@@ -1,0 +1,45 @@
+====== Overview / Articles ======
+
+===== Articles / Blog Entries / How Tos =====
+  * [1] [[http://stackoverflow.com/questions/568136/svg-vs-canvas-where-is-the-web-world-going-towards|svg vs canvas on stackoverflow]]
+  * [2] [[http://www.ernestdelgado.com/gmaps/canvas/ddemo1.html|speed comparison of canvas vs svg, via gmaps, not a good test]]
+  * [3] [[http://prototype-graphic.xilinus.com/samples/shape.html#|direct speed comparison svg vs canvas]] canvas has about double the speed
+  * [4] [[http://intertwingly.net/stories/2006/07/10/penroseTiling.html|speedtest canvas vs svg]] same result as [3]
+  * [5] [[http://smus.com/canvas-vs-svg-performance/|yet another about speed and scaling...]]  
+  * [6]
+
+===== Considered Frameworks =====
+
+  * canvas
+  * svg
+
+===== results =====
+==== articles ====
+
+
+from [5]
+> "Whether or not you use Canvas or SVG mostly depends on your specific application. A graphics-intensive game, where many objects are redrawn all the time is probably best implemented in Canvas. On the other hand, applications like map viewers may involve large rendering areas and might lend themselves better to SVG."
+
+----
+
+from [1]:
+> SVG
+> SVG is a Retained mode graphics therefore it is very easy and recommended for interactivity (like click events and all mouse events, because the event binds directly to the element in the DOM), it is great for maps etc.
+> But it is not recommended for heavy animations since the DOM is generally slow.
+> SVG is also not recommended for large data driven charts since it needs to do a lot of DOM manipulation.
+> Additionally with the raphaeljs library, should simplify your work with SVG
+> 
+> Canvas
+> canvas is immediate-mode graphic and is not part of the DOM tree, therefore its not best for binding mouse events.
+> But is best for pixel based drawings and especially for objects that are high in animation's
+
+==== my thoughts ====
+
+
+I suppose svg could be more suited for this particular app, since it's mostly having a background image and some vectorgraphics on top of it, whats svg strong side.
+BUT it's harder to find good material on building interactive web apps using svg and SMIL or javascript; and the general trend goes in direction cancas / html5.
+
+also, it's more low level (i control and initiate the rendering) meaning:
+  * more complicated
+  * more control
+  * according to [2-4] it's ALOT faster (x2 - x10)

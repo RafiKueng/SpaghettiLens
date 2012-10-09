@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <script type="text/javascript">
+      // This function is called on page load.
+
+      function onLoadFn() {
+        drawOnCanvas(0,0,0);
+      }
+      
+      function drawOnCanvas(r,g,b) {
+
+        // Get the canvas element.
+        var canvas = document.getElementById("drawArea");
+
+        // Make sure you got it.
+        if (canvas.getContext)
+
+        // If you have it, create a canvas user inteface element.
+        {
+          // Specify 2d canvas type.
+          var ctx = canvas.getContext("2d");
+
+          // Draw the colored circle element.
+          // Start the path.
+          ctx.beginPath();
+
+          // Define the fill color in RGB
+          ctx.fillStyle = "rgb("+r+" ,"+g+" ,"+b+")";
+
+          // Draw the circle using an arc.
+          ctx.arc(100, 100, 50, 0, 2 * Math.PI, true);
+
+          // Fill the circle.
+          ctx.fill();
+        }
+      }
+
+      // This function is called when you click the canvas.
+      function clickOnCanv() {      
+        alert("You clicked the canvas drawing area element.");
+      }
+      
+
+      // This function is called when you click the svg.
+      function clickColorPicker(evt) {
+        var pnt = coordTrans(evt, document.getElementById('colorPicker'));
+        var green = Math.floor(255 - pnt.x/500.*255);
+        drawOnCanvas(255,green,0);
+        var log = document.getElementById('log');
+        var msg = "You clicked the svg color picker element.<br/>"
+              + "At location: " + evt.clientX + " / " + evt.clientY+"<br/>"
+              + "new loc: " + pnt.x + " / " + pnt.y + "<br/>"
+              + "resulting in g: "+green;
+        //alert(msg);
+        log.innerHTML = msg;
+      }
+      
+      //this function converts windowcoordinates to viewbort coordinates
+      function coordTrans(evt, root) {
+        var pnt = root.createSVGPoint();
+        pnt.x = evt.pageX;
+        pnt.y = evt.pageY;
+
+        var ctm = evt.target.getScreenCTM();
+        if (ctm = ctm.inverse()){
+          pnt = pnt.matrixTransform(ctm);
+        }
+        pnt.x = Math.round(pnt.x);
+        pnt.y = Math.round(pnt.y);
+        return pnt;
+      }
+      
+    </script>
+  </head>
+  
+  <body onload="onLoadFn()">
+    <h1>
+      Demo User interface combining svg for ui elements and canvas/js for drawing section
+    </h1>
+    
+
+    <h2>
+      SVG UI element
+    </h2>
+
+    <!-- Create the SVG pane. -->
+    <svg id="colorPicker" height="50" width="500">
+      <!-- Create the ui demo color picker -->
+      <defs>
+        <!-- Create a gradient -->
+        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:rgb(255,255,0);stop-opacity:1" />
+          <stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect
+        width="500" height="50" id="uIElement" fill="url(#grad1)"
+        onclick="clickColorPicker(evt);"
+        onmousemove="clickColorPicker(evt);"
+      />
+    </svg>
+
+
+
+    <hr />
+    <h2>
+      Canvas Drawing area
+    </h2>
+
+    <!-- Create the Canvas element. -->
+    <canvas id="drawArea" width="200" height="200" onclick="clickOnCanv()">
+      your browser doesn't support canvases
+    </canvas>
+
+
+
+    <h2>
+      Just a regular paragraph, used for output
+    </h2>
+    <p id="log">
+      some blabla
+    </p>
+  </body>
+
+</html>
