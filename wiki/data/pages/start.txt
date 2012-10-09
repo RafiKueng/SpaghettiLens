@@ -1,0 +1,8 @@
+====== My Masters Thesis Notepad ======
+
+
+===== Overview =====
+
+  * [[overview|Overview of techniques / frameworks / approaches]]
+  * [[useful_links|useful links]]
+  * [[setup_win_linux|How to set up windows to work with linux]]

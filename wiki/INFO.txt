@@ -1,0 +1,3 @@
+this folder is the root of a docuwiki install.
+it's excluded from this git repro for obvious reasons
+to read the wiki, just install a dokuwiki here, not overwriting existing files.

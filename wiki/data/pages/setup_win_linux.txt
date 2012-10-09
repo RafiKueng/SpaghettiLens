@@ -1,0 +1,85 @@
+====== Setting up and working with SSH under Windows ======
+
+  * for git / putty / winscp / linux remote access
+  * filesyncing win <-> linux
+
+
+===== Overview: =====
+
+2 relevant implementation: openssh style vs putty style
+
+  * git / msys / cygwin ssh: openssh style
+  * putty / winscp: putty style
+
+==== terminals / (ssh) shells / tools: ====
+
+
+=== putty ===
+
+  * standalone win32 applikation, pure ssh client
+  * "gui" mode (commandline suppportet)
+  * eigenes schluessel management (import / export von openssh keys moeglich)
+  
+=== winscp ===
+
+  * standalone win32 applikation
+  * "gui" mode (commandline suppportet), explorer / MC like
+  * nur file transfer / rudimentaere ssh shell (nicht brauchbar)
+  * gut in putty integriert / schluessel von putty brauchbar
+
+
+=== mingw32 / msys: ===
+  * native win entwicklung (eigene win header dateien)
+  * entwickelte software kann irgendeine lizenz haben
+  * native win32 anwendungen / linux tools, auf win portiert (befehle grep, gcc, ...)
+  
+  * DIE alternative zu Visual studio compiler (als backend) fuer frontend alternativen siehe Eclipse CDT / code::blocks...
+  * fuer x64 check out MinGW-w64
+  
+
+=== git / msys: ===
+  * specially modified msys
+  * git augmented shell
+  * win home mounted as /home/xy
+  * ssh shell, fully functional, uses winhomedir\.ssh
+  * sh.exe, fully functional shell
+
+  
+=== cygwin: ===
+  * bash komplett losgeloest vom win sys (programm innerhalb von cmd gestartet)
+  * eigene (linux) verzeichnisstruktur innerhalb <installdir>
+  * voll kompatibles terminal (farben...) -> bash
+  * start von console aus, laeuft darin
+  * mounted windows laufwerke unter /cygdrive/c /cygdrive/d ...
+  * fuer linux programmierte programme laufen (fast) unveraendert (muessen aber neu kompiliert werden!), aber brauchen cygwin-dll. programmieren mit unix systemcalls, dll uebersetzt in windows calls
+  * hat xserver: anzeige von programmen die auf remote linux laufen
+  * hat sshd (ssh server): remotezugriff auf windows pc mit ssh
+  * hat alle linux commands, compiler ect... und sowas wie packet manager (setup.exe)
+  * can use windows home as your home (not really recommended) by setting $HOME; by editing /ect/passwd; by using mkpasswd, or by mounting?
+  * can run windows tools like notepad / ipconfig ... pay attention to confliction tools (like find, check path)
+
+=== UnxUtils ===
+  * unix tools, completly portet to win32. integrate in path and use from command line
+  
+=== GNU on Windows https://github.com/bmatzelle/gow/wiki ===
+  * practically the same as UnxTools, but with installer :)
+  
+  
+  
+===== recommended windows tools: =====
+  * console [[http://sourceforge.net/projects/console/|source]]\\ console enchancement, multi tab, transparency, easy copy paste other fancy stuff
+  * notepad++ [[http://notepad-plus-plus.org/|source]]\\ THE text editor to use.
+  
+
+  
+===== set up of everything :) =====
+
+
+
+
+
+===== different tasks: =====
+
+  * sync files linux server <-> windows client using winscp
+
+

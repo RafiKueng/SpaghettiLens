@@ -1,0 +1,36 @@
+<html>
+   <head>
+      <script type="text/javascript">
+         window.onload = function() {
+ 
+            var webSocket = new WebSocket("ws://localhost:9000");
+ 
+            webSocket.onmessage = function(e) {
+               console.log("Got echo: " + e.data);
+            }
+         }
+
+         function addToLog(txt){
+            document.getElementById( "log2" ).innerHTML =
+               document.getElementByID( "log2" ).innherHTML + "; " + txt;
+         } 
+      </script>
+   </head>
+   <body>
+      <h1>WebSocket Echo Client</h1>
+      
+      <input type="text" id="txt_field" value="Input Message">
+
+      <button onclick='webSocket.send("Hello, world!");'>
+         Send Hello
+      </button>
+      <button onclick='addToLog(document.getElementById('txt_field').value);'>
+         Send fill log
+      </button>
+
+
+      <hr/>
+      <p id="log2">Log2:</p>
+      <textarea name="log" cols="50" rows="10">log is here</textarea>
+   </body>
+</html>

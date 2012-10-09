@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <script type="text/javascript">
+         var sock = null;
+         var ellog = null;
+
+         function connect() {
+
+            ellog = document.getElementById('log');
+            var port = document.getElementById('port').value;
+            log("selected port is: "+port);
+
+            var wsuri;
+            if (window.location.protocol === "file:") {
+               wsuri = "ws://localhost:8080";
+            } else {
+               wsuri = "ws://" + window.location.hostname + ":" + port;
+            }
+
+            if ("WebSocket" in window) {
+               sock = new WebSocket(wsuri);
+            } else if ("MozWebSocket" in window) {
+               sock = new MozWebSocket(wsuri);
+            } else {
+               alert("Browser does not support WebSocket!");
+            }
+
+            if (sock) {
+               sock.onopen = function() {
+                  log("Connected to " + wsuri);
+               }
+
+               sock.onclose = function(e) {
+                  log("Connection closed (wasClean = " + e.wasClean + ", code = " + e.code + ", reason = '" + e.reason + "')");
+                  sock = null;
+               }
+
+               sock.onmessage = function(e) {
+                  log("Got echo: " + e.data);
+               }
+            }
+         };
+
+         function disc() {
+             sock.close();
+         };
+
+         function send() {
+            var msg = document.getElementById('message').value;
+            if (sock) {
+               sock.send(msg);
+               log("Sent: " + msg);
+            } else {
+               log("Not connected.");
+            }
+         };
+
+         function log(m) {
+            ellog.innerHTML += m + '\n';
+            ellog.scrollTop = ellog.scrollHeight;
+         };
+      </script>
+   </head>
+   <body>
+      <h1>WebSocket Echo Test</h1>
+      <noscript>no js error</noscript>
+      <form>
+         <p>Com.Port: <input id="port" type="text" size="50" maxlength="50" value="8080"><br/>
+         use 8080 for tornado testing, 8081 for twisted pure, 8082 for autobahn</p>
+         <p>Message: <input id="message" type="text" size="50" maxlength="50" value="test"><br/>
+         use "b: cmd" to send direct python command to backend, "g: cmd" to send command to glass<br/>
+         Example: g: sleep 1000</p>
+      </form>
+      <button onclick='connect();'>connect</button>
+      <button onclick='send();'>Send</button>
+      <button onclick='disc();'>disc</button>
+      <pre id="log" style="height: 20em; overflow-y: scroll; background-color: #aaaaff;"></pre>
+   </body>
+</html>
