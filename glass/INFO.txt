@@ -1,0 +1,9 @@
+GLASS (is missing here)
+
+In this directory, add glass from Jonathan Coles
+best to make an svn checkout to this dir from:
+svn co https://svn.physik.uzh.ch/repos/itp/glass
+
+only modified files are tracked by the git repro, so make
+sure to make a svn checkout, then overwrite the files FROM
+svn with the files in the git repro.

@@ -30,6 +30,10 @@ ehthumbs.db
 Thumbs.db
 ~
 
+# Compiled files #
+##################
+*.pyc
+
 # only save wiki data files #
 #############################
 !wiki/
@@ -41,7 +45,7 @@ wiki/*
 /wiki/data/*
 !/wiki/data/pages/
 
-
-# Compiled files #
-##################
-*.pyc
+# glass is already on svn.physik. no need to add it here
+# or only add changed files, to keep track of changes
+##########################################################
+glass/

@@ -6,7 +6,11 @@
   * [3] [[http://prototype-graphic.xilinus.com/samples/shape.html#|direct speed comparison svg vs canvas]] canvas has about double the speed
   * [4] [[http://intertwingly.net/stories/2006/07/10/penroseTiling.html|speedtest canvas vs svg]] same result as [3]
   * [5] [[http://smus.com/canvas-vs-svg-performance/|yet another about speed and scaling...]]  
-  * [6]
+  * [6] [[http://ajaxian.com/archives/todataurl-canvas-and-svg|use both, render canvas, then use in svg]] [[http://www.cs.helsinki.fi/group/kuje/svg_open_2009_presentation/|presentation slides]] original paper lost in space...
+  * [7] [[http://msdn.microsoft.com/en-us/library/gg589494%28v=vs.85%29.aspx|MS provides 2 implementation of a push button, in canvas and svg]] [[http://msdn.microsoft.com/en-us/library/gg589521%28v=vs.85%29.aspx|and a simple pong in canvas and svg]]
+  * [8] [[http://msdn.microsoft.com/en-us/library/gg193983%28v=vs.85%29.aspx|and the view of MS about canvas vs svg. very nicely done..]]
+  * [9] [[http://msdn.microsoft.com/en-us/library/gg589494%28v=vs.85%29.aspx|and this one about creating user interfaces in svg vs canvas]]
+  * [10] [[http://www.carto.net/svg/eventhandling/|all about svg events and coordinates]]
 
 ===== Considered Frameworks =====
 
@@ -33,6 +37,11 @@ from [1]:
 > canvas is immediate-mode graphic and is not part of the DOM tree, therefore its not best for binding mouse events.
 > But is best for pixel based drawings and especially for objects that are high in animation's
 
+----
+
+from [8]
+
+{{http://i.msdn.microsoft.com/dynimg/IC496493.png}}
 ==== my thoughts ====
 
 
@@ -43,3 +52,40 @@ also, it's more low level (i control and initiate the rendering) meaning:
   * more complicated
   * more control
   * according to [2-4] it's ALOT faster (x2 - x10)
+
+**but keep in mind [6]** which suggestes combining both, what could be very useful, render the background, use svg to overlay vector graphics
+
+well, i'll actually combine both, creating the ui with svg and the drawing in canvas.. I'll try with a demo.. starting with [9]
+ --- //[[rafik@no-email.ch|Rafael Kueng]] 2012/10/09 17:47//
+
+
+
+major drawback of svg: shitty coordinate handling....
+
+have a look [[http://www.carto.net/papers/svg/samples/show_coordinates.shtml|here]]
+ --- //[[rafik@no-email.ch|Rafael Kueng]] 2012/10/09 18:25//
+
+[[http://stackoverflow.com/questions/2930625/svg-from-window-coordinates-to-viewbox-coordinates|this]] solved my problem  --- //[[rafik@no-email.ch|Rafael Kueng]] 2012/10/09 20:29//
+
+combining svg and canvas made easy: just draw the two on top of each other using css..
+
+<div style="height:400px; width:750px; position:relative">
+<svg style="position: absolute; left: 0; top: 0; z-index: 1;">...</svg>
+<canvas style="position: absolute; left: 0; top: 0; z-index: 0;" width="750" height="400"></canvas>
+ --- //[[rafik@no-email.ch|Rafael Kueng]] 2012/10/18 04:16//
+====== References / Tec Docs ======
+===== svg =====
+  * [[http://www.w3.org/TR/SVG/interact.html#SVGEvents|SVG Events]]
+
+===== html5 tags =====
+  * [[http://www.quackit.com/html_5/tags/html_button_tag.cfm|html tags and attributes]]
+  * http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas-element.html#2dcontext
+
+
+====== Some libraries ======
+===== overview =====
+  * http://www.farinspace.com/top-svg-javascript-libraries-worth-looking-at/
+
+===== svg =====
+
+

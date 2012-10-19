@@ -1,0 +1,28 @@
+
+
+/* this is the div containing the ui layers */
+#ui.area {
+  height:400px;
+  width:750px;
+  position:relative
+}
+
+/* this represents the background layer */
+#ui.canvas_layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+}
+
+/* this is the foreground layer */
+#ui.svg_layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+}
+
+#tspan2997 {
+  font-weight=bolder;
+}
