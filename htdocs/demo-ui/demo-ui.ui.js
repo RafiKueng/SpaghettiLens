@@ -21,10 +21,12 @@ function coordTrans(evt, root) {
 
 function clickOnBG(evt) {
   alert("bg click");
-  var cx = evt.getClientX();
-  var cy = evt.getClientY();
+  //var cx = evt.getClientX();
+  //var cy = evt.getClientY();
   var px = evt.pageX;
   var py = evt.pageY;
+  
+  var target = evt.target;
   
   var pnt = coordTrans(evt, document.getElementById('ui'));
   //alert("click" + pnt.x + "-" + pnt.y);
