@@ -1,6 +1,6 @@
 
 <!-- /// demo-ui.body.php start -->
-<body>
+<body onload="onBodyInit();">
 <h1>Demo User interface</h1>
 <h2>the user interface</h2>
 

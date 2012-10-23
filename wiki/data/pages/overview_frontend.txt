@@ -74,6 +74,9 @@ combining svg and canvas made easy: just draw the two on top of each other using
 <canvas style="position: absolute; left: 0; top: 0; z-index: 0;" width="750" height="400"></canvas>
  --- //[[rafik@no-email.ch|Rafael Kueng]] 2012/10/18 04:16//
 ====== References / Tec Docs ======
+===== js =====
+http://www.quirksmode.org/dom/w3c_core.html
+
 ===== svg =====
   * [[http://www.w3.org/TR/SVG/interact.html#SVGEvents|SVG Events]]
 
