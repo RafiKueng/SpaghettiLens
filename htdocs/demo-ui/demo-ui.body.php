@@ -1,9 +1,11 @@
 
 <!-- /// demo-ui.body.php start -->
 <body onload="onBodyInit();">
-<h1>Demo User interface</h1>
-<h2>the user interface</h2>
+<!--<h1>Demo User interface</h1>-->
+<h2>debug.log</h2>
+<p id="debug.log">test</p>
 
+<h2>the user interface</h2>
 <div id="ui.area">
 
 <!-- / include svg, cut first line-->

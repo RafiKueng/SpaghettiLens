@@ -6,6 +6,11 @@
 
 var selectedPoint = false;
 
+
+/****************************************************
+ * UI CODE
+ ****************************************************/
+
 function initUI() {
   //alert("initUI");
   var element = document.getElementById("ui.svg.settings_menu");
@@ -13,7 +18,6 @@ function initUI() {
   //alert("done");
   
 }
-
 
 // this is called when specific elements are hoovered over
 function mouseOver(evt) {
@@ -37,56 +41,11 @@ function mouseOut(evt) {
   }
 }
 
-
-
-
 // clicks on a UI element, but not on a button
 function onClickUI(evt) {
   var target = evt.target;
   alert("clicked on a tab, but no button: "+target.id);
   evt.stopPropagation();
-}
-
-
-// this handles all the clicks on the background to no element
-function onClickSVG(evt){
-  var target = evt.target;
-  //alert("click on svg: " + target.id);
-  if (target.id=="ui.svg_layer") {
-    addContour(coordTrans(evt));
-  }
-  else if (evt.detail>=2){
-    alert("doubleclick on " + target.id);
-  }
-}
-
-
-// clicks on one contour element
-function onMouseDownContours(evt) {
-  var target = evt.target;
-  //alert("click on contour: "+target.id );
-  selectContourPoint(target, coordTrans(evt));
-  evt.stopPropagation();
-}
-
-function onMouseUpContours(evt) {
-  var target = evt.target;
-  //alert("click on contour: "+target.id );
-  if (selectedPoint==false) {
-    addContour(coordTrans(evt));
-  }
-  else {
-    unselectContourPoint(target, coordTrans(evt));
-  }
-  evt.stopPropagation();
-}
-
-function onMouseMove(evt) {
-  if (selectedPoint) {
-    //alert("click on contour: "+target.id );
-    movePoint(coordTrans(evt));
-  }
-  evt.stopPropagation();  
 }
 
 // handler for all button clicks
@@ -113,6 +72,103 @@ function onClickBtn(evt) {
   evt.stopPropagation();
 }
 
+
+/****************************************************
+ * Curve Code (layer2)
+ ****************************************************/
+
+
+// this handles all the clicks on the background to no element
+function onClickSVG(evt){
+  var target = evt.target;
+  //alert("click on svg: " + target.id);
+  
+  // doubleclick on background
+  if (target.id=="ui.svg_layer" && evt.detail>=2) {
+    var pnt = coordTrans(evt);
+    var parent = document.getElementById("layer2");
+    var newgroup = createGroup(parent, pnt.x.toFixed(0), pnt.y.toFixed(0));
+    parent.appendChild(newgroup);
+  }
+  else if (evt.detail>=2){
+    //alert("doubleclick on " + target.id);
+    expandPoint(target.parentElement);
+  }
+}
+
+var dragTarget = false;
+var x_start;
+var y_start;
+
+function onMouseDownContours(evt) {
+  //var target = evt.target;
+  
+  //start moving
+  dragTarget = evt.target;
+  x_start = evt.clientX;
+  y_start = evt.clientY;
+  //dragTarget.ownerSVGElement.addEventListener('mousemove', onMouseMove, false);
+  //document.getElementById("ui.svg_layer").addEventListener('mousemove', onMouseMove, false);
+  document.getElementById("ui.svg_layer").setAttribute("onmousemove", "onMouseMove(evt)");
+}
+
+function onMouseUpContours(evt) {
+  dragTarget.ownerSVGElement.removeEventListener('mousemove', onMouseMove, false);
+  dragTarget = false;
+}
+
+function onMouseMove(evt) {
+  var log = document.getElementById("debug.log");
+  var p1 = coordTrans(evt);
+  var p2 = localCoordTrans(evt);
+  
+  log.innerHTML = "move: target:"+evt.target.id+"; evt=" + evt.clientX + "," + evt.clientY
+                + "; regCT:" + p1.x + "," + p1.y
+                + "; locCT:" + p2.x + "," + p2.y;
+}
+
+
+
+/*
+// clicks on one contour element
+function onMouseDownContours(evt) {
+  var target = evt.target;
+  //alert("click on contour: "+target.id );
+  selectContourPoint(target, coordTrans(evt));
+  evt.stopPropagation();
+}
+*/
+
+/*
+function onMouseUpContours(evt) {
+  var target = evt.target;
+  //alert("click on contour: "+target.id );
+  if (selectedPoint==false) {
+    addContour(coordTrans(evt));
+  }
+  else {
+    unselectContourPoint(target, coordTrans(evt));
+  }
+  evt.stopPropagation();
+}
+*/
+
+/*
+function onMouseMove(evt) {
+  if (selectedPoint) {
+    //alert("click on contour: "+target.id );
+    movePoint(coordTrans(evt));
+  }
+  evt.stopPropagation();  
+}
+*/
+
+
+
+/****************************************************
+ * Helper functions
+ ****************************************************/
+ 
 function coordTrans(evt) {
 
   var m = evt.target.getScreenCTM();
@@ -127,6 +183,19 @@ function coordTrans(evt) {
   return p;
 }
 
+function localCoordTrans(evt) {
+
+  var m = evt.target.parentElement.getScreenCTM();
+
+  var root = document.getElementById("ui.svg_layer");
+  var p = root.createSVGPoint(); 
+
+  p.x = evt.clientX;
+  p.y = evt.clientY;
+  p = p.matrixTransform(m.inverse());
+
+  return p;
+}
 
 // HELPER/DEBUG: this shows infos about an event (coordinates)
 function eventInfo(evt) {
@@ -144,6 +213,8 @@ function eventInfo(evt) {
 
 
 
+
+/*
 var pointnr=0;
 
 
@@ -174,7 +245,7 @@ function selectContourPoint(target, point) {
 function unselectContourPoint(target, point) {
   selectedPoint = false;
 }
-
+*/
 
 
 
