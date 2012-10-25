@@ -29,7 +29,7 @@ function initUI() {
   root.onmousemove = "if (event.preventDefault) event.preventDefault()";
   */
   
-  alert("init done");
+  //alert("init done");
   
 }
 
