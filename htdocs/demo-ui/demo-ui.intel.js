@@ -50,7 +50,15 @@ function expandPoint(targetGroup) {
 var ngroups=0;
 
 function moveGroup(grp, dx, dy) {
-  
+  var x = parseInt(grp.getAttribute("dx"));
+  var y = parseInt(grp.getAttribute("dy"));
+  grp.setAttribute("transform", "translate("+(x+dx)+","+(y+dy)+")");
+  grp.setAttribute("dx", x+dx);
+  grp.setAttribute("dy", y+dy);
+}
+
+function moveGroup2(grp, pnt) {
+  grp.setAttribute("transform", "translate("+pnt.y+","+pnt.y+")");
 }
 
 function createGroup(parent, dx, dy) {

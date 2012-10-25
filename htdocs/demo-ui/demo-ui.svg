@@ -28,16 +28,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="372.01659"
-     inkscape:cy="137.46008"
+     inkscape:cx="254.19922"
+     inkscape:cy="166.38865"
      inkscape:document-units="px"
      inkscape:current-layer="ui.svg_layer"
      showgrid="true"
      borderlayer="true"
-     inkscape:window-width="1457"
-     inkscape:window-height="987"
-     inkscape:window-x="2085"
-     inkscape:window-y="43"
+     inkscape:window-width="1920"
+     inkscape:window-height="1061"
+     inkscape:window-x="-8"
+     inkscape:window-y="112"
      inkscape:window-maximized="0"
      showguides="false">
     <inkscape:grid
@@ -154,4 +154,11 @@
          onclick="onClickBtn(evt);" />
     </g>
   </g>
+  <rect
+     style="opacity:0.01000001;fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     id="bg"
+     width="770"
+     height="420"
+     x="-10"
+     y="-10" />
 </svg>

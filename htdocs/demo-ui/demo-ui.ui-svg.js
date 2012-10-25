@@ -109,22 +109,34 @@ function onMouseDownContours(evt) {
   y_start = evt.clientY;
   //dragTarget.ownerSVGElement.addEventListener('mousemove', onMouseMove, false);
   //document.getElementById("ui.svg_layer").addEventListener('mousemove', onMouseMove, false);
-  document.getElementById("ui.svg_layer").setAttribute("onmousemove", "onMouseMove(evt)");
+  //document.getElementById("ui.svg_layer").setAttribute("onmousemove", "onMouseMove(evt)");
 }
 
 function onMouseUpContours(evt) {
-  dragTarget.ownerSVGElement.removeEventListener('mousemove', onMouseMove, false);
+  //dragTarget.ownerSVGElement.removeEventListener('mousemove', onMouseMove, false);
   dragTarget = false;
 }
 
 function onMouseMove(evt) {
+  
   var log = document.getElementById("debug.log");
   var p1 = coordTrans(evt);
   var p2 = localCoordTrans(evt);
-  
   log.innerHTML = "move: target:"+evt.target.id+"; evt=" + evt.clientX + "," + evt.clientY
                 + "; regCT:" + p1.x + "," + p1.y
                 + "; locCT:" + p2.x + "," + p2.y;
+  
+
+  if (dragTarget) {
+    
+    var dx = evt.clientX - x_start;
+    var dy = evt.clientY - y_start;
+    moveGroup(evt.target.parentElement, dx, dy);
+    x_start = evt.clientX;
+    y_start = evt.clientY;  
+    
+    //moveGroup2(evt.target.parentElement, coordTrans(evt));
+  }
 }
 
 
@@ -210,7 +222,10 @@ function eventInfo(evt) {
 
 
 
-
+function dlog(txt) {
+  var log = document.getElementById("debug.log");
+  log.innerHTML = txt;
+}
 
 
 
