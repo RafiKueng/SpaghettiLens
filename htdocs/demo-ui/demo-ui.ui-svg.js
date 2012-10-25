@@ -11,11 +11,25 @@ var selectedPoint = false;
  * UI CODE
  ****************************************************/
 
+ var root = null;
+ 
 function initUI() {
+
+  root = document.getElementById("ui.svg_layer");
+  
   //alert("initUI");
   var element = document.getElementById("ui.svg.settings_menu");
   element.isVisible = false;
-  //alert("done");
+  
+  // disable default image dragging behaviour
+  /*
+  root.mousedown = "if (event.preventDefault) event.preventDefault()";
+  root.onmousedown = "if (event.preventDefault) event.preventDefault()";
+  root.mousemove = "if (event.preventDefault) event.preventDefault()";
+  root.onmousemove = "if (event.preventDefault) event.preventDefault()";
+  */
+  
+  alert("init done");
   
 }
 
@@ -81,18 +95,25 @@ function onClickBtn(evt) {
 // this handles all the clicks on the background to no element
 function onClickSVG(evt){
   var target = evt.target;
+  var parent = evt.target.parentElement;
   //alert("click on svg: " + target.id);
   
   // doubleclick on background
-  if (target.id=="ui.svg_layer" && evt.detail>=2) {
+  //if (target.id=="ui.svg_layer" && evt.detail>=2) {
+  if (target.id=="bg" && evt.detail>=2) {
     var pnt = coordTrans(evt);
     var parent = document.getElementById("layer2");
-    var newgroup = createGroup(parent, pnt.x.toFixed(0), pnt.y.toFixed(0));
+    var newgroup = createGroup(parent, pnt.x.toFixed(0), pnt.y.toFixed(0), true);
     parent.appendChild(newgroup);
   }
   else if (evt.detail>=2){
     //alert("doubleclick on " + target.id);
-    expandPoint(target.parentElement);
+    if (parent.expanded) {
+      collapsePoint(parent);
+    }
+    else {
+      expandPoint(parent);
+    }
   }
 }
 
@@ -110,6 +131,8 @@ function onMouseDownContours(evt) {
   //dragTarget.ownerSVGElement.addEventListener('mousemove', onMouseMove, false);
   //document.getElementById("ui.svg_layer").addEventListener('mousemove', onMouseMove, false);
   //document.getElementById("ui.svg_layer").setAttribute("onmousemove", "onMouseMove(evt)");
+  evt.stopPropagation();
+  evt.preventDefault();
 }
 
 function onMouseUpContours(evt) {
@@ -122,7 +145,7 @@ function onMouseMove(evt) {
   var log = document.getElementById("debug.log");
   var p1 = coordTrans(evt);
   var p2 = localCoordTrans(evt);
-  log.innerHTML = "move: target:"+evt.target.id+"; evt=" + evt.clientX + "," + evt.clientY
+  log.innerHTML = "move: target:"+evt.target.id+"; dragtrg:"+dragTarget.id+"; evt=" + evt.clientX + "," + evt.clientY
                 + "; regCT:" + p1.x + "," + p1.y
                 + "; locCT:" + p2.x + "," + p2.y;
   
@@ -131,12 +154,14 @@ function onMouseMove(evt) {
     
     var dx = evt.clientX - x_start;
     var dy = evt.clientY - y_start;
-    moveGroup(evt.target.parentElement, dx, dy);
+    moveGroup(dragTarget.parentElement, dx, dy);
     x_start = evt.clientX;
     y_start = evt.clientY;  
     
     //moveGroup2(evt.target.parentElement, coordTrans(evt));
   }
+  evt.stopPropagation();
+
 }
 
 
