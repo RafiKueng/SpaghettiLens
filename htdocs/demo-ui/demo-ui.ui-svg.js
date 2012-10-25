@@ -103,12 +103,12 @@ function onClickSVG(evt){
   if (target.id=="bg" && evt.detail>=2) {
     var pnt = coordTrans(evt);
     var parent = document.getElementById("layer2");
-    var newgroup = createGroup(parent, pnt.x.toFixed(0), pnt.y.toFixed(0), true);
+    var newgroup = createGroup(parent, parseInt(pnt.x.toFixed(0)), parseInt(pnt.y.toFixed(0)), true);
     parent.appendChild(newgroup);
   }
   else if (evt.detail>=2){
     //alert("doubleclick on " + target.id);
-    if (parent.expanded) {
+    if (parent.isExpanded) {
       collapsePoint(parent);
     }
     else {
@@ -126,8 +126,7 @@ function onMouseDownContours(evt) {
   
   //start moving
   dragTarget = evt.target;
-  x_start = evt.clientX;
-  y_start = evt.clientY;
+
   //dragTarget.ownerSVGElement.addEventListener('mousemove', onMouseMove, false);
   //document.getElementById("ui.svg_layer").addEventListener('mousemove', onMouseMove, false);
   //document.getElementById("ui.svg_layer").setAttribute("onmousemove", "onMouseMove(evt)");
@@ -143,22 +142,16 @@ function onMouseUpContours(evt) {
 function onMouseMove(evt) {
   
   var log = document.getElementById("debug.log");
-  var p1 = coordTrans(evt);
-  var p2 = localCoordTrans(evt);
+  var p1 =  coordTrans(evt);
+  //var p2 = localCoordTrans(evt);
   log.innerHTML = "move: target:"+evt.target.id+"; dragtrg:"+dragTarget.id+"; evt=" + evt.clientX + "," + evt.clientY
-                + "; regCT:" + p1.x + "," + p1.y
-                + "; locCT:" + p2.x + "," + p2.y;
+                + "; regCT:" + p1.x.toFixed(1) + "," + p1.y.toFixed(1);
+                //+ "; locCT:" + p2.x + "," + p2.y;
   
 
   if (dragTarget) {
-    
-    var dx = evt.clientX - x_start;
-    var dy = evt.clientY - y_start;
-    moveGroup(dragTarget.parentElement, dx, dy);
-    x_start = evt.clientX;
-    y_start = evt.clientY;  
-    
-    //moveGroup2(evt.target.parentElement, coordTrans(evt));
+    var pnt = coordTrans(evt);
+    moveExtremalPoint(dragTarget, parseInt(pnt.x), parseInt(pnt.y));
   }
   evt.stopPropagation();
 
