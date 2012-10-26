@@ -31,7 +31,11 @@ function expandPoint(targetGroup) {
   
   targetGroup.appendChild(point2);
   targetGroup.appendChild(point3);
-  targetGroup.isExpanded = true;
+  targetGroup.isExpanded = true;  
+  
+  createContour(point2);
+  
+
 }
 
 function collapsePoint(targetGroup) {
@@ -140,4 +144,107 @@ function createGroup(parent, x, y, isRoot) {
   //parent.appendChild(group);
   return group;
   
+}
+
+var n_cp = 8; //number of contour points (including saddle point) per contour
+var ncgroups = 0;
+var cpnt_nr = 0;
+var cpath_nr = 0;
+
+function createContour(grp) {
+  var parent = grp.parentElement;
+
+  var dAng = Math.PI * 2 / n_cp;
+  
+  var dx = parent.x - grp.x;
+  var dy = parent.y - grp.y;
+  var ang = toPolarAng(dx, dy);
+  var rad = toPolarR(dx, dy);
+  
+  var cgrp = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  cgrp.setAttribute("id", "cgrp"+(ncgroups++));
+  cgrp.setAttribute("class", "contourpoint_group");
+  grp.appendChild(cgrp);
+  
+  for (var i = 1; i<n_cp; i++) { //no need to draw the first point
+    var r_fac = Math.abs(i-n_cp/2.)/(0.5*n_cp); //gives a number 0..1
+    r_fac = r_fac *0.25 + 0.50; //makes the radi between 50% and 75% of dist to parent
+    var cp_ang = ang+i*dAng;
+    var cp_rad = rad * r_fac;
+    cp_x = grp.x + toRectX(cp_ang, cp_rad);
+    cp_y = grp.y + toRectY(cp_ang, cp_rad);
+    
+    
+    var point = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    point.setAttribute("class", "contourpoint");
+    point.setAttribute("cx", cp_x);
+    point.setAttribute("cy", cp_y);
+    point.setAttribute("r",  5);
+    point.setAttribute("fill", "black");
+    point.setAttribute("id", "cpnt"+(cpnt_nr++));
+    
+    point.ang = cp_ang;
+    point.rad = cp_rad;
+    
+    cgrp.appendChild(point);
+    
+  }
+  var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("id", "cpath"+(cpath_nr++));
+  path.setAttribute("class", "contourpath");
+  path.setAttribute("d",  "");
+  path.setAttribute("style", "stroke: blue; fill: none; stroke-width: 1");
+  
+  grp.appendChild(path);    
+    
+  updateContourOf(grp);
+  
+}
+
+function updateContourOf(grp) {
+  var parent = grp.parentElement;
+  // var j = grp.isRoot ? 1 : 0; //offset for root node, he has no line
+  var j = grp.isExtended ? 0 : 2; //if not expanded, then two groups are missing
+  var contGrp = grp.childNodes[4-j];
+  var path = grp.childNodes[5-j];
+  var pathstr = "";
+  
+  pathstr += "M" + parent.x + "," + parent.y + " "; //move to start pos
+  
+  for (var i=0; i<contGrp.childNodes.length; i++) {
+    var pnt = contGrp.childNodes[i];
+    var cp_x = grp.x + toRectX(pnt.ang, pnt.rad);
+    var cp_y = grp.y + toRectY(pnt.ang, pnt.rad);
+    pnt.setAttribute("cx", cp_x);
+    pnt.setAttribute("cy", cp_y);
+    pathstr += "L"+cp_x + ","+cp_y+" ";
+  }
+  
+  pathstr += "Z"; //close path
+  path.setAttribute("d", pathstr);
+}
+
+
+
+/********************
+ * math helper
+ ********************/
+
+function toPolarAng(xdiff,ydiff) {
+   var direction = (Math.atan2(ydiff,xdiff));
+   return(direction);
+}
+
+function toPolarR(xdiff,ydiff) {
+   var distance = Math.sqrt(xdiff * xdiff + ydiff * ydiff);
+   return(distance);
+}
+function toRectX(direction,distance) {
+   var x = distance * Math.cos(direction);
+   return(x);
+}
+
+function toRectY(direction,distance) {
+   y = distance * Math.sin(direction);
+   return(y);
 }
