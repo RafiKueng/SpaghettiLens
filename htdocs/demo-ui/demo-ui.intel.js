@@ -76,6 +76,7 @@ function moveExtremalPoint(pnt, x, y) {
       updateContourOf(child);
     }
   }
+  updateContourOf(pGrp);
 }
 /*
 function moveGroup(grp, dx, dy) {
@@ -124,7 +125,7 @@ function createGroup(parent, x, y, isRoot) {
   point.setAttribute("class", "extremalpoint");
   point.setAttribute("cx", x);
   point.setAttribute("cy", y);
-  point.setAttribute("r",  5);
+  point.setAttribute("r",  10);
   point.setAttribute("fill", "green");
   point.setAttribute("id", "point"+pointnr);
   point.setAttribute("type", "min");
@@ -183,7 +184,7 @@ function createContour(grp) {
     point.setAttribute("class", "contourpoint");
     point.setAttribute("cx", cp_x);
     point.setAttribute("cy", cp_y);
-    point.setAttribute("r",  2);
+    point.setAttribute("r",  5);
     point.setAttribute("fill", "black");
     point.setAttribute("id", "cpnt"+(cpnt_nr++));
     
