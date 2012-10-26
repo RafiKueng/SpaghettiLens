@@ -3,10 +3,17 @@
 
 */
 
+var circ_id = 0; //position of the graphical element
+var g1_id = 4; //position of the first child group
+var g2_id = 5; //position of the second child group
+var l_id = 1; //position of the connecting line
+var p_id = 3; // position of the contour path
+var cp_id = 2; // position of the contour path point group
+var root_off = -3; //offset for the root node
+
 function onBodyInit() {
   initUI();
 }
-
 
 var pointnr = 0;
 
@@ -36,16 +43,23 @@ function expandPoint(targetGroup) {
   createContour(point2);
   createContour(point3);
   
-
+  targetGroup.type = "sad";
+  var circle = targetGroup.childNodes[circ_id];
+  circle.setAttribute("fill", "red");
+  circle.setAttribute("class", "extremalpoint_sad");
 }
 
 function collapsePoint(targetGroup) {
   var kids = targetGroup.childNodes;
-  var i = targetGroup.isRoot ? 1 : 0; //compensate for root that has no line as child
-  targetGroup.removeChild(kids[3-i]);
-  targetGroup.removeChild(kids[2-i]);
+  var i = targetGroup.isRoot ? root_off : 0; //compensate for root that has no line as child
+  targetGroup.removeChild(kids[g2_id+i]);
+  targetGroup.removeChild(kids[g1_id+i]);
   //targetGroup.removeChild(kids[1]);
   targetGroup.isExpanded=false;
+  targetGroup.type = getOtherSiblingGrp(targetGroup).type;
+  var circle = targetGroup.childNodes[circ_id];
+  circle.setAttribute("fill", targetGroup.type=="min" ? "green" : "blue");
+  circle.setAttribute("class", "extremalpoint_"+targetGroup.type);
 }
 
 var ngroups=0;
@@ -59,14 +73,16 @@ function moveExtremalPoint(pnt, x, y) {
   pGrp.x = x;
   pGrp.y = y;
   
-  //update debug lines
+  //update debug lines and this contour
   if (!pGrp.isRoot) {
     var line = pnt.nextSibling;
     line.setAttribute("x1", x);
     line.setAttribute("y1", y);
+    updateContourOf(pGrp);
   }
+  
   if (pGrp.isExpanded) {
-    var j = pGrp.isRoot ? 1 : 4; //offset for root node, he has no line
+    var j = pGrp.isRoot ? g1_id+root_off : g1_id; //offset for root node, he has no line
     for (var i=0; i<2; i++) {
       var child = pGrp.childNodes[i+j];
       var line = child.childNodes[1];
@@ -76,7 +92,7 @@ function moveExtremalPoint(pnt, x, y) {
       updateContourOf(child);
     }
   }
-  updateContourOf(pGrp);
+
 }
 /*
 function moveGroup(grp, dx, dy) {
@@ -117,18 +133,29 @@ function createGroup(parent, x, y, isRoot) {
   group.phi = 0; //angle of parent
   group.isExpanded = false;
   group.isRoot = isRoot;
-  if (isRoot) {group.depth = 0;}
-  else {group.depth = parent.depth+1;}
+  if (isRoot) {
+    group.depth = 0;
+    group.type = "min";
+  }
+  else {
+    group.depth = parent.depth+1;
+    group.type = parent.type;
+  }
   
 
   var point = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  point.setAttribute("class", "extremalpoint");
+  point.setAttribute("id", "point"+pointnr);
   point.setAttribute("cx", x);
   point.setAttribute("cy", y);
   point.setAttribute("r",  10);
-  point.setAttribute("fill", "green");
-  point.setAttribute("id", "point"+pointnr);
-  point.setAttribute("type", "min");
+  if (group.type == "min") {
+    point.setAttribute("fill", "green");
+    point.setAttribute("class", "extremalpoint_min");
+  }
+  else {
+    point.setAttribute("fill", "blue");
+    point.setAttribute("class", "extremalpoint_max");  
+  }
   group.appendChild(point);
   
   
@@ -246,6 +273,21 @@ function updateContourOf(grp) {
 }
 
 
+//returns the other subgroup
+function getOtherSiblingGrp(grp) {
+  if (grp.nextSibling) {
+    if (grp.nextSibling.id.substring(0,3)=="grp") {
+      return grp.nextSibling;
+    }
+  }
+  else if (grp.previousSibling) {
+    if (grp.previousSibling.id.substring(0,3)=="grp") {
+      return grp.previousSibling;
+    }
+  }
+}
+
+
 
 /********************
  * math helper
@@ -269,3 +311,5 @@ function toRectY(direction,distance) {
    y = distance * Math.sin(direction);
    return(y);
 }
+
+
