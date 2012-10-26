@@ -152,6 +152,7 @@ function onMouseMove(evt) {
   if (dragTarget) {
     var pnt = coordTrans(evt);
     moveExtremalPoint(dragTarget, parseInt(pnt.x), parseInt(pnt.y));
+    updateContourOf(dragTarget.parentElement);
   }
   evt.stopPropagation();
 
