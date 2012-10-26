@@ -66,11 +66,14 @@ function moveExtremalPoint(pnt, x, y) {
     line.setAttribute("y1", y);
   }
   if (pGrp.isExpanded) {
-    var j = pGrp.isRoot ? 1 : 0; //offset for root node, he has no line
-    for (var i=2; i<=3; i++) {
-      var line = pGrp.childNodes[i-j].childNodes[1];
+    var j = pGrp.isRoot ? 1 : 4; //offset for root node, he has no line
+    for (var i=0; i<2; i++) {
+      var child = pGrp.childNodes[i+j];
+      var line = child.childNodes[1];
       line.setAttribute("x2", x);
       line.setAttribute("y2", y);
+      
+      updateContourOf(child);
     }
   }
 }
