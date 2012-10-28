@@ -56,10 +56,18 @@ function collapsePoint(targetGroup) {
   targetGroup.removeChild(kids[g1_id+i]);
   //targetGroup.removeChild(kids[1]);
   targetGroup.isExpanded=false;
-  targetGroup.type = getOtherSiblingGrp(targetGroup).type;
-  var circle = targetGroup.childNodes[circ_id];
-  circle.setAttribute("fill", targetGroup.type=="min" ? "green" : "blue");
-  circle.setAttribute("class", "extremalpoint_"+targetGroup.type);
+  if (targetGroup.isRoot) {
+    targetGroup.type = "min";
+    var circle = targetGroup.childNodes[circ_id];
+    circle.setAttribute("fill", "green");
+    circle.setAttribute("class", "extremalpoint_"+targetGroup.type);
+  }
+  else {
+    targetGroup.type = getOtherSiblingGrp(targetGroup).type;
+    var circle = targetGroup.childNodes[circ_id];
+    circle.setAttribute("fill", targetGroup.type=="min" ? "green" : "blue");
+    circle.setAttribute("class", "extremalpoint_"+targetGroup.type);
+  }
 }
 
 var ngroups=0;
@@ -92,6 +100,9 @@ function moveExtremalPoint(pnt, x, y) {
       updateContourOf(child);
     }
   }
+  
+  //check for change of type of extremalpoint
+  
 
 }
 /*
@@ -271,6 +282,7 @@ function updateContourOf(grp) {
   pathstr += "Z"; //close path
   path.setAttribute("d", pathstr);
 }
+
 
 
 //returns the other subgroup

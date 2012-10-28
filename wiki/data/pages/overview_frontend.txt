@@ -83,7 +83,7 @@ http://www.quirksmode.org/dom/w3c_core.html
 ===== html5 tags =====
   * [[http://www.quackit.com/html_5/tags/html_button_tag.cfm|html tags and attributes]]
   * http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas-element.html#2dcontext
-
+  * [[http://www.html5rocks.com/en/tutorials/dnd/basics/|drag and drop in html5]]
 
 ====== Some libraries ======
 ===== overview =====
