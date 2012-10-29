@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+ 
 import sys
  
 from twisted.internet import reactor
@@ -15,10 +15,12 @@ class EchoServerProtocol(WebSocketServerProtocol):
  
    def onMessage(self, msg, binary):
       print "got message", msg
+      sleep(5)
 
-      self.sendMessage(msg, binary)
+      print "send answer"
+      self.sendMessage("get your image from this url: www.google.com (you sent me: "+msg, binary)
  
- 
+  
 if __name__ == '__main__':
  
    log.startLogging(sys.stdout)

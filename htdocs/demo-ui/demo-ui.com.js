@@ -11,16 +11,17 @@ function calculateModel() {
   //on message: statusreport -> update
   //            picture url -> load picture, close socket
   
-  var sock = openSocket(null, null, null);
-  var points = getPoints();
-  var serialised_points = JSON.stringify(points);
-  if (sock) {
+
+
+  var onopen = function () {
+    //dbg.write("Connected to " + wsuri);
+    var points = getPoints();
+    var serialised_points = JSON.stringify(points);
     sock.send(serialised_points);
-    dbg.write("Sent: " + serialised_points);
-  }
-  else {
-    dbg.write("Not connected.");
-  }
+    //dbg.write("Sent: " + serialised_points);
+  };
+  var sock = openSocket(onopen, null, null);
+
 }
 
 
@@ -47,17 +48,15 @@ function openSocket(onopen_fn, onclose_fn, onmessage_fn) {
   }
 
   if (sock) {
-     sock.onopen = function() {
-        log("Connected to " + wsuri);
-     }
+     sock.onopen = onopen_fn;
 
      sock.onclose = function(e) {
-        log("Connection closed (wasClean = " + e.wasClean + ", code = " + e.code + ", reason = '" + e.reason + "')");
+        dgb.write("Connection closed (wasClean = " + e.wasClean + ", code = " + e.code + ", reason = '" + e.reason + "')");
         sock = null;
      }
 
      sock.onmessage = function(e) {
-        log("Got echo: " + e.data);
+        dbg.write("Got echo: " + e.data);
      }
   }
   return sock;

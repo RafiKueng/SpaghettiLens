@@ -86,7 +86,7 @@ function onClickBtn(evt) {
     
     case "ui.btn.go":
     calculateModel();
-    alert("clicked on go");
+    //alert("clicked on go");
     evt.stopPropagation();
     break;
     
