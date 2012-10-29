@@ -6,6 +6,8 @@
 
 var selectedPoint = false;
 
+var dbg = new logger();
+
 
 /****************************************************
  * UI CODE
@@ -14,7 +16,7 @@ var selectedPoint = false;
  var root = null;
  
 function initUI() {
-
+  dbg.init();
   root = document.getElementById("ui.svg_layer");
   
   //alert("initUI");
@@ -64,26 +66,34 @@ function onClickUI(evt) {
 
 // handler for all button clicks
 function onClickBtn(evt) {
-  var target = evt.target;
+  var target = evt.currentTarget;
   
   switch(target.id) {
     case "m1_btn1":
     alert("click on bnt1");
+    evt.stopPropagation();
     break;
 
     case "m1_btn2":
     alert("click on bnt2");
+    evt.stopPropagation();
     break;
 
     case "m1_btn3":
     alert("click on bnt3");
+    evt.stopPropagation();
+    break;
+    
+    case "ui.btn.go":
+    getPoints();
+    alert("clicked on go");
+    evt.stopPropagation();
     break;
     
     default:
     alert("click to no where (BAD): "+target.id);
     break;
   }
-  evt.stopPropagation();
 }
 
 
@@ -243,9 +253,24 @@ function eventInfo(evt) {
 
 
 
-function dlog(txt) {
-  var log = document.getElementById("debug.log");
-  log.innerHTML = txt;
+function logger () {
+
+  this.init = function(){
+    this.log = document.getElementById("debug.log");
+  };
+  
+  this.write = function(txt) {
+    this.log.innerHTML = txt;
+  };
+  
+  this.append = function(txt) {
+    this.log.innerHTML += (txt + '<br/>'); 
+  };
+  
+  this.clear = function() {
+    this.log.innerHTML = ""; 
+  }
+  
 }
 
 
