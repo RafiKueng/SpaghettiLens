@@ -108,28 +108,7 @@ function moveExtremalPoint(pnt, x, y) {
   
 
 }
-/*
-function moveGroup(grp, dx, dy) {
-  var x = parseInt(grp.getAttribute("dx"));
-  var y = parseInt(grp.getAttribute("dy"));
-  grp.setAttribute("transform", "translate("+(x+dx)+","+(y+dy)+")");
-  grp.setAttribute("dx", x+dx);
-  grp.setAttribute("dy", y+dy);
-  
-  var kids = grp.parentNode.childNodes;
-  //if (kids[3] && kids[4]) {
-  if (grp.parentNode.expanded) {
-    var i = 0;
-    if (kids[1].id == grp.id) {i=0;}
-    else {i=1;}
-    var line = kids[3+i];
-    line.setAttribute("x1", "0");
-    line.setAttribute("y1", "0");
-    line.setAttribute("x2", (x+dx));
-    line.setAttribute("y2", (y+dy));
-  }
-}
-*/
+
 
 
 function createGroup(parent, x, y, isRoot) {
