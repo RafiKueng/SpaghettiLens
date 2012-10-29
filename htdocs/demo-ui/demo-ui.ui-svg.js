@@ -85,7 +85,7 @@ function onClickBtn(evt) {
     break;
     
     case "ui.btn.go":
-    getPoints();
+    calculateModel();
     alert("clicked on go");
     evt.stopPropagation();
     break;

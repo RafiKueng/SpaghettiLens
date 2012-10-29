@@ -355,9 +355,13 @@ function getPoints() {
   var root = document.getElementById("layer2");
   var src1 = root.childNodes[0];
   dbg.clear();
+  var res = new Array();
   if (src1) {
     var tmp = getExtremaArray(src1, null);
+    res = res.concat(tmp);
   }
+  
+  return res;
   
 }
 

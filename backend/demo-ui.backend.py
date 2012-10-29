@@ -14,9 +14,8 @@ from autobahn.websocket import WebSocketServerFactory, \
 class EchoServerProtocol(WebSocketServerProtocol):
  
    def onMessage(self, msg, binary):
-      print "sending echo:", msg
-      print "now sleeping"
-      sleep(10)
+      print "got message", msg
+
       self.sendMessage(msg, binary)
  
  
@@ -24,7 +23,7 @@ if __name__ == '__main__':
  
    log.startLogging(sys.stdout)
  
-   factory = WebSocketServerFactory("ws://localhost:8082", debug = False)
+   factory = WebSocketServerFactory("ws://localhost:8080", debug = False)
    factory.protocol = EchoServerProtocol
    listenWS(factory)
  
