@@ -23,9 +23,9 @@ function expandPoint(targetGroup) {
   //if (targentGroup.parentElement.class == "contourgroup") {
     //make custom dx, dy depending on the parent group
   //}
-  var p1x = targetGroup.x + dx/(targetGroup.depth/3+1);
-  var p2x = targetGroup.x - dx/(targetGroup.depth/3+1);
-  var p1y = targetGroup.y + dy/(targetGroup.depth/3+1);
+  var p1x = targetGroup.pnt.x + dx/(targetGroup.depth/3+1);
+  var p2x = targetGroup.pnt.x - dx/(targetGroup.depth/3+1);
+  var p1y = targetGroup.pnt.y + dy/(targetGroup.depth/3+1);
   var p2y = p1y;
 
   var point2 = createGroup(targetGroup, p1x, p1y, false);
@@ -76,10 +76,11 @@ function moveExtremalPoint(pnt, x, y) {
   
   pnt.setAttribute("cx", x);
   pnt.setAttribute("cy", y);
-  pGrp.x = x;
-  pGrp.y = y;
-  pGrp.pnt.x = x;
-  pGrp.pnt.y = y;
+  // pGrp.x = x;
+  // pGrp.y = y;
+  // pGrp.pnt.x = x;
+  // pGrp.pnt.y = y;
+  pGrp.pnt.update(x,y);
   
   
   //update debug lines and this contour
@@ -114,34 +115,16 @@ function moveExtremalPoint(pnt, x, y) {
 
 function createGroup(parent, x, y, isRoot) {
   
-  //var x = parent.x + dx;
-  //var y = parent.y + dy;
-  //var name =  
-
+  // create svg objects and add svg attributes
   var group  = document.createElementNS("http://www.w3.org/2000/svg", "g");
   group.setAttribute("id", "grp"+ngroups);
   group.setAttribute("class", "contourgroup");
-  group.x = x;
-  group.y = y;
-  group.pnt = new Point(x,y);
-  group.r = 0; //distance to parent
-  group.phi = 0; //angle of parent
-  group.isExpanded = false;
-  group.isRoot = isRoot;
-  if (isRoot) {
-    group.depth = 0;
-    group.type = "min";
-  }
-  else {
-    group.depth = parent.depth+1;
-    group.type = parent.type;
-  }
+  group.type = "min";
   
-
   var point = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   point.setAttribute("id", "point"+pointnr);
-  point.setAttribute("cx", x);
-  point.setAttribute("cy", y);
+  // point.setAttribute("cx", x);
+  // point.setAttribute("cy", y);
   point.setAttribute("r",  10);
   if (group.type == "min") {
     point.setAttribute("fill", "green");
@@ -152,17 +135,42 @@ function createGroup(parent, x, y, isRoot) {
     point.setAttribute("class", "extremalpoint_max");  
   }
   group.appendChild(point);
-  
-  
+
+  //add debug helper lines
   if (!isRoot) {
     var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     line.setAttribute("x1", x);
     line.setAttribute("y1", y);
-    line.setAttribute("x2", parent.x);
-    line.setAttribute("y2", parent.y);
+    line.setAttribute("x2", parent.pnt.x);
+    line.setAttribute("y2", parent.pnt.y);
     line.setAttribute("style","stroke:rgb(0,0,0);stroke-width:1");
     group.appendChild(line);
   }
+
+  
+  // add js attributes
+  
+  // group.x = x;
+  // group.y = y;
+  // group.pnt = new Point(x,y);
+  // group.r = 0; //distance to parent
+  // group.phi = 0; //angle of parent
+  group.isExpanded = false;
+  group.isRoot = isRoot;
+  
+  if (isRoot) {
+    group.depth = 0;
+    group.type = "min";
+    group.pnt = new Point(x,y, point);
+  }
+  else {
+    group.depth = parent.depth+1;
+    group.type = parent.type;
+    group.pnt = new Point(x,y, point, parent.pnt); //parent can be null / unfedined
+  }
+  
+
+
   
   pointnr++;
   ngroups++;
@@ -183,10 +191,12 @@ function createContour(grp) {
 
   var dAng = Math.PI * 2 / n_cp;
   
-  var dx = parent.x - grp.x;
-  var dy = parent.y - grp.y;
-  var ang = toPolarAng(dx, dy);
-  var rad = toPolarR(dx, dy);
+  //var dx = grp.pnt.dx; //parent.x - grp.x;
+  //var dy = grp.pnt.dx; //parent.y - grp.y;
+  //var ang = toPolarAng(dx, dy);
+  //var rad = toPolarR(dx, dy);
+  var ang = grp.pnt.phi+Math.PI;
+  var rad = grp.pnt.r;
   
   var cgrp = document.createElementNS("http://www.w3.org/2000/svg", "g");
   cgrp.setAttribute("id", "cgrp"+(ncgroups++));
@@ -198,8 +208,9 @@ function createContour(grp) {
     r_fac = r_fac *0.25 + 0.50; //makes the radi between 50% and 75% of dist to parent
     var cp_ang = ang+i*dAng;
     var cp_rad = rad * r_fac;
-    var cp_x = grp.x + toRectX(cp_ang, cp_rad);
-    var cp_y = grp.y + toRectY(cp_ang, cp_rad);
+    //TODO: this is a hack, switch to using the point objects here
+    var cp_x = grp.pnt.x + toRectX(cp_ang, cp_rad);
+    var cp_y = grp.pnt.y + toRectY(cp_ang, cp_rad);
     
     
     var point = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -231,14 +242,16 @@ function createContour(grp) {
 }
 
 function updateContourOf(grp) {
-  var parent = grp.parentElement;
+  var pPnt = grp.parentElement.pnt;
   
   var dAng = Math.PI * 2 / n_cp;
   
-  var dx = parent.x - grp.x;
-  var dy = parent.y - grp.y;
-  var ang = toPolarAng(dx, dy);
-  var rad = toPolarR(dx, dy);
+  // var dx = parent.x - grp.x;
+  // var dy = parent.y - grp.y;
+  // var ang = toPolarAng(dx, dy);
+  // var rad = toPolarR(dx, dy);
+  var ang = grp.pnt.phi+Math.PI;
+  var rad = grp.pnt.r;
   
   // var j = grp.isRoot ? 1 : 0; //offset for root node, he has no line
   var j = grp.isExtended ? 0 : 2; //if not expanded, then two groups are missing
@@ -246,15 +259,15 @@ function updateContourOf(grp) {
   var path = grp.childNodes[5-j];
   var pathstr = "";
   
-  pathstr += "M" + parent.x + "," + parent.y + " "; //move to start pos
+  pathstr += "M" + pPnt.x + "," + pPnt.y + " "; //move to start pos
   
   for (var i=0; i<contGrp.childNodes.length; i++) {
     var pnt = contGrp.childNodes[i];
     
     var cp_ang = ang + pnt.d_ang;
     var cp_rad = rad * pnt.s_rad;
-    var cp_x = grp.x + toRectX(cp_ang, cp_rad);
-    var cp_y = grp.y + toRectY(cp_ang, cp_rad);
+    var cp_x = grp.pnt.x + toRectX(cp_ang, cp_rad);
+    var cp_y = grp.pnt.y + toRectY(cp_ang, cp_rad);
     
     //var cp_x = grp.x + toRectX(pnt.ang, pnt.rad);
     //var cp_y = grp.y + toRectY(pnt.ang, pnt.rad);
@@ -398,13 +411,13 @@ function toRectY(direction,distance) {
    .dx, dy relative coordinates to parent
    .r .phi rel coords polar
    .parent reference to parent point object
-   .hasParent
+   .svg link to the actual svg circle object representing this point
    
    and some helper functions
    
    doesn't need to have a parent, but then only .x and .y are set
 */
-function Point(x, y, parent) {
+function Point(x, y, svg, parent) {
   //constructor
   
   // see http://stackoverflow.com/questions/148901/is-there-a-better-way-to-do-optional-function-parameters-in-javascript
@@ -412,24 +425,19 @@ function Point(x, y, parent) {
   this.x = parseInt(x) || 0;
   this.y = parseInt(y) || 0;
   
-  if (parent) {
-    this.parent = parent;
-    this.hasParent = true;
-    this.updateRel();
-  }
-  else {
-    this.parent = null;
-    this.hasParent = false;
-  }
+  this.parent = parent || null;
+  this.svg = svg || null;
   
+  this.updateRel();  
+  this.updateSVG();
+};
   
-  //methods
-  //****************
+//methods for point object
+//****************
   
   // internal update function. expects new x, y are already set
-  this.updateRel = function () {
+Point.prototype.updateRel = function () {
     if (this.parent) {
-      this.hasParent = true;
       var dx = this.x - this.parent.x;
       var dy = this.y - this.parent.y;
       
@@ -439,7 +447,6 @@ function Point(x, y, parent) {
       this.phi = Math.atan2(dy,dx);
     }
     else {
-      this.hasParent = false;
       this.dx = null;
       this.dy = null;
       this.r = null;
@@ -448,12 +455,22 @@ function Point(x, y, parent) {
   };
   
   //external update function, setting new abs coords
-  this.update = function (x,y) {
-    this.x = x;
-    this.y = y;
+  // or updating structure, if no x, y are passed
+Point.prototype.update = function (x,y) {
+    this.x = x || this.x;
+    this.y = y || this.y;
     this.updateRel();
+    this.updateSVG();
   };
 
+  // internal: this updates the bound svg opject
+Point.prototype.updateSVG = function () {
+    if (this.svg) {
+      this.svg.setAttribute("cx",this.x);
+      this.svg.setAttribute("cy",this.y);
+    }
+  };
+  
   /*
   this.getDistTo = function(pnt) {
     var x = this.x-pnt.x;
@@ -463,15 +480,15 @@ function Point(x, y, parent) {
   };
   */ 
   
-  this.getRelCoordTo = function(pnt) {
+Point.prototype.getRelCoordTo = function(pnt) {
     return new Point( this.x - pnt.x, this.y - pnt.y);
   };
   
-  this.toString = function() {
+Point.prototype.toString = function() {
     var txt = "[x:" + this.x + " y:" + this.y + "]";
     return txt;
   };
-}
+
 
 function SVGtoPoint(circle) {
   return new Point(circle.getAttribute("cx"), circle.getAttribute("cy"));
