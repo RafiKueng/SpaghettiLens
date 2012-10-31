@@ -44,7 +44,18 @@ function calculateModel() {
     sock.send("pnts" + serialised_points);
     //dbg.write("Sent: " + serialised_points);
   };
-  var sock = openSocket(onopen, null, null);
+  
+  var onmessage = function (e) {
+    if (e.data.substring(0,4) == "cont") {
+      var cont = e.data.substring(4);
+      dbg.write("got contour image url: " + cont);
+    }
+    else {
+      dbg.write("got error: " + e.data);
+    }
+  };
+  
+  var sock = openSocket(onopen, null, onmessage);
 
 }
 

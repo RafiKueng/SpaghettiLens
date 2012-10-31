@@ -38,12 +38,22 @@ class EchoServerProtocol(WebSocketServerProtocol):
         
       print "got p_id: " + data
       
-      url = "hubble-udf.jpg"
+      if (p_id==1):
+        url = "hubble-udf.jpg"
+      elif (p_id==2):
+        url = "http://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Einstein_cross.jpg/621px-Einstein_cross.jpg"
+      else:
+        url = "no-img.jpg"
       self.sendMessage("limg" + url)
       print "send limg: " + url
     
     elif (id=="pnts"):
       print "got pnts: " + data
+      
+      #call glass, generate img
+      sleep(5)
+      url = "hubble-udf.jpg"
+      self.sendMessage("cont" + url)
       
     else:
       print "PROTOCOLL ERROR - dump:"
