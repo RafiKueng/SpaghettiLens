@@ -11,9 +11,7 @@ var p_id = 3; // position of the contour path
 var cp_id = 2; // position of the contour path point group
 var root_off = -3; //offset for the root node
 
-function onBodyInit() {
-  initUI();
-}
+
 
 var pointnr = 0;
 
@@ -80,6 +78,9 @@ function moveExtremalPoint(pnt, x, y) {
   pnt.setAttribute("cy", y);
   pGrp.x = x;
   pGrp.y = y;
+  pGrp.pnt.x = x;
+  pGrp.pnt.y = y;
+  
   
   //update debug lines and this contour
   if (!pGrp.isRoot) {
@@ -105,28 +106,7 @@ function moveExtremalPoint(pnt, x, y) {
   
 
 }
-/*
-function moveGroup(grp, dx, dy) {
-  var x = parseInt(grp.getAttribute("dx"));
-  var y = parseInt(grp.getAttribute("dy"));
-  grp.setAttribute("transform", "translate("+(x+dx)+","+(y+dy)+")");
-  grp.setAttribute("dx", x+dx);
-  grp.setAttribute("dy", y+dy);
-  
-  var kids = grp.parentNode.childNodes;
-  //if (kids[3] && kids[4]) {
-  if (grp.parentNode.expanded) {
-    var i = 0;
-    if (kids[1].id == grp.id) {i=0;}
-    else {i=1;}
-    var line = kids[3+i];
-    line.setAttribute("x1", "0");
-    line.setAttribute("y1", "0");
-    line.setAttribute("x2", (x+dx));
-    line.setAttribute("y2", (y+dy));
-  }
-}
-*/
+
 
 
 function createGroup(parent, x, y, isRoot) {
@@ -140,6 +120,7 @@ function createGroup(parent, x, y, isRoot) {
   group.setAttribute("class", "contourgroup");
   group.x = x;
   group.y = y;
+  group.pnt = new Point(x,y);
   group.r = 0; //distance to parent
   group.phi = 0; //angle of parent
   group.isExpanded = false;
@@ -299,6 +280,89 @@ function getOtherSiblingGrp(grp) {
   }
 }
 
+/* recursive function returning all the points coordinates for ONE source
+ relative to origin
+ origin is the max of the root group (or the point more close to the saddle
+ point)
+ the desired order is: (postorder)
+  1. point futher away from saddlepoint
+  2. point closer
+  3. saddle point
+*/
+function getExtremaArray(grp, origin) {
+  
+  var res = new Array();
+  if (grp.isExpanded) {
+
+    var ps = grp.pnt;
+    var j = (grp.isRoot) ? root_off : 0;
+    var p1 = grp.childNodes[g1_id+j];
+    var p2 = grp.childNodes[g2_id+j];
+    
+    var str = 'point: '+grp.id+" "+ps.toString() ;
+    dbg.append(str);
+    dbg.append('point: '+p1.id+" "+p1.pnt.toString() );
+    dbg.append('point: '+p2.id+" "+p2.pnt.toString() );
+    
+    
+    //maintain postorder traversal, nodes sortet by distance
+    if (ps.getDistTo(p1.pnt) < ps.getDistTo(p2.pnt)) {
+      var tmp = p1;
+      p1 = p2;
+      p2 = tmp;
+    }
+    
+    var skiporigin = false;
+    if (origin==null) {
+      origin = p2.pnt;
+      skiporigin = true;
+      var p2arr = getExtremaArray(p2, origin);
+      res = res.concat(p2arr);
+    }
+    var p1arr = getExtremaArray(p1, origin);
+    res = res.concat(p1arr);
+    if (!skiporigin) { 
+      var p2arr = getExtremaArray(p2, origin);
+      res = res.concat(p2arr);
+    }
+    res = res.concat(new Array(ps.getRelCoordTo(origin)));
+  }
+
+  else {
+    var pnt = null;
+    if (origin==null) {
+      pnt = SVGtoPoint(grp.childNodes[circ_id]);
+    }
+    else {
+      pnt = SVGtoPoint(grp.childNodes[circ_id]);
+      pnt = pnt.getRelCoordTo(origin);
+    }
+    res = Array(pnt);
+  }
+  
+  return res;
+  
+}
+
+
+/*
+  this starts the recursive function to get all the points from all the sources
+  TODO only gets the 1st source
+*/
+function getPoints() {
+  var root = document.getElementById("layer2");
+  var src1 = root.childNodes[0];
+  dbg.clear();
+  var res = new Array();
+  if (src1) {
+    var tmp = getExtremaArray(src1, null);
+    res = res.concat(tmp);
+  }
+  
+  return res;
+  
+}
+
 
 
 /********************
@@ -325,3 +389,28 @@ function toRectY(direction,distance) {
 }
 
 
+
+function Point(x, y) {
+  this.x = parseInt(x) || 0;
+  this.y = parseInt(y) || 0;
+  
+  this.getDistTo = function(pnt) {
+    var x = this.x-pnt.x;
+    var y = this.y-pnt.y;
+    
+    return Math.sqrt(x*x + y*y);
+  };
+  
+  this.getRelCoordTo = function(pnt) {
+    return new Point( pnt.x-this.x, pnt.y - this.y);
+  };
+  
+  this.toString = function() {
+    var txt = "[x:" + this.x + " y:" + this.y + "]";
+    return txt;
+  };
+}
+
+function SVGtoPoint(circle) {
+  return new Point(circle.getAttribute("cx"), circle.getAttribute("cy"));
+}

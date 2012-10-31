@@ -28,17 +28,17 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="199.9135"
+     inkscape:cx="363.84647"
      inkscape:cy="166.38865"
      inkscape:document-units="px"
-     inkscape:current-layer="ui.svg_layer"
+     inkscape:current-layer="layer1"
      showgrid="true"
      borderlayer="true"
-     inkscape:window-width="1457"
-     inkscape:window-height="987"
-     inkscape:window-x="305"
-     inkscape:window-y="201"
-     inkscape:window-maximized="0"
+     inkscape:window-width="1920"
+     inkscape:window-height="1031"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
      showguides="false">
     <inkscape:grid
        type="xygrid"
@@ -98,17 +98,29 @@
      id="layer1"
      transform="translate(0,-652.36218)"
      onclick="onClickUI(evt);">
-    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="36.435547"
-       y="692.36218"
-       id="text2987"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan2989"
-         x="36.435547"
-         y="692.36218">my demo svg ui created with inkscape</tspan></text>
+    <g
+       id="ui.btn.go"
+       onclick="onClickBtn(evt);">
+      <rect
+         style="fill:#000080;fill-opacity:0.72307691;stroke:#000000;stroke-width:0.79432511;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="m1_btn1-1"
+         width="58.888885"
+         height="60.000004"
+         x="680"
+         y="982.36218" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text3784"
+         y="1022.3622"
+         x="690"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+           y="1022.3622"
+           x="690"
+           id="tspan3786"
+           sodipodi:role="line">GO</tspan></text>
+    </g>
     <g
        id="ui.svg.settings_menu"
        onmouseover="mouseOver(evt);"
