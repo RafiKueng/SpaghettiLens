@@ -3,8 +3,6 @@
 <body onload="onBodyInit();">
 <!--<h1>Demo User interface</h1>-->
 
-<h2>the user interface</h2>
-
 <div id="ui_area">
 
 <!-- / include svg, cut first line-->
@@ -15,7 +13,7 @@ echo file_get_contents('demo-ui.svg', NULL, NULL, 55); //skip the first line wit
 
 
 <div id="console">
-<h2>debug.log</h2>
+<p>:: debug.log ::</p>
 <p id="debug.log">test</p>
 </div>
 

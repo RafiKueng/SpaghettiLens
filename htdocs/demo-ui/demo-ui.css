@@ -25,11 +25,13 @@
   top: 900px;
   z-index: 1;*/
   /*display: hide;*/
-  background-color: yellow;
+  /*background-color: yellow;*/
 }
 
 /* this is the debug console */
 #console {
   width: 100%;
   background-color: #CCCCFF;
+  font-family : "courier new",courier,monospace;
+  font-size : 80%;
 }

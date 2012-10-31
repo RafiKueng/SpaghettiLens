@@ -3,6 +3,30 @@
 
 */
 
+/*
+  gets the location of the images from the server
+  depending on the provided id
+*/
+function getBGImageUrls(id) {
+  var onopen = function () {
+    sock.send("p_id"+id);
+    dbg.write("Sent: " + "p_id"+id);
+  };
+  var onmessage = function (e) {
+    if (e.data.substring(0,4) == "limg") {
+      var limg = e.data.substring(4);
+      dbg.write("got image url: " + limg);
+      loadImage(limg);
+    }
+    else {
+      dbg.write("got error: " + e.data);
+    }
+  };
+  var sock = openSocket(onopen, null, onmessage);
+}
+
+
+
 function calculateModel() {
   //set cursor to busy
   //open socket
@@ -17,7 +41,7 @@ function calculateModel() {
     //dbg.write("Connected to " + wsuri);
     var points = getPoints();
     var serialised_points = JSON.stringify(points);
-    sock.send(serialised_points);
+    sock.send("pnts" + serialised_points);
     //dbg.write("Sent: " + serialised_points);
   };
   var sock = openSocket(onopen, null, null);
@@ -50,13 +74,13 @@ function openSocket(onopen_fn, onclose_fn, onmessage_fn) {
   if (sock) {
      sock.onopen = onopen_fn;
 
-     sock.onclose = function(e) {
+     sock.onclose = onclose_fn ? onclose_fn : function(e) {
         dgb.write("Connection closed (wasClean = " + e.wasClean + ", code = " + e.code + ", reason = '" + e.reason + "')");
         sock = null;
      }
 
-     sock.onmessage = function(e) {
-        dbg.write("Got echo: " + e.data);
+     sock.onmessage = onmessage_fn ? onmessage_fn : function(e) {
+        dbg.write("Got: " + e.data);
      }
   }
   return sock;

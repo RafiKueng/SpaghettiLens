@@ -8,7 +8,7 @@
   global variables
 */
 var dbg; //the logging device
-
+var $_GET; //the passed (HTTP GET) arguments
 
 
 /*
@@ -20,8 +20,22 @@ function onBodyInit() {
   initUI();
   
   //init the logging device
-  dbg = new logger()
+  dbg = new logger();
   dbg.init();
+  
+  initGetVars();
+  var log = "got the following arguments: <br/>";
+  for (var i =0; i < $_GET.nArgs; i++) {
+    log += $_GET.array[i] + "<br/>";
+  }
+  dbg.write(log);
+  
+  //check if id supplied
+  if (! $_GET.id) {
+    alert("imageid in url is missing (add ?id=1 to url)");
+  }
+  
+  getBGImageUrls($_GET.id);
 }
 
 
@@ -33,10 +47,14 @@ this fnc saves the arguments attached to the url to an $_GET object
 */
 function initGetVars() {
   var parts = window.location.search.substr(1).split("&");
-  var $_GET = {};
+  $_GET = {};
+  $_GET['nArgs'] = parts.length;
+  $_GET['array'] = new Array();
+
   for (var i = 0; i < parts.length; i++) {
       var temp = parts[i].split("=");
       $_GET[decodeURIComponent(temp[0])] = decodeURIComponent(temp[1]);
+      $_GET['array'].push(parts[i]);
   }
 }
 
