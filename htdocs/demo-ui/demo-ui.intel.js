@@ -103,7 +103,8 @@ function moveExtremalPoint(pnt, x, y) {
   }
   
   //check for change of type of extremalpoint
-  
+  var oGrp = getOtherSiblingGrp(pGrp);
+  if (pGrp.phi - oGrp.phi)
 
 }
 
@@ -389,11 +390,59 @@ function toRectY(direction,distance) {
 }
 
 
-
-function Point(x, y) {
+/*
+  Object, represents a point with
+   .x, .y absolute cooridinates on canvas
+   .dx, dy relative coordinates to parent
+   .r .phi rel coords polar
+   .parent reference to parent point object
+   .hasParent
+   
+   and some helper functions
+   
+   doesn't need to have a parent, but then only .x and .y are set
+*/
+function Point(x, y, parent) {
+  //constructor
+  
+  // see http://stackoverflow.com/questions/148901/is-there-a-better-way-to-do-optional-function-parameters-in-javascript
+  //this would be better, but that handling of default values I use here should be alright in our usecase
   this.x = parseInt(x) || 0;
   this.y = parseInt(y) || 0;
   
+  if (parent) {
+    this.parent = parent;
+    this.hasParent = true;
+    this.updateRel();
+  }
+  else {
+    this.parent = null;
+    this.hasParent = false;
+  
+  
+  //methods
+  //****************
+  
+  // internal update function. expects new x, y are already set
+  this updateRel = function () {
+    if (this.parent) {
+      var dx = this.x - this.parent.x;
+      var dy = this.y - this.parent.y;
+      
+      this.dx = dx;
+      this.dy = dy;
+      this.r = Math.sqrt(dx*dx+dy*dy);
+      this.phi = Math.atan2(dy,dx);
+    }
+    else {
+      this.dx = null;
+      this.dy = null;
+      this.r = null;
+      this.phi = null;
+    }
+  }
+
+  /*
   this.getDistTo = function(pnt) {
     var x = this.x-pnt.x;
     var y = this.y-pnt.y;
@@ -404,6 +453,7 @@ function Point(x, y) {
   this.getRelCoordTo = function(pnt) {
     return new Point( pnt.x-this.x, pnt.y - this.y);
   };
+  */
   
   this.toString = function() {
     var txt = "[x:" + this.x + " y:" + this.y + "]";
