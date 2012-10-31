@@ -86,7 +86,7 @@ function openSocket(onopen_fn, onclose_fn, onmessage_fn) {
      sock.onopen = onopen_fn;
 
      sock.onclose = onclose_fn ? onclose_fn : function(e) {
-        dgb.write("Connection closed (wasClean = " + e.wasClean + ", code = " + e.code + ", reason = '" + e.reason + "')");
+        dbg.write("Connection closed (wasClean = " + e.wasClean + ", code = " + e.code + ", reason = '" + e.reason + "')");
         sock = null;
      }
 

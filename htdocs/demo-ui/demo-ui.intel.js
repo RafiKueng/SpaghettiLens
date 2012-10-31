@@ -104,7 +104,9 @@ function moveExtremalPoint(pnt, x, y) {
   
   //check for change of type of extremalpoint
   var oGrp = getOtherSiblingGrp(pGrp);
-  if (pGrp.phi - oGrp.phi)
+  if (pGrp.phi - oGrp.phi) {
+  
+  }
 
 }
 
@@ -299,15 +301,15 @@ function getExtremaArray(grp, origin) {
     var j = (grp.isRoot) ? root_off : 0;
     var p1 = grp.childNodes[g1_id+j];
     var p2 = grp.childNodes[g2_id+j];
-    
-    var str = 'point: '+grp.id+" "+ps.toString() ;
-    dbg.append(str);
+     
+    dbg.append('point: '+grp.id+" "+ps.toString());
     dbg.append('point: '+p1.id+" "+p1.pnt.toString() );
     dbg.append('point: '+p2.id+" "+p2.pnt.toString() );
     
     
-    //maintain postorder traversal, nodes sortet by distance
-    if (ps.getDistTo(p1.pnt) < ps.getDistTo(p2.pnt)) {
+    // maintain postorder traversal, nodes sortet by distance
+    // p1.pnt.r is distance p1 to ps
+    if (p1.pnt.r < p2.pnt.r) {
       var tmp = p1;
       p1 = p2;
       p2 = tmp;
@@ -418,14 +420,16 @@ function Point(x, y, parent) {
   else {
     this.parent = null;
     this.hasParent = false;
+  }
   
   
   //methods
   //****************
   
   // internal update function. expects new x, y are already set
-  this updateRel = function () {
+  this.updateRel = function () {
     if (this.parent) {
+      this.hasParent = true;
       var dx = this.x - this.parent.x;
       var dy = this.y - this.parent.y;
       
@@ -435,12 +439,20 @@ function Point(x, y, parent) {
       this.phi = Math.atan2(dy,dx);
     }
     else {
+      this.hasParent = false;
       this.dx = null;
       this.dy = null;
       this.r = null;
       this.phi = null;
     }
-  }
+  };
+  
+  //external update function, setting new abs coords
+  this.update = function (x,y) {
+    this.x = x;
+    this.y = y;
+    this.updateRel();
+  };
 
   /*
   this.getDistTo = function(pnt) {
@@ -449,11 +461,11 @@ function Point(x, y, parent) {
     
     return Math.sqrt(x*x + y*y);
   };
+  */ 
   
   this.getRelCoordTo = function(pnt) {
-    return new Point( pnt.x-this.x, pnt.y - this.y);
+    return new Point( this.x - pnt.x, this.y - pnt.y);
   };
-  */
   
   this.toString = function() {
     var txt = "[x:" + this.x + " y:" + this.y + "]";
