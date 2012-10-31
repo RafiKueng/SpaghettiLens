@@ -11,9 +11,7 @@ var p_id = 3; // position of the contour path
 var cp_id = 2; // position of the contour path point group
 var root_off = -3; //offset for the root node
 
-function onBodyInit() {
-  initUI();
-}
+
 
 var pointnr = 0;
 

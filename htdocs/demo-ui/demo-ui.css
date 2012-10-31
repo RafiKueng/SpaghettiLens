@@ -1,28 +1,35 @@
 
 
 /* this is the div containing the ui layers */
-#ui.area {
-  height:400px;
+#ui_area {
   width:750px;
-  position:relative
+  margin: 1em auto;
+  text-align: left;
+  border: 1px solid black;
+}
+
+
+
+/* this is the foreground layer */
+#ui_svg_layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
 }
 
 /* this represents the background layer */
-#ui.canvas_layer {
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 0;
+#ui_canvas_layer {
+  /*position: absolute;
+  left: 750px;
+  top: 900px;
+  z-index: 1;*/
+  /*display: hide;*/
+  background-color: yellow;
 }
 
-/* this is the foreground layer */
-#ui.svg_layer {
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 0;
-}
-
-#tspan2997 {
-  font-weight=bolder;
+/* this is the debug console */
+#console {
+  width: 100%;
+  background-color: #CCCCFF;
 }

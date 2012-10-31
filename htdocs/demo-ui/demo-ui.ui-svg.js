@@ -6,8 +6,6 @@
 
 var selectedPoint = false;
 
-var dbg = new logger();
-
 
 /****************************************************
  * UI CODE
@@ -16,7 +14,7 @@ var dbg = new logger();
  var root = null;
  
 function initUI() {
-  dbg.init();
+  
   root = document.getElementById("ui.svg_layer");
   
   //alert("initUI");
@@ -156,10 +154,10 @@ function onMouseMove(evt) {
   var log = document.getElementById("debug.log");
   var p1 =  coordTrans(evt);
   //var p2 = localCoordTrans(evt);
-  log.innerHTML = "move: target:"+evt.target.id+"; dragtrg:"+dragTarget.id+"; evt=" + evt.clientX + "," + evt.clientY
+  var log = "move: target:"+evt.target.id+"; dragtrg:"+dragTarget.id+"; evt=" + evt.clientX + "," + evt.clientY
                 + "; regCT:" + p1.x.toFixed(1) + "," + p1.y.toFixed(1);
                 //+ "; locCT:" + p2.x + "," + p2.y;
-  
+  dbg.write(log);
 
   if (dragTarget) {
     var pnt = coordTrans(evt);
@@ -219,22 +217,4 @@ function eventInfo(evt) {
 
 
 
-function logger () {
 
-  this.init = function(){
-    this.log = document.getElementById("debug.log");
-  };
-  
-  this.write = function(txt) {
-    this.log.innerHTML = txt;
-  };
-  
-  this.append = function(txt) {
-    this.log.innerHTML += (txt + '<br/>'); 
-  };
-  
-  this.clear = function() {
-    this.log.innerHTML = ""; 
-  }
-  
-}
