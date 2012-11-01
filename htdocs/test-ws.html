@@ -66,9 +66,9 @@
       <h1>WebSocket Echo Test</h1>
       <noscript>no js error</noscript>
       <form>
-         <p>Com.Port: <input id="port" type="text" size="50" maxlength="50" value="8080"><br/>
+         <p>Com.Port: <input id="port" type="text" size="50" maxlength="5" value="8080"><br/>
          use 8080 for tornado testing, 8081 for twisted pure, 8082 for autobahn</p>
-         <p>Message: <input id="message" type="text" size="50" maxlength="50" value="test"><br/>
+         <p>Message: <input id="message" type="text" size="100" maxlength="500" value="test"><br/>
          use "b: cmd" to send direct python command to backend, "g: cmd" to send command to glass<br/>
          Example: g: sleep 1000</p>
       </form>

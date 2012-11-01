@@ -40,15 +40,22 @@ function calculateModel() {
   var onopen = function () {
     //dbg.write("Connected to " + wsuri);
     var points = getPoints();
-    var serialised_points = JSON.stringify(points);
+    //var serialised_points = JSON.stringify(points);
+    var serialised_points = serializePoints(points);
     sock.send("pnts" + serialised_points);
     //dbg.write("Sent: " + serialised_points);
   };
   
   var onmessage = function (e) {
-    if (e.data.substring(0,4) == "cont") {
-      var cont = e.data.substring(4);
-      dbg.write("got contour image url: " + cont);
+    var ident = e.data.substring(0,4); 
+    var data = e.data.substring(4);
+    if ( ident == "cont") {
+      dbg.write("got contour image url: " + data);
+      var img = document.getElementById('glassimg');
+      img.setAttribute('src', data);
+    }
+    else if (ident=="stat") {
+      dbg.write("got status: " + data);
     }
     else {
       dbg.write("got error: " + e.data);
@@ -60,6 +67,16 @@ function calculateModel() {
 }
 
 
+function serializePoints(pnts) {
+  var out = "";
+  out += "000" + $_GET.id;
+  for (var i=0; i<pnts.length; i++) {
+    out += "|" + pnts[i].x/200.0 + ":" + pnts[i].y/200.0 + ":" + 'unk';//pnts[i].type;
+    //TODO make better scaling, add type attr. to point class
+  }
+  out += "|0.50:1.00";
+  return out;
+}
 
 var port = 8080;
 var server_url = window.location.hostname;

@@ -180,7 +180,7 @@ function coordTrans(evt) {
 
   var m = evt.target.getScreenCTM();
 
-  var root = document.getElementById("ui.svg_layer");
+  var root = document.getElementById("ui_svg_layer");
   var p = root.createSVGPoint(); 
 
   p.x = evt.clientX;
@@ -215,6 +215,18 @@ function eventInfo(evt) {
 
 }
 
+function addBG() {
+  var canv = document.getElementById('ui_canvas_layer');
+  var svg = document.getElementById('ui_svg_layer');
+  importCanvas(canv, svg);
+  
+}
 
-
-
+// adds the canvas to the svg
+function importCanvas(sourceCanvas, targetSVG) {
+  var image = sourceCanvas.toDataURL("image/png"); // get base64 encoded png from Canvas
+  var svgimg = document.createElementNS("http://www.w3.org/2000/svg", "image"); // Create new SVG Image element.  Must also be careful with the namespaces.
+  svgimg.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', image);
+  targetSVG.appendChild(svgimg); // Append image to SVG
+  var tmp=0;
+}
