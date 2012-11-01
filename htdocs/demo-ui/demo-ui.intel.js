@@ -132,7 +132,7 @@ function checkType(grp){
     var dphi = Math.abs(phi1-phi2);
     dphi = dphi>Math.PI ? Math.PI*2 - dphi : dphi;    
     
-    if (dphi<Math.PI/2.) {
+    if (dphi<Math.PI/3.) {
       var cng_grp = null;
       var oth_grp = null;
       
