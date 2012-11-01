@@ -41,7 +41,10 @@ function expandPoint(targetGroup) {
   createContour(point2);
   createContour(point3);
   
+  
+  targetGroup.wasType = targetGroup.type;
   targetGroup.type = "sad";
+  targetGroup.pnt.type = "sad";
   var circle = targetGroup.childNodes[circ_id];
   circle.setAttribute("fill", "red");
   circle.setAttribute("class", "extremalpoint_sad");
@@ -103,11 +106,139 @@ function moveExtremalPoint(pnt, x, y) {
   }
   
   //check for change of type of extremalpoint
-  
+  if (pGrp.isRoot) {
+    checkType(pGrp);
+  }
+  else {
+    checkType(pGrp.parentElement);
+  }
 
 }
 
 
+function checkType(grp){
+  if (grp.isExpanded) {
+    var ppnt = grp.pnt;
+    var j = (grp.isRoot) ? root_off : 0;
+    var child1 = grp.childNodes[g1_id+j];
+    var child2 = grp.childNodes[g2_id+j];
+    var cpnt1 = child1.pnt;
+    var cpnt2 = child2.pnt;
+    
+    var phi1 = ppnt.getAngleTo(cpnt1);
+    var phi2 = ppnt.getAngleTo(cpnt2);
+    var r1 = ppnt.getDistTo(cpnt1);
+    var r2 = ppnt.getDistTo(cpnt2);
+    var dphi = Math.abs(phi1-phi2);
+    dphi = dphi>Math.PI ? Math.PI*2 - dphi : dphi;    
+    
+    if (dphi<Math.PI/3.) {
+      var cng_grp = null;
+      var oth_grp = null;
+      
+      if (r1>r2) {
+        cng_grp = child2;
+        oth_grp = child1;
+      }
+      else {
+        cng_grp = child1;
+        oth_grp = child2;
+      }
+      var newtype = grp.wasType=='min' ? 'max' : 'min';
+      if (cng_grp.isExpanded) {
+        cng_grp.wasType = newtype;
+        checkType(cng_grp);
+
+      }
+      else {
+        cng_grp.type = newtype;
+        cng_grp.pnt.setType(newtype);
+        cng_grp.childNodes[circ_id].setAttribute("fill", cng_grp.type=="min" ? "green" : "blue");
+
+      }
+      if (oth_grp.isExpanded){
+        oth_grp.wasType = grp.wasType;
+        checkType(oth_grp);     
+      }
+      else {
+        oth_grp.type = grp.wasType;
+        oth_grp.pnt.type = grp.wasType;
+        oth_grp.childNodes[circ_id].setAttribute("fill", oth_grp.type=="min" ? "green" : "blue");      
+      }
+    }
+    else {
+      if (child1.isExpanded) {
+        child1.wasType = grp.wasType;
+        checkType(child1);
+      }
+      else {
+        child1.type = grp.wasType;
+        child1.pnt.type - grp.wasType;
+        child1.childNodes[circ_id].setAttribute("fill", child1.type=="min" ? "green" : "blue");
+      }
+      if (child2.isExpanded) {
+        child2.wasType = grp.wasType;
+        checkType(child2);
+      }
+      else {
+        child2.type = grp.wasType;
+        child2.pnt.type - grp.wasType;
+        child2.childNodes[circ_id].setAttribute("fill", child2.type=="min" ? "green" : "blue");
+      }
+    
+    }
+    
+  }
+}
+
+/*
+  func that checks whether the type of an extremalpoints has changed
+  min <-> max
+*/
+/*
+function checkType(grp) {
+  var ppnt = grp.pnt;
+  var j = (grp.isRoot) ? root_off : 0;
+  var child1 = grp.childNodes[g1_id+j];
+  var child2 = grp.childNodes[g2_id+j];
+  var cpnt1 = child1.pnt;
+  var cpnt2 = child2.pnt;
+  
+  var phi1 = ppnt.getAngleTo(cpnt1);
+  var phi2 = ppnt.getAngleTo(cpnt2);
+  var r1 = ppnt.getDistTo(cpnt1);
+  var r2 = ppnt.getDistTo(cpnt2);
+  var dphi = Math.abs(phi1-phi2);
+  dphi = dphi>2*Math.PI ? dphi-2*Math.PI : dphi;
+  
+  if (dphi<Math.PI/2.) {
+    var cng_grp = null;
+    var cng_pnt = null;
+    
+    if (r1>r2) {
+      cng_grp = child2;
+      cng_pnt = cpnt2;
+    }
+    else {
+      cng_grp = child1;
+      cng_pnt = cpnt1;
+    }
+    var par_type = grp.wasType;
+    
+    
+    
+      // cpnt2.switchType();
+      // child2.type = cpnt2.type;
+      // var circ = child2.childNodes[circ_id];
+      // var color = "black";
+      // if (cpnt2.type=='sad') {color='red';}
+      // else if (cpnt2.type=='min') {color='green';}
+      // else if (cpnt2.type=='max') {color='blue';}
+      // circle.setAttribute("fill", color);
+      
+  }
+}
+*/
 
 function createGroup(parent, x, y, isRoot) {
   
@@ -128,10 +259,12 @@ function createGroup(parent, x, y, isRoot) {
   if (isRoot) {
     group.depth = 0;
     group.type = "min";
+    group.pnt.setType("min");
   }
   else {
     group.depth = parent.depth+1;
     group.type = parent.type;
+    group.pnt.setType(parent.type);
   }
   
 
@@ -331,10 +464,12 @@ function getExtremaArray(grp, origin) {
   else {
     var pnt = null;
     if (origin==null) {
-      pnt = SVGtoPoint(grp.childNodes[circ_id]);
+      //pnt = SVGtoPoint(grp.childNodes[circ_id]);
+      pnt = grp.pnt;
     }
     else {
-      pnt = SVGtoPoint(grp.childNodes[circ_id]);
+      //pnt = SVGtoPoint(grp.childNodes[circ_id]);
+      pnt = grp.pnt;
       pnt = pnt.getRelCoordTo(origin);
     }
     res = Array(pnt);
@@ -394,6 +529,16 @@ function Point(x, y) {
   this.x = parseInt(x) || 0;
   this.y = parseInt(y) || 0;
   
+  this.setType = function(type) {
+    this.type = type;
+  };
+  
+  this.switchType = function() {
+    if (this.type!='sad') {
+      this.type = this.type=='min' ? 'max' : 'min';
+    }
+  };
+  
   this.getDistTo = function(pnt) {
     var x = this.x-pnt.x;
     var y = this.y-pnt.y;
@@ -402,8 +547,16 @@ function Point(x, y) {
   };
   
   this.getRelCoordTo = function(pnt) {
-    return new Point( pnt.x-this.x, pnt.y - this.y);
+    var pnt = new Point( pnt.x-this.x, pnt.y - this.y);
+    pnt.setType(this.type);
+    return pnt;
   };
+  
+  this.getAngleTo = function (pnt) {
+    var dx = this.x-pnt.x;
+    var dy = this.y-pnt.y;
+    return Math.atan2(dy, dx);
+  }
   
   this.toString = function() {
     var txt = "[x:" + this.x + " y:" + this.y + "]";

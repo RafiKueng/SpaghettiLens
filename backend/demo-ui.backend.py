@@ -37,8 +37,12 @@ class GlassSettings(object):
   def genOutput(self):
     s = self
     out = """
-glass_basis('glass.basis.pixels', solver='rwalk')
+import matplotlib as mpl
+mpl.use('Agg') #make plots on headless server 
+#import matplotlib.pyplot as pl
 import pylab as pl
+
+glass_basis('glass.basis.pixels', solver='rwalk')
 meta(author='Jonathan Coles', notes='Just testing')
 """
     out += "setup_log('" + s.lens_id + "_" + s.run_id + ".log')\n"
@@ -87,8 +91,20 @@ shear(0.01)
     s.statefile = s.lens_id + "_" + s.run_id + ".state"
     out += "savestate('../tmp/" + s.statefile + "')" 
     
+    out += """ 
+
+
+#pl.figure()
+#env().glerrorplot('kappa(R)', ['R', 'arcsec'])
+#pl.savefig('kappa_R.png')
+env().make_ensemble_average()
+env().arrival_plot(env().ensemble_average, only_contours=True)
+""" 
+    s.imgfile = s.lens_id + "_" + s.run_id + ".png"
+    out += "pl.savefig('../htdocs/img/" + s.imgfile + "')"
+ 
+     
     s.cfgfile = s.lens_id + "_" + s.run_id + ".gls"
-    
     f = open('../tmp/' + s.cfgfile, 'w')
     f.write(out)
     f.close()
@@ -150,7 +166,7 @@ class EchoServerProtocol(WebSocketServerProtocol):
       
       #read in the points
       data = [_.split(':') for _ in data.split('|')]
-      
+       
       global run_id
       run_id += 1 
       gs = GlassSettings(data[0][0],run_id)
@@ -172,7 +188,7 @@ class EchoServerProtocol(WebSocketServerProtocol):
       gs.setRedshiftSource(data[-1][1])      
       
       gs.genOutput() 
-        
+         
       #call glass, generate img
       print "call glass"
       retval = subprocess.call(['../glass/run_glass', '../tmp/'+gs.cfgfile]) 
@@ -180,9 +196,9 @@ class EchoServerProtocol(WebSocketServerProtocol):
       self.sendMessage("stat" + repr(retval)) 
       
       #subprocess.call(['../glass/run_glass', '../tmp/'+gs.cfgfile])
-      sleep(10) #wait for glass to finish 
+      #sleep(10) #wait for glass to finish 
       #if retval==0:
-      url = "hubble-udf.jpg"  
+      url = 'img/' + gs.imgfile
       self.sendMessage("cont" + url)
       #else:
         #self.sendMessage("stat" + "ERROR IN GLASS")
