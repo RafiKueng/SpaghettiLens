@@ -52,7 +52,7 @@ function calculateModel() {
     if ( ident == "cont") {
       dbg.write("got contour image url: " + data);
       var img = document.getElementById('glassimg');
-      img.setAttribute('src', data);
+      img.setAttribute('src', '../'+data);
     }
     else if (ident=="stat") {
       dbg.write("got status: " + data);
