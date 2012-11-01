@@ -148,16 +148,22 @@ function checkType(grp){
       if (cng_grp.isExpanded) {
         cng_grp.wasType = newtype;
         checkType(cng_grp);
-        oth_grp.wasType = grp.wasType;
-        checkType(oth_grp);
+
       }
       else {
         cng_grp.type = newtype;
         cng_grp.pnt.setType(newtype);
         cng_grp.childNodes[circ_id].setAttribute("fill", cng_grp.type=="min" ? "green" : "blue");
+
+      }
+      if (oth_grp.isExpanded){
+        oth_grp.wasType = grp.wasType;
+        checkType(oth_grp);     
+      }
+      else {
         oth_grp.type = grp.wasType;
         oth_grp.pnt.type = grp.wasType;
-        oth_grp.childNodes[circ_id].setAttribute("fill", oth_grp.type=="min" ? "green" : "blue");
+        oth_grp.childNodes[circ_id].setAttribute("fill", oth_grp.type=="min" ? "green" : "blue");      
       }
     }
     else {
