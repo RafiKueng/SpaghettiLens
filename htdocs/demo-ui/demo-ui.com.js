@@ -72,6 +72,7 @@ function serializePoints(pnts) {
   out += "000" + $_GET.id;
   for (var i=0; i<pnts.length; i++) {
     out += "|" + pnts[i].x/200.0 + ":" + pnts[i].y/200.0 + ":" + 'unk';//pnts[i].type;
+    //TODO make better scaling, add type attr. to point class
   }
   out += "|0.50:1.00";
   return out;
