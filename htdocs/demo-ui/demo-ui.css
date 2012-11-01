@@ -3,6 +3,7 @@
 /* this is the div containing the ui layers */
 #ui_area {
   width:750px;
+  height: 400px;
   margin: 1em auto;
   text-align: left;
   border: 1px solid black;
@@ -12,18 +13,18 @@
 
 /* this is the foreground layer */
 #ui_svg_layer {
-  position: absolute;
+  position: relative;
   left: 0;
   top: 0;
-  z-index: 0;
+  z-index: 1;
 }
 
 /* this represents the background layer */
 #ui_canvas_layer {
-  /*position: absolute;
-  left: 750px;
-  top: 900px;
-  z-index: 1;*/
+  position: relative;
+  left: 0;
+  top: -406px;
+  z-index: 0;
   /*display: hide;*/
   /*background-color: yellow;*/
 }

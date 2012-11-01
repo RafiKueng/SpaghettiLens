@@ -15,6 +15,7 @@ function loadImage(uri) {
   img.onload = function(){ //play save, wait with draw till fully loaded
     blendImage(canvas, ctx, img);
     //ctx.drawImage(img,0,0);
+    //addBG(); //TODO fix this, for some reason the bg doesn't show up in the canvas.. now i just use css to put svg ontop of canvas
   };
   img.src = uri;
 
