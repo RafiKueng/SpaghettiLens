@@ -175,14 +175,17 @@ class EchoServerProtocol(WebSocketServerProtocol):
         
       #call glass, generate img
       print "call glass"
-      subprocess.call(['../glass/run_glass', '../tmp/'+gs.cfgfile]) 
-      print "return from glass"
+      retval = subprocess.call(['../glass/run_glass', '../tmp/'+gs.cfgfile]) 
+      print "return from glass with:", retval
+      self.sendMessage("stat" + repr(retval)) 
       
-      subprocess.call(['../glass/run_glass', '../tmp/'+gs.cfgfile])
-      
-      #sleep(5)
-      url = "hubble-udf.jpg"
+      #subprocess.call(['../glass/run_glass', '../tmp/'+gs.cfgfile])
+      sleep(10) #wait for glass to finish 
+      #if retval==0:
+      url = "hubble-udf.jpg"  
       self.sendMessage("cont" + url)
+      #else:
+        #self.sendMessage("stat" + "ERROR IN GLASS")
       
     else:
       print "PROTOCOLL ERROR - dump:"

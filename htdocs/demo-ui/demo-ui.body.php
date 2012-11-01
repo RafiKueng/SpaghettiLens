@@ -17,6 +17,7 @@ echo file_get_contents('demo-ui.svg', NULL, NULL, 55); //skip the first line wit
 <p id="debug.log">test</p>
 </div>
 
+<img id="glassimg" src="" alt="glassimg" height="300" width="300"> 
 
 <!-- / include canvas -->
 <canvas id="ui_canvas_layer" width="750" height="400">
