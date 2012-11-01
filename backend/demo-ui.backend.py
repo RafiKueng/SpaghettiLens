@@ -28,10 +28,10 @@ class GlassSettings(object):
     self.points.append(point)
   
   def setRedshiftLens(self, z):
-    self.zlens = repr(z)
+    self.zlens = z
     
   def setRedshiftSource(self, z):
-    self.zSrc = repr(z)
+    self.zSrc = z
   
   
   def genOutput(self):
@@ -66,7 +66,7 @@ hubble_time(13.7)
     out += "globject('" + s.lens_id + "')\n"
     out += "zlens(" + s.zlens + ")\n"
     out += """
-pixrad(3)
+pixrad(3) 
 steepness(0,None)
 smooth(2,include_central_pixel=False)
 local_gradient(45)
@@ -85,9 +85,11 @@ shear(0.01)
     out += "model(1000)\n"
     
     s.statefile = s.lens_id + "_" + s.run_id + ".state"
-    out += "savestate('" + s.statefile + "')"
+    out += "savestate('../tmp/" + s.statefile + "')" 
     
-    f = open('tmp/' + s.lens_id + "_" + s.run_id + ".gls", 'w')
+    s.cfgfile = s.lens_id + "_" + s.run_id + ".gls"
+    
+    f = open('../tmp/' + s.cfgfile, 'w')
     f.write(out)
     f.close()
 
@@ -97,15 +99,16 @@ shear(0.01)
 class Point(object):
   def __init__(self, x,y,type='None',delay='None'):
     self.x = x
-    self.y = y
+    self.y = y 
     self.type = type
-    self.delay = '' if delay==None else delay
-  
+    self.delay = 'None' if delay=='' else delay 
+    print "creating point: ", "XX" if delay==None else delay 
+   
   def toStringA(self):
-    return repr(self.x)+','+repr(self.y)
+    return self.x+','+self.y
     
   def toStringB(self):
-    return "'" + self.type + "' " + ('' if self.delay=='' else ', '+self.delay)
+    return "'" + self.type + "' " + ('' if self.delay==None else ', '+self.delay)
   
  
 class EchoServerProtocol(WebSocketServerProtocol):
@@ -155,14 +158,14 @@ class EchoServerProtocol(WebSocketServerProtocol):
       for i in range(1,len(data)-1):
         if len(data[i])==4:
           delay = data[i][3]
-        elif i==0:
+        elif i==1: 
           delay = None
         else:
           delay = ''
         
-        print "got data: ", i, data[i][0], data[i][1], data[i][2], delay
+        print "got data: ", i, len(data[i]), data[i][0], data[i][1], data[i][2], repr(delay)
         pnt = Point(data[i][0], data[i][1], data[i][2], delay)
-        gs.addSource(pnt)
+        gs.addSource(pnt) 
         
       #the last line are the other parameters
       gs.setRedshiftLens(data[-1][0])
@@ -172,8 +175,10 @@ class EchoServerProtocol(WebSocketServerProtocol):
         
       #call glass, generate img
       print "call glass"
-      subprocess.call(['../glass/run_glass', 'tmp/'+gs.statefile])
+      subprocess.call(['../glass/run_glass', '../tmp/'+gs.cfgfile]) 
       print "return from glass"
+      
+      subprocess.call(['../glass/run_glass', '../tmp/'+gs.cfgfile])
       
       #sleep(5)
       url = "hubble-udf.jpg"
