@@ -130,7 +130,7 @@ function checkType(grp){
     var r1 = ppnt.getDistTo(cpnt1);
     var r2 = ppnt.getDistTo(cpnt2);
     var dphi = Math.abs(phi1-phi2);
-    dphi = dphi>2*Math.PI ? dphi-2*Math.PI : dphi;    
+    dphi = dphi>Math.PI ? Math.PI*2 - dphi : dphi;    
     
     if (dphi<Math.PI/2.) {
       var cng_grp = null;
