@@ -259,10 +259,12 @@ function createGroup(parent, x, y, isRoot) {
   if (isRoot) {
     group.depth = 0;
     group.type = "min";
+    group.pnt.setType("min");
   }
   else {
     group.depth = parent.depth+1;
     group.type = parent.type;
+    group.pnt.setType(parent.type);
   }
   
 
@@ -462,10 +464,12 @@ function getExtremaArray(grp, origin) {
   else {
     var pnt = null;
     if (origin==null) {
-      pnt = SVGtoPoint(grp.childNodes[circ_id]);
+      //pnt = SVGtoPoint(grp.childNodes[circ_id]);
+      pnt = grp.pnt;
     }
     else {
-      pnt = SVGtoPoint(grp.childNodes[circ_id]);
+      //pnt = SVGtoPoint(grp.childNodes[circ_id]);
+      pnt = grp.pnt;
       pnt = pnt.getRelCoordTo(origin);
     }
     res = Array(pnt);
@@ -543,7 +547,9 @@ function Point(x, y) {
   };
   
   this.getRelCoordTo = function(pnt) {
-    return new Point( pnt.x-this.x, pnt.y - this.y);
+    var pnt = new Point( pnt.x-this.x, pnt.y - this.y);
+    pnt.setType(this.type);
+    return pnt;
   };
   
   this.getAngleTo = function (pnt) {
