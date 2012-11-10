@@ -194,7 +194,7 @@ class EchoServerProtocol(WebSocketServerProtocol):
       retval = subprocess.call(['../glass/run_glass', '../tmp/'+gs.cfgfile]) 
       print "return from glass with:", retval
       self.sendMessage("stat" + repr(retval)) 
-      
+       
       #subprocess.call(['../glass/run_glass', '../tmp/'+gs.cfgfile])
       #sleep(10) #wait for glass to finish 
       #if retval==0:

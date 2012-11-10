@@ -524,46 +524,6 @@ function toRectY(direction,distance) {
 }
 
 
-
-function Point(x, y) {
-  this.x = parseInt(x) || 0;
-  this.y = parseInt(y) || 0;
-  
-  this.setType = function(type) {
-    this.type = type;
-  };
-  
-  this.switchType = function() {
-    if (this.type!='sad') {
-      this.type = this.type=='min' ? 'max' : 'min';
-    }
-  };
-  
-  this.getDistTo = function(pnt) {
-    var x = this.x-pnt.x;
-    var y = this.y-pnt.y;
-    
-    return Math.sqrt(x*x + y*y);
-  };
-  
-  this.getRelCoordTo = function(pnt) {
-    var pnt = new Point( pnt.x-this.x, pnt.y - this.y);
-    pnt.setType(this.type);
-    return pnt;
-  };
-  
-  this.getAngleTo = function (pnt) {
-    var dx = this.x-pnt.x;
-    var dy = this.y-pnt.y;
-    return Math.atan2(dy, dx);
-  }
-  
-  this.toString = function() {
-    var txt = "[x:" + this.x + " y:" + this.y + "]";
-    return txt;
-  };
-}
-
 function SVGtoPoint(circle) {
   return new Point(circle.getAttribute("cx"), circle.getAttribute("cy"));
 }
