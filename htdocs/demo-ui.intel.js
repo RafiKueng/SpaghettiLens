@@ -23,9 +23,9 @@ function expandPoint(targetGroup) {
   //if (targentGroup.parentElement.class == "contourgroup") {
     //make custom dx, dy depending on the parent group
   //}
-  var p1x = targetGroup.x + dx/(targetGroup.depth/3+1);
-  var p2x = targetGroup.x - dx/(targetGroup.depth/3+1);
-  var p1y = targetGroup.y + dy/(targetGroup.depth/3+1);
+  var p1x = targetGroup.pnt.x + dx/(targetGroup.depth/3+1);
+  var p2x = targetGroup.pnt.x - dx/(targetGroup.depth/3+1);
+  var p1y = targetGroup.pnt.y + dy/(targetGroup.depth/3+1);
   var p2y = p1y;
 
   var point2 = createGroup(targetGroup, p1x, p1y, false);
@@ -79,10 +79,11 @@ function moveExtremalPoint(pnt, x, y) {
   
   pnt.setAttribute("cx", x);
   pnt.setAttribute("cy", y);
-  pGrp.x = x;
-  pGrp.y = y;
-  pGrp.pnt.x = x;
-  pGrp.pnt.y = y;
+  //pGrp.x = x;
+  //pGrp.y = y;
+  //pGrp.pnt.x = x;
+  //pGrp.pnt.y = y;
+  pGrp.pnt.setCoord(x,y);
   
   
   //update debug lines and this contour
@@ -101,6 +102,7 @@ function moveExtremalPoint(pnt, x, y) {
       line.setAttribute("x2", x);
       line.setAttribute("y2", y);
       
+      child.pnt.update();
       updateContourOf(child);
     }
   }
@@ -125,11 +127,16 @@ function checkType(grp){
     var cpnt1 = child1.pnt;
     var cpnt2 = child2.pnt;
     
-    var phi1 = ppnt.getAngleTo(cpnt1);
-    var phi2 = ppnt.getAngleTo(cpnt2);
-    var r1 = ppnt.getDistTo(cpnt1);
-    var r2 = ppnt.getDistTo(cpnt2);
-    var dphi = Math.abs(phi1-phi2);
+    // var phi1 = ppnt.getAngleTo(cpnt1);
+    // var phi2 = ppnt.getAngleTo(cpnt2);
+    // var r1 = ppnt.getDistTo(cpnt1);
+    // var r2 = ppnt.getDistTo(cpnt2);
+    // var dphi = Math.abs(phi1-phi2);
+    var dphi = Math.abs(cpnt1.dphi - cpnt2.dphi);
+    var r1 = cpnt1.dr;
+    var r2 = cpnt2.dr;
+    
+    
     dphi = dphi>Math.PI ? Math.PI*2 - dphi : dphi;    
     
     if (dphi<Math.PI/3.) {
@@ -173,7 +180,7 @@ function checkType(grp){
       }
       else {
         child1.type = grp.wasType;
-        child1.pnt.type - grp.wasType;
+        child1.pnt.type = grp.wasType;
         child1.childNodes[circ_id].setAttribute("fill", child1.type=="min" ? "green" : "blue");
       }
       if (child2.isExpanded) {
@@ -182,7 +189,7 @@ function checkType(grp){
       }
       else {
         child2.type = grp.wasType;
-        child2.pnt.type - grp.wasType;
+        child2.pnt.type = grp.wasType;
         child2.childNodes[circ_id].setAttribute("fill", child2.type=="min" ? "green" : "blue");
       }
     
@@ -249,11 +256,11 @@ function createGroup(parent, x, y, isRoot) {
   var group  = document.createElementNS("http://www.w3.org/2000/svg", "g");
   group.setAttribute("id", "grp"+ngroups);
   group.setAttribute("class", "contourgroup");
-  group.x = x;
-  group.y = y;
-  group.pnt = new Point(x,y);
-  group.r = 0; //distance to parent
-  group.phi = 0; //angle of parent
+  //group.x = x;
+  //group.y = y;
+  group.pnt = new Point(x,y,parent.pnt);
+  //group.r = 0; //distance to parent
+  //group.phi = 0; //angle of parent
   group.isExpanded = false;
   group.isRoot = isRoot;
   if (isRoot) {
@@ -288,8 +295,8 @@ function createGroup(parent, x, y, isRoot) {
     var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     line.setAttribute("x1", x);
     line.setAttribute("y1", y);
-    line.setAttribute("x2", parent.x);
-    line.setAttribute("y2", parent.y);
+    line.setAttribute("x2", parent.pnt.x);
+    line.setAttribute("y2", parent.pnt.y);
     line.setAttribute("style","stroke:rgb(0,0,0);stroke-width:1");
     group.appendChild(line);
   }
@@ -313,10 +320,12 @@ function createContour(grp) {
 
   var dAng = Math.PI * 2 / n_cp;
   
-  var dx = parent.x - grp.x;
-  var dy = parent.y - grp.y;
-  var ang = toPolarAng(dx, dy);
-  var rad = toPolarR(dx, dy);
+  //var dx = parent.pnt.x - grp.x;
+  //var dy = parent.y - grp.y;
+  //var ang = toPolarAng(dx, dy);
+  //var rad = toPolarR(dx, dy);
+  var ang = grp.pnt.dphi;
+  var rad = grp.pnt.dr;
   
   var cgrp = document.createElementNS("http://www.w3.org/2000/svg", "g");
   cgrp.setAttribute("id", "cgrp"+(ncgroups++));
@@ -328,8 +337,8 @@ function createContour(grp) {
     r_fac = r_fac *0.25 + 0.50; //makes the radi between 50% and 75% of dist to parent
     var cp_ang = ang+i*dAng;
     var cp_rad = rad * r_fac;
-    var cp_x = grp.x + toRectX(cp_ang, cp_rad);
-    var cp_y = grp.y + toRectY(cp_ang, cp_rad);
+    var cp_x = grp.pnt.x + toRectX(cp_ang, cp_rad);
+    var cp_y = grp.pnt.y + toRectY(cp_ang, cp_rad);
     
     
     var point = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -365,10 +374,12 @@ function updateContourOf(grp) {
   
   var dAng = Math.PI * 2 / n_cp;
   
-  var dx = parent.x - grp.x;
-  var dy = parent.y - grp.y;
-  var ang = toPolarAng(dx, dy);
-  var rad = toPolarR(dx, dy);
+  //var dx = parent.x - grp.x;
+  //var dy = parent.y - grp.y;
+  //var ang = toPolarAng(dx, dy);
+  //var rad = toPolarR(dx, dy);
+  var rad = grp.pnt.dr;
+  var ang = grp.pnt.dphi;
   
   // var j = grp.isRoot ? 1 : 0; //offset for root node, he has no line
   var j = grp.isExtended ? 0 : 2; //if not expanded, then two groups are missing
@@ -376,15 +387,15 @@ function updateContourOf(grp) {
   var path = grp.childNodes[5-j];
   var pathstr = "";
   
-  pathstr += "M" + parent.x + "," + parent.y + " "; //move to start pos
+  pathstr += "M" + parent.pnt.x + "," + parent.pnt.y + " "; //move to start pos
   
   for (var i=0; i<contGrp.childNodes.length; i++) {
     var pnt = contGrp.childNodes[i];
     
     var cp_ang = ang + pnt.d_ang;
     var cp_rad = rad * pnt.s_rad;
-    var cp_x = grp.x + toRectX(cp_ang, cp_rad);
-    var cp_y = grp.y + toRectY(cp_ang, cp_rad);
+    var cp_x = grp.pnt.x + toRectX(cp_ang, cp_rad);
+    var cp_y = grp.pnt.y + toRectY(cp_ang, cp_rad);
     
     //var cp_x = grp.x + toRectX(pnt.ang, pnt.rad);
     //var cp_y = grp.y + toRectY(pnt.ang, pnt.rad);
@@ -439,7 +450,8 @@ function getExtremaArray(grp, origin) {
     
     
     //maintain postorder traversal, nodes sortet by distance
-    if (ps.getDistTo(p1.pnt) < ps.getDistTo(p2.pnt)) {
+    //if (ps.getDistTo(p1.pnt) < ps.getDistTo(p2.pnt)) {
+    if (p1.pnt.dr < p2.pnt.dr) {
       var tmp = p1;
       p1 = p2;
       p2 = tmp;
@@ -459,6 +471,7 @@ function getExtremaArray(grp, origin) {
       res = res.concat(p2arr);
     }
     res = res.concat(new Array(ps.getRelCoordTo(origin)));
+    
   }
 
   else {
@@ -498,7 +511,21 @@ function getPoints() {
   
 }
 
+var masspointnr = 0;
 
+function createMassPoint(parent, x, y) {
+  masspointnr = masspointnr+1;
+  var point = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  point.setAttribute("id", "masspoint"+masspointnr);
+  point.setAttribute("cx", x);
+  point.setAttribute("cy", y);
+  point.setAttribute("r",  7);
+  point.setAttribute("fill", "white");
+  point.setAttribute("class", "masspoint");
+  
+  parent.appendChild(point);
+
+}
 
 /********************
  * math helper

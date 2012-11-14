@@ -82,9 +82,40 @@ function onClickBtn(evt) {
     evt.stopPropagation();
     break;
     
-    case "ui.btn.go":
+    case "ui_btn_go":
     calculateModel();
     //alert("clicked on go");
+    evt.stopPropagation();
+    break;
+    
+    case "ui_rulerMode":
+    //alert("clicked on ruler mode");
+    settings.mode=2;
+    select.modehighlight.setAttribute("transform",constants.highliter_pos[settings.mode]);
+    evt.stopPropagation();
+    break;
+
+    case "ui_massMode":
+    //alert("clicked on ui_massMode");
+    settings.mode=1;
+    select.modehighlight.setAttribute("transform",constants.highliter_pos[settings.mode]);
+    evt.stopPropagation();
+    break;
+
+    case "ui_imgMode":
+    //alert("clicked on imgMode");
+    settings.mode=0;
+    select.modehighlight.setAttribute("transform",constants.highliter_pos[settings.mode]);
+    evt.stopPropagation();
+    break;
+
+    case "ui_btn_undo":
+    alert("clicked on undo");
+    evt.stopPropagation();
+    break;
+
+    case "ui_btn_redo":
+    alert("clicked on redo");
     evt.stopPropagation();
     break;
     
@@ -106,22 +137,46 @@ function onClickSVG(evt){
   var parent = evt.target.parentElement;
   //alert("click on svg: " + target.id);
   
-  // doubleclick on background
-  //if (target.id=="ui.svg_layer" && evt.detail>=2) {
-  if (target.id=="bg" && evt.detail>=2) {
-    var pnt = coordTrans(evt);
-    var parent = document.getElementById("layer2");
-    var newgroup = createGroup(parent, parseInt(pnt.x.toFixed(0)), parseInt(pnt.y.toFixed(0)), true);
-    parent.appendChild(newgroup);
-  }
-  else if (evt.detail>=2 && target.id.substring(0,5)=="point"){
-    //alert("doubleclick on " + target.id);
-    if (parent.isExpanded) {
-      collapsePoint(parent);
-    }
-    else {
-      expandPoint(parent);
-    }
+  
+  switch(settings.mode) {
+  
+    case constants.modeImg:
+      // doubleclick on background
+      //if (target.id=="ui.svg_layer" && evt.detail>=2) {
+      if (target.id=="bg" && evt.detail>=2) {
+        var pnt = coordTrans(evt);
+        var parent = document.getElementById("layer2");
+        var newgroup = createGroup(parent, parseInt(pnt.x.toFixed(0)), parseInt(pnt.y.toFixed(0)), true);
+        parent.appendChild(newgroup);
+      }
+      else if (evt.detail>=2 && target.id.substring(0,5)=="point"){
+        //alert("doubleclick on " + target.id);
+        if (parent.isExpanded) {
+          collapsePoint(parent);
+        }
+        else {
+          expandPoint(parent);
+        }
+      }
+    break;
+      
+    
+    case constants.modeMass:
+      //alert("clicked bg in mass mode");
+      if (target.id=="bg") {
+        var pnt = coordTrans(evt);
+        var parent = document.getElementById("layer3");
+        var newgroup = createMassPoint(parent, parseInt(pnt.x.toFixed(0)), parseInt(pnt.y.toFixed(0)));
+      }
+      else {
+        var parent = document.getElementById("layer3");
+        parent.removeChild(target);
+      }
+    break;
+    
+    case constants.modeRuler:
+      alert("clicked bg in ruler mode");
+    break;
   }
 }
 

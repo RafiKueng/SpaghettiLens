@@ -28,8 +28,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="144.56076"
-     inkscape:cy="166.38865"
+     inkscape:cx="343.11987"
+     inkscape:cy="234.38417"
      inkscape:document-units="px"
      inkscape:current-layer="ui_svg_layer"
      showgrid="true"
@@ -80,16 +80,20 @@
     </rdf:RDF>
   </metadata>
   <rect
-     style="fill:#000000;fill-opacity:0.00392157;stroke:#000000;stroke-width:0.96954232;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     style="fill:#000000;fill-opacity:0.00392157;stroke:#000000;stroke-width:0.96314263;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
      id="bg"
-     width="760"
+     width="750"
      height="400"
      x="-1.1768364e-014"
      y="-2.3829178e-015" />
   <g
      inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="Rulers" />
+  <g
+     inkscape:groupmode="layer"
      id="layer3"
-     inkscape:label="bg" />
+     inkscape:label="Masses" />
   <g
      inkscape:groupmode="layer"
      id="layer2"
@@ -102,8 +106,88 @@
      id="layer1"
      transform="translate(0,-652.36218)"
      onclick="onClickUI(evt);">
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffff00;fill-opacity:0.55769228;stroke:none"
+       id="ui_modehighlight"
+       sodipodi:cx="720"
+       sodipodi:cy="45"
+       sodipodi:rx="20"
+       sodipodi:ry="5"
+       d="m 740,45 a 20,5 0 1 1 -40,0 20,5 0 1 1 40,0 z"
+       transform="translate(0,652.36218)" />
+    <path
+       sodipodi:type="star"
+       style="fill:#000000;fill-opacity:0.32156863;stroke:#000000;stroke-width:0.71736842;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="ui_massMode"
+       sodipodi:sides="5"
+       sodipodi:cx="420"
+       sodipodi:cy="30"
+       sodipodi:r1="14.142136"
+       sodipodi:r2="7.0710678"
+       sodipodi:arg1="0.78539816"
+       sodipodi:arg2="1.4137167"
+       inkscape:flatsided="false"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 430,40 -8.89384,-3.015989 -7.52656,5.616724 0.12003,-9.390537 -7.66765,-5.422515 L 415,25 l 2.78768,-8.968022 5.42252,7.667654 9.39054,-0.120027 -5.61673,7.526554 z"
+       inkscape:transform-center-x="1.0228863"
+       inkscape:transform-center-y="-0.88784806"
+       transform="matrix(1.4962554,0,0,1.2987027,40.999691,639.23201)"
+       onclick="onClickBtn(evt);" />
     <g
-       id="ui.btn.go"
+       id="ui_rulerMode"
+       transform="matrix(1,0,0,0.54059101,-102.50483,309.36266)"
+       onclick="onClickBtn(evt);">
+      <path
+         transform="matrix(0.32679987,-0.05642789,-0.02545677,0.38204216,795.88018,626.49438)"
+         d="m -230,115 c 0,8.28427 -6.71573,15 -15,15 -8.28427,0 -15,-6.71573 -15,-15 0,-8.28427 6.71573,-15 15,-15 8.28427,0 15,6.71573 15,15 z"
+         sodipodi:ry="15"
+         sodipodi:rx="15"
+         sodipodi:cy="115"
+         sodipodi:cx="-245"
+         id="path3840"
+         style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:4.47544193;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         sodipodi:type="arc" />
+      <path
+         transform="matrix(0.70028551,-0.12091691,-0.05455021,0.8186617,887.59096,563.88783)"
+         d="m -210,115 c 0,19.32997 -15.67003,35 -35,35 -19.32997,0 -35,-15.67003 -35,-35 0,-19.329966 15.67003,-35 35,-35 19.32997,0 35,15.670034 35,35 z"
+         sodipodi:ry="35"
+         sodipodi:rx="35"
+         sodipodi:cy="115"
+         sodipodi:cx="-245"
+         id="path3842"
+         style="fill:#000000;fill-opacity:0.32156863;stroke:#000000;stroke-width:2.0885396;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         sodipodi:type="arc" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3844"
+         d="m 717.78868,683.40764 c 19.60799,-3.38567 19.60799,-3.38567 19.60799,-3.38567"
+         style="fill:none;stroke:#000000;stroke-width:1.57224286;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3848"
+         d="m 723.07253,676.83059 -0.38185,5.73064"
+         style="fill:none;stroke:#000000;stroke-width:1.57224286;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3850"
+         d="m 727.97453,675.98417 -0.38185,5.73064"
+         style="fill:none;stroke:#000000;stroke-width:1.57224286;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3852"
+         d="m 732.87653,675.13776 -0.38185,5.73063"
+         style="fill:none;stroke:#000000;stroke-width:1.57224286;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    </g>
+    <path
+       style="fill:#000000;fill-opacity:0.32156863;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 701.08205,667.26324 7.6,25 30.4,-10 -11.4,-20 z"
+       id="ui_imgMode"
+       inkscape:connector-curvature="0"
+       onclick="onClickBtn(evt);" />
+    <g
+       id="ui_btn_go"
        onclick="onClickBtn(evt);">
       <rect
          style="fill:#000080;fill-opacity:0.72307691;stroke:#000000;stroke-width:0.79432511;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
@@ -125,6 +209,20 @@
            id="tspan3786"
            sodipodi:role="line">GO</tspan></text>
     </g>
+    <path
+       style="fill:#0000ff;fill-opacity:0.32156863;stroke:#000000;stroke-width:0.57735026px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 20,669.02885 15,0 0,13.33333 -15,0 0,6.66667 -15,-13.33334 15,-13.33333 0,6.66667"
+       id="ui_btn_undo"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc"
+       onclick="onClickBtn(evt);" />
+    <path
+       style="fill:#000000;fill-opacity:0.32156863;stroke:#000000;stroke-width:0.57735026px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 60,682.36218 -15,0 0,-13.33333 15,0 0,-6.66667 14.99999,13.33334 L 60,689.02885 l 0,-6.66667"
+       id="ui_btn_redo"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc"
+       onclick="onClickBtn(evt);" />
     <g
        id="ui.svg.settings_menu"
        onmouseover="mouseOver(evt);"

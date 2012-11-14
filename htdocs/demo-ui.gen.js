@@ -19,6 +19,10 @@ var $_GET; //the passed (HTTP GET) arguments
 function onBodyInit() {
   initUI();
   
+  // init the references
+  select.modehighlight = document.getElementById("ui_modehighlight");
+  
+  
   //init the logging device
   dbg = new logger();
   dbg.init();
@@ -79,4 +83,30 @@ function logger () {
   this.clear = function() {
     this.log.innerHTML = ""; 
   }
+}
+
+
+
+var settings = {
+  mode: 0 // the current operating mode: 0:img mode, 1: pointmass mode, 2: ruler mode
+  
+}
+
+
+// some application constants
+var constants = {
+  
+  // where to place the hilighter for the selected mode (mode = array index)
+  highliter_pos: new Array(
+    "translate(0,652.3)",
+    "translate(-50,652.3)",
+    "translate(-112,652.3)"),
+  modeImg:   0,
+  modeMass:  1,
+  modeRuler: 2
+}
+
+//references to some objects that are often used (will be set on init)
+var select = {
+  modehighlight: null
 }
