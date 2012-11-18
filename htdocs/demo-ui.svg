@@ -28,10 +28,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="343.11987"
+     inkscape:cx="260.61987"
      inkscape:cy="234.38417"
      inkscape:document-units="px"
-     inkscape:current-layer="ui_svg_layer"
+     inkscape:current-layer="layer2"
      showgrid="true"
      borderlayer="true"
      inkscape:window-width="1920"
@@ -97,9 +97,26 @@
   <g
      inkscape:groupmode="layer"
      id="layer2"
-     inkscape:label="Contours"
+     inkscape:label="Model"
      onmousedown="onMouseDownContours(evt);"
-     onmouseup="onMouseUpContours(evt);" />
+     onmouseup="onMouseUpContours(evt);">
+    <g
+       inkscape:label="ConnectorLinesLayer"
+       id="ConnectorLinesLayer"
+       inkscape:groupmode="layer" />
+    <g
+       inkscape:label="ContourLinesLayer"
+       id="ContourLinesLayer"
+       inkscape:groupmode="layer" />
+    <g
+       inkscape:groupmode="layer"
+       id="ContourPointsLayer"
+       inkscape:label="ContourPointsLayer" />
+    <g
+       inkscape:groupmode="layer"
+       id="ExtremalPointsLayer"
+       inkscape:label="ExtremalPointsLayer" />
+  </g>
   <g
      inkscape:label="UI"
      inkscape:groupmode="layer"
@@ -114,7 +131,7 @@
        sodipodi:cy="45"
        sodipodi:rx="20"
        sodipodi:ry="5"
-       d="m 740,45 a 20,5 0 1 1 -40,0 20,5 0 1 1 40,0 z"
+       d="m 740,45 c 0,2.761424 -8.95431,5 -20,5 -11.04569,0 -20,-2.238576 -20,-5 0,-2.761424 8.95431,-5 20,-5 11.04569,0 20,2.238576 20,5 z"
        transform="translate(0,652.36218)" />
     <path
        sodipodi:type="star"

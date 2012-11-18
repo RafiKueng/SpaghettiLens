@@ -1,7 +1,7 @@
 /*
   demo-ui.gen.js script file
   
-  some general routines that donät fit in to other js files
+  some general routines that donï¿½t fit in to other js files
 */
 
 /*
@@ -10,7 +10,7 @@
 var dbg; //the logging device
 var $_GET; //the passed (HTTP GET) arguments
 
-
+ 
 /*
   general init function, is called, as soon as the document is loaded
   and the inital DOM is built
@@ -20,6 +20,11 @@ function onBodyInit() {
   initUI();
   
   // init the references
+  select.connectiorLinesLayer = document.getElementById("ConnectorLinesLayer");
+  select.contourLinesLayer = document.getElementById("ContourLinesLayer");
+  select.contourPointsLayer = document.getElementById("ContourPointsLayer");
+  select.extremalPointsLayer = document.getElementById("ExtremalPointsLayer");
+  
   select.modehighlight = document.getElementById("ui_modehighlight");
   
   
@@ -86,12 +91,22 @@ function logger () {
 }
 
 
-
+/*
+  this saves all the settings of the programm, that are not relevant for the model
+*/
 var settings = {
-  mode: 0 // the current operating mode: 0:img mode, 1: pointmass mode, 2: ruler mode
-  
+  mode: 0, // the current operating mode: 0:img mode, 1: pointmass mode, 2: ruler mode
+
+  paintContour: true,
+  paintConnectingLines: true
 }
 
+/*
+  this saves all the relevant modelling parameters
+*/
+var model = {
+  tmp: 0
+}
 
 // some application constants
 var constants = {
@@ -108,5 +123,12 @@ var constants = {
 
 //references to some objects that are often used (will be set on init)
 var select = {
-  modehighlight: null
+  connectiorLinesLayer: null,
+  contourLinesLayer: null,
+  contourPointsLayer: null,
+  extremalPointsLayer: null,
+  
+  modehighlight: null //this item / group highlights the selected mode in ui
+  
+  
 }
