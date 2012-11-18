@@ -98,13 +98,22 @@ var settings = {
   mode: 0, // the current operating mode: 0:img mode, 1: pointmass mode, 2: ruler mode
 
   paintContour: true,
-  paintConnectingLines: true
+  paintConnectingLines: true,
+
+
+	tmp: 0
 }
 
 /*
-  this saves all the relevant modelling parameters
+  this saves all the relevant modelling parameters with default values
 */
 var model = {
+  nSources: 0, // how many sources are modelled? (equals the number of contour groups)
+  Sources: new Array(), //this contains all the modeled sources (of length nSources)
+
+  MinMmaxSwitchAngle: Math.PI / 3. , //limit angle between two children, when the children will switch to different type (min/min to min/max; max/max to min/max)
+  
+  
   tmp: 0
 }
 
@@ -118,7 +127,10 @@ var constants = {
     "translate(-112,652.3)"),
   modeImg:   0,
   modeMass:  1,
-  modeRuler: 2
+  modeRuler: 2,
+  
+  
+  tmp: 0
 }
 
 //references to some objects that are often used (will be set on init)
@@ -128,7 +140,8 @@ var select = {
   contourPointsLayer: null,
   extremalPointsLayer: null,
   
-  modehighlight: null //this item / group highlights the selected mode in ui
+  modehighlight: null, //this item / group highlights the selected mode in ui
   
   
+  tmp: 0
 }
