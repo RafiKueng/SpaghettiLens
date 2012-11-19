@@ -52,7 +52,7 @@ function calculateModel() {
     if ( ident == "cont") {
       dbg.write("got contour image url: " + data);
       var img = document.getElementById('glassimg');
-      img.setAttribute('src', '../'+data);
+      img.setAttribute('src', ''+data);
     }
     else if (ident=="stat") {
       dbg.write("got status: " + data);
@@ -72,7 +72,7 @@ function serializePoints(pnts) {
   out += "000" + $_GET.id;
   for (var i=1; i<pnts.length; i++) { //the first points is not needed, it's 0/0 anyways
     out += "|" + pnts[i].x/200.0 + ":" + pnts[i].y/200.0 + ":" + pnts[i].type;
-    //TODO make better scaling, add type attr. to point class
+    //TODO make better scaling
   }
   out += "|0.50:1.00";
   return out;
@@ -103,7 +103,7 @@ function openSocket(onopen_fn, onclose_fn, onmessage_fn) {
      sock.onopen = onopen_fn;
 
      sock.onclose = onclose_fn ? onclose_fn : function(e) {
-        dgb.write("Connection closed (wasClean = " + e.wasClean + ", code = " + e.code + ", reason = '" + e.reason + "')");
+        dbg.write("Connection closed (wasClean = " + e.wasClean + ", code = " + e.code + ", reason = '" + e.reason + "')");
         sock = null;
      }
 
