@@ -281,7 +281,8 @@ Point.prototype.removeSelf = function() {
 		this.isExpanded = false;
 	}
 	if (this.contour) {	//remove contour
-		
+		this.contour.remove();
+		this.contour = null;
 	}
 	
 	if (this.line) { //remove line
@@ -348,6 +349,26 @@ Point.prototype.paint = function() {
   }
 }
 
+
+Point.prototype.toJSON = function(){
+	return {
+		id: "pn",
+		idnr: this.idnr,
+		x: this.x,
+		y: this.y,
+		depth: this.depth,
+		
+		isRoot: this.isRoot,
+		isExpanded: this.isExpanded,
+		type: this.type,
+		wasType: this.wasType,
+		
+		child1: this.child1,
+		child2: this.child2,
+		
+		contour: this.contour
+	}
+}
 
 // static vars
 Point.counter = 0;

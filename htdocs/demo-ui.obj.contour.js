@@ -88,4 +88,29 @@ Contour.prototype.paint = function() {
 
 
 
+/**
+ * 
+ */
+Contour.prototype.remove = function() {
+	while (this.cpoints.length>0){
+		var elem = this.cpoints.shift();
+		elem.remove();
+	}
+	select.contourLinesLayer.removeChild(this.path);
+	this.path = null;
+}
+
+
+/**
+ *	define json representation 
+ */
+Contour.prototype.toJSON = function() {
+	return {
+		id: "cnt",
+		idnr: this.idnr,
+		cpnts: this.cpoints
+	}
+}
+
+
 Contour.counter = 0;

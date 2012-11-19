@@ -147,3 +147,14 @@ var select = {
   
   tmp: 0
 }
+
+
+/**
+ * how to stringify a model
+ */
+/*
+model.toJSON = function(){
+	return {
+		x: 5
+	}
+}*/

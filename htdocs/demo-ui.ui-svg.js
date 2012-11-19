@@ -110,7 +110,9 @@ function onClickBtn(evt) {
     break;
 
     case "ui_btn_undo":
-    alert("clicked on undo");
+    //alert("clicked on undo");
+    
+    testStringify();
     evt.stopPropagation();
     break;
 

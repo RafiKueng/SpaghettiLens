@@ -70,7 +70,7 @@ function createRootPoint(x,y) {
 	p.setType("min");
 	p.update();
 	++model.nSources;
-	model.Sources.push(p);
+	model.Sources.push({point: p});
 }
 
 /*
@@ -687,4 +687,50 @@ function toRectY(direction, distance) {
 
 function SVGtoPoint(circle) {
   return new Point(circle.getAttribute("cx"), circle.getAttribute("cy"));
+}
+
+function round(number, digits) {
+	var multiple = Math.pow(10, digits);
+	var rndedNum = Math.round(number * multiple) / multiple;
+	return rndedNum;
+}
+
+
+
+
+
+
+
+
+/***
+ * TESTERS
+ *  
+ */
+
+function testStringify() {
+  /*
+  var fnc = function(key, value) {
+  	if (key == "parent" || 
+  			key == "sibling" ||
+  			key == "circle" ||
+  			key == "line" ||
+  			key == "extpnt" ||
+  			key == "extpnt") {
+			return undefined;
+		}
+  	return value;
+  }*/
+	var str = JSON.stringify(model);
+	
+	dbg.write(str);
+	
+	var fnc2 = function(key, val) {
+		if (key=="Sources" || key=="point") {
+			var i = 0;
+		}
+		return val;
+	}
+	
+	var obj = JSON.parse(str, fnc2);
+	//dbg.write(obj);
 }
