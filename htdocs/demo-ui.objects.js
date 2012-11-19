@@ -47,7 +47,7 @@ function Point(x, y, parent) {
     this.isRoot = true;
   }
   this.isExpanded = false;
-  this.update();
+  //this.update();
 
   /*
    this.setType = function(type) {
@@ -87,19 +87,29 @@ function Point(x, y, parent) {
 }
 
 Point.prototype.update = function() {
+	this.updateCoord();
+	this.updateType();
+	this.paint();
+}
+
+/**
+ * repaint all children 
+ */
+Point.prototype.updateAll = function() {
+	this.update();
+	if(this.isExpanded){
+		this.child1.updateAll();
+		this.child2.updateAll();
+	}
+}
+
+Point.prototype.updateCoord = function() {
   if (this.parent) {
     this.dx = this.parent.x - this.x;
     this.dy = this.parent.y - this.y;
     this.dr = Math.sqrt(this.dx * this.dx + this.dy * this.dy);
     this.dphi = Math.atan2(this.dy, this.dx);
-    
-    this.parent.updateType();
   }
-  else if (this.isExpanded) {
- 		this.updateType();
- 	}
-
-  this.paint();
 }
 
 
@@ -108,7 +118,9 @@ Point.prototype.update = function() {
  * recursive 
  */
 Point.prototype.updateType = function() {
-
+	
+	if (!this.isExpanded) {return;}
+	
   var c1 = this.child1;
   var c2 = this.child2;
 
@@ -148,7 +160,7 @@ Point.prototype.updateType = function() {
       oth_grp.updateType();
     }
     else {
-      oth_grp.sestType(this.wasType);
+      oth_grp.setType(this.wasType);
     }
   }
 
@@ -181,7 +193,7 @@ Point.prototype.updateType = function() {
 Point.prototype.setCoord = function(x, y) {
   this.x = x;
   this.y = y;
-  this.update();
+  this.updateCoord();
 }
 
 Point.prototype.setType = function(type) {
@@ -192,6 +204,10 @@ Point.prototype.setRoot = function(isRoot) {
 	this.isRoot = isRoot;
 } 
 
+/**
+ * returns the relative coordinates to pnt
+ * (used for creation of correct order for modelling backend)
+ */
 Point.prototype.getRelCoordTo = function(pnt) {
   var pnt = new Point(pnt.x - this.x, pnt.y - this.y);
   pnt.setType(this.type);
@@ -239,7 +255,7 @@ Point.prototype.setRelationship = function(parent, sibling, child1, child2) {
  * @param {Point} child2
  */
 Point.prototype.setChildren = function(child1, child2) {
-  if (chil1 && child2) {
+  if (child1 && child2) {
     this.child1 = child1;
     this.child2 = child2;
     child1.sibling = child2;
@@ -254,9 +270,16 @@ Point.prototype.setChildren = function(child1, child2) {
 
 /**
  *	Delete self
- * (remove all assosiated svg elements) 
+ * (recursivly remove all assosiated svg elements)
  */
 Point.prototype.removeSelf = function() {
+	if (this.isExpanded){
+		this.child1.removeSelf();
+		this.child2.removeSelf();
+		this.child1 = null;
+		this.child2 = null;
+		this.isExpanded = false;
+	}
 	if (this.contour) {	//remove contour
 		
 	}
@@ -268,6 +291,7 @@ Point.prototype.removeSelf = function() {
 	
 	if (this.circle) { //remove the circle
 		select.extremalPointsLayer.removeChild(this.circle);
+		this.circle = null;
 	}
 }
 
@@ -303,12 +327,13 @@ Point.prototype.paint = function() {
   }
   this.circle.setAttribute("fill", color);
 
-  if (settings.paintContour) {
-    if (!this.contour) {
-      //create contour
-    }
-    //update contour
-  }
+	if (!this.isRoot) {
+	  if (!this.contour) {
+	    this.contour = new Contour(this) //create contour
+	    this.contour.create();
+	  }
+	  this.contour.paint();
+	}
 
   if (settings.paintConnectingLines && !this.isRoot) {
     if (!this.line) {

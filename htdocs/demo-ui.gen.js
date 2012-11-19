@@ -98,8 +98,10 @@ var settings = {
   mode: 0, // the current operating mode: 0:img mode, 1: pointmass mode, 2: ruler mode
 
   paintContour: true,
+  paintContourPoints: true,
   paintConnectingLines: true,
 
+	nPointsPerContour: 8, //how many points does one contour initially have
 
 	tmp: 0
 }

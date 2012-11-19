@@ -4,6 +4,8 @@
   
   <script type="text/javascript" src="demo-ui.gen.js"></script>
   <script type="text/javascript" src="demo-ui.objects.js"></script>
+  <script type="text/javascript" src="demo-ui.obj.contour.js"></script>
+  <script type="text/javascript" src="demo-ui.obj.contourPoint.js"></script>
 
   <script type="text/javascript" src="demo-ui.intel.js"></script>
   <script type="text/javascript" src="demo-ui.com.js"></script>

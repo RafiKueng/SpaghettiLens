@@ -135,6 +135,7 @@ function onClickBtn(evt) {
 function onClickSVG(evt){
   var target = evt.target;
   var parent = evt.target.parentElement;
+  var pnt = target.pnt;
   //alert("click on svg: " + target.id);
   
   
@@ -144,18 +145,20 @@ function onClickSVG(evt){
       // doubleclick on background
       //if (target.id=="ui.svg_layer" && evt.detail>=2) {
       if (target.id=="bg" && evt.detail>=2) {
-        var pnt = coordTrans(evt);
-        var parent = document.getElementById("layer2");
-        var newgroup = createGroup(parent, parseInt(pnt.x.toFixed(0)), parseInt(pnt.y.toFixed(0)), true);
-        parent.appendChild(newgroup);
+        
+        var svgpnt = coordTrans(evt);
+        //var parent = document.getElementById("layer2");
+        //var newgroup = createGroup(parent, parseInt(pnt.x.toFixed(0)), parseInt(pnt.y.toFixed(0)), true);
+        //parent.appendChild(newgroup);
+        createRootPoint(svgpnt.x, svgpnt.y);
       }
       else if (evt.detail>=2 && target.id.substring(0,5)=="point"){
         //alert("doubleclick on " + target.id);
-        if (parent.isExpanded) {
-          collapsePoint(parent);
+        if (pnt.isExpanded) {
+          collapsePoint(pnt);
         }
         else {
-          expandPoint(parent);
+          expandPoint(pnt);
         }
       }
     break;
@@ -181,6 +184,7 @@ function onClickSVG(evt){
 }
 
 var dragTarget = false;
+var dragTargetStr = "";
 var x_start;
 var y_start;
 
@@ -188,7 +192,8 @@ function onMouseDownContours(evt) {
   //var target = evt.target;
   
   //start moving
-  if (evt.target.id.substring(0,5)=="point") {
+  dragTargetStr = evt.target.id.substring(0,4)
+  if (dragTargetStr=="poin" || dragTargetStr=="cpnt") {
     dragTarget = evt.target;
   }
 
@@ -206,18 +211,20 @@ function onMouseUpContours(evt) {
 
 function onMouseMove(evt) {
   
-  var log = document.getElementById("debug.log");
   var p1 =  coordTrans(evt);
-  //var p2 = localCoordTrans(evt);
   var log = "move: target:"+evt.target.id+"; dragtrg:"+dragTarget.id+"; evt=" + evt.clientX + "," + evt.clientY
                 + "; regCT:" + p1.x.toFixed(1) + "," + p1.y.toFixed(1);
-                //+ "; locCT:" + p2.x + "," + p2.y;
   dbg.write(log);
 
   if (dragTarget) {
     var pnt = coordTrans(evt);
-    moveExtremalPoint(dragTarget, parseInt(pnt.x), parseInt(pnt.y));
-    //updateContourOf(dragTarget.parentElement);
+    if (dragTargetStr=="poin") {
+	    moveExtremalPoint(dragTarget.pnt, pnt.x, pnt.y);
+		}
+		else if (dragTargetStr=="cpnt") {
+			moveContourPoint(dragTarget.pnt, pnt.x, pnt.y);
+		}
+
   }
   evt.stopPropagation();
 
@@ -241,6 +248,8 @@ function coordTrans(evt) {
   p.x = evt.clientX;
   p.y = evt.clientY;
   p = p.matrixTransform(m.inverse());
+  p.x = Math.round(p.x);
+  p.y = Math.round(p.y);
 
   return p;
 }

@@ -28,7 +28,10 @@ var pointnr = 0;
  *
  *	@param {Point} pointToExpand 
  */
-function expandPoint2(pointToExpand) {
+function expandPoint(pointToExpand) {
+	
+	var dx = 50;
+	var dy = 50;
 	
 	//claculate the new coordinates of the spawned points
   var p1x = pointToExpand.x + dx / (pointToExpand.depth / 3 + 1);
@@ -36,21 +39,26 @@ function expandPoint2(pointToExpand) {
   var pny = pointToExpand.y + dy / (pointToExpand.depth / 3 + 1);
 
 	//create the points
-	var child1 = Point(p1x, pny, pointToExpand);
-	var child2 = Point(p2x, pny, pointToExpand);
+	var child1 = new Point(p1x, pny, pointToExpand);
+	var child2 = new Point(p2x, pny, pointToExpand);
 
-	//
+	child1.updateCoord();
+	child2.updateCoord();	
+	
 	child1.depth = pointToExpand.depth+1;
 	child2.depth = pointToExpand.depth+1;
 	
 	child1.setType(pointToExpand.type);
 	child2.setType(pointToExpand.type);
-
+	
 	pointToExpand.wasType = pointToExpand.type;
 	pointToExpand.setType("sad");
 	
 	pointToExpand.setChildren(child1, child2);
-	
+
+	pointToExpand.update();
+	child1.update();
+	child2.update();	
 }
 
 /**
@@ -60,11 +68,12 @@ function createRootPoint(x,y) {
 	var p = new Point(x,y);
 	p.depth = 0;
 	p.setType("min");
+	p.update();
 	++model.nSources;
 	model.Sources.push(p);
 }
 
-
+/*
 function expandPoint(targetGroup) {
 
   var dx = 50;
@@ -99,7 +108,10 @@ function expandPoint(targetGroup) {
   circle.setAttribute("fill", "red");
   circle.setAttribute("class", "extremalpoint_sad");
 }
+*/
 
+
+/*
 function collapsePoint(targetGroup) {
   var kids = targetGroup.childNodes;
   var i = targetGroup.isRoot ? root_off : 0;
@@ -121,14 +133,24 @@ function collapsePoint(targetGroup) {
     circle.setAttribute("class", "extremalpoint_" + targetGroup.type);
   }
 }
+*/
 
 /**
- * this collapses a point 
+ * this collapses a point and all sub points
  */
-function collapsePoint2(pnt) {
+function collapsePoint(pnt) {
+	
 	if (pnt.isExpanded) {
 		pnt.child1.removeSelf();
+		pnt.child1 = null;
 		pnt.child2.removeSelf();
+		pnt.child2 = null;
+		pnt.isExpanded = false;
+		pnt.setType(pnt.wasType);
+		pnt.update();
+	}
+	else {
+		alert("error: this should never happend [@collapsePoint]");
 	}
 }
 
@@ -145,11 +167,18 @@ var ngroups = 0;
  * @param x
  * @param y 
  */
-function moveExtremalPoint2(pnt, x, y) {
-		pnt.setCoord(x,y);
+function moveExtremalPoint(pnt, x, y) {
+		pnt.setCoord(x,y); //TODO double updateCoord here..
+		pnt.update();
+		if (!pnt.isRoot){
+			pnt.parent.updateAll();
+		}
+		else {
+			pnt.updateAll();
+		}
 }
 
-
+/*
 function moveExtremalPoint(pnt, x, y) {
   var pGrp = pnt.parentElement;
   //parentGroup
@@ -194,7 +223,24 @@ function moveExtremalPoint(pnt, x, y) {
   }
 
 }
+*/
 
+
+
+/**
+ *	moves a contour point to new coordinates
+ * 
+ * @param {Point} pnt point to move
+ * @param x
+ * @param y 
+ */
+function moveContourPoint(cpnt, x, y) {
+		cpnt.updateCoord(x,y); //TODO double updateCoord here..
+		cpnt.extrpnt.paint();
+}
+
+
+/*
 function checkType(grp) {
   if (grp.isExpanded) {
     var ppnt = grp.pnt;
@@ -274,6 +320,7 @@ function checkType(grp) {
 
   }
 }
+*/
 
 /*
  func that checks whether the type of an extremalpoints has changed
@@ -324,6 +371,8 @@ function checkType(grp) {
  }
  */
 
+
+/*
 function createGroup(parent, x, y, isRoot) {
 
   //var x = parent.x + dx;
@@ -386,7 +435,11 @@ function createGroup(parent, x, y, isRoot) {
   return group;
 
 }
+*/
 
+
+
+/* OLD
 var n_cp = 8;
 //number of contour points (including saddle point) per contour
 var ncgroups = 0;
@@ -448,7 +501,11 @@ function createContour(grp) {
   updateContourOf(grp);
 
 }
+*/
 
+
+
+/* OLD
 function updateContourOf(grp) {
   var parent = grp.parentElement;
 
@@ -490,7 +547,9 @@ function updateContourOf(grp) {
   //close path
   path.setAttribute("d", pathstr);
 }
+*/
 
+/* OLD
 //returns the other subgroup
 function getOtherSiblingGrp(grp) {
   if (grp.nextSibling) {
@@ -504,6 +563,7 @@ function getOtherSiblingGrp(grp) {
     }
   }
 }
+*/
 
 /* recursive function returning all the points coordinates for ONE source
  relative to origin
@@ -514,41 +574,40 @@ function getOtherSiblingGrp(grp) {
  2. point closer
  3. saddle point
  */
-function getExtremaArray(grp, origin) {
+function getExtremaArray(pnt, origin) {
 
   var res = new Array();
-  if (grp.isExpanded) {
+  if (pnt.isExpanded) {
 
-    var ps = grp.pnt;
-    var j = (grp.isRoot) ? root_off : 0;
-    var p1 = grp.childNodes[g1_id + j];
-    var p2 = grp.childNodes[g2_id + j];
+    var ps = pnt;
+    var c1 = pnt.child1;
+    var c2 = pnt.child2;
 
-    var str = 'point: ' + grp.id + " " + ps.toString();
+    var str = 'point: ' + pnt.circle.id + " " + ps.toString();
     dbg.append(str);
-    dbg.append('point: ' + p1.id + " " + p1.pnt.toString());
-    dbg.append('point: ' + p2.id + " " + p2.pnt.toString());
+    dbg.append('point: ' + c1.circle.id + " " + c1.toString());
+    dbg.append('point: ' + c2.circle.id + " " + c2.toString());
 
 
     //maintain postorder traversal, nodes sortet by distance
     //if (ps.getDistTo(p1.pnt) < ps.getDistTo(p2.pnt)) {
-    if (p1.pnt.dr < p2.pnt.dr) {
-      var tmp = p1;
-      p1 = p2;
-      p2 = tmp;
+    if (c1.dr < c2.dr) {
+      var tmp = c1;
+      c1 = c2;
+      c2 = tmp;
     }
 
     var skiporigin = false;
     if (origin == null) {
-      origin = p2.pnt;
+      origin = c2;
       skiporigin = true;
-      var p2arr = getExtremaArray(p2, origin);
+      var p2arr = getExtremaArray(c2, origin);
       res = res.concat(p2arr);
     }
-    var p1arr = getExtremaArray(p1, origin);
+    var p1arr = getExtremaArray(c1, origin);
     res = res.concat(p1arr);
     if (!skiporigin) {
-      var p2arr = getExtremaArray(p2, origin);
+      var p2arr = getExtremaArray(c2, origin);
       res = res.concat(p2arr);
     }
     res = res.concat(new Array(ps.getRelCoordTo(origin)));
@@ -556,14 +615,9 @@ function getExtremaArray(grp, origin) {
   }
 
   else {
-    var pnt = null;
     if (origin == null) {
-      //pnt = SVGtoPoint(grp.childNodes[circ_id]);
-      pnt = grp.pnt;
     }
     else {
-      //pnt = SVGtoPoint(grp.childNodes[circ_id]);
-      pnt = grp.pnt;
       pnt = pnt.getRelCoordTo(origin);
     }
     res = Array(pnt);
@@ -573,13 +627,13 @@ function getExtremaArray(grp, origin) {
 
 }
 
-/*
- this starts the recursive function to get all the points from all the sources
- TODO only gets the 1st source
+/**
+ * this starts the recursive function to get all the points from all the sources
+ * TODO only gets the 1st source
  */
 function getPoints() {
   var root = document.getElementById("layer2");
-  var src1 = root.childNodes[0];
+  var src1 = model.Sources[0];
   dbg.clear();
   var res = new Array();
   if (src1) {
