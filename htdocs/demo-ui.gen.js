@@ -10,6 +10,7 @@
 var dbg; //the logging device
 var $_GET; //the passed (HTTP GET) arguments
 var model;
+var actionstack;
 
  
 /*
@@ -49,6 +50,8 @@ function onBodyInit() {
   
   //init the model
   model = new Model();
+  
+  actionstack = new ActionStack();
 }
 
 
@@ -106,6 +109,9 @@ var settings = {
   paintConnectingLines: true,
 
 	nPointsPerContour: 8, //how many points does one contour initially have
+
+	nUndoActions: 20, //how many actions can be undone?
+	nRedoActions: 20, //same for redo
 
 	tmp: 0
 }

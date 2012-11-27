@@ -58,12 +58,29 @@ function Point(x, y, depth, type) {
 }
 
 
+/**
+ * recursive initialisation of
+ *  1. this.child1
+ *  2. this.child2
+ *  3. this (aka this.contour aka this.cpnts) 
+ */
 Point.prototype.init = function(parent, sibling) {
+
+	if (this.isExpanded){ //if exists and true
+		this.child1.init(this,this.child2);
+		this.child2.init(this,this.child1);
+	}
+	else { //if not exists
+		this.isExpanded = false;
+	}
+
 
   if (parent) {
     this.parent = parent;
     this.isRoot = false;
-    this.contour = new Contour();
+    if (!this.contour){
+    	this.contour = new Contour();
+    }
     this.contour.init(this);
   }
   else {
@@ -72,8 +89,6 @@ Point.prototype.init = function(parent, sibling) {
   }
   
   if (sibling) {this.sibling=sibling;}
-
-  this.isExpanded = false;
 }
 
 
@@ -414,6 +429,15 @@ Point.createFromJSONObj = function(obj) {
 		p.child2.sibling = p.child1;
 		p.child1.parent = p;
 		p.child2.parent = p;
+	}
+	else {
+		p.child1 = null;
+		p.child2 = null;
+	}
+	
+	if(p.isRoot){
+		this.contour=null;
+		this.sibling=null;
 	}
 	
 	return p;

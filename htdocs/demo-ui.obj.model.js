@@ -37,11 +37,73 @@ Model.prototype.repaint = function() {
 }
 
 
+Model.prototype.remove = function() {
+	for (i = 0; i < this.Sources.length; ++i) {
+		this.Sources[i].collapse(false);
+	}
+}
+
+
+
+/**
+ * 
+ */
+Model.prototype.getStateAsString = function() {
+	return JSON.stringify(this);
+}
+
+
+/***********************************************
+ * Static methods
+ ***********************************************/
+
+
+/**
+ * 
+ */
+Model.getModelFormJSONString = function(str) {
+	
+	// helper fnc to convert the json object to actual object
+	var h_fnc = function(key, val) {
+		if (val instanceof Array) {
+			return val;
+		}
+		else if (typeof(val) == "object") {
+			switch (val.__type) {
+				case "extpnt":
+					var p = Point.createFromJSONObj(val);
+					return p;
+					break;
+				case "cpnt":
+					var cp = ContourPoint.createFromJSONObj(val);
+					return cp;
+					break;
+				case "contour":
+					var c = Contour.createFromJSONObj(val);
+					return c;
+					break;
+				case "model":
+					var m = Model.createFromJSONObj(val);
+					return m;
+					break;
+				default:
+					alert("Invalid object in json string..");
+			}
+		}
+		return val;
+	}
+	// END helper function
+	
+	var m = JSON.parse(str, h_fnc);	
+	return m;
+}
+
+
 /**
  * 
  * @param {Object} obj
  */
-Point.createFromJSONObj = function(obj) {
+Model.createFromJSONObj = function(obj) {
 	var m = new Model();
 	
 	for (var key in obj){
@@ -50,7 +112,7 @@ Point.createFromJSONObj = function(obj) {
 	}
 	
 	m.update();
+	m.repaint();
 	
 	return m;
-		
 };

@@ -68,7 +68,7 @@ function expandPoint(pointToExpand) {
 	child2.update();
 	*/
 	model.update();
-	model.repaint();	
+	model.repaint();
 }
 
 /**

@@ -112,7 +112,18 @@ function onClickBtn(evt) {
     case "ui_btn_undo":
     //alert("clicked on undo");
     
-    testStringify();
+    //testStringify();
+    var m = actionstack.undo();
+    if (m) { //if valid return value (a model from stack) 
+    	//delete old
+    	model.remove();
+    	//install new
+    	model = m;
+    	model.init();
+    	model.update();
+    	model.paint();
+    }
+    
     evt.stopPropagation();
     break;
 
@@ -138,6 +149,8 @@ function onClickSVG(evt){
   var target = evt.target;
   var parent = evt.target.parentElement;
   var pnt = target.pnt;
+  
+  var somethinghappend = false;
   //alert("click on svg: " + target.id);
   
   
@@ -153,17 +166,20 @@ function onClickSVG(evt){
         //var newgroup = createGroup(parent, parseInt(pnt.x.toFixed(0)), parseInt(pnt.y.toFixed(0)), true);
         //parent.appendChild(newgroup);
         createRootPoint(svgpnt.x, svgpnt.y);
+        somethinghappend = true;
       }
       else if (evt.detail>=2 && target.id.substring(0,5)=="point"){
         //alert("doubleclick on " + target.id);
         if (pnt.isExpanded) {
           collapsePoint(pnt);
+          somethinghappend = true;
         }
         else {
           expandPoint(pnt);
+          somethinghappend = true;
         }
       }
-    break;
+    	break;
       
     
     case constants.modeMass:
@@ -177,15 +193,25 @@ function onClickSVG(evt){
         var parent = document.getElementById("layer3");
         parent.removeChild(target);
       }
-    break;
+      somethinghappend = true;
+    	break;
     
     case constants.modeRuler:
       alert("clicked bg in ruler mode");
-    break;
+      somethinghappend = true;
+    	break;
+    	
+  	default:
+  		break;
+  }
+  //push the new model to the undo / action stack
+  if (somethinghappend) {
+  	actionstack.push(model);
   }
 }
 
 var dragTarget = false;
+var somethingDragged = false;
 var dragTargetStr = "";
 var x_start;
 var y_start;
@@ -208,6 +234,13 @@ function onMouseDownContours(evt) {
 
 function onMouseUpContours(evt) {
   //dragTarget.ownerSVGElement.removeEventListener('mousemove', onMouseMove, false);
+
+	//if something was dragged, then add new entry to actionstack
+	if (somethingDragged) {
+	  //push the new model to the undo / action stack
+	  actionstack.push(model);
+	}
+	somethingDragged = false;
   dragTarget = false;
 }
 
@@ -226,6 +259,7 @@ function onMouseMove(evt) {
 		else if (dragTargetStr=="cpnt") {
 			moveContourPoint(dragTarget.pnt, pnt.x, pnt.y);
 		}
+		somethingDragged = true;
 
   }
   evt.stopPropagation();

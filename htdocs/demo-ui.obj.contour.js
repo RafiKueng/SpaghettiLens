@@ -209,8 +209,8 @@ Contour.createFromJSONObj = function(obj) {
 	}
 	
 	// recreate path
-	c.createPathSVG();
+	//c.createPathSVG();
 
-	return p;
+	return c;
 		
 };
