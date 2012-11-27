@@ -33,32 +33,42 @@ function expandPoint(pointToExpand) {
 	var dx = 50;
 	var dy = 50;
 	
+	var p2e = pointToExpand;
+	
 	//claculate the new coordinates of the spawned points
-  var p1x = pointToExpand.x + dx / (pointToExpand.depth / 3 + 1);
-  var p2x = pointToExpand.x - dx / (pointToExpand.depth / 3 + 1);
-  var pny = pointToExpand.y + dy / (pointToExpand.depth / 3 + 1);
+  var p1x = p2e.x + dx / (p2e.depth / 3 + 1);
+  var p2x = p2e.x - dx / (p2e.depth / 3 + 1);
+  var pny = p2e.y + dy / (p2e.depth / 3 + 1);
 
 	//create the points
-	var child1 = new Point(p1x, pny, pointToExpand);
-	var child2 = new Point(p2x, pny, pointToExpand);
+	var child1 = new Point(p1x, pny, p2e.depth+1, p2e.type);
+	var child2 = new Point(p2x, pny, p2e.depth+1, p2e.type);
+
+	child1.init(p2e, child2);
+	child2.init(p2e, child1);
 
 	child1.updateCoord();
 	child2.updateCoord();	
-	
-	child1.depth = pointToExpand.depth+1;
-	child2.depth = pointToExpand.depth+1;
-	
-	child1.setType(pointToExpand.type);
-	child2.setType(pointToExpand.type);
 	
 	pointToExpand.wasType = pointToExpand.type;
 	pointToExpand.setType("sad");
 	
 	pointToExpand.setChildren(child1, child2);
 
+	/* will be done in childs init
+	child1.contour = new Contour();
+	child1.contour.init(child1);
+	child2.contour = new Contour();
+	child2.contour.init(child2);
+	*/
+	
+	/*
 	pointToExpand.update();
 	child1.update();
-	child2.update();	
+	child2.update();
+	*/
+	model.update();
+	model.repaint();	
 }
 
 /**
@@ -66,11 +76,13 @@ function expandPoint(pointToExpand) {
  */
 function createRootPoint(x,y) {
 	var p = new Point(x,y);
+	p.init();
 	p.depth = 0;
 	p.setType("min");
 	p.update();
-	++model.nSources;
-	model.Sources.push({point: p});
+	++model.NrOf.Sources;
+	model.Sources.push(p);
+	model.repaint();
 }
 
 /*
@@ -140,18 +152,11 @@ function collapsePoint(targetGroup) {
  */
 function collapsePoint(pnt) {
 	
-	if (pnt.isExpanded) {
-		pnt.child1.removeSelf();
-		pnt.child1 = null;
-		pnt.child2.removeSelf();
-		pnt.child2 = null;
-		pnt.isExpanded = false;
-		pnt.setType(pnt.wasType);
-		pnt.update();
-	}
-	else {
-		alert("error: this should never happend [@collapsePoint]");
-	}
+	pnt.collapse(true);
+	
+	//update is not needed here
+	//model.update();
+	model.repaint();
 }
 
 
@@ -169,13 +174,16 @@ var ngroups = 0;
  */
 function moveExtremalPoint(pnt, x, y) {
 		pnt.setCoord(x,y); //TODO double updateCoord here..
-		pnt.update();
+		model.update();
+		model.repaint();
+		/*
 		if (!pnt.isRoot){
 			pnt.parent.updateAll();
 		}
 		else {
 			pnt.updateAll();
 		}
+		*/
 }
 
 /*
@@ -236,7 +244,9 @@ function moveExtremalPoint(pnt, x, y) {
  */
 function moveContourPoint(cpnt, x, y) {
 		cpnt.updateCoord(x,y); //TODO double updateCoord here..
-		cpnt.extrpnt.paint();
+		//cpnt.extrpnt.paint();
+		model.update();
+		model.repaint();
 }
 
 
@@ -725,12 +735,30 @@ function testStringify() {
 	dbg.write(str);
 	
 	var fnc2 = function(key, val) {
-		if (key=="Sources" || key=="point") {
-			var i = 0;
+		if (val instanceof Array) {
+			return val;
+		}
+		else if (typeof(val) == "object") {
+			switch (val.__type) {
+				case "extpnt":
+					var p = Point.createFromJSONObj(val);
+					return p;
+					break;
+				case "cpnt":
+					break;
+				case "contour":
+					break;
+				case "model":
+					return val;
+					break;
+				default:
+					alert("Invalid object in json string..");
+			}
 		}
 		return val;
 	}
 	
 	var obj = JSON.parse(str, fnc2);
+	var tmp = 0;
 	//dbg.write(obj);
 }

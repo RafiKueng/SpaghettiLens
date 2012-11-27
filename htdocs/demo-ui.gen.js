@@ -9,6 +9,7 @@
 */
 var dbg; //the logging device
 var $_GET; //the passed (HTTP GET) arguments
+var model;
 
  
 /*
@@ -45,6 +46,9 @@ function onBodyInit() {
   }
   
   getBGImageUrls($_GET.id);
+  
+  //init the model
+  model = new Model();
 }
 
 
@@ -106,18 +110,7 @@ var settings = {
 	tmp: 0
 }
 
-/*
-  this saves all the relevant modelling parameters with default values
-*/
-var model = {
-  nSources: 0, // how many sources are modelled? (equals the number of contour groups)
-  Sources: new Array(), //this contains all the modeled sources (of length nSources)
 
-  MinMmaxSwitchAngle: Math.PI / 3. , //limit angle between two children, when the children will switch to different type (min/min to min/max; max/max to min/max)
-  
-  
-  tmp: 0
-}
 
 // some application constants
 var constants = {
