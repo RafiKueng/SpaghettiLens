@@ -88,7 +88,7 @@ Contour.prototype.createSVG = function() {
   this.path.setAttribute("id", "cpath" + this.idnr);
   this.path.setAttribute("class", "contourpath");
   this.path.setAttribute("d", "");
-  this.path.setAttribute("style", "stroke: blue; fill: none; stroke-width: 1");
+  //this.path.setAttribute("style", "stroke: blue; fill: none; stroke-width: 1");
 
 	select.contourLinesLayer.appendChild(this.path);
 }
@@ -142,10 +142,10 @@ Contour.prototype.paint = function() {
 	
 	//TODO: better use css for formating and change class / name
 	if (settings.paintContour){
-		this.path.setAttribute("style", "stroke: blue; fill: none; stroke-width: 1");
+		this.path.setAttribute("class", "contourpath");
 	}
 	else {
-		this.path.setAttribute("style", "stroke: blue; fill: none; stroke-width: 0");
+		this.path.setAttribute("class", "invisible");
 	}
 }
 

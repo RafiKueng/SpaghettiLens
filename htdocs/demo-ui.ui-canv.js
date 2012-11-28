@@ -9,7 +9,7 @@
 function loadImage(uri) {
   //var uri = "hubble-udf.jpg" //later get this message from backend
   
-  var canvas = document.getElementById('ui_canvas_layer');
+  var canvas = document.getElementById('ui_bg_canvas');
   var ctx = canvas.getContext('2d');
   var img = new Image;
   img.onload = function(){ //play save, wait with draw till fully loaded

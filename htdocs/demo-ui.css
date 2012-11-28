@@ -2,8 +2,8 @@
 
 /* this is the div containing the ui layers */
 #ui_area {
-  width:750px;
-  height: 400px;
+  width: 1200px;
+  height: 600px;
   margin: 1em auto;
   text-align: left;
   border: 1px solid black;
@@ -12,7 +12,7 @@
 
 
 /* this is the foreground layer */
-#ui_svg_layer {
+#ui_svg {
   position: relative;
   left: 0;
   top: 0;
@@ -20,13 +20,20 @@
 }
 
 /* this represents the background layer */
-#ui_canvas_layer {
+#ui_bg_canvas {
   position: relative;
   left: 0;
-  top: -406px;
+  top: -606px;
   z-index: 0;
   /*display: hide;*/
   /*background-color: yellow;*/
+}
+
+#ui_img_canvas {
+  position: relative;
+  left: 600px;
+  top: -606px;
+  z-index: 0;
 }
 
 /* this is the debug console */
@@ -35,4 +42,44 @@
   background-color: #CCCCFF;
   font-family : "courier new",courier,monospace;
   font-size : 80%;
+}
+
+
+
+/* SVG elements */
+.extremalpoint_min {
+	fill: green;
+}
+
+.extremalpoint_max {
+	fill: blue;
+}
+
+.extremalpoint_sad {
+	fill: yellow;
+}
+
+.contourpoint {
+	fill: #555555;
+}
+
+.connectorline {
+	stroke: #555555;
+	stroke-width:1;
+}
+
+.contourpath {
+	stroke: #555555;
+	fill: none;
+	stroke-width: 1;
+}
+
+/* use this class for elements that are not displayed */
+.invisible {
+	visibility: hidden;
+}
+
+.xxdobtn {
+	fill: #3333ff;
+	fill-opacity:0.5;
 }

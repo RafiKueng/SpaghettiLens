@@ -15,7 +15,8 @@ var selectedPoint = false;
  
 function initUI() {
   
-  root = document.getElementById("ui.svg_layer");
+  //root = document.getElementById("ui.svg_layer");
+  root = $sel.svg; 
   
   //alert("initUI");
   var element = document.getElementById("ui.svg.settings_menu");
@@ -128,7 +129,14 @@ function onClickBtn(evt) {
     break;
 
     case "ui_btn_redo":
-    alert("clicked on redo");
+    var m = actionstack.redo();
+    if (m) { //if valid return value (a model from stack) 
+    	//delete old
+    	model.remove();
+    	//install new
+    	model = m;
+    }
+    
     evt.stopPropagation();
     break;
     
@@ -278,8 +286,9 @@ function coordTrans(evt) {
 
   var m = evt.target.getScreenCTM();
 
-  var root = document.getElementById("ui_svg_layer");
-  var p = root.createSVGPoint(); 
+  //var root = document.getElementById("ui_svg");
+  //var p = root.createSVGPoint(); 
+  var p = $sel.svg.createSVGPoint(); 
 
   p.x = evt.clientX;
   p.y = evt.clientY;
@@ -294,8 +303,9 @@ function localCoordTrans(evt) {
 
   var m = evt.target.parentElement.getScreenCTM();
 
-  var root = document.getElementById("ui.svg_layer");
-  var p = root.createSVGPoint(); 
+  //var root = document.getElementById("ui.svg_layer");
+  //var p = root.createSVGPoint(); 
+  var p = $sel.svg.createSVGPoint(); 
 
   p.x = evt.clientX;
   p.y = evt.clientY;

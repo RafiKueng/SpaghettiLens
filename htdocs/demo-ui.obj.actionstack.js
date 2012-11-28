@@ -68,32 +68,46 @@ ActionStack.prototype.push = function(model) {
 		this.tail = this.tail.next;
 		this.undoSize--;
 	}
+	
+	this.updateUIBtn();
 }
 
 
 
 ActionStack.prototype.undo = function() {
+	
+	var ret;
+	
 	//if (this.nUndoActionsPossible()>0) {
 	if (this.undoSize>0 && this.current.prev) {
 		//var state = this.current;
 		this.current = this.current.prev;
 		this.redoSize++;
 		this.undoSize--;
-		return this.current.getModel();
+		ret = this.current.getModel();
 	}
-	else {return null;}
+	else {ret = null;}
+	
+	this.updateUIBtn();
+	
+	return ret;
 }
 
 
 
 ActionStack.prototype.redo = function() {
+	var ret;
 	if (this.redoSize>0 && this.current.next) {
 		this.current = this.current.next;
 		this.redoSize--;
 		this.undoSize++;
-		return this.current.getModel();
+		ret = this.current.getModel();
 	}
-	else {return null;} 
+	else {ret = null;}
+	
+	this.updateUIBtn();
+	
+	return ret;
 }
 
 
@@ -114,6 +128,25 @@ ActionStack.prototype.nRedoActionsPossible = function() {
 }
 
 
+
+/**
+ * This updates the display of the accoring UI buttons
+ */
+ActionStack.prototype.updateUIBtn = function() {
+	
+	if (this.nUndoActionsPossible()>1) {
+		$sel.undoBtn.setAttribute("class", "xxdobtn");
+	}
+	else {
+		$sel.undoBtn.setAttribute("class", "invisible");
+	}
+	if (this.nRedoActionsPossible()>0) {
+		$sel.redoBtn.setAttribute("class", "xxdobtn");
+	}
+	else {
+		$sel.redoBtn.setAttribute("class", "invisible");
+	}
+}
 
 
 

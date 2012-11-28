@@ -351,18 +351,6 @@ Point.prototype.paint = function() {
   this.circle.setAttribute("cy", this.y);
 	this.circle.setAttribute("class", "extremalpoint_" + this.type);
 	
-  //TODO get rid of this later and use css for styling
-  var color = "";
-  if (this.type == "sad") {
-    color = "red";
-  }
-  else if (this.type == "min") {
-    color = "green";
-  }
-  else {
-    color = "blue";
-  }
-  this.circle.setAttribute("fill", color);
 
 	//recursion: paint children
 	if (this.isExpanded) {
@@ -382,7 +370,7 @@ Point.prototype.paint = function() {
   if (settings.paintConnectingLines && !this.isRoot) {
     if (!this.line) {
       this.line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      this.line.setAttribute("style", "stroke:rgb(0,0,0);stroke-width:1");
+      this.line.setAttribute("class", "connectorline");
       select.connectiorLinesLayer.appendChild(this.line);
     }
     this.line.setAttribute("x1", this.x);

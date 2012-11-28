@@ -55,7 +55,7 @@ ContourPoint.prototype.createSVG = function() {
 		this.circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
 	  this.circle.setAttribute("class", "contourpoint");
 	  this.circle.setAttribute("r", 5);
-	  this.circle.setAttribute("fill", "black");
+	  //this.circle.setAttribute("fill", "black");
 	  this.circle.setAttribute("id", "cpnt" + (this.idnr));
 	  
 	  this.circle.pnt = this;
@@ -113,7 +113,6 @@ ContourPoint.prototype.paint = function() {
   this.circle.setAttribute("cx", this.x);
   this.circle.setAttribute("cy", this.y);
   
-  //TODO use better vraiant: css...
 	if (settings.paintContourPoints) {
 	  this.circle.setAttribute("r", 5);
 	}
@@ -121,23 +120,15 @@ ContourPoint.prototype.paint = function() {
 	  this.circle.setAttribute("r", 0);
 	}
 	*/
-	if (settings.paintContourPoints && this.circle) {
-		this.updateSVG();
-	}
-	else if (settings.paintContourPoints && !this.circle) {
+	
+	if (!this.circle) {
 		this.createSVG();
-		this.updateSVG();
 	}
-	else if (!settings.paintContourPoints && this.circle) {
-		this.deleteSVG();
-	}
-	else if (!settings.paintContourPoints && !this.circle) {
-		//nothing to do
-	}
-	else {
-		alert("strange error in Contour.paint");
-	}
-}
+	this.updateSVG();
+	
+	this.circle.setAttribute("class",
+		settings.paintContourPoints ? "contourpoint" : "invisible" );
+ }
 
 
 /**

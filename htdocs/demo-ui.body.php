@@ -12,10 +12,15 @@ echo file_get_contents('demo-ui.svg', NULL, NULL, 55); //skip the first line wit
 <!-- \ end in svg, cut first line-->
 
 <!-- / include canvas -->
-<canvas id="ui_canvas_layer" width="750" height="400">
+<canvas id="ui_bg_canvas" width="600" height="600">
   your browser doesn't support canvases
 </canvas>
 <!-- \ end include canvas -->
+
+<canvas id="ui_img_canvas" width="600" height="600">
+  your browser doesn't support canvases
+</canvas>
+
 
 </div>
 <div id="console">
