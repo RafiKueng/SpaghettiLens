@@ -9,14 +9,14 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="750"
-   height="400"
-   id="ui_svg_layer"
+   width="600"
+   height="600"
+   id="ui_svg"
    version="1.1"
    inkscape:version="0.48.0 r9654"
    sodipodi:docname="demo-ui.svg"
    onclick="onClickSVG(evt);"
-   viewBox="0 0 750 400"
+   viewBox="0 0 600 600"
    onmousemove="onMouseMove(evt);">
   <defs
      id="defs4" />
@@ -27,11 +27,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="260.61987"
-     inkscape:cy="234.38417"
+     inkscape:zoom="2.8"
+     inkscape:cx="423.85014"
+     inkscape:cy="593.95072"
      inkscape:document-units="px"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer1"
      showgrid="true"
      borderlayer="true"
      inkscape:window-width="1920"
@@ -39,7 +39,8 @@
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     showguides="false">
+     showguides="false"
+     inkscape:snap-grids="true">
     <inkscape:grid
        type="xygrid"
        id="grid2985"
@@ -80,12 +81,12 @@
     </rdf:RDF>
   </metadata>
   <rect
-     style="fill:#000000;fill-opacity:0.00392157;stroke:#000000;stroke-width:0.96314263;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     style="fill:#000000;fill-opacity:0.00392157;stroke:#000000;stroke-width:1.05506992;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
      id="bg"
-     width="750"
-     height="400"
-     x="-1.1768364e-014"
-     y="-2.3829178e-015" />
+     width="600"
+     height="600"
+     x="0"
+     y="0" />
   <g
      inkscape:groupmode="layer"
      id="layer4"
@@ -121,40 +122,9 @@
      inkscape:label="UI"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-652.36218)"
      onclick="onClickUI(evt);">
-    <path
-       sodipodi:type="arc"
-       style="fill:#ffff00;fill-opacity:0.55769228;stroke:none"
-       id="ui_modehighlight"
-       sodipodi:cx="720"
-       sodipodi:cy="45"
-       sodipodi:rx="20"
-       sodipodi:ry="5"
-       d="m 740,45 c 0,2.761424 -8.95431,5 -20,5 -11.04569,0 -20,-2.238576 -20,-5 0,-2.761424 8.95431,-5 20,-5 11.04569,0 20,2.238576 20,5 z"
-       transform="translate(0,652.36218)" />
-    <path
-       sodipodi:type="star"
-       style="fill:#000000;fill-opacity:0.32156863;stroke:#000000;stroke-width:0.71736842;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       id="ui_massMode"
-       sodipodi:sides="5"
-       sodipodi:cx="420"
-       sodipodi:cy="30"
-       sodipodi:r1="14.142136"
-       sodipodi:r2="7.0710678"
-       sodipodi:arg1="0.78539816"
-       sodipodi:arg2="1.4137167"
-       inkscape:flatsided="false"
-       inkscape:rounded="0"
-       inkscape:randomized="0"
-       d="m 430,40 -8.89384,-3.015989 -7.52656,5.616724 0.12003,-9.390537 -7.66765,-5.422515 L 415,25 l 2.78768,-8.968022 5.42252,7.667654 9.39054,-0.120027 -5.61673,7.526554 z"
-       inkscape:transform-center-x="1.0228863"
-       inkscape:transform-center-y="-0.88784806"
-       transform="matrix(1.4962554,0,0,1.2987027,40.999691,639.23201)"
-       onclick="onClickBtn(evt);" />
     <g
-       id="ui_rulerMode"
-       transform="matrix(1,0,0,0.54059101,-102.50483,309.36266)"
+       id="g3871"
        onclick="onClickBtn(evt);">
       <path
          transform="matrix(0.32679987,-0.05642789,-0.02545677,0.38204216,795.88018,626.49438)"
@@ -197,15 +167,10 @@
          d="m 732.87653,675.13776 -0.38185,5.73063"
          style="fill:none;stroke:#000000;stroke-width:1.57224286;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     </g>
-    <path
-       style="fill:#000000;fill-opacity:0.32156863;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 701.08205,667.26324 7.6,25 30.4,-10 -11.4,-20 z"
-       id="ui_imgMode"
-       inkscape:connector-curvature="0"
-       onclick="onClickBtn(evt);" />
     <g
        id="ui_btn_go"
-       onclick="onClickBtn(evt);">
+       onclick="onClickBtn(evt);"
+       transform="translate(-150,-452.36218)">
       <rect
          style="fill:#000080;fill-opacity:0.72307691;stroke:#000000;stroke-width:0.79432511;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
          id="m1_btn1-1"
@@ -227,15 +192,13 @@
            sodipodi:role="line">GO</tspan></text>
     </g>
     <path
-       style="fill:#0000ff;fill-opacity:0.32156863;stroke:#000000;stroke-width:0.57735026px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 20,669.02885 15,0 0,13.33333 -15,0 0,6.66667 -15,-13.33334 15,-13.33333 0,6.66667"
+       d="m 30,20 15,0 0,13.33333 -15,0 L 30,40 15,26.66666 30,13.33333 30,20"
        id="ui_btn_undo"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccccccc"
        onclick="onClickBtn(evt);" />
     <path
-       style="fill:#000000;fill-opacity:0.32156863;stroke:#000000;stroke-width:0.57735026px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 60,682.36218 -15,0 0,-13.33333 15,0 0,-6.66667 14.99999,13.33334 L 60,689.02885 l 0,-6.66667"
+       d="m 70,33.33333 -15,0 L 55,20 70,20 70,13.33333 84.99999,26.66667 70,40 70,33.33333"
        id="ui_btn_redo"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccccccc"
@@ -246,7 +209,8 @@
        onmouseout="mouseOut(evt);"
        visability="hover"
        translate_vect_out="(0,0)"
-       translate_vect_over="(90,0)">
+       translate_vect_over="(90,0)"
+       transform="translate(-41.111115,-532.36218)">
       <text
          transform="matrix(0,-1,1,0,0,0)"
          sodipodi:linespacing="125%"
@@ -289,6 +253,53 @@
          width="58.888885"
          id="m1_btn3"
          style="fill:none;stroke:#000000;stroke-width:0.79432511;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         onclick="onClickBtn(evt);" />
+    </g>
+    <g
+       id="menu_top_right"
+       transform="translate(600,0)">
+      <path
+         sodipodi:open="true"
+         sodipodi:end="6.2774738"
+         sodipodi:start="0"
+         d="m 0,35 a 20,5 0 1 1 -3.2621226e-4,-0.02856"
+         sodipodi:ry="5"
+         sodipodi:rx="20"
+         sodipodi:cy="35"
+         sodipodi:cx="-20"
+         id="ui_modehighlight"
+         style="fill:#ffff00;fill-opacity:0.6;stroke:none"
+         sodipodi:type="arc" />
+      <path
+         onclick="onClickBtn(evt);"
+         inkscape:connector-curvature="0"
+         id="ui_imgMode"
+         d="M -38.60219,8.1728614 -35.4,30.714281 l 30.3999997,-10 L -16.4,0.71428514 z"
+         style="fill:#000000;fill-opacity:0.32156863;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         sodipodi:nodetypes="ccccc" />
+      <path
+         inkscape:transform-center-y="-0.22189409"
+         inkscape:transform-center-x="1.6092943"
+         d="m -56.071427,31.42857 -12.876996,-4.304499 -8.696629,10.426618 0.114612,-13.576914 -12.603709,-5.048983 12.947829,-4.086495 0.907108,-13.5470615 7.887587,11.0513215 13.164333,-3.3235616 -8.073032,10.9165876 z"
+         inkscape:randomized="0"
+         inkscape:rounded="0"
+         inkscape:flatsided="false"
+         sodipodi:arg2="1.2942878"
+         sodipodi:arg1="0.66596924"
+         sodipodi:r2="7.7766132"
+         sodipodi:r1="19.076242"
+         sodipodi:cy="19.642857"
+         sodipodi:cx="-71.071426"
+         sodipodi:sides="5"
+         id="ui_massMode"
+         style="fill:#000000;fill-opacity:0.32156863;stroke:#000000;stroke-opacity:1"
+         sodipodi:type="star"
+         onclick="onClickBtn(evt);" />
+      <path
+         inkscape:connector-curvature="0"
+         id="ui_rulerMode"
+         d="m -137.75955,26.359623 7.95495,6.187184 27.14785,-17.172593 -6.9448,-6.3134533 3.78807,3.4092643 -6.69226,4.16688 -2.14657,-2.399113 2.52538,2.272844 -5.3033,3.409265 -2.52538,-2.399113 2.77791,2.399113 -5.6821,3.156726 -2.27285,-2.146574 2.52538,2.146574 -5.05076,3.282996 -2.39911,-1.894036 2.14657,1.894036 -5.6821,2.904189 z"
+         style="fill:#000000;fill-opacity:0.32156863;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          onclick="onClickBtn(evt);" />
     </g>
   </g>

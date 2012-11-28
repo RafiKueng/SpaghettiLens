@@ -6,6 +6,8 @@
   <script type="text/javascript" src="demo-ui.objects.js"></script>
   <script type="text/javascript" src="demo-ui.obj.contour.js"></script>
   <script type="text/javascript" src="demo-ui.obj.contourPoint.js"></script>
+  <script type="text/javascript" src="demo-ui.obj.model.js"></script>
+  <script type="text/javascript" src="demo-ui.obj.actionstack.js"></script>
 
   <script type="text/javascript" src="demo-ui.intel.js"></script>
   <script type="text/javascript" src="demo-ui.com.js"></script>

@@ -38,7 +38,7 @@ class GlassSettings(object):
     s = self
     out = """
 import matplotlib as mpl
-mpl.use('Agg') #make plots on headless server 
+#mpl.use('Agg') #make plots on headless server 
 #import matplotlib.pyplot as pl
 import pylab as pl
 

@@ -1,11 +1,9 @@
 /*
-demo-ui.objects.js script file
-
-contains all the objects and definitions
+XXX.obj.ExtremalPoint.js script file
 */
 
 /*****************************************************************************
- Point
+ ExtremalPoint
  @class represents an extremalpoint
 
  x,y:    abs. coordinates
@@ -31,77 +29,110 @@ contains all the objects and definitions
  *  @param {Number} y the y coordinate
  * 	@param {Object} [parent=None] the parent object
  */
-function Point(x, y, parent) {
+function Point(x, y, depth, type) {
 	
-	this.idnr = ++Point.counter;
+	this.idnr = model.NrOf.ExtremalPoints++;
 	
   this.x = parseInt(x) || 0;
   this.y = parseInt(y) || 0;
 
+	this.depth = depth;
+
+	this.type = type;
+	this.wasType = "";
+
+  this.isRoot = true;	//will be set by init
+  this.isExpanded = false;	//will be set by init
+	
+  this.parent = null;	//will be set by init
+	this.child1 = null;
+	this.child2 = null;
+	this.sibling = null;
+	
+	this.contour = null;
+	
+	//the svg objects references
+	this.line = null;
+	this.circle = null;
+	
+}
+
+
+/**
+ * recursive initialisation of
+ *  1. this.child1
+ *  2. this.child2
+ *  3. this (aka this.contour aka this.cpnts) 
+ */
+Point.prototype.init = function(parent, sibling) {
+
+	if (this.isExpanded){ //if exists and true
+		this.child1.init(this,this.child2);
+		this.child2.init(this,this.child1);
+	}
+	else { //if not exists
+		this.isExpanded = false;
+	}
+
+
   if (parent) {
     this.parent = parent;
     this.isRoot = false;
+    if (!this.contour){
+    	this.contour = new Contour();
+    }
+    this.contour.init(this);
   }
   else {
     this.parent = null;
     this.isRoot = true;
   }
-  this.isExpanded = false;
-  //this.update();
-
-  /*
-   this.setType = function(type) {
-   this.type = type;
-   };
-
-   this.switchType = function() {
-   if (this.type!='sad') {
-   this.type = this.type=='min' ? 'max' : 'min';
-   }
-   };
-
-   this.getDistTo = function(pnt) {
-   var x = this.x-pnt.x;
-   var y = this.y-pnt.y;
-
-   return Math.sqrt(x*x + y*y);
-   };
-
-   this.getRelCoordTo = function(pnt) {
-   var pnt = new Point( pnt.x-this.x, pnt.y - this.y);
-   pnt.setType(this.type);
-   return pnt;
-   };
-
-   this.getAngleTo = function (pnt) {
-   var dx = this.x-pnt.x;
-   var dy = this.y-pnt.y;
-   return Math.atan2(dy, dx);
-   }
-
-   this.toString = function() {
-   var txt = "[x:" + this.x + " y:" + this.y + "]";
-   return txt;
-   };
-   */
+  
+  if (sibling) {this.sibling=sibling;}
 }
 
+
+/**
+ * repaint all children 
+ */
+Point.prototype.update = function() {
+	
+	this.updateCoord(); //update this coordinates
+	if(this.isExpanded){ //and recursivly all the children
+		this.child1.update();
+		this.child2.update();
+	}
+	this.updateType() //updates recusivly the type of this points children
+	
+	if (this.contour) { //update this.contour
+		this.contour.update();
+	}
+}
+
+
+/*
 Point.prototype.update = function() {
 	this.updateCoord();
 	this.updateType();
 	this.paint();
 }
+*/
 
 /**
  * repaint all children 
  */
+/*
 Point.prototype.updateAll = function() {
 	this.update();
 	if(this.isExpanded){
 		this.child1.updateAll();
 		this.child2.updateAll();
 	}
+	if (this.contour) {
+		this.contour.update();
+	}
 }
+*/
 
 Point.prototype.updateCoord = function() {
   if (this.parent) {
@@ -193,7 +224,7 @@ Point.prototype.updateType = function() {
 Point.prototype.setCoord = function(x, y) {
   this.x = x;
   this.y = y;
-  this.updateCoord();
+  //this.updateCoord();
 }
 
 Point.prototype.setType = function(type) {
@@ -271,28 +302,33 @@ Point.prototype.setChildren = function(child1, child2) {
 /**
  *	Delete self
  * (recursivly remove all assosiated svg elements)
+ * 
+ * keepThis: bool to flag the first element in recursion (as it should stay)
  */
-Point.prototype.removeSelf = function() {
+Point.prototype.collapse = function(keepThis) {
 	if (this.isExpanded){
-		this.child1.removeSelf();
-		this.child2.removeSelf();
+		this.child1.collapse(false);
+		this.child2.collapse(false);
 		this.child1 = null;
 		this.child2 = null;
 		this.isExpanded = false;
+		this.setType(this.wasType);
 	}
-	if (this.contour) {	//remove contour
-		this.contour.remove();
-		this.contour = null;
-	}
-	
-	if (this.line) { //remove line
-		select.connectiorLinesLayer.removeChild(this.line);
-		this.line = null;
-	}
-	
-	if (this.circle) { //remove the circle
-		select.extremalPointsLayer.removeChild(this.circle);
-		this.circle = null;
+	if (!keepThis) {
+		if (this.contour) {	//remove contour
+			this.contour.remove();
+			this.contour = null;
+		}
+		
+		if (this.line) { //remove line
+			select.connectiorLinesLayer.removeChild(this.line);
+			this.line = null;
+		}
+		
+		if (this.circle) { //remove the circle
+			select.extremalPointsLayer.removeChild(this.circle);
+			this.circle = null;
+		}
 	}
 }
 
@@ -315,23 +351,18 @@ Point.prototype.paint = function() {
   this.circle.setAttribute("cy", this.y);
 	this.circle.setAttribute("class", "extremalpoint_" + this.type);
 	
-  //TODO get rid of this later and use css for styling
-  var color = "";
-  if (this.type == "sad") {
-    color = "red";
-  }
-  else if (this.type == "min") {
-    color = "green";
-  }
-  else {
-    color = "blue";
-  }
-  this.circle.setAttribute("fill", color);
+
+	//recursion: paint children
+	if (this.isExpanded) {
+		this.child1.paint();
+		this.child2.paint();
+	}
+
 
 	if (!this.isRoot) {
 	  if (!this.contour) {
-	    this.contour = new Contour(this) //create contour
-	    this.contour.create();
+	    this.contour = new Contour() //create contour
+	    this.contour.init(this);
 	  }
 	  this.contour.paint();
 	}
@@ -339,7 +370,7 @@ Point.prototype.paint = function() {
   if (settings.paintConnectingLines && !this.isRoot) {
     if (!this.line) {
       this.line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      this.line.setAttribute("style", "stroke:rgb(0,0,0);stroke-width:1");
+      this.line.setAttribute("class", "connectorline");
       select.connectiorLinesLayer.appendChild(this.line);
     }
     this.line.setAttribute("x1", this.x);
@@ -352,7 +383,7 @@ Point.prototype.paint = function() {
 
 Point.prototype.toJSON = function(){
 	return {
-		id: "pn",
+		__type: "extpnt",
 		idnr: this.idnr,
 		x: this.x,
 		y: this.y,
@@ -370,5 +401,33 @@ Point.prototype.toJSON = function(){
 	}
 }
 
-// static vars
-Point.counter = 0;
+
+//static fnc
+Point.createFromJSONObj = function(obj) {
+	var p = new Point(Object.x, obj.y);
+	
+	for (var key in obj){
+		var tmp = obj[key];
+		p[key] = obj[key];
+	}
+	
+	// recreate (cyclic) references
+	if (p.isExpanded){
+		p.child1.sibling = p.child2;
+		p.child2.sibling = p.child1;
+		p.child1.parent = p;
+		p.child2.parent = p;
+	}
+	else {
+		p.child1 = null;
+		p.child2 = null;
+	}
+	
+	if(p.isRoot){
+		this.contour=null;
+		this.sibling=null;
+	}
+	
+	return p;
+		
+};
