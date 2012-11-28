@@ -119,9 +119,9 @@ function onClickBtn(evt) {
     	model.remove();
     	//install new
     	model = m;
-    	model.init();
-    	model.update();
-    	model.paint();
+    	//model.init();
+    	//model.update();
+    	//model.paint();
     }
     
     evt.stopPropagation();

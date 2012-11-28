@@ -50,6 +50,7 @@ function onBodyInit() {
   
   //init the model
   model = new Model();
+  model.init();
   
   actionstack = new ActionStack();
 }

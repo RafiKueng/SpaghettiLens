@@ -40,7 +40,7 @@ Contour.prototype.init = function(extpnt) {
 	}
 	else { //if the points are there, but this fn is called, that means they come from json and are not initialiesed
 		for (var i =0; i<this.cpoints.length; ++i){
-			this.cpoints[i].init();
+			this.cpoints[i].init(this.idnr, this.extpnt);
 		}
 	}
 }
@@ -189,7 +189,7 @@ Contour.prototype.toJSON = function() {
 	return {
 		__type: "contour",
 		idnr: this.idnr,
-		cpnts: this.cpoints
+		cpoints: this.cpoints
 	}
 }
 
@@ -206,6 +206,10 @@ Contour.createFromJSONObj = function(obj) {
 	
 	for (var key in obj){
 		c[key] = obj[key];
+	}
+	
+	if (c.cpoints){
+		c.nContourPoints = c.cpoints.length;
 	}
 	
 	// recreate path

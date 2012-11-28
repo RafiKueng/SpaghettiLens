@@ -193,10 +193,7 @@ ContourPoint.createFromJSONObj = function(obj) {
 		cp[key] = obj[key];
 	}
 	
-	// recreate path
-	c.createPathSVG();
-
-	return p;
+	return cp;
 		
 };
 

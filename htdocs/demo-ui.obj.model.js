@@ -5,20 +5,32 @@
   can be stringified and reparsed (for loading and saving)
 */
 function Model() {
-	//__type: "model", //identifier for object type, used for json  
+	this.__type = "model"; //identifier for object type, used for json  
 
   this.NrOf = { // some counters
+  	__type: "counters",
   	Sources:0,// how many sources are modelled? (equals the number of contour groups)
   	ExtremalPoints:0,
   	Contours:0,
   	ContourPoints:0
 	};
 
-  this.Sources = new Array(); //this contains all the modeled sources (of length nSources)
+  this.Sources = null; //this contains all the modeled sources (of length nSources)
 
   this.MinMmaxSwitchAngle = Math.PI / 3.; //limit angle between two children, when the children will switch to different type (min/min to min/max; max/max to min/max)
 }
 
+
+Model.prototype.init = function() {
+	if (this.Sources) {
+		for (i = 0; i < this.Sources.length; ++i) {
+			this.Sources[i].init();
+		}
+	}
+	else {
+		this.Sources = new Array();
+	}
+}
 
 /**
  * updates the whole model
@@ -53,6 +65,9 @@ Model.prototype.getStateAsString = function() {
 }
 
 
+
+
+
 /***********************************************
  * Static methods
  ***********************************************/
@@ -68,8 +83,14 @@ Model.getModelFormJSONString = function(str) {
 		if (val instanceof Array) {
 			return val;
 		}
-		else if (typeof(val) == "object") {
+		
+		// list the keys of all anonymous objects here
+		//else if (key == "NrOf") {return val;}
+		else if (val && typeof(val) == "object") {
 			switch (val.__type) {
+				case "counters":
+					return val;
+					break; 
 				case "extpnt":
 					var p = Point.createFromJSONObj(val);
 					return p;
@@ -107,10 +128,12 @@ Model.createFromJSONObj = function(obj) {
 	var m = new Model();
 	
 	for (var key in obj){
-		var tmp = obj[key];
-		p[key] = obj[key];
+		//var tmp = obj[key];
+		m[key] = obj[key];
 	}
 	
+	
+	m.init();
 	m.update();
 	m.repaint();
 	
