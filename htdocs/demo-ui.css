@@ -83,3 +83,14 @@
 	fill: #3333ff;
 	fill-opacity:0.5;
 }
+
+
+
+/*ui elements*/
+.btn {
+	fill: #3333ff;
+}
+
+.btn.active {
+	fill: #ff00ff;
+}

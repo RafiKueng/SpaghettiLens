@@ -28,15 +28,15 @@
      inkscape:cx="152.24595"
      inkscape:cy="-7.6081913"
      inkscape:document-units="px"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer1"
      showgrid="true"
      objecttolerance="10"
      gridtolerance="10"
      guidetolerance="10"
      inkscape:window-width="1515"
      inkscape:window-height="957"
-     inkscape:window-x="1996"
-     inkscape:window-y="103"
+     inkscape:window-x="2079"
+     inkscape:window-y="88"
      inkscape:window-maximized="0"
      inkscape:snap-page="true">
     <inkscape:grid
@@ -55,7 +55,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -66,7 +66,7 @@
      style="display:inline">
     <path
        style="fill:#000000;fill-opacity:0.60379998;stroke:none"
-       d="m 20,5 235,0 c 15,0 15,0 15,15 l 0,30 c 0,15 0,15 -15,15 L 20,65 C 5,65 5,65 5,50 L 5,20 C 5,5 5,5 20,5 z"
+       d="M 15.318,0 260,0 c 15.618,0 15.618,0 15.618,17.5 l 0,35 c 0,17.5 0,17.5 -15.618,17.5 L 15.318,70 C -0.3,70 -0.3,70 -0.3,52.5 l 0,-35 C -0.3,0 -0.3,0 15.318,0 z"
        id="path3783"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccccc" />

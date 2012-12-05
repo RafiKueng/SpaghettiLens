@@ -36,7 +36,7 @@ function initUI() {
   
   //ui.actionMenu.init();
   
-  //init_ActionMenu();
+  init_ActionMenu();
   init_ModeMenu();
   
   /*

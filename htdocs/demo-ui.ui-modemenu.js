@@ -6,7 +6,12 @@
 
 
 function init_ModeMenu() {
-	ui.modeMenu = new Widget("modeMenu", "demo-ui.svg.mode_sel.svg", 0, 0, Widget.h_pos.right | Widget.v_pos.top);
+	ui.modeMenu = new Widget(
+		"modeMenu",
+		"demo-ui.svg.mode_sel.svg",
+		-10, 10,
+		Widget.h_pos.right | Widget.v_pos.top
+	);
 
   ui.modeMenu.addHandler("massMode",  Widget.event.click, ui.mm.onclick.massMode);
   ui.modeMenu.addHandler("rulerMode", Widget.event.click, ui.mm.onclick.rulerMode);
@@ -18,39 +23,39 @@ function init_ModeMenu() {
 }
 
 
+/**
+ * just a random object to store the functions
+ * those are only used direcly above 
+ */
 ui.mm = {
 	
 	oninit: function() {
 		  settings.mode=0;
-			ui.modeMenu.buttons.massMode.children[0].style.fill = "#0000ff";
-			ui.modeMenu.buttons.rulerMode.children[0].style.fill = "#0000ff";
-			ui.modeMenu.buttons.imageMode.children[0].style.fill = "#aaaaff";	
+			ui.modeMenu.buttons.imageMode.bg.setAttribute('class', 'btn active');
 	},
 	
 	onclick: {
-		bg: function(evt) {alert('click on bg');},
-		
+	
 		massMode: function(evt) {
 			settings.mode=1;
-			ui.modeMenu.buttons.massMode.children[0].style.fill = "#aaaaff";
-			ui.modeMenu.buttons.rulerMode.children[0].style.fill = "#0000ff";
-			ui.modeMenu.buttons.imageMode.children[0].style.fill = "#0000ff";
+			ui.modeMenu.buttons.massMode.bg.setAttribute('class', 'btn active');
+			ui.modeMenu.buttons.rulerMode.bg.setAttribute('class', 'btn');
+			ui.modeMenu.buttons.imageMode.bg.setAttribute('class', 'btn');
 		},
 		
 		rulerMode: function(evt) {
 			settings.mode=2;
-			ui.modeMenu.buttons.massMode.children[0].style.fill = "#0000ff";
-			ui.modeMenu.buttons.rulerMode.children[0].style.fill = "#aaaaff";
-			ui.modeMenu.buttons.imageMode.children[0].style.fill = "#0000ff";
+			ui.modeMenu.buttons.massMode.bg.setAttribute('class', 'btn');
+			ui.modeMenu.buttons.rulerMode.bg.setAttribute('class', 'btn active');
+			ui.modeMenu.buttons.imageMode.bg.setAttribute('class', 'btn');
 		},
 		
 		imageMode: function(evt) {
 			settings.mode=0;
-			ui.modeMenu.buttons.massMode.children[0].style.fill = "#0000ff";
-			ui.modeMenu.buttons.rulerMode.children[0].style.fill = "#0000ff";
-			ui.modeMenu.buttons.imageMode.children[0].style.fill = "#aaaaff";
-		}
-		
-	}		
+			ui.modeMenu.buttons.massMode.bg.setAttribute('class', 'btn');
+			ui.modeMenu.buttons.rulerMode.bg.setAttribute('class', 'btn');
+			ui.modeMenu.buttons.imageMode.bg.setAttribute('class', 'btn active');
 
+		}
+	}
 } 

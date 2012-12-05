@@ -28,15 +28,15 @@
      inkscape:cx="121.70348"
      inkscape:cy="48.516979"
      inkscape:document-units="px"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer1"
      showgrid="true"
      objecttolerance="10"
      gridtolerance="10"
      guidetolerance="10"
      inkscape:window-width="1535"
      inkscape:window-height="797"
-     inkscape:window-x="2076"
-     inkscape:window-y="149"
+     inkscape:window-x="2006"
+     inkscape:window-y="266"
      inkscape:window-maximized="0"
      inkscape:snap-page="true">
     <inkscape:grid
@@ -95,7 +95,7 @@
        sodipodi:nodetypes="ccccccccc"
        inkscape:connector-curvature="0"
        id="path3783"
-       d="M 14.622642,5 165.37736,5 C 175,5 175,5 175,20 l 0,30 c 0,15 0,15 -9.62264,15 L 14.622642,65 C 5,65 5,65 5,50 L 5,20 C 5,5 5,5 14.622642,5 z"
+       d="M 10.294,0 170,0 c 10.194,0 10.194,0 10.194,17.5 l 0,35 c 0,17.5 0,17.5 -10.194,17.5 L 10.294,70 C 0.09999947,70 0.09999947,70 0.09999947,52.5 l 0,-35 c 0,-17.5 0,-17.5 10.19400053,-17.5 z"
        style="fill:#000000;fill-opacity:0.60379998;stroke:none" />
   </g>
   <g

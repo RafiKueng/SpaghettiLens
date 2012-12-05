@@ -29,7 +29,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
      inkscape:cx="518.64127"
-     inkscape:cy="235.09856"
+     inkscape:cy="320.81285"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -123,74 +123,6 @@
      inkscape:groupmode="layer"
      id="layer1"
      onclick="onClickUI(evt);">
-    <g
-       id="g3871"
-       onclick="onClickBtn(evt);">
-      <path
-         transform="matrix(0.32679987,-0.05642789,-0.02545677,0.38204216,795.88018,626.49438)"
-         d="m -230,115 c 0,8.28427 -6.71573,15 -15,15 -8.28427,0 -15,-6.71573 -15,-15 0,-8.28427 6.71573,-15 15,-15 8.28427,0 15,6.71573 15,15 z"
-         sodipodi:ry="15"
-         sodipodi:rx="15"
-         sodipodi:cy="115"
-         sodipodi:cx="-245"
-         id="path3840"
-         style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:4.47544193;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-         sodipodi:type="arc" />
-      <path
-         transform="matrix(0.70028551,-0.12091691,-0.05455021,0.8186617,887.59096,563.88783)"
-         d="m -210,115 c 0,19.32997 -15.67003,35 -35,35 -19.32997,0 -35,-15.67003 -35,-35 0,-19.329966 15.67003,-35 35,-35 19.32997,0 35,15.670034 35,35 z"
-         sodipodi:ry="35"
-         sodipodi:rx="35"
-         sodipodi:cy="115"
-         sodipodi:cx="-245"
-         id="path3842"
-         style="fill:#000000;fill-opacity:0.32156863;stroke:#000000;stroke-width:2.0885396;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-         sodipodi:type="arc" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path3844"
-         d="m 717.78868,683.40764 c 19.60799,-3.38567 19.60799,-3.38567 19.60799,-3.38567"
-         style="fill:none;stroke:#000000;stroke-width:1.57224286;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path3848"
-         d="m 723.07253,676.83059 -0.38185,5.73064"
-         style="fill:none;stroke:#000000;stroke-width:1.57224286;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path3850"
-         d="m 727.97453,675.98417 -0.38185,5.73064"
-         style="fill:none;stroke:#000000;stroke-width:1.57224286;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path3852"
-         d="m 732.87653,675.13776 -0.38185,5.73063"
-         style="fill:none;stroke:#000000;stroke-width:1.57224286;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-    </g>
-    <g
-       id="ui_btn_go"
-       onclick="onClickBtn(evt);"
-       transform="translate(-150,-452.36218)">
-      <rect
-         style="fill:#000080;fill-opacity:0.72307691;stroke:#000000;stroke-width:0.79432511;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-         id="m1_btn1-1"
-         width="58.888885"
-         height="60.000004"
-         x="680"
-         y="982.36218" />
-      <text
-         sodipodi:linespacing="125%"
-         id="text3784"
-         y="1022.3622"
-         x="690"
-         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         xml:space="preserve"><tspan
-           style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-           y="1022.3622"
-           x="690"
-           id="tspan3786"
-           sodipodi:role="line">GO</tspan></text>
-    </g>
     <path
        d="m 30,20 15,0 0,13.33333 -15,0 L 30,40 15,26.66666 30,13.33333 30,20"
        id="ui_btn_undo"
@@ -253,53 +185,6 @@
          width="58.888885"
          id="m1_btn3"
          style="fill:none;stroke:#000000;stroke-width:0.79432511;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-         onclick="onClickBtn(evt);" />
-    </g>
-    <g
-       id="menu_top_right"
-       transform="translate(600,0)">
-      <path
-         sodipodi:open="true"
-         sodipodi:end="6.2774738"
-         sodipodi:start="0"
-         d="m 0,35 c 0,2.761424 -8.954305,5 -20,5 -11.045695,0 -20,-2.238576 -20,-5 0,-2.761424 8.954305,-5 20,-5 11.0011117,0 19.9368412,2.22121 19.99967378774,4.971443"
-         sodipodi:ry="5"
-         sodipodi:rx="20"
-         sodipodi:cy="35"
-         sodipodi:cx="-20"
-         id="ui_modehighlight"
-         style="fill:#ffff00;fill-opacity:0.6;stroke:none"
-         sodipodi:type="arc" />
-      <path
-         onclick="onClickBtn(evt);"
-         inkscape:connector-curvature="0"
-         id="ui_imgMode"
-         d="M -38.60219,8.1728614 -35.4,30.714281 l 30.3999997,-10 L -16.4,0.71428514 z"
-         style="fill:#000000;fill-opacity:0.32156863;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-         sodipodi:nodetypes="ccccc" />
-      <path
-         inkscape:transform-center-y="-0.22189409"
-         inkscape:transform-center-x="1.6092943"
-         d="m -56.071427,31.42857 -12.876996,-4.304499 -8.696629,10.426618 0.114612,-13.576914 -12.603709,-5.048983 12.947829,-4.086495 0.907108,-13.5470615 7.887587,11.0513215 13.164333,-3.3235616 -8.073032,10.9165876 z"
-         inkscape:randomized="0"
-         inkscape:rounded="0"
-         inkscape:flatsided="false"
-         sodipodi:arg2="1.2942878"
-         sodipodi:arg1="0.66596924"
-         sodipodi:r2="7.7766132"
-         sodipodi:r1="19.076242"
-         sodipodi:cy="19.642857"
-         sodipodi:cx="-71.071426"
-         sodipodi:sides="5"
-         id="ui_massMode"
-         style="fill:#000000;fill-opacity:0.32156863;stroke:#000000;stroke-opacity:1"
-         sodipodi:type="star"
-         onclick="onClickBtn(evt);" />
-      <path
-         inkscape:connector-curvature="0"
-         id="ui_rulerMode"
-         d="m -137.75955,26.359623 7.95495,6.187184 27.14785,-17.172593 -6.9448,-6.3134533 3.78807,3.4092643 -6.69226,4.16688 -2.14657,-2.399113 2.52538,2.272844 -5.3033,3.409265 -2.52538,-2.399113 2.77791,2.399113 -5.6821,3.156726 -2.27285,-2.146574 2.52538,2.146574 -5.05076,3.282996 -2.39911,-1.894036 2.14657,1.894036 -5.6821,2.904189 z"
-         style="fill:#000000;fill-opacity:0.32156863;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          onclick="onClickBtn(evt);" />
     </g>
   </g>

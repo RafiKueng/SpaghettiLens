@@ -6,6 +6,7 @@
  * 	make sure the svg contains two layers with id layer1 and layer2
  * 	layer1: conains all the background
  *  layer2: contains as children all the buttons
+ * 		each button is a group with at least children[0]
  * 
  * ******************
  * 
@@ -87,6 +88,11 @@ Widget.prototype.addToDOM = function(svgDoc) {
 	this.bg   = svgDoc.getElementById('layer1'); //background layer
 	this.btns = svgDoc.getElementById('layer2'); //buttons layer
 	
+	//debug
+	if (!this.bg) {
+		var xx = 1;
+	}
+	
 	this.grp.appendChild(this.bg);
 	this.grp.appendChild(this.btns);
 	
@@ -101,6 +107,19 @@ Widget.prototype.addToDOM = function(svgDoc) {
 	for (var i=0; i<children.length; ++i){
 		var child = children[i];
 		this.buttons[child.id] = child;
+		
+		// save .bg for easy access and styling
+		if (child.children[0]) { //if child is a group and has at least one child (the backgroubd)
+			this.buttons[child.id]['bg'] = child.children[0]; // expose a bg element
+		}
+		else { //child is a simple svg figure (rectangle?)
+			this.buttons[child.id]['bg'] = child[0];
+		}
+		
+		// set class, remove styles that are taken care of by css
+		this.buttons[child.id]['bg'].style.fill = '';
+		this.buttons[child.id]['bg'].setAttribute('class', 'btn');
+		
 		
 		if (this.handlers[child.id]) {
 			if (this.handlers[child.id][Widget.event.click]) {child.onclick = this.handlers[child.id][Widget.event.click];}

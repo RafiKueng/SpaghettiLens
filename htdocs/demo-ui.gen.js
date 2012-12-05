@@ -191,6 +191,7 @@ function initRefs() {
  */
 function importSVG(url, callback)
 {
+	var xmlDoc = null;
 	// firefox
 	if (document.implementation && document.implementation.createDocument)
 	{

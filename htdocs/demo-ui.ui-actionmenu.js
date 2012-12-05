@@ -6,15 +6,20 @@
 
 
 function init_ActionMenu() {
-	ui.actionMenu = new Widget("actionMenu", "demo-ui.svg.br.svg", 0, 0, Widget.h_pos.right | Widget.v_pos.bot);
+	ui.actionMenu = new Widget(
+		"actionMenu",
+		"demo-ui.svg.br.svg",
+		-10, -10,
+		Widget.h_pos.right | Widget.v_pos.bot
+	);
 
   ui.actionMenu.addHandler("save", Widget.event.click, ui.am.onclick.save);
   ui.actionMenu.addHandler("model", Widget.event.click, ui.am.onclick.model);
   ui.actionMenu.addHandler("next", Widget.event.click, ui.am.onclick.next);
   ui.actionMenu.addHandler("prev", Widget.event.click, ui.am.onclick.prev);
 
-  ui.actionMenu.addHandler("prev", Widget.event.mousemove, ui.am.onmove.prev);
-  ui.actionMenu.addHandler("bg", Widget.event.click, ui.am.onclick.bg);
+  //ui.actionMenu.addHandler("prev", Widget.event.mousemove, ui.am.onmove.prev);
+  //ui.actionMenu.addHandler("bg", Widget.event.click, ui.am.onclick.bg);
   
   
   ui.actionMenu.init();  
@@ -49,7 +54,7 @@ ui.am = {
 	},
 	onmove: {
 		prev: function(evt) {
-			//alert('mouse moved');
+			alert('mouse moved');
 		}
 	}
 } 
