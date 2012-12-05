@@ -15,7 +15,7 @@ function getBGImageUrls(id) {
   var onmessage = function (e) {
     if (e.data.substring(0,4) == "limg") {
       var limg = e.data.substring(4);
-      dbg.write("got image url: " + limg);
+      dbg.append("got image url: " + limg);
       loadImage(limg);
     }
     else {

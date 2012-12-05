@@ -19,14 +19,13 @@ var actionstack;
   [body onload]
 */
 function onBodyInit() {
-  initUI();
-  
   // init the references
 	initRefs();
-  
+
   //init the logging device
   dbg = new logger();
   dbg.init();
+
   
   initGetVars();
   var log = "got the following arguments: <br/>";
@@ -42,6 +41,9 @@ function onBodyInit() {
     $_GET.id = Math.floor(tmp) + 1;
     alert("imageid in url is missing (add ?id=1 to url)\nusing random mode: "+$_GET.id);
   }
+
+	//load all the ui elements
+  initUI();
   
   getBGImageUrls($_GET.id);
   
@@ -88,7 +90,7 @@ function logger () {
   };
   
   this.append = function(txt) {
-    this.log.innerHTML += (txt + '<br/>'); 
+    this.log.innerHTML += ('<br/>' + txt); 
   };
   
   this.clear = function() {
@@ -147,6 +149,8 @@ var select = {
   contourPointsLayer: null,
   extremalPointsLayer: null,
   
+  svguiLayer: null,
+  
   modehighlight: null, //this item / group highlights the selected mode in ui
   
   undoBtn: null,
@@ -168,8 +172,43 @@ function initRefs() {
   select.contourPointsLayer = document.getElementById("ContourPointsLayer");
   select.extremalPointsLayer = document.getElementById("ExtremalPointsLayer");
   
+  select.svguiLayer = document.getElementById("layer1");
+  
   select.modehighlight = document.getElementById("ui_modehighlight");
   
   select.undoBtn = document.getElementById("ui_btn_undo");
   select.redoBtn = document.getElementById("ui_btn_redo");
+}
+
+
+
+
+/**
+ * loads an xml (svg) file
+ * http://www.jr.pl/www.quirksmode.org/dom/importxml.html
+ * 
+ * @param {Object} url
+ */
+function importSVG(url, callback)
+{
+	// firefox
+	if (document.implementation && document.implementation.createDocument)
+	{
+		xmlDoc = document.implementation.createDocument("", "", null);
+		xmlDoc.onload = function() {callback(xmlDoc);};
+	}
+	// ie9
+	else if (window.ActiveXObject)
+	{
+		xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+		xmlDoc.onreadystatechange = function () {
+			if (xmlDoc.readyState == 4) callback(xmlDoc)
+		};
+ 	}
+	else
+	{
+		alert('Your browser can\'t handle this script');
+		return;
+	}
+	xmlDoc.load(url);
 }

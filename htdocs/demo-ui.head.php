@@ -12,7 +12,13 @@
   <script type="text/javascript" src="demo-ui.intel.js"></script>
   <script type="text/javascript" src="demo-ui.com.js"></script>
   <script type="text/javascript" src="demo-ui.ui-svg.js"></script>
+  <script type="text/javascript" src="demo-ui.widget.js"></script>
   <script type="text/javascript" src="demo-ui.ui-canv.js"></script>
+ 
+  <script type="text/javascript" src="demo-ui.ui-actionmenu.js"></script>
+  <script type="text/javascript" src="demo-ui.ui-modemenu.js"></script>
+  
+  
   <title>Demo.UI</title>
 </head>
 <!-- \\\ demo-ui.head.php end -->

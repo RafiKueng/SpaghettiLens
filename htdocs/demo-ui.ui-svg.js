@@ -11,7 +11,8 @@ var selectedPoint = false;
  * UI CODE
  ****************************************************/
 
- var root = null;
+var root = null;
+var ui = {};
  
 function initUI() {
   
@@ -31,6 +32,23 @@ function initUI() {
   */
   
   //alert("init done");
+  
+  
+  //ui.actionMenu.init();
+  
+  //init_ActionMenu();
+  init_ModeMenu();
+  
+  /*
+  ui = {
+  	actionMenu: new Widget("actionMenu", "demo-ui.svg.br.svg", 100, 10)
+  };
+  
+  ui.actionMenu.addHandler("save", function() {alert("clicked on save");});
+  ui.actionMenu.init();  
+  
+  ui.actionMenu.move(200,200);
+  */
   
 }
 
