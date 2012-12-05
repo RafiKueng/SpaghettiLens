@@ -134,14 +134,16 @@ ActionStack.prototype.nRedoActionsPossible = function() {
  */
 ActionStack.prototype.updateUIBtn = function() {
 	
+	if (!$sel.undoBtn | !$sel.redoBtn ) {return;} // the buttons are not yet loaded
+	 
 	if (this.nUndoActionsPossible()>1) {
-		$sel.undoBtn.setAttribute("class", "xxdobtn");
+		$sel.undoBtn.setAttribute("class", "btn");
 	}
 	else {
 		$sel.undoBtn.setAttribute("class", "invisible");
 	}
 	if (this.nRedoActionsPossible()>0) {
-		$sel.redoBtn.setAttribute("class", "xxdobtn");
+		$sel.redoBtn.setAttribute("class", "btn");
 	}
 	else {
 		$sel.redoBtn.setAttribute("class", "invisible");

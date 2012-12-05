@@ -10,7 +10,8 @@ function init_ModeMenu() {
 		"modeMenu",
 		"demo-ui.svg.mode_sel.svg",
 		-10, 10,
-		Widget.h_pos.right | Widget.v_pos.top
+		Widget.h_pos.right | Widget.v_pos.top,
+		Widget.Animation(Widget.aniType.none)
 	);
 
   ui.modeMenu.addHandler("massMode",  Widget.event.click, ui.mm.onclick.massMode);
@@ -31,30 +32,30 @@ ui.mm = {
 	
 	oninit: function() {
 		  settings.mode=0;
-			ui.modeMenu.buttons.imageMode.bg.setAttribute('class', 'btn active');
+			ui.modeMenu.buttons.imageMode._bg.setAttribute('class', 'btn active');
 	},
 	
 	onclick: {
 	
 		massMode: function(evt) {
 			settings.mode=1;
-			ui.modeMenu.buttons.massMode.bg.setAttribute('class', 'btn active');
-			ui.modeMenu.buttons.rulerMode.bg.setAttribute('class', 'btn');
-			ui.modeMenu.buttons.imageMode.bg.setAttribute('class', 'btn');
+			ui.modeMenu.buttons.massMode._bg.setAttribute('class', 'btn active');
+			ui.modeMenu.buttons.rulerMode._bg.setAttribute('class', 'btn');
+			ui.modeMenu.buttons.imageMode._bg.setAttribute('class', 'btn');
 		},
 		
 		rulerMode: function(evt) {
 			settings.mode=2;
-			ui.modeMenu.buttons.massMode.bg.setAttribute('class', 'btn');
-			ui.modeMenu.buttons.rulerMode.bg.setAttribute('class', 'btn active');
-			ui.modeMenu.buttons.imageMode.bg.setAttribute('class', 'btn');
+			ui.modeMenu.buttons.massMode._bg.setAttribute('class', 'btn');
+			ui.modeMenu.buttons.rulerMode._bg.setAttribute('class', 'btn active');
+			ui.modeMenu.buttons.imageMode._bg.setAttribute('class', 'btn');
 		},
 		
 		imageMode: function(evt) {
 			settings.mode=0;
-			ui.modeMenu.buttons.massMode.bg.setAttribute('class', 'btn');
-			ui.modeMenu.buttons.rulerMode.bg.setAttribute('class', 'btn');
-			ui.modeMenu.buttons.imageMode.bg.setAttribute('class', 'btn active');
+			ui.modeMenu.buttons.massMode._bg.setAttribute('class', 'btn');
+			ui.modeMenu.buttons.rulerMode._bg.setAttribute('class', 'btn');
+			ui.modeMenu.buttons.imageMode._bg.setAttribute('class', 'btn active');
 
 		}
 	}

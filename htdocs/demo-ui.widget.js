@@ -12,10 +12,22 @@
  * 
  * create a new widget
  * 
- * 	myWidget = new Widget(name, pathToSVG, dx, dy, positioning)
+ * 	myWidget = new Widget(
+ * 		name,
+ * 		pathToSVG,
+ * 		dx, dy,
+ * 		positioning,
+ * 		[animation_style = none]
+ * )
  * 
  * with dx, dy: x/y coordinates (either rel or abs)
+ * 
  * positioning = Widget.h_pos.left | Widget.v_pos.top;
+ * 
+ * create an animation_stype unsing the helper function
+ * var aniStyle = Widget.Animation(type [, var1, [, var 2[...]]]) 
+ * example a (rough) sliding animation:
+ * Widget.Animation(Widget.aniType.sliding, -10, -10)
  * 
  * *******************
  * 
@@ -25,15 +37,23 @@
  * myWidget.addHandler('buttonID', eventtype, func);
  * 
  * the callback function is called with the svg button element as this
+ * and this.bg mapped to the basic svg background element
+ * 
  * to change a style of a button you could use:
  * 
- * var func = function(evt) {this.style.fill = '#0000ff';}
+ * var func = function(evt) {this.bg.style.fill = '#0000ff';}
+ * 
  * 
  * you can add events to the background (id bg) too
+ * (bg is a generic name)
+ * myWidget.addHandler('_bg', eventtype, func);
  * 
- * var eventtype = 
+ * and you can add an onInit function
+ * myWidget.addHandler('_init', eventtype, func);
  * 
  * ***********************
+ * 
+ * 
  * 
  * and then initalise it
  * myWidget.init();
@@ -45,12 +65,15 @@
  * @param {Object} y
  * @param {Object} positioning optional positioning object (default absolute pos)
  */
-function Widget(name, path, x, y, positioning) {
+function Widget(name, path, x, y, positioning, animation) {
 	this.name = name;
 	this.path = path;
 	this.x = x;
 	this.y = y;
+	this.w = 0; //width and height get set with init()
+	this.h = 0;
 	this.pos = positioning || 0;
+	this.ani = (animation) ? animation : Widget.Animation(); //if no animation type supplied, create none type 
 	
 	this.grp = null; //the whole group with all the layout elements
 	this.bg = null;
@@ -87,11 +110,10 @@ Widget.prototype.addToDOM = function(svgDoc) {
 
 	this.bg   = svgDoc.getElementById('layer1'); //background layer
 	this.btns = svgDoc.getElementById('layer2'); //buttons layer
-	
-	//debug
-	if (!this.bg) {
-		var xx = 1;
-	}
+
+	// save widgets dimensions
+	this.w = svgDoc.documentElement.width.baseVal.value;
+	this.h = svgDoc.documentElement.height.baseVal.value;
 	
 	this.grp.appendChild(this.bg);
 	this.grp.appendChild(this.btns);
@@ -110,15 +132,15 @@ Widget.prototype.addToDOM = function(svgDoc) {
 		
 		// save .bg for easy access and styling
 		if (child.children[0]) { //if child is a group and has at least one child (the backgroubd)
-			this.buttons[child.id]['bg'] = child.children[0]; // expose a bg element
+			this.buttons[child.id]['_bg'] = child.children[0]; // expose a bg element
 		}
 		else { //child is a simple svg figure (rectangle?)
-			this.buttons[child.id]['bg'] = child[0];
+			this.buttons[child.id]['_bg'] = child[0];
 		}
 		
 		// set class, remove styles that are taken care of by css
-		this.buttons[child.id]['bg'].style.fill = '';
-		this.buttons[child.id]['bg'].setAttribute('class', 'btn');
+		this.buttons[child.id]['_bg'].style.fill = '';
+		this.buttons[child.id]['_bg'].setAttribute('class', 'btn');
 		
 		
 		if (this.handlers[child.id]) {
@@ -149,13 +171,30 @@ Widget.prototype.addToDOM = function(svgDoc) {
 		this.handlers['_init'][Widget.event.init](null);		
 	}
 
+	//move to right coords
+	this.update();
+
+	// add animations
+	if (this.ani) {
+		switch (this.ani.type) {
+			case Widget.aniType.none:
+				break;
+			case Widget.aniType.sliding:
+				var fncs = this.createSlidingFunctions();
+				this.grp.onmouseover = fncs[0];
+				this.grp.onmouseout = fncs[1];
+				break;
+		}
+	}
+
+	$sel.svguiLayer.appendChild(this.grp);		
+}
+
+
+Widget.prototype.update = function() {
 	//move to the right place
 	var x = 0;
 	var y = 0;
-
-	//widgets dimensions
-	var w_w = svgDoc.documentElement.width.baseVal.value;
-	var w_h = svgDoc.documentElement.height.baseVal.value;
 
 	//parent dimensions	
 	var p = $sel.svg; //get the parent element
@@ -169,10 +208,10 @@ Widget.prototype.addToDOM = function(svgDoc) {
 			y = this.y;
 			break;
 		case Widget.v_pos.mid:
-			y = p_h / 2 - w_h / 2 + this.y;
+			y = p_h / 2 - this.h / 2 + this.y;
 			break;
 		case Widget.v_pos.bot:
-			y = p_h - w_h + this.y;
+			y = p_h - this.h + this.y;
 			break;
 	};
 
@@ -183,20 +222,47 @@ Widget.prototype.addToDOM = function(svgDoc) {
 			x = this.x;
 			break;
 		case Widget.h_pos.mid:
-			x = p_w / 2 - w_w / 2 + this.x;
+			x = p_w / 2 - this.w / 2 + this.x;
 			break;
 		case Widget.h_pos.right:
-			x = p_w - w_w + this.x;
+			x = p_w - this.w + this.x;
 			break;
 	};
 	
-	var tmp = 3;
 	this.grp.setAttribute('transform', 'translate(' + x + ',' + y + ')');
-		
-	$sel.svguiLayer.appendChild(this.grp);		
 }
 
- 
+
+Widget.prototype.hide = function() {
+}
+
+
+
+Widget.prototype.createSlidingFunctions = function(ani) {
+	var mouseover = (function(obj) {
+		return function() {
+			obj.x += obj.ani.dx;
+			obj.y += obj.ani.dy;
+			obj.update();
+		}
+	})(this);
+	
+	var mouseout = (function(obj) {
+		return function() {
+			obj.x -= obj.ani.dx;
+			obj.y -= obj.ani.dy;
+			obj.update();
+		}
+	})(this);
+	
+	return [mouseover, mouseout];
+}
+
+
+
+/**
+ * 
+ */
 Widget.prototype.addHandler = function(name, eventtype, fnc) {
 	if ( ! this.handlers[name] ){
 		this.handlers[name] = {};
@@ -210,13 +276,13 @@ Widget.prototype.addHandler = function(name, eventtype, fnc) {
 }
 
 
-
+/*
 Widget.prototype.move = function(x,y) {
 	this.x = x;
 	this.y = y;
 	this.grp.setAttribute('transform', 'translate(' +this.x + ',' + this.y + ')');
 }
-
+*/
 
 
 /**
@@ -250,4 +316,43 @@ Widget.h_pos = {
 	left:  1 << 2,
 	mid:   2 << 2,
 	right: 3 << 2
+}
+
+
+/**
+ * Types of supported animation 
+ */
+Widget.aniType = {
+	none: 0,
+	sliding: 1
+}
+
+
+/**
+ * creates a object representing the settings of the animation of a widget
+ * 
+ * variable arguments list
+ * arguments[0] has to the the type 
+ */
+Widget.Animation = function () {
+	var ani = {};
+	switch (arguments[0]) {
+		
+		case (Widget.aniType.none):
+			ani.type = arguments[0];
+			break;
+			
+		case (Widget.aniType.sliding):
+			ani.type = arguments[0];
+			ani.dx = arguments[1];
+			ani.dy = arguments[2];
+			break;
+			
+		default:
+			//alert('error, not supoorted animation type');
+			ani.type = Widget.aniType.none;
+			break;
+	}
+	
+	return ani;
 }

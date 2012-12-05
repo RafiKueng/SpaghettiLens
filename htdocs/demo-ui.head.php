@@ -17,6 +17,8 @@
  
   <script type="text/javascript" src="demo-ui.ui-actionmenu.js"></script>
   <script type="text/javascript" src="demo-ui.ui-modemenu.js"></script>
+  <script type="text/javascript" src="demo-ui.ui-settingstab.js"></script>
+  <script type="text/javascript" src="demo-ui.ui-xxdo.js"></script>
   
   
   <title>Demo.UI</title>

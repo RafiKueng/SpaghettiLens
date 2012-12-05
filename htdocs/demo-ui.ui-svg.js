@@ -19,10 +19,7 @@ function initUI() {
   //root = document.getElementById("ui.svg_layer");
   root = $sel.svg; 
   
-  //alert("initUI");
-  var element = document.getElementById("ui.svg.settings_menu");
-  element.isVisible = false;
-  
+ 
   // disable default image dragging behaviour
   /*
   root.mousedown = "if (event.preventDefault) event.preventDefault()";
@@ -38,6 +35,8 @@ function initUI() {
   
   init_ActionMenu();
   init_ModeMenu();
+  init_SettingsTab();
+  init_UnReDoBtns();
   
   /*
   ui = {

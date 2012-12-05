@@ -10,7 +10,8 @@ function init_ActionMenu() {
 		"actionMenu",
 		"demo-ui.svg.br.svg",
 		-10, -10,
-		Widget.h_pos.right | Widget.v_pos.bot
+		Widget.h_pos.right | Widget.v_pos.bot,
+		Widget.Animation(Widget.aniType.none)
 	);
 
   ui.actionMenu.addHandler("save", Widget.event.click, ui.am.onclick.save);
@@ -20,7 +21,6 @@ function init_ActionMenu() {
 
   //ui.actionMenu.addHandler("prev", Widget.event.mousemove, ui.am.onmove.prev);
   //ui.actionMenu.addHandler("bg", Widget.event.click, ui.am.onclick.bg);
-  
   
   ui.actionMenu.init();  
 }

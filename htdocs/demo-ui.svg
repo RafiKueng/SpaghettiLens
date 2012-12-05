@@ -28,10 +28,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="518.64127"
+     inkscape:cx="436.14127"
      inkscape:cy="320.81285"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="ui_svg"
      showgrid="true"
      borderlayer="true"
      inkscape:window-width="1920"
@@ -122,70 +122,5 @@
      inkscape:label="UI"
      inkscape:groupmode="layer"
      id="layer1"
-     onclick="onClickUI(evt);">
-    <path
-       d="m 30,20 15,0 0,13.33333 -15,0 L 30,40 15,26.66666 30,13.33333 30,20"
-       id="ui_btn_undo"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccccccc"
-       onclick="onClickBtn(evt);" />
-    <path
-       d="m 70,33.33333 -15,0 L 55,20 70,20 70,13.33333 84.99999,26.66667 70,40 70,33.33333"
-       id="ui_btn_redo"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccccccc"
-       onclick="onClickBtn(evt);" />
-    <g
-       id="ui.svg.settings_menu"
-       onmouseover="mouseOver(evt);"
-       onmouseout="mouseOut(evt);"
-       visability="hover"
-       translate_vect_out="(0,0)"
-       translate_vect_over="(90,0)"
-       transform="translate(0,-451.64789)">
-      <text
-         transform="matrix(0,-1,1,0,0,0)"
-         sodipodi:linespacing="125%"
-         id="text2995"
-         y="20"
-         x="-1032.3622"
-         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         xml:space="preserve"><tspan
-           style="font-size:14px"
-           y="20"
-           x="-1032.3622"
-           id="tspan2997"
-           sodipodi:role="line">settings</tspan></text>
-      <path
-         sodipodi:nodetypes="csscsccc"
-         inkscape:connector-curvature="0"
-         id="m1_bg"
-         d="m -90,732.36218 c 0,0 -10,0 60,0 20,0 30,10 30,29.28571 0,110.71429 0,129.1381 0,170.71429 0,20 30,19.9794 30,50 0,50.00002 0,70.00002 0,70.00002 l -120,0 z"
-         style="fill:#0000ff;fill-opacity:0.32307691;stroke:#000000;stroke-width:0.77761573;stroke-miterlimit:4;stroke-opacity:1" />
-      <rect
-         y="842.36218"
-         x="-78.888885"
-         height="60.000004"
-         width="58.888885"
-         id="m1_btn1"
-         style="fill:#000080;stroke:#000000;stroke-width:0.79432511;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-         onclick="onClickBtn(evt);" />
-      <rect
-         y="912.36218"
-         x="-78.888885"
-         height="59.999996"
-         width="58.888885"
-         id="m1_btn2"
-         style="fill:none;stroke:#000000;stroke-width:0.79432505;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-         onclick="onClickBtn(evt);" />
-      <rect
-         y="982.36218"
-         x="-78.888885"
-         height="60.000004"
-         width="58.888885"
-         id="m1_btn3"
-         style="fill:none;stroke:#000000;stroke-width:0.79432511;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-         onclick="onClickBtn(evt);" />
-    </g>
-  </g>
+     onclick="onClickUI(evt);" />
 </svg>
