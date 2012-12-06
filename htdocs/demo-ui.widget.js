@@ -87,6 +87,7 @@ function Widget(name, path, x, y, positioning, animation) {
 
 Widget.prototype.init = function() {
 	
+	/* OUTDATED
 	//this fnc makes sure, that addToDOM of/on this element is called
 	var fnc = (function (obj) {
 		return function(svgDoc) {
@@ -95,6 +96,15 @@ Widget.prototype.init = function() {
 	})(this)
 	
 	importSVG(this.path, fnc);
+	*/
+	
+	//short hack for imorting it syncronoly
+	
+	var svg = importSVGsync(this.path);
+	this.addToDOM(svg);
+	
+	
+	
 }
 
 
@@ -123,18 +133,22 @@ Widget.prototype.addToDOM = function(svgDoc) {
 	
 	//register the handlers for the buttons previously added by addHandler
 	// look for each button whether there is an event handler
-	var children = this.btns.children;
+	var children = this.btns.childNodes;
 	var log = "";
 	
 	this.buttons = {};
 	
 	for (var i=0; i<children.length; ++i){
 		var child = children[i];
+
+		if (child.nodeName && child.nodeName=='#text') {
+			continue;
+		}
 		this.buttons[child.id] = child;
 		
 		// save .bg for easy access and styling
-		if (child.children[0]) { //if child is a group and has at least one child (the backgroubd)
-			this.buttons[child.id]['_bg'] = child.children[0]; // expose a bg element
+		if (child.childNodes[0]) { //if child is a group and has at least one child (the backgroubd)
+			this.buttons[child.id]['_bg'] = child.childNodes[0]; // expose a bg element
 		}
 		else { //child is a simple svg figure (rectangle?)
 			this.buttons[child.id]['_bg'] = child[0];

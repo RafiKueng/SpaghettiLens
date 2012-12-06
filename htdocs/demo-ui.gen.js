@@ -194,6 +194,7 @@ function initRefs() {
  */
 function importSVG(url, callback)
 {
+	/* this is not standart and doesnt work in chrome
 	var xmlDoc = null;
 	// firefox
 	if (document.implementation && document.implementation.createDocument)
@@ -215,4 +216,69 @@ function importSVG(url, callback)
 		return;
 	}
 	xmlDoc.load(url);
+	*/
+	
+	
+	
+	/*
+	 * check https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest/Using_XMLHttpRequest
+	 * 
+	 */
+	var req = new XMLHttpRequest();
+
+	var transferComplete = function(evt) {
+		var x=1;
+	}
+	
+	//req.addEventListener("progress", updateProgress, false);
+	req.addEventListener("load", transferComplete, false);
+	//req.addEventListener("error", transferFailed, false);
+	//req.addEventListener("abort", transferCanceled, false);
+	
+	req.open('GET', url, false);
+	req.send();
+	var ans = req.responseXML; 
 }
+
+
+/**
+ * syncronously imports the to be loaded files.. not recomended
+ * @param {Object} url
+ * @param {Object} callback
+ */
+function importSVGsync(url) {
+	var req = new XMLHttpRequest();
+
+	req.open('GET', url, false);
+	req.send();
+	
+	//remove whitespace text nodes
+	// source: http://stackoverflow.com/questions/5817069/dom-navigation-eliminating-the-text-nodes
+	var reBlank = /^\s*$/;
+	function walk(node) {
+    var child, next;
+    switch (node.nodeType) {
+      case 3: // Text node
+        if (reBlank.test(node.nodeValue)) {
+          node.parentNode.removeChild(node);
+        }
+        break;
+      case 1: // Element node
+      case 9: // Document node
+        child = node.firstChild;
+        while (child) {
+          next = child.nextSibling;
+          walk(child);
+          child = next;
+        }
+        break;
+    }
+	}
+
+	var xmlDoc = req.responseXML;
+	walk(xmlDoc); // Where xmlDoc is your XML document instance
+
+	return xmlDoc;
+}
+
+
