@@ -672,8 +672,8 @@ function moveRuler(ruler, svgpnt, x, y) {
 		ruler.phi = toPolarAng(dx,dy);
 	}
 	else {
-		alert('sould not happen in moveRuler');
-		return
+		//alert('sould not happen in moveRuler');
+		//return
 	}
 
 	ruler.update();
@@ -695,8 +695,8 @@ function moveMass(mass, svgpnt, x, y) {
 		mass.phi = toPolarAng(dx,dy);
 	}
 	else {
-		alert('sould not happen in moveRuler');
-		return
+		//alert('sould not happen in moveRuler');
+		//return
 	}
 
 	mass.update();
