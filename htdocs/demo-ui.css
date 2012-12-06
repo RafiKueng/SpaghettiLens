@@ -74,10 +74,35 @@
 	stroke-width: 1;
 }
 
-/* use this class for elements that are not displayed */
-.invisible {
-	visibility: hidden;
+
+.ruler_mid {
+	fill: white;
 }
+
+.ruler_circ {
+	fill: none;
+	stroke: white;
+}
+
+.ruler_handle {
+	fill: #ffaaaa;
+}
+
+
+.ext_mass_mid {
+	fill: black;
+}
+
+.ext_mass_circ {
+	fill: none;
+	stroke: black;
+}
+
+.ext_mass_handle {
+	fill: #00a;
+}
+
+
 
 
 .xxdobtn {
@@ -93,5 +118,10 @@
 }
 
 .btn.active {
-	fill: #ff00ff;
+	fill: #aaaaff;
+}
+
+/* use this class for elements that are not displayed */
+.invisible {
+	visibility: hidden;
 }

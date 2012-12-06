@@ -13,6 +13,7 @@ var selectedPoint = false;
 
 var root = null;
 var ui = {};
+ui.popup = {};
  
 function initUI() {
   
@@ -37,6 +38,8 @@ function initUI() {
   init_ModeMenu();
   init_SettingsTab();
   init_UnReDoBtns();
+  
+  init_Popup_DisplaySettings();
   
   /*
   ui = {
@@ -168,12 +171,15 @@ function onClickBtn(evt) {
  * Curve Code (layer2)
  ****************************************************/
 
+var noclick = false;
 
 // this handles all the clicks on the background to no element
 function onClickSVG(evt){
   var target = evt.target;
   var parent = evt.target.parentElement;
   var pnt = target.pnt;
+  
+  if (noclick){noclick=false;return;}
   
   var somethinghappend = false;
   //alert("click on svg: " + target.id);
@@ -211,18 +217,29 @@ function onClickSVG(evt){
       //alert("clicked bg in mass mode");
       if (target.id=="bg") {
         var pnt = coordTrans(evt);
-        var parent = document.getElementById("layer3");
-        var newgroup = createMassPoint(parent, parseInt(pnt.x.toFixed(0)), parseInt(pnt.y.toFixed(0)));
+				var em = new ExtMass(pnt.x, pnt.y, 30);
+			  em.update();
+			  em.paint();
       }
       else {
-        var parent = document.getElementById("layer3");
-        parent.removeChild(target);
+        target.extmass.remove();
       }
       somethinghappend = true;
     	break;
     
     case constants.modeRuler:
-      alert("clicked bg in ruler mode");
+      //alert("clicked bg in ruler mode");
+      if (target.id == "bg"){
+	      var pnt = coordTrans(evt);
+	      var r = new Ruler(pnt.x, pnt.y, 30);
+	      r.update();
+	      r.paint();
+			}
+			else {
+				target.ruler.remove();
+			}
+	     
+      
       somethinghappend = true;
     	break;
     	
@@ -246,13 +263,17 @@ function onMouseDownContours(evt) {
   
   //start moving
   dragTargetStr = evt.target.id.substring(0,4)
-  if (dragTargetStr=="poin" || dragTargetStr=="cpnt") {
+  if (dragTargetStr=="poin"
+  	|| dragTargetStr=="cpnt"
+  	|| dragTargetStr=="ext_"
+  	|| dragTargetStr=="rule") {
     dragTarget = evt.target;
   }
 
   //dragTarget.ownerSVGElement.addEventListener('mousemove', onMouseMove, false);
   //document.getElementById("ui.svg_layer").addEventListener('mousemove', onMouseMove, false);
   //document.getElementById("ui.svg_layer").setAttribute("onmousemove", "onMouseMove(evt)");
+  noclick = false;
   evt.stopPropagation();
   evt.preventDefault();
 }
@@ -264,6 +285,7 @@ function onMouseUpContours(evt) {
 	if (somethingDragged) {
 	  //push the new model to the undo / action stack
 	  actionstack.push(model);
+	  evt.stopPropagation();
 	}
 	somethingDragged = false;
   dragTarget = false;
@@ -284,9 +306,16 @@ function onMouseMove(evt) {
 		else if (dragTargetStr=="cpnt") {
 			moveContourPoint(dragTarget.pnt, pnt.x, pnt.y);
 		}
+		else if (dragTargetStr=="rule") {
+			moveRuler(dragTarget.ruler, dragTarget, pnt.x, pnt.y);
+		}
+		else if (dragTargetStr=="ext_") {
+			moveMass(dragTarget.extmass, dragTarget, pnt.x, pnt.y);
+		}
 		somethingDragged = true;
-
+  	noclick = true;
   }
+
   evt.stopPropagation();
 
 }

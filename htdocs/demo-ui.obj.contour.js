@@ -122,6 +122,13 @@ Contour.prototype.paint = function() {
 	pathstr += "Z"; //close path
 
 	
+	if (!this.path){
+		this.createSVG();
+	}
+
+	this.updateSVG(pathstr);
+
+	/*	
 	if (settings.paintContour && this.path) {
 		this.updateSVG(pathstr);
 	}
@@ -138,9 +145,9 @@ Contour.prototype.paint = function() {
 	else {
 		alert("strange error in Contour.paint");
 	}
+	*/
 	
 	
-	//TODO: better use css for formating and change class / name
 	if (settings.paintContour){
 		this.path.setAttribute("class", "contourpath");
 	}

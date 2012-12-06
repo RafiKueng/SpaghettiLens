@@ -151,7 +151,7 @@ var select = {
   
   svguiLayer: null,
   
-  modehighlight: null, //this item / group highlights the selected mode in ui
+  //modehighlight: null, //this item / group highlights the selected mode in ui
   
   undoBtn: null,
   redoBtn: null,
@@ -173,8 +173,11 @@ function initRefs() {
   select.extremalPointsLayer = document.getElementById("ExtremalPointsLayer");
   
   select.svguiLayer = document.getElementById("layer1");
+
+  select.rulerLayer = document.getElementById("layer4");
+  select.massLayer = document.getElementById("layer3");
   
-  select.modehighlight = document.getElementById("ui_modehighlight");
+  //select.modehighlight = document.getElementById("ui_modehighlight");
   
   select.undoBtn = document.getElementById("ui_btn_undo");
   select.redoBtn = document.getElementById("ui_btn_redo");

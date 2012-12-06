@@ -24,11 +24,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8001429"
-     inkscape:cx="121.70348"
-     inkscape:cy="48.516979"
+     inkscape:zoom="11.200572"
+     inkscape:cx="93.981682"
+     inkscape:cy="33.397073"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="rulerMode"
      showgrid="true"
      objecttolerance="10"
      gridtolerance="10"
@@ -115,7 +115,7 @@
          sodipodi:nodetypes="ccccccccccccccccccccccccccccc"
          inkscape:connector-curvature="0"
          id="path3144"
-         d="m 71,25 0,22 38,0 0,-22 -2,0 0,20 -4,0 0,-3 -2,0 0,3 -4,0 0,-3 -2,0 0,3 -4,0 0,-11 -2,0 0,11 -4,0 0,-3 -2,0 0,3 -4,0 0,-3 -2,0 0,3 -4,0 0,-20 z"
+         d="m 71,30 0,17 38,0 0,-17 -2,0 0,15 -4,0 0,-3 -2,0 0,3 -4,0 0,-3 -2,0 0,3 -4,0 0,-7 -2,0 0,7 -4,0 0,-3 -2,0 0,3 -4,0 0,-3 -2,0 0,3 -4,0 0,-15 z"
          style="fill:#000000;fill-opacity:1;stroke:none" />
     </g>
     <g
@@ -140,7 +140,7 @@
          x="28.571247"
          style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
          xml:space="preserve"><tspan
-           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr;text-anchor:start;fill:#ffffff;fill-opacity:1;font-family:Arial;-inkscape-font-specification:Arial"
            y="41.785622"
            x="28.571247"
            id="tspan3918"

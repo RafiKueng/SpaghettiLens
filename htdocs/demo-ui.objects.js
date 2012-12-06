@@ -367,12 +367,14 @@ Point.prototype.paint = function() {
 	  this.contour.paint();
 	}
 
-  if (settings.paintConnectingLines && !this.isRoot) {
+  if (!this.isRoot) {
     if (!this.line) {
       this.line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      this.line.setAttribute("class", "connectorline");
+      
       select.connectiorLinesLayer.appendChild(this.line);
     }
+    var classstr = settings.paintConnectingLines ? "connectorline" : "connectorline invisible";
+    this.line.setAttribute("class", classstr);
     this.line.setAttribute("x1", this.x);
     this.line.setAttribute("y1", this.y);
     this.line.setAttribute("x2", this.parent.x);

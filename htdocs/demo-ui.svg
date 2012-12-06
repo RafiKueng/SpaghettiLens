@@ -34,11 +34,11 @@
      inkscape:current-layer="ui_svg"
      showgrid="true"
      borderlayer="true"
-     inkscape:window-width="1920"
-     inkscape:window-height="1151"
-     inkscape:window-x="1912"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1"
+     inkscape:window-width="1057"
+     inkscape:window-height="882"
+     inkscape:window-x="604"
+     inkscape:window-y="77"
+     inkscape:window-maximized="0"
      showguides="false"
      inkscape:snap-grids="true">
     <inkscape:grid
@@ -89,12 +89,10 @@
      y="0" />
   <g
      inkscape:groupmode="layer"
-     id="layer4"
-     inkscape:label="Rulers" />
-  <g
-     inkscape:groupmode="layer"
      id="layer3"
-     inkscape:label="Masses" />
+     inkscape:label="Masses"
+     onmouseup="onMouseUpContours(evt);"
+     onmousedown="onMouseDownContours(evt);" />
   <g
      inkscape:groupmode="layer"
      id="layer2"
@@ -118,6 +116,12 @@
        id="ExtremalPointsLayer"
        inkscape:label="ExtremalPointsLayer" />
   </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="Rulers"
+     onmouseup="onMouseUpContours(evt);"
+     onmousedown="onMouseDownContours(evt);" />
   <g
      inkscape:label="UI"
      inkscape:groupmode="layer"

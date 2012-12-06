@@ -655,21 +655,56 @@ function getPoints() {
 
 }
 
-var masspointnr = 0;
 
-function createMassPoint(parent, x, y) {
-  masspointnr = masspointnr + 1;
-  var point = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  point.setAttribute("id", "masspoint" + masspointnr);
-  point.setAttribute("cx", x);
-  point.setAttribute("cy", y);
-  point.setAttribute("r", 7);
-  point.setAttribute("fill", "white");
-  point.setAttribute("class", "masspoint");
 
-  parent.appendChild(point);
+
+
+function moveRuler(ruler, svgpnt, x, y) {
+	
+	if (svgpnt.classList[0] == "ruler_mid") {
+		ruler.x = x;
+		ruler.y = y;
+	}	
+	else if (svgpnt.classList[0] == "ruler_handle") {
+		var dx = -ruler.x + x;
+		var dy = -ruler.y + y;
+		ruler.r = toPolarR(dx,dy);
+		ruler.phi = toPolarAng(dx,dy);
+	}
+	else {
+		alert('sould not happen in moveRuler');
+		return
+	}
+
+	ruler.update();
+	ruler.paint();
 
 }
+
+
+function moveMass(mass, svgpnt, x, y) {
+	
+	if (svgpnt.classList[0] == "ext_mass_mid") {
+		mass.x = x;
+		mass.y = y;
+	}	
+	else if (svgpnt.classList[0] == "ext_mass_handle") {
+		var dx = -mass.x + x;
+		var dy = -mass.y + y;
+		mass.r = toPolarR(dx,dy);
+		mass.phi = toPolarAng(dx,dy);
+	}
+	else {
+		alert('sould not happen in moveRuler');
+		return
+	}
+
+	mass.update();
+	mass.paint();
+
+}
+
+
 
 /********************
  * math helper

@@ -75,6 +75,8 @@ function Widget(name, path, x, y, positioning, animation) {
 	this.pos = positioning || 0;
 	this.ani = (animation) ? animation : Widget.Animation(); //if no animation type supplied, create none type 
 	
+	this.isShown = true;
+	
 	this.grp = null; //the whole group with all the layout elements
 	this.bg = null;
 	this.btns = null;
@@ -157,14 +159,21 @@ Widget.prototype.addToDOM = function(svgDoc) {
 
 	
 	//add handler to the background
-	if (this.handlers['bg']){
-		if (this.handlers['bg'][Widget.event.click]) {this.bg.onclick = this.handlers['bg'][Widget.event.click];}
-		if (this.handlers['bg'][Widget.event.mouseover]) {this.bg.onmouseover = this.handlers['bg'][Widget.event.mouseover];}
-		if (this.handlers['bg'][Widget.event.mouseout]) {this.bg.onmouseout = this.handlers['bg'][Widget.event.mouseout];}
-		if (this.handlers['bg'][Widget.event.mousemove]) {this.bg.onmousemove = this.handlers['bg'][Widget.event.mousemove];}
-		
-		// run init handler
+	if (this.handlers['_bg']){
+		if (this.handlers['_bg'][Widget.event.click]) {this.bg.onclick = this.handlers['_bg'][Widget.event.click];}
+		if (this.handlers['_bg'][Widget.event.mouseover]) {this.bg.onmouseover = this.handlers['_bg'][Widget.event.mouseover];}
+		if (this.handlers['_bg'][Widget.event.mouseout]) {this.bg.onmouseout = this.handlers['_bg'][Widget.event.mouseout];}
+		if (this.handlers['_bg'][Widget.event.mousemove]) {this.bg.onmousemove = this.handlers['_bg'][Widget.event.mousemove];}
 	}
+
+	//add handler to the basic group
+	if (this.handlers['_all']){
+		if (this.handlers['_all'][Widget.event.click]) {this.grp.onclick = this.handlers['_all'][Widget.event.click];}
+		if (this.handlers['_all'][Widget.event.mouseover]) {this.grp.onmouseover = this.handlers['_all'][Widget.event.mouseover];}
+		if (this.handlers['_all'][Widget.event.mouseout]) {this.grp.onmouseout = this.handlers['_all'][Widget.event.mouseout];}
+		if (this.handlers['_all'][Widget.event.mousemove]) {this.grp.onmousemove = this.handlers['_all'][Widget.event.mousemove];}
+	}
+
 	
 	//run init handler
 	if (this.handlers['_init']){
@@ -230,10 +239,28 @@ Widget.prototype.update = function() {
 	};
 	
 	this.grp.setAttribute('transform', 'translate(' + x + ',' + y + ')');
+	
+	if (this.isShown){
+		this.grp.removeAttribute('class');		
+	}
+	else {
+		this.grp.setAttribute('class', 'invisible');
+	}
 }
 
 
 Widget.prototype.hide = function() {
+	this.isShown = false;
+	if (this.grp){ //if its initalized
+		this.update();
+	}
+}
+
+Widget.prototype.show = function() {
+	this.isShown = true;
+	if (this.grp){ //if its initalized
+		this.update();
+	}
 }
 
 

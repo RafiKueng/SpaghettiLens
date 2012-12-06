@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.959798"
-     inkscape:cx="70.623132"
-     inkscape:cy="378.3904"
+     inkscape:zoom="7.9195959"
+     inkscape:cx="-1.7441831"
+     inkscape:cy="47.167846"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -72,7 +72,7 @@
        sodipodi:nodetypes="cccssccc" />
     <text
        xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       style="font-size:24px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial;font-stretch:normal;font-variant:normal;text-anchor:start;text-align:start;writing-mode:lr"
        x="-380"
        y="20"
        id="text3042"
@@ -82,7 +82,7 @@
          id="tspan3044"
          x="-380"
          y="20"
-         style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;font-family:Sans;-inkscape-font-specification:Sans">settings</tspan></text>
+         style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial;fill:#ffffff;fill-opacity:1">settings</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -91,14 +91,14 @@
     <g
        id="displaySettings">
       <rect
-         style="fill:#0000ff;fill-opacity:0.50196078;fill-rule:nonzero;stroke:#000000;stroke-opacity:1"
+         style="fill:#0000ff;fill-opacity:0.50196078;fill-rule:nonzero;stroke:#000000;stroke-width:0.83333337;stroke-opacity:1"
          id="rect3046"
-         width="60"
-         height="60"
-         x="-65"
-         y="335" />
+         width="50"
+         height="50"
+         x="-60"
+         y="340" />
       <path
-         transform="translate(-5,0)"
+         transform="matrix(0.67655075,0,0,0.74231489,-14.803715,93.934393)"
          sodipodi:open="true"
          sodipodi:end="8.6746988"
          sodipodi:start="5.5551014"
@@ -108,10 +108,10 @@
          sodipodi:cy="365"
          sodipodi:cx="-30"
          id="path4329-0"
-         style="fill:#0000ff;fill-opacity:0.50196078000000000;fill-rule:nonzero;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:3,9;stroke-dashoffset:0"
+         style="fill:#0000ff;fill-opacity:0.50196078;fill-rule:nonzero;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:3, 9;stroke-dashoffset:0"
          sodipodi:type="arc" />
       <path
-         transform="translate(-5,0)"
+         transform="matrix(0.71432826,0,0,0.7443099,-14.283587,93.213086)"
          sodipodi:open="true"
          sodipodi:end="5.5602935"
          sodipodi:start="2.3946371"
@@ -121,13 +121,13 @@
          sodipodi:cy="365"
          sodipodi:cx="-30"
          id="path4329"
-         style="fill:#0000ff;fill-opacity:0.50196078000000000;fill-rule:nonzero;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         style="fill:#0000ff;fill-opacity:0.50196078;fill-rule:nonzero;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
          sodipodi:type="arc" />
       <path
          inkscape:connector-curvature="0"
          id="path4349"
-         d="m -10,340 -50,50 0,0"
-         style="fill:none;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0" />
+         d="m -15,345 -40,40 0,0"
+         style="fill:none;stroke:#000000;stroke-width:2.4000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
     </g>
   </g>
 </svg>

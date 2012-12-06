@@ -35,7 +35,7 @@ ui.am = {
 		},
 		
 		model:  function(evt) {
-			alert('clicked on model');
+			//alert('clicked on model');
 			calculateModel();
 		},
 		

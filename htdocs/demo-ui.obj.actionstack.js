@@ -140,13 +140,13 @@ ActionStack.prototype.updateUIBtn = function() {
 		$sel.undoBtn.setAttribute("class", "btn");
 	}
 	else {
-		$sel.undoBtn.setAttribute("class", "invisible");
+		$sel.undoBtn.setAttribute("class", "btn invisible");
 	}
 	if (this.nRedoActionsPossible()>0) {
 		$sel.redoBtn.setAttribute("class", "btn");
 	}
 	else {
-		$sel.redoBtn.setAttribute("class", "invisible");
+		$sel.redoBtn.setAttribute("class", "btn invisible");
 	}
 }
 

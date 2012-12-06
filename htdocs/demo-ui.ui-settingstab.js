@@ -23,7 +23,12 @@ function init_SettingsTab() {
 ui.st = {
 	onclick: {
 		displaySettings: function(evt) {
-			alert('clicked display settings');
+			if (ui.popup.displaysettings.isShown){
+				ui.popup.displaysettings.hide();
+			}
+			else {
+				ui.popup.displaysettings.show();
+			}
 		},
 	},
-} 
+}
