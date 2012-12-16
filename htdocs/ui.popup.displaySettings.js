@@ -12,16 +12,20 @@ function init_Popup_DisplaySettings() {
 		Widget.h_pos.mid | Widget.v_pos.mid,
 		Widget.Animation(Widget.aniType.none)
 	);
+	
+	var ds = ui.popup.displaysettings;
+	var _ds = ui.popup._displaysettings;
+	var evnts =  Widget.event;
 
-  ui.popup.displaysettings.addHandler("DisplayContourLines",  Widget.event.click, ui.popup._displaysettings.onclick.dispContLine);
-  ui.popup.displaysettings.addHandler("DisplayContourPoints",  Widget.event.click, ui.popup._displaysettings.onclick.dispContPnt);
-  ui.popup.displaysettings.addHandler("DisplayConnectingLines",  Widget.event.click, ui.popup._displaysettings.onclick.dispCncLine);
+  ds.addHandler("DisplayContourLines",  evnts.click, _ds.onclick.dispContLine);
+  ds.addHandler("DisplayContourPoints",  evnts.click, _ds.onclick.dispContPnt);
+  ds.addHandler("DisplayConnectingLines",  evnts.click, _ds.onclick.dispCncLine);
 
-  ui.popup.displaysettings.addHandler("_all", Widget.event.mouseout, ui.popup._displaysettings.onmouseout);
-  ui.popup.displaysettings.addHandler("_init", Widget.event.init, ui.popup._displaysettings.oninit);
+  ds.addHandler("_all", evnts.mouseout, _ds.onmouseout);
+  ds.addHandler("_init", evnts.init, _ds.oninit);
   
-  ui.popup.displaysettings.init();
-  ui.popup.displaysettings.hide();
+  ds.init();
+  ds.hide();
   
 }
 
@@ -35,8 +39,13 @@ ui.popup._displaysettings = {
 	oninit: function() {
 	},
 	
-	onmouseout: function() {
-		//ui.popup.displaysettings.hide();
+	onmouseout: function(evt) {
+		var _this = ui.popup.displaysettings;
+		var _that = ui.popup._displaysettings;
+		
+		if (evt.rangeParent == $sel.svg) {
+			_this.hide();
+		}
 	},
 	
 	onclick: {

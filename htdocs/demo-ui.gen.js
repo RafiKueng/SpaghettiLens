@@ -41,15 +41,19 @@ function onBodyInit() {
     $_GET.id = Math.floor(tmp) + 1;
     alert("imageid in url is missing (add ?id=1 to url)\nusing random mode: "+$_GET.id);
   }
-
-	//load all the ui elements
-  initUI();
-  
-  getBGImageUrls($_GET.id);
   
   //init the model
   model = new Model();
   model.init();
+
+	//load all the ui elements
+  initUI();
+  
+  canvas.init();
+  
+  getBGImageUrls($_GET.id);
+  
+
   
   actionstack = new ActionStack();
   actionstack.push(model); //init commit of empty state
@@ -163,6 +167,7 @@ var $sel = select;
 
 
 function initRefs() {
+	select.body = document.body;
 	select.svg = document.getElementById("ui_svg");
 	select.bg_canv = document.getElementById("ui_bg_canvas");
 	select.img_canv = document.getElementById("ui_img_canvas");

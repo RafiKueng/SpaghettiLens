@@ -156,6 +156,8 @@ class EchoServerProtocol(WebSocketServerProtocol):
         url = "hubble-udf.jpg"
       elif (p_id==2):
         url = "http://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Einstein_cross.jpg/621px-Einstein_cross.jpg"
+      elif (p_id==3):
+        url = "demo-gray.png"
       else:
         url = "no-img.jpg"
       self.sendMessage("limg" + url)

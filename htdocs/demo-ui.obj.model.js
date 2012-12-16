@@ -18,6 +18,25 @@ function Model() {
   this.Sources = null; //this contains all the modeled sources (of length nSources)
 
   this.MinMmaxSwitchAngle = Math.PI / 3.; //limit angle between two children, when the children will switch to different type (min/min to min/max; max/max to min/max)
+  
+  //color and channel settings
+  this.brightness = 0.5;
+  this.contrast = 0.5;
+  this.channels = [
+  	//array of channel objects containing the options for each channel, like:
+  	//TODO comment this out
+  	{ short: 'K',
+  		name: 'near IR',
+  		color: new Color(255, 0, 0),
+  		alpha: 1,
+  		img_url: '',
+  		//img_obj: null,
+  		//ctx_data: null
+  	}
+  ]
+  
+  this.brightness = 0.5;
+  this.contrast = 0.5;
 }
 
 

@@ -16,7 +16,10 @@ function getBGImageUrls(id) {
     if (e.data.substring(0,4) == "limg") {
       var limg = e.data.substring(4);
       dbg.append("got image url: " + limg);
-      loadImage(limg);
+      
+      //loadImage(limg);
+      //limg.split('|')
+      canvas.loadImages([limg]);
     }
     else {
       dbg.write("got error: " + e.data);

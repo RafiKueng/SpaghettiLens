@@ -111,6 +111,11 @@
 }
 
 
+.bg {
+	fill: #aaaaaa;
+	fill-opacity: 0.8;
+}
+
 
 /*ui elements*/
 .btn {

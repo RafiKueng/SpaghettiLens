@@ -114,6 +114,9 @@ Widget.prototype.init = function() {
  * the ui
  * 
  * addiditionally sets the handlers for the buttons
+ * 
+ * difference between default buttons and special instances:
+ * specials only get handles assgined, no style or anything.
  */
 Widget.prototype.addToDOM = function(svgDoc) {
 	//alert('got svg doc');
@@ -122,10 +125,26 @@ Widget.prototype.addToDOM = function(svgDoc) {
 
 	this.bg   = svgDoc.getElementById('layer1'); //background layer
 	this.btns = svgDoc.getElementById('layer2'); //buttons layer
+	this._special = svgDoc.getElementById('layer3'); //special elements layer
+
+	// if defs exist, move them to group
+	//TODO make sure, no double defs are around..
+	var defsnode = svgDoc.getElementsByTagName('defs');
+	var first_defs = defsnode[0];
+	var defs = first_defs.childNodes;
+	
+	if (defs.length && defs.length>0) {
+		this.grp.appendChild(first_defs);
+	}
 
 	// save widgets dimensions
 	this.w = svgDoc.documentElement.width.baseVal.value;
 	this.h = svgDoc.documentElement.height.baseVal.value;
+
+	
+	this.bg.firstChild.style.fill = '';
+	this.bg.firstChild.style['fill-opacity'] = '';
+	this.bg.firstChild.setAttribute('class', 'bg');	
 	
 	this.grp.appendChild(this.bg);
 	this.grp.appendChild(this.btns);
@@ -151,7 +170,7 @@ Widget.prototype.addToDOM = function(svgDoc) {
 			this.buttons[child.id]['_bg'] = child.childNodes[0]; // expose a bg element
 		}
 		else { //child is a simple svg figure (rectangle?)
-			this.buttons[child.id]['_bg'] = child[0];
+			this.buttons[child.id]['_bg'] = child;
 		}
 		
 		// set class, remove styles that are taken care of by css
@@ -159,6 +178,8 @@ Widget.prototype.addToDOM = function(svgDoc) {
 		this.buttons[child.id]['_bg'].setAttribute('class', 'btn');
 		
 		
+		this._setHandlers(child, child.id);
+		/*
 		if (this.handlers[child.id]) {
 			if (this.handlers[child.id][Widget.event.click]) {child.onclick = this.handlers[child.id][Widget.event.click];}
 			if (this.handlers[child.id][Widget.event.mouseover]) {child.onmouseover = this.handlers[child.id][Widget.event.mouseover];}
@@ -167,26 +188,53 @@ Widget.prototype.addToDOM = function(svgDoc) {
 		}
 		else {
 			log += "no event handler for: " + child.id+'<br>';
-		}
+		}*/
+		
 	}
+	
+	if (this._special) {
+		this.special = {};
+		
+			for (var i=0; i<this._special.childNodes.length; ++i){
+				var child = this._special.childNodes[i];
+		
+				if (child.nodeName && child.nodeName=='#text') {
+					continue;
+				}
+				this.special[child.id] = child;
+				
+				this._setHandlers(child, child.id);
+		}
+		
+		
+		this.grp.appendChild(this._special);
+	}
+	
+	
 	dbg.write(log);
 
 	
 	//add handler to the background
+	this._setHandlers(this.bg, '_bg');
+	/*
 	if (this.handlers['_bg']){
 		if (this.handlers['_bg'][Widget.event.click]) {this.bg.onclick = this.handlers['_bg'][Widget.event.click];}
 		if (this.handlers['_bg'][Widget.event.mouseover]) {this.bg.onmouseover = this.handlers['_bg'][Widget.event.mouseover];}
 		if (this.handlers['_bg'][Widget.event.mouseout]) {this.bg.onmouseout = this.handlers['_bg'][Widget.event.mouseout];}
 		if (this.handlers['_bg'][Widget.event.mousemove]) {this.bg.onmousemove = this.handlers['_bg'][Widget.event.mousemove];}
 	}
+	*/
 
 	//add handler to the basic group
+	this._setHandlers(this.grp, '_all');
+	/*
 	if (this.handlers['_all']){
 		if (this.handlers['_all'][Widget.event.click]) {this.grp.onclick = this.handlers['_all'][Widget.event.click];}
 		if (this.handlers['_all'][Widget.event.mouseover]) {this.grp.onmouseover = this.handlers['_all'][Widget.event.mouseover];}
 		if (this.handlers['_all'][Widget.event.mouseout]) {this.grp.onmouseout = this.handlers['_all'][Widget.event.mouseout];}
 		if (this.handlers['_all'][Widget.event.mousemove]) {this.grp.onmousemove = this.handlers['_all'][Widget.event.mousemove];}
 	}
+	*/
 
 	
 	//run init handler
@@ -213,6 +261,23 @@ Widget.prototype.addToDOM = function(svgDoc) {
 	$sel.svguiLayer.appendChild(this.grp);		
 }
 
+
+/**
+ * internal func
+ * assigns the handlers stored in this.handlers[attr] to elem  
+ */
+Widget.prototype._setHandlers = function (elem, attr) {
+	var handlers = this.handlers[attr];
+	if (handlers){
+		if (handlers[Widget.event.click]) {elem.onclick = handlers[Widget.event.click];}
+		if (handlers[Widget.event.mouseover]) {elem.onmouseover = handlers[Widget.event.mouseover];}
+		if (handlers[Widget.event.mouseout]) {elem.onmouseout = handlers[Widget.event.mouseout];}
+		if (handlers[Widget.event.mousemove]) {elem.onmousemove = handlers[Widget.event.mousemove];}
+		if (handlers[Widget.event.mousedown]) {elem.onmousedown = handlers[Widget.event.mousedown];}
+		if (handlers[Widget.event.mouseup]) {elem.onmouseup = handlers[Widget.event.mouseup];}
+	}
+
+}
 
 Widget.prototype.update = function() {
 	//move to the right place
@@ -309,9 +374,24 @@ Widget.prototype.addHandler = function(name, eventtype, fnc) {
 		this.handlers[name] = {};
 	}
 	this.handlers[name][eventtype] = function (evt) {
-		fnc.apply(this, evt);
+		fnc.apply(this, [evt]); //TODO this doesn't really work..
 		if (evt) {
 			evt.stopPropagation();
+		}
+	}
+}
+
+
+/**
+ * Switches the mousemove handler of _all on and off 
+ */
+Widget.prototype.catchMouseMove = function(bool) {
+	if (this.handlers['_all'][Widget.event.mousemove]) {
+		if (bool) {
+			this.grp.onmousemove = this.handlers['_all'][Widget.event.mousemove];
+		}
+		else {
+			this.grp.onmousemove = null;
 		}
 	}
 }
@@ -334,7 +414,9 @@ Widget.event = {
 	click:     0,
 	mouseover: 1,
 	mouseout:  2,
-	mousemove: 3
+	mousemove: 3,
+	mousedown: 4,
+	mouseup: 5
 }
 
 /**

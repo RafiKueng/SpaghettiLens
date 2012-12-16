@@ -1,6 +1,10 @@
 <!-- /// demo-ui.head.php start -->
 <head>
   <link rel="stylesheet" href="demo-ui.css" type="text/css" />
+
+  <script type="text/javascript" src="Color.js"></script>
+  <script type="text/javascript" src="object.ui.BandColorSelector.js"></script>
+
   
   <script type="text/javascript" src="demo-ui.gen.js"></script>
   <script type="text/javascript" src="demo-ui.objects.js"></script>
@@ -22,6 +26,10 @@
   <script type="text/javascript" src="demo-ui.ui-settingstab.js"></script>
   <script type="text/javascript" src="demo-ui.ui-xxdo.js"></script>
   <script type="text/javascript" src="ui.popup.displaySettings.js"></script>
+  <script type="text/javascript" src="ui.popup.graphicSettings.js"></script>
+
+
+
   
   
   <title>Demo.UI</title>

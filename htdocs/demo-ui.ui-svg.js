@@ -40,6 +40,7 @@ function initUI() {
   init_UnReDoBtns();
   
   init_Popup_DisplaySettings();
+  init_Popup_GraphicsSettings();
   
   /*
   ui = {
@@ -79,7 +80,7 @@ function mouseOut(evt) {
 // clicks on a UI element, but not on a button
 function onClickUI(evt) {
   var target = evt.target;
-  alert("clicked on a tab, but no button: "+target.id);
+  //alert("clicked on a tab, but no button: "+target.id);
   evt.stopPropagation();
 }
 
