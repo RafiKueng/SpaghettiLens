@@ -17,9 +17,45 @@ function getBGImageUrls(id) {
       var limg = e.data.substring(4);
       dbg.append("got image url: " + limg);
       
+      
+      
+      /*debug and demo purpose*/
+     if (limg=="DEVDEMO")  {
+     //if (true)  {
+     	
+		 	  model.channels = [
+			  	{ short: 'Ch1',
+			  		name: 'near IR',
+			  		color: new Color(255, 0, 0),
+			  		alpha: 1,
+			  		img_url: '' },
+			  	{ short: 'Ch2',
+			  		name: 'near IR',
+			  		color: new Color(0, 255, 0),
+			  		alpha: 1,
+			  		img_url: '' },
+			  	{ short: 'Ch3',
+			  		name: 'near IR',
+			  		color: new Color(0, 0, 255),
+			  		alpha: 1,
+			  		img_url: '' }
+	  		];
+			  		
+			  		
+	  		limg = ['testing/svgfilter/demo-ch1.png','testing/svgfilter/demo-ch2.png', 'testing/svgfilter/demo-ch3.png'];
+     }
+     
+     else {
+     	limg = [limg];
+     }
+     
+      
+      
+      
+      
       //loadImage(limg);
       //limg.split('|')
-      canvas.loadImages([limg]);
+      canvas.loadImages(limg);
     }
     else {
       dbg.write("got error: " + e.data);

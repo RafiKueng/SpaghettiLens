@@ -45,6 +45,7 @@ canvas.waitForLoadToCompelte = function() {
 	canvas.nImgLoaded++;
 	if (canvas.nImgLoaded == canvas.nImages){
 		canvas.repaint();
+		ui.popup._graphicssettings.oninit();
 	}
 }
 
