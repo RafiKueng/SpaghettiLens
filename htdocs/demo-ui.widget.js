@@ -286,8 +286,11 @@ Widget.prototype.update = function() {
 
 	//parent dimensions	
 	var p = $sel.svg; //get the parent element
-	var p_w = p.width.baseVal.value;
-	var p_h = p.height.baseVal.value;
+	
+	//var p_w = p.width.baseVal.value;
+	//var p_h = p.height.baseVal.value;
+	var p_w = p.clientWidth;
+	var p_h = p.clientHeight;
 	
 	//first vertical (bitwise op: 3 = 0b0011 gets the last 2 binary digits)
 	switch (this.pos & 3) {
