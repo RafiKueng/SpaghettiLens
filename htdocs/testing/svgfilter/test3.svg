@@ -15,12 +15,13 @@
                    0 0 0 0 0 
                    0 0 0 1 0"/>
                    
-        <feComposite in="comp" in2="cimg1" result="comp"
-                   operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>
+        <feComposite in="comp" in2="cimg1" result="comp" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>
 
-      
-                   
-                  
+
+
+
+
+
         <feImage x = "0" y = "0" width = "100%" height = "100%" result = "img2" xlink:href = "demo-ch2.png"/>
         <feColorMatrix type="matrix" in="img2" result="cimg2"
            values="0 0 0 0 0 
