@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+	<title>footer gestalten</title> 
+<style type="text/css">
+
+  html, body
+  {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+  }
+  
+  #doc {
+    height: 100%;
+    background-color: gray;
+    position: relative;
+  }
+
+  #top {
+    height: 100px;
+    background-color: yellow;
+  }
+  
+  #cont {
+    position: absolute;
+    top: 100px;
+    bottom: 100px;
+    width: 100%;
+    background-color: black;
+  }
+  
+  #main {
+    height: 100%;
+    position: relative;
+    background-color: magenta;
+  }
+  
+  #btn {
+    height: 50px;
+    background-color: orange;
+  }
+  
+  #btn2 {
+		position: absolute;
+    top: 50px;
+    left: 0;
+    bottom: 0;
+    width: 50%;
+  }
+  
+	#out
+	{
+		position: absolute;
+    top: 50px;
+    right: 0;
+    bottom: 0;
+    width: 50%;
+		background-color: blue;
+	}
+	
+	#inp
+	{
+		position: absolute;
+    top: 50px;
+    left: 50px;
+    bottom: 0;
+    width: 50%;
+		background-color: aqua;
+	}
+  
+	#log	
+	{ 
+    position: absolute;
+    bottom: 0px;
+    height: 100px;
+    width: 100%;
+    background-color: lime;
+    font-family: "Courier New", "Lucida Console";
+	}
+
+	#popup	
+	{ 
+    position: absolute;
+    top: 300px;
+    left: 300px;
+    height: 100px;
+    width: 100px;
+    background-color: white;
+	}
+  
+	
+</style>
+</head>
+<body>
+
+<div id="doc">
+  <div id="top">top</div>
+  <div id="cont">
+    <div id="main">
+      <div id="btn">btn</div>
+      <div id="btn2">btn2</div>
+      <div id="out">out</div>
+      <div id="inp">inp<br/>line2</div>
+    </div>
+  
+  </div>
+  <div id="log">log</div>
+
+  <div id="popup">popup</div>
+</div>
+
+</body>
+</html>
