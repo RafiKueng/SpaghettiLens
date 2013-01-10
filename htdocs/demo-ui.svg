@@ -9,15 +9,15 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="600"
-   height="600"
    id="ui_svg"
    version="1.1"
    inkscape:version="0.48.0 r9654"
    sodipodi:docname="demo-ui.svg"
    onclick="onClickSVG(evt);"
    viewBox="0 0 600 600"
-   onmousemove="onMouseMove(evt);">
+   onmousemove="onMouseMove(evt);"
+   width="100%"
+   height="100%">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -27,9 +27,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="436.14127"
-     inkscape:cy="320.81285"
+     inkscape:zoom="0.7"
+     inkscape:cx="357.54707"
+     inkscape:cy="285.87709"
      inkscape:document-units="px"
      inkscape:current-layer="ui_svg"
      showgrid="true"
