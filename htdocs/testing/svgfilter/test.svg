@@ -7,7 +7,7 @@
         <feImage x = "0" y = "0" width = "50%" height = "50%" result = "raster1" xlink:href = "demo-ch1.png"/>
         <feImage x = "0" y = "0" width = "50%" height = "50%" result = "raster2" xlink:href = "demo-ch2.png"/>
         
-        <feBlend id="fb" in="raster1" in2="raster2" mode="multiply">
+        <feBlend id="fb" in="raster1" in2="raster2" mode="multiply" result="someres">
           <animate attributeName="mode"
               values="normal;screen;darken;lighten"
               begin="3s"
