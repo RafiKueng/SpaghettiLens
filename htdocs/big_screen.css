@@ -1,0 +1,31 @@
+@media screen and (min-width: 980px) {
+
+html, body {
+  min-width: 980px;
+}
+
+#btn {
+  left: 0px;
+  width: 50%;
+}
+
+#btn2{
+  right: 0px;
+  width: 50%;
+}
+
+#inp {
+  width: 50%;
+}
+
+#out {
+  width: 50%;
+}
+
+#log {
+  left: 50px;
+  right: 50px;
+  bottom: -180px;
+}
+
+}

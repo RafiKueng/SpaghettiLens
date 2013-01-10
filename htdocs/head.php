@@ -1,5 +1,16 @@
-<!-- /// demo-ui.head.php start -->
+
+<!-- START head.php -->
+
 <head>
+  <meta charset="UTF-8">
+  
+  <link rel="stylesheet" href="main.css" type="text/css" />
+  <link rel="stylesheet" href="svg_elements.css" type="text/css" />
+  <link rel="stylesheet" href="big_screen.css" type="text/css" />
+  <link rel="stylesheet" href="small_screen.css" type="text/css" />
+
+  
+<!--
   <link rel="stylesheet" href="demo-ui.css" type="text/css" />
 
   <script type="text/javascript" src="Color.js"></script>
@@ -27,11 +38,9 @@
   <script type="text/javascript" src="demo-ui.ui-xxdo.js"></script>
   <script type="text/javascript" src="ui.popup.displaySettings.js"></script>
   <script type="text/javascript" src="ui.popup.graphicSettings.js"></script>
+-->
 
-
-
-  
-  
-  <title>Demo.UI</title>
+  <title>LensModellingTool</title>
 </head>
-<!-- \\\ demo-ui.head.php end -->
+
+<!-- END head.php -->
