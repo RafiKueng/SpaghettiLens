@@ -4,6 +4,67 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
 	<title>footer gestalten</title> 
+  
+  <script type="text/javascript">
+    
+    /* displays more lines of the logfile upon clicking on it */
+    function togglelog() {
+      var logpos = document.getElementById('log').style.bottom;
+      var contpos = '';
+      
+      if (logpos == "-130px") {logpos = "0px";contpos = "200px";}
+      else if (logpos == "0px") {logpos = "-130px";contpos = "70px";}
+      else {logpos = "0px";contpos = "200px";}
+      
+      document.getElementById('log').style.bottom = logpos;
+      document.getElementById('cont').style.bottom = contpos;
+      
+      
+    }
+    
+    function hoverBtns(event) {
+      document.getElementById('popup').style.left = Math.round(event.clientX) + 10 + 'px';
+      document.getElementById('popup').style.top  = Math.round(event.clientY) + 10 + 'px';
+    }
+    
+    
+    /**
+      this takes care of the output / input display if in small/mobile mode
+    */
+    var mindisp_style = 'inp';
+    function sliderclick() {
+    
+      /* change to output view */
+      if (mindisp_style=='inp') {
+        document.getElementById('inp').style.zIndex = '14';
+        document.getElementById('btn').style.zIndex = '14';
+        document.getElementById('out').style.zIndex = '15';
+        document.getElementById('btn2').style.zIndex = '15';
+
+        document.getElementById('slider').style.left = '0px';
+        document.getElementById('slider').style.right = 'auto';
+
+        
+        mindisp_style = 'out';
+      }
+      
+      /* change to input view */
+      else {
+        document.getElementById('inp').style.zIndex = '15';
+        document.getElementById('btn').style.zIndex = '15';
+        document.getElementById('out').style.zIndex = '14';
+        document.getElementById('btn2').style.zIndex = '14';
+        
+        document.getElementById('slider').style.left = 'auto';
+        document.getElementById('slider').style.right = '0px';
+        
+        mindisp_style = 'inp';
+      }
+    }
+    
+  </script>
+  
+  
 <style type="text/css">
 
   html, body
@@ -11,6 +72,8 @@
     margin: 0px;
     padding: 0px;
     height: 100%;
+    min-width: 800px;
+    min-height: 600px;
   }
   
   #doc {
@@ -27,7 +90,7 @@
   #cont {
     position: absolute;
     top: 100px;
-    bottom: 100px;
+    bottom: 70px;
     width: 100%;
     background-color: black;
   }
@@ -36,19 +99,25 @@
     height: 100%;
     position: relative;
     background-color: magenta;
+    min-height: 400px;
   }
   
   #btn {
+		position: absolute;
     height: 50px;
+    top: 0px;
+    left: 0px;
+    width: 50%;
     background-color: orange;
   }
   
   #btn2 {
 		position: absolute;
-    top: 50px;
-    left: 0;
-    bottom: 0;
+    top: 0px;
+    right: 0px;
     width: 50%;
+    height: 50px;
+    background-color: red;
   }
   
 	#out
@@ -65,7 +134,7 @@
 	{
 		position: absolute;
     top: 50px;
-    left: 50px;
+    left: 0px;
     bottom: 0;
     width: 50%;
 		background-color: aqua;
@@ -73,24 +142,98 @@
   
 	#log	
 	{ 
+    
     position: absolute;
-    bottom: 0px;
-    height: 100px;
+    
+    bottom: -130px;
+    
+    height: 200px;
     width: 100%;
+    
     background-color: lime;
+    
+    font-size: 75%;
     font-family: "Courier New", "Lucida Console";
 	}
+  
+  #logtitle {
+    font-weight: bolder;
+    margin: 0.5em 0.5em 0em 0.5em; /* top/bottom  left/right */
+    
+    border-bottom-style: dotted;
+    border-width: 1px;
+  }
+  
+  #logcont {
+    margin: 0em 1.5em 0em 1.5em;
+    padding: 0px 0px 0px 3px;
+    border-left-style: dotted;
+    border-width: 1px;
+  }
 
 	#popup	
 	{ 
+    display: none;
+    padding: 20px;
     position: absolute;
     top: 300px;
     left: 300px;
-    height: 100px;
-    width: 100px;
-    background-color: white;
-	}
+    /*height: 100px;*/ 
+    /*width: 100px;*/
+    z-index: 100;
+    border: solid;
+    background: rgba(255, 255, 255, 0.6);
+    }
   
+  #slider
+  {
+    display: none;
+    z-index: 99;
+  }
+  
+  
+  @media screen and (max-width: 980px) {
+    html, body
+    {
+      min-width: 480px;
+    }
+    #inp
+    {
+      width: auto;
+      right: 50px;
+      z-index: 15;
+    }
+    #out
+    {
+      left: 50px;
+      width: auto;
+      right: 0px;
+      z-index: 14;
+    }
+    #slider
+    {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      width: 50px;
+      height: 100%;
+      display: block;
+      background-color: white;
+    }
+    #btn 
+    {
+      left: 0px;
+      right: 50px;
+      width: auto;
+      z-index: 15;
+    }
+    #btn2
+    {
+      left: 50px;
+      right: 0px;
+      width: auto;
+      z-index: 14;
+    }
 	
 </style>
 </head>
@@ -100,14 +243,42 @@
   <div id="top">top</div>
   <div id="cont">
     <div id="main">
-      <div id="btn">btn</div>
-      <div id="btn2">btn2</div>
+      <div id="btn"
+        onmousemove='hoverBtns(event);'
+        onmouseover="document.getElementById('popup').style.display = 'block';"
+        onmouseout="document.getElementById('popup').style.display = 'none';"
+        >
+        btn
+      </div>
+
+      <div id="btn2"
+        onmousemove='hoverBtns(event);'
+        onmouseover="document.getElementById('popup').style.display = 'block';"
+        onmouseout="document.getElementById('popup').style.display = 'none';"
+        >
+        btn2
+      </div>
+
       <div id="out">out</div>
       <div id="inp">inp<br/>line2</div>
+      <div id="slider"
+        onclick="sliderclick();">
+        &lt;&lt;&gt;&gt;
+      </div>
+      
     </div>
   
   </div>
-  <div id="log">log</div>
+  <div
+    id="log"
+    onclick="togglelog();">
+    <p id="logtitle">
+      DEBUG INFORMATION / LOG:
+    </p>
+    <p id="logcont">
+      blabla<br />blabla<br />blabla<br />blabla<br />blabla
+    </p>
+  </div>
 
   <div id="popup">popup</div>
 </div>
