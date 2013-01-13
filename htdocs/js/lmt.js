@@ -17,6 +17,23 @@ LMT.comm = {};    // all the communication routines (websocket)
 LMT.utils = {};   // some utils
 
 
+LMT.settings = {
+	mode: 'image',  // 'none'for doing nothing; 'image' for images; 'ruler' for adding rulers; 'mass' to add external masses 
+	
+	display: {
+		Contours: true,
+		paintContourPoints: true,
+		paintConnectingLines: true
+	},
+	
+	nPointsPerContour: 8, //how many points does one contour initially have
+	
+	nUndoActions: 20, //how many actions can be undone?
+	nRedoActions: 20, //same for redo
+	
+	tmp: 0
+}
+
 
 
 function onBodyInit() {
@@ -28,4 +45,6 @@ function onBodyInit() {
   var ep = new LMT.objects.ExtremalPoint(5);
   ep.write();
   */
+	LMT.ui.svg.init();
+	LMT.ui.svg.initBG();
 }

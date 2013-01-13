@@ -64,7 +64,7 @@ Model.prototype.update = function() {
 }
 
 
-Model.prototype.repaint = function() {
+Model.prototype.paint = function() {
 	for (i = 0; i < this.Sources.length; ++i) {
 		this.Sources[i].paint();
 	}

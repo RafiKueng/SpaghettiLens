@@ -16,9 +16,7 @@
  child2
 
  ******************************************************************************/
-
-
-(function() {
+/*(function() {*/
 
 /**
  *	creates n new point 
@@ -412,4 +410,4 @@ ExtremalPoint.createFromJSONObj = function(obj) {
 
 
 LMT.objects.ExtremalPoint = ExtremalPoint;
-})();
+/*})();*/
