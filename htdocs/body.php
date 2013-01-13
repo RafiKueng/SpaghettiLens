@@ -1,6 +1,6 @@
 <!-- START body.php -->
 
-<body onload="onBodyInit();">
+<body  onload="onBodyInit();"> 
 
 <div id="doc">
   
@@ -14,16 +14,14 @@
       <div id="btn"
         onmousemove='hoverBtns(event);'
         onmouseover="document.getElementById('popup').style.display = 'block';"
-        onmouseout="document.getElementById('popup').style.display = 'none';"
-        >
+        onmouseout="document.getElementById('popup').style.display = 'none';">
         btn
       </div>
 
       <div id="btn2"
-        onmousemove='hoverBtns(event);'
+        onmousemove='log.write("hover btn2");'
         onmouseover="document.getElementById('popup').style.display = 'block';"
-        onmouseout="document.getElementById('popup').style.display = 'none';"
-        >
+        onmouseout="document.getElementById('popup').style.display = 'none';">
         btn2
       </div>
 
@@ -54,14 +52,8 @@
   <div
     id="log"
     onclick="togglelog();">
-    
-    <p id="logtitle">
-      DEBUG INFORMATION / LOG:
-    </p>
-    <p id="logcont">
-      blabla<br />blabla<br />blabla<br />blabla<br />blabla
-    </p>
-    
+    <p id="logtitle">DEBUG INFORMATION / LOG:</p>
+    <p id="logcont">blabla<br />blabla<br />blabla<br />blabla<br />blabla</p>
   </div>
 
   <div

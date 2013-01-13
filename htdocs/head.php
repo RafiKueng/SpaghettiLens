@@ -4,11 +4,24 @@
 <head>
   <meta charset="UTF-8">
   
-  <link rel="stylesheet" href="main.css" type="text/css" />
-  <link rel="stylesheet" href="svg_elements.css" type="text/css" />
-  <link rel="stylesheet" href="big_screen.css" type="text/css" />
-  <link rel="stylesheet" href="small_screen.css" type="text/css" />
+  <link rel="stylesheet" href="css/main.css" type="text/css" />
+  <link rel="stylesheet" href="css/svg_elements.css" type="text/css" />
+  <link rel="stylesheet" href="css/big_screen.css" type="text/css" />
+  <link rel="stylesheet" href="css/small_screen.css" type="text/css" />
 
+  <script type="text/javascript" src="js/lmt.js"></script>
+<?php
+  // include all script files in the folder /js
+  $handle=opendir("js/");
+
+  while (($file = readdir($handle))!==false) {
+    if ($file[0] != '.' && $file != 'lmt.js') {
+      echo '  <script type="text/javascript" src="js/' . $file . '"></script>' . "\n";
+    }
+  }
+
+  closedir($handle);
+?>
   
 <!--
   <link rel="stylesheet" href="demo-ui.css" type="text/css" />
