@@ -7,8 +7,23 @@
 /*(function(){*/
 
 
+/**
+ * set some constants and expose structure 
+ */
 var svg = {
 	ns: "http://www.w3.org/2000/svg",
+	
+	layer: {
+		zoompan: null,
+		bg: null,
+		masses: null,
+		models: null,
+		connectorlines: null,
+		contourlines: null,
+		contourpoints: null,
+		extremalpoints: null,
+		rulers: null
+	}
 };
 	
 /**
@@ -35,9 +50,23 @@ svg.init = function() {
 
 	
 	//set attributes	
+	svg.root.setAttribute('id', 'svgroot');
 	svg.layer.bg.setAttribute('id', 'bg');
 
-	svg.layer.bg.setAttribute('onclick', 'LMT.ui.svg.events.onClick(evt);');
+	//set event listeners
+	svg.root.addEventListener('click', LMT.ui.svg.events.onClick);
+	svg.root.addEventListener('mousedown', LMT.ui.svg.events.onMouseDown);
+	svg.root.addEventListener('mouseup', LMT.ui.svg.events.onMouseUp);
+	
+	if (svg.root.addEventListener) {
+		// IE9, Chrome, Safari, Opera
+		svg.root.addEventListener("mousewheel", LMT.ui.svg.events.onMouseWheel, false);
+		// Firefox
+		svg.root.addEventListener("DOMMouseScroll", LMT.ui.svg.events.onMouseWheel, false);
+	}
+	// IE 6/7/8
+	else svg.root.attachEvent("onmousewheel", LMT.ui.svg.events.onMouseWheel);
+	
 	
 	
 	// add everything to DOM
@@ -70,8 +99,8 @@ svg.initBG = function(urls) {
 	
 	rect.setAttribute('x', '0px');
 	rect.setAttribute('y', '0px');
-	rect.setAttribute('width', '500px');
-	rect.setAttribute('height', '300px');
+	rect.setAttribute('width', '100%');
+	rect.setAttribute('height', '100%');
 	rect.setAttribute('fill', 'black');
 	
 	
@@ -104,7 +133,13 @@ svg.events = {
 		}
 		else {
 			svg.events.state = 'pan';
+			/*
+			svg.events.stateTf = svg.layer.zoompan.getCTM().inverse();
+			svg.events.stateOrigin = LMT.ui.svg.coordTrans(evt).matrixTransform(svg.events.stateTf);
+			*/
+			svg.events.stateOrigin = {x: evt.screenX, y: evt.screenY, scale: LMT.settings.display.zoompan.scale};
 		}
+		svg.root.addEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
 	
 	},
 	
@@ -114,9 +149,19 @@ svg.events = {
 	  evt.stopPropagation();
 	  evt.preventDefault();
 	  
+		var dx = evt.screenX - svg.events.stateOrigin.x;
+		var dy = evt.screenY - svg.events.stateOrigin.y;
+		
+		/**
+		 * did really something happen? break otherwise 
+		 */
+		if (dx==0 && dy==0) {
+			return;
+		}
+	  
 	  if (svg.events.state == 'drag') {
-	    var coord = coordTrans(evt);
-			svg.events.dragTarget.jsObj.move(coord);
+	    var coord = LMT.ui.svg.coordTrans(evt);
+			svg.events.dragTarget.jsObj.move(coord, svg.events.dragTarget);
 
 			svg.events.someElementWasDragged = true;
 	  	svg.events.preventClick = true;
@@ -124,6 +169,23 @@ svg.events = {
 	  
 	  else if (svg.events.state == 'pan') {
 	  	//TODO panning logic, use SVGPan library as vorlage
+	  	/*
+	  	var p = LMT.ui.svg.coordTrans(evt).matrixTransform(svg.events.stateTf);
+			svg.setCTM(svg.layer.zoompan, svg.events.stateTf.inverse().translate(p.x - svg.events.stateOrigin.x, p.y - svg.events.stateOrigin.y));
+			*/
+			//var x = LMT.settings.display.zoompan.x + evt.screenX - svg.events.stateOrigin.x;
+			//var y = LMT.settings.display.zoompan.y + evt.screenY - svg.events.stateOrigin.y;
+			svg.events.newState = {	x: LMT.settings.display.zoompan.x + dx,
+															y: LMT.settings.display.zoompan.y + dy,
+															scale: LMT.settings.display.zoompan.scale};
+			/*
+			LMT.settings.display.translate.x += translate.x;
+			LMT.settings.display.translate.y += translate.y;
+			*/
+			svg.setTransform(svg.layer.zoompan, svg.events.newState);
+			
+			svg.events.someElementWasDragged = false;
+	  	svg.events.preventClick = true;
 	  }
 
 
@@ -133,12 +195,18 @@ svg.events = {
 	
 	
 	onMouseUp: function(evt) {
+		if (svg.events.state == 'pan') {
+			if (svg.events.newState) {
+				LMT.settings.display.zoompan = svg.events.newState;
+			}
+		}
 		if (svg.events.someElementWasDragged) {
-			actionstack.push(model);
+			//actionstack.push(model);
 		  evt.stopPropagation();
 		  evt.preventDefault();
 		}
 		svg.events.someElementWasDragged = false;
+		svg.root.removeEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
 	},
 	
 	
@@ -149,13 +217,20 @@ svg.events = {
 			return;
 		}
 		
+		//delegate click on middle button
+		// 1 according to w3c, 4 according to ms...
+		if (evt.button == 1 || evt.button == 4) {
+			svg.events.onMiddleClick(evt);
+			return;
+		}
+		
 	  var target = evt.target;
 	  var parent = evt.target.parentElement;
 	  
 	  var somethinghappend = false;
 	  
 	  //click on background
-		if (evt.currentTarget.id == 'bg') {
+		if ( target.id == 'svgroot' || parent.id == 'bg') {
 			
       var coord = svg.coordTrans(evt);			
 			
@@ -199,14 +274,41 @@ svg.events = {
 
 	  //push the new model to the undo / action stack
 	  if (somethinghappend) {
-	  	actionstack.push(model);
+	  	//actionstack.push(model);
 	  } 
+	},
+	
+	/**
+	 * adds zooming function
+	 * based on this post:  http://www.sitepoint.com/html5-javascript-mouse-wheel/
+	 */
+	onMouseWheel: function(evt) {
+		// cross-browser wheel delta
+		var e = window.event || evt; // old IE support
+		var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+		LMT.settings.display.zoompan.scale *= 1 + delta*0.1;
+		svg.setTransform(svg.layer.zoompan, LMT.settings.display.zoompan);
+		
+		if (evt.stopPropagation) {evt.stopPropagation();}
+		if (evt.preventDefault) {evt.preventDefault();}
+		
+	},
+
+	/**
+	 * reset zoom and pan to default
+	 */	
+	onMiddleClick: function(evt) {
+		LMT.settings.display.zoompan = {x:0, y:0, scale:1};
+		svg.setTransform(svg.layer.zoompan, LMT.settings.display.zoompan);
+		if (evt.stopPropagation) {evt.stopPropagation();}
+		if (evt.preventDefault) {evt.preventDefault();}
 	}
 }
 	
 	
 svg.coordTrans = function(evt) {
 
+	/*
   var m = evt.target.getScreenCTM();
   var p = svg.root.createSVGPoint(); 
 
@@ -216,9 +318,40 @@ svg.coordTrans = function(evt) {
   p.x = Math.round(p.x);
   p.y = Math.round(p.y);
 
-  return p;
-}
+	log.write(''+p.x+' / '+p.y);
+	*/
 	
+	var pt = svg.root.createSVGPoint();
+	pt.x = evt.clientX;
+	pt.y = evt.clientY;
+	var globalPoint = pt.matrixTransform(svg.root.getScreenCTM().inverse());
+	var globalToLocal = svg.layer.zoompan.getTransformToElement(svg.root).inverse();
+	var inObjectSpace = globalPoint.matrixTransform( globalToLocal );
+	
+  return inObjectSpace;
+}
+
+
+/**
+ * Sets the current transform matrix of an element.
+ */
+svg.setCTM = function(element, matrix) {
+	var s = "matrix(" + matrix.a + "," + matrix.b + "," + matrix.c + "," + matrix.d + "," + matrix.e + "," + matrix.f + ")";
+
+	element.setAttribute("transform", s);
+}
+
+svg.setTransform = function(element, state) {
+
+	var s = "translate(" + (state.x) + "," +
+												 (state.y) + ") " + 
+					"scale(" + state.scale + ")";
+	element.setAttribute("transform", s);
+	LMT.objects.Ruler.r = {	mid:    LMT.objects.Ruler.r_def.mid * 1/state.scale,
+													handle: LMT.objects.Ruler.r_def.handle * 1/state.scale};
+}
+
+
 LMT.ui.svg = svg;
 
 

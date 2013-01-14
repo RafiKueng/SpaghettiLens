@@ -18,18 +18,22 @@ LMT.utils = {};   // some utils
 
 
 LMT.settings = {
-	mode: 'image',  // 'none'for doing nothing; 'image' for images; 'ruler' for adding rulers; 'mass' to add external masses 
+	mode: 'ruler',  // 'none'for doing nothing; 'image' for images; 'ruler' for adding rulers; 'mass' to add external masses 
 	
 	display: {
 		Contours: true,
 		paintContourPoints: true,
-		paintConnectingLines: true
+		paintConnectingLines: true,
+		
+		// translation vector and scale for the canvas
+		zoompan: {x:0, y:0, scale: 1}
 	},
 	
 	nPointsPerContour: 8, //how many points does one contour initially have
 	
 	nUndoActions: 20, //how many actions can be undone?
 	nRedoActions: 20, //same for redo
+	
 	
 	tmp: 0
 }

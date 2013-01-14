@@ -5,7 +5,7 @@
   can be stringified and reparsed (for loading and saving)
 */
 
-(function() {
+/*(function() {*/
 
 function Model() {
 	this.__type = "model"; //identifier for object type, used for json  
@@ -165,4 +165,4 @@ Model.createFromJSONObj = function(obj) {
 
 
 LMT.objects.Model = Model;
-})();
+/*})();*/
