@@ -15,7 +15,7 @@
         onmousemove='hoverBtns(event);'
         onmouseover="document.getElementById('popup').style.display = 'block';"
         onmouseout="document.getElementById('popup').style.display = 'none';">
-        btn
+        <img id="mode_sel" class="svg btn" src="svg/mode_sel.svg"/>
       </div>
 
       <div id="btn2"

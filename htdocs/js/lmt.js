@@ -38,9 +38,14 @@ LMT.settings = {
 	tmp: 0
 }
 
+LMT.addEventListener = document.addEventListener;
 
 
 function onBodyInit() {
+}
+
+
+$(document).ready(function(){
 
   log = new LMT.utils.logger();
   log.write('init complete');
@@ -51,4 +56,35 @@ function onBodyInit() {
   */
 	LMT.ui.svg.init();
 	LMT.ui.svg.initBG();
-}
+	LMT.ui.html.loadAllSVG();
+	
+	LMT.model = new Model();
+	
+});
+
+
+
+/*gets fires as soon as all button svg elements are loaded*/
+$('#inp').bind('loadedButtons', function(evt){
+	
+	alert("loadedButtons was triggered");
+});
+
+
+
+/* gets fires as soon as connection to server is established and infos for model are received*/
+$(document).on('loadedModelData', function(){
+	
+});
+
+
+/* gets fires as soon as the images for the model are loaded */
+$(document).on('loadedModelData', function(){
+	
+});
+
+
+/* gets fired as soon as everything is ready to be used */
+$(document).on('AppReady', function(){
+	
+});

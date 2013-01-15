@@ -2,7 +2,9 @@
  * lmt.ui.svg.js
  * this takes care of all the svg ui interactions
  * 
- *  
+ *  only takes care of the setup and low level user interactions,
+ * translates them to highlevel custom events that will be fired
+ * and react on in the app intelligence part
  */
 /*(function(){*/
 
@@ -51,12 +53,15 @@ svg.init = function() {
 	
 	//set attributes	
 	svg.root.setAttribute('id', 'svgroot');
+	svg.root.setAttribute('width', '100%');
+	svg.root.setAttribute('height', '100%');
 	svg.layer.bg.setAttribute('id', 'bg');
 
 	//set event listeners
 	svg.root.addEventListener('click', LMT.ui.svg.events.onClick);
 	svg.root.addEventListener('mousedown', LMT.ui.svg.events.onMouseDown);
 	svg.root.addEventListener('mouseup', LMT.ui.svg.events.onMouseUp);
+	svg.root.addEventListener('mouseout', LMT.ui.svg.events.onMouseOut);
 	
 	if (svg.root.addEventListener) {
 		// IE9, Chrome, Safari, Opera
@@ -217,8 +222,8 @@ svg.events = {
 			return;
 		}
 		
-		//delegate click on middle button
-		// 1 according to w3c, 4 according to ms...
+		// delegate click on middle button
+		// 1 according to w3c, 4 according to ms... (but this time, the ms solution is actually better...)
 		if (evt.button == 1 || evt.button == 4) {
 			svg.events.onMiddleClick(evt);
 			return;
@@ -239,15 +244,11 @@ svg.events = {
 			}
 			
 			else if (LMT.settings.mode == 'mass') {
- 				var newElem = new ExtMass(coord.x, coord.y, 30);
-			  newElem.update();
-			  newElem.paint();
+				$.event.trigger('CreateExternalMass', [coord]);
 			}
 			
 			else if (LMT.settings.mode == 'ruler') {
-	      var newElem = new Ruler(coord.x, coord.y, 30);
-			  newElem.update();
-			  newElem.paint();
+				$.event.trigger('CreateRuler', [coord]);
       }
 
       somethinghappend = true;
@@ -267,7 +268,7 @@ svg.events = {
   	
   	//is it something with an assigned js object? (rulers, pointmasses)
   	else if (target.jsObj) {
-  		jsObj.remove();
+  		target.jsObj.remove();
       somethinghappend = true;
   	}
 
@@ -302,6 +303,17 @@ svg.events = {
 		svg.setTransform(svg.layer.zoompan, LMT.settings.display.zoompan);
 		if (evt.stopPropagation) {evt.stopPropagation();}
 		if (evt.preventDefault) {evt.preventDefault();}
+	},
+	
+	/**
+	 * abort all operations on mouse out of svg area 
+	 */
+	onMouseOut: function(evt) {
+		/*
+		if (evt.target.farthestViewportElement.id != "svgroot") {
+			svg.events.onMouseUp(evt);
+		}
+		*/
 	}
 }
 	

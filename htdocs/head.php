@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="css/big_screen.css" type="text/css" />
   <link rel="stylesheet" href="css/small_screen.css" type="text/css" />
 
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
   <script type="text/javascript" src="js/lmt.js"></script>
 <?php
   // include all script files in the folder /js
