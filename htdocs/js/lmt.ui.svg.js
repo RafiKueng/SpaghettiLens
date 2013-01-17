@@ -166,8 +166,9 @@ svg.events = {
 	  
 	  if (svg.events.state == 'drag') {
 	    var coord = LMT.ui.svg.coordTrans(evt);
-			svg.events.dragTarget.jsObj.move(coord, svg.events.dragTarget);
-
+	    
+	    $.event.trigger('MoveObject', [svg.events.dragTarget.jsObj, svg.events.dragTarget, coord]);
+	    
 			svg.events.someElementWasDragged = true;
 	  	svg.events.preventClick = true;
 	  }
@@ -317,7 +318,9 @@ svg.events = {
 	}
 }
 	
-	
+/**
+ * transforms the optained raw coordines in the coordinate system of the zoomed / panned layer 
+ */
 svg.coordTrans = function(evt) {
 
 	/*
@@ -347,12 +350,17 @@ svg.coordTrans = function(evt) {
 /**
  * Sets the current transform matrix of an element.
  */
+/* OUTDATED
 svg.setCTM = function(element, matrix) {
 	var s = "matrix(" + matrix.a + "," + matrix.b + "," + matrix.c + "," + matrix.d + "," + matrix.e + "," + matrix.f + ")";
 
 	element.setAttribute("transform", s);
 }
+*/
 
+/**
+ * sets the translate / scale values of the zoompan layer (ie the whole svg canvas) 
+ */
 svg.setTransform = function(element, state) {
 
 	var s = "translate(" + (state.x) + "," +

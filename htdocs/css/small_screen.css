@@ -4,13 +4,13 @@ html, body {
   min-width: 480px;
 }
 
-#btn {
+#toolbar1 {
   left: 0px;
   right: 50px;
   z-index: 15;
 }
 
-#btn2 {
+#toolbar2 {
   left: 50px;
   right: 0px;
   z-index: 14;

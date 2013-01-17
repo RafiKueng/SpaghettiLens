@@ -1,3 +1,9 @@
+/*****************************************************************************
+ * a Color in RGB
+ *  
+ ******************************************************************************/
+/*(function() {*/
+
 function Color(r, g, b){
 	this.r = Math.max(0,Math.min(r,255));
 	this.g = Math.max(0,Math.min(g,255));
@@ -5,6 +11,10 @@ function Color(r, g, b){
 	this.rgb = [this.r/255, this.g/255, this.b/255]; // in range 0...1
 }
 
+/**
+ * returns the 3*8bit html hex string of this color
+ * #00aa98
+ */
 Color.prototype.asHex = function() {
 	
 	var hex = function(n) {
@@ -17,6 +27,7 @@ Color.prototype.asHex = function() {
 
 
 /**
+ * creates a new color from a HSL definition
  * 
  * source https://github.com/cloudhead/less.js/blob/master/lib/less/functions.js 
  * @param {Object} h hue from 0...360
@@ -45,3 +56,6 @@ Color.fromHSL = function(h,s,l) {
   }
 }
 
+
+LMT.objects.Color = Color;
+/*})();*/

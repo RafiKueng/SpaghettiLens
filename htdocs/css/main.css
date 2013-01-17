@@ -39,17 +39,11 @@ html, body {
   min-height: 400px;
 }
 
-#btn {
-  position: absolute;
-  top: 0px;
-  height: 60px;
+#toolbar1 {
   background-color: orange;
 }
 
-#btn2 {
-  position: absolute;
-  top: 0px;
-  height: 60px;
+#toolbar2 {
   background-color: red;
 }
 
@@ -110,6 +104,27 @@ html, body {
 }
 
 
+.toolbar_element {
+	background:#AAAAAA;
+	margin: 0px;
+	padding: 5px;
+	display: inline-block;
+  border-style: solid;
+  border-color: gold;
+}
+
+
+.toolbar {
+  position: absolute;
+  top: 0px;
+  height: 60px;
+  text-align:center;
+}
+
+
+
+
+
 /*******************************************************
   single text elements styling
  *******************************************************/
@@ -129,5 +144,7 @@ html, body {
   border-width: 1px;
 }
 
-
+.hidden {
+	display: none;
+}
 

@@ -65,9 +65,9 @@ $(document).ready(function(){
 
 
 /*gets fires as soon as all button svg elements are loaded*/
-$('#inp').bind('loadedButtons', function(evt){
-	
-	alert("loadedButtons was triggered");
+$(document).on('loadedButtons', function(evt){
+
+	//alert("loadedButtons was triggered:");
 });
 
 

@@ -20,7 +20,7 @@ var intel = {};
  *  
  * @param {Object} evt
  */
-intel.createRuler = function(evt, coord){
+intel.CreateRuler = function(evt, coord){
   var newElem = new Ruler(coord.x, coord.y, 30);
   newElem.update();
   newElem.paint();
@@ -33,7 +33,7 @@ intel.createRuler = function(evt, coord){
  * coord.x: x pos
  * coord.y: y pos
  */
-intel.createExternalMass = function(evt, coord){
+intel.CreateExternalMass = function(evt, coord){
 	var newElem = new ExtMass(coord.x, coord.y, 30);
 	newElem.update();
 	newElem.paint();
@@ -53,13 +53,22 @@ intel.CreateRootPoint = function(evt, coord){
 }
 
 
+/**
+ * An object is moved
+ * jsTarget: the js object that is moved
+ * svgTarget: the svg element that was actually moved
+ * coord: to where (canvas coordinates)
+ */
+intel.MoveObject = function(evt, jsTarget, svgTarget, coord){
+	
+	jsTarget.move(coord, svgTarget);
+
+}
 
 
 
 
-
-
-intel.updateModel = function(evt){
+intel.UpdateModel = function(evt){
 	
 };
 
@@ -69,7 +78,7 @@ intel.updateModel = function(evt){
  * 
  * maintains the undo / redo function. pushes the sack each time something happend 
  */
-intel.modelChanged = function(evt){
+intel.ModelChanged = function(evt){
 	
 }
 
@@ -80,8 +89,10 @@ intel.modelChanged = function(evt){
  */
 
 
-$(document).on('CreateRuler', intel.createRuler);
-$(document).on('CreateExternalMass', intel.createExternalMass);
+$(document).on('CreateRuler', intel.CreateRuler);
+$(document).on('CreateExternalMass', intel.CreateExternalMass);
+$(document).on('MoveObject', intel.MoveObject);
+
 
 
 
