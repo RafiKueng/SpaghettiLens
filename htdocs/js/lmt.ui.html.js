@@ -59,7 +59,8 @@ html.events = {
 	
 	
 	onclick: function(evt){
-		alert('click on '+evt.currentTarget.id);
+		var event = $(evt.currentTarget).data("event");
+		alert('click on '+evt.currentTarget.id + ", firing event: " + event);
 	}
 	
 	

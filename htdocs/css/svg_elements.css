@@ -73,6 +73,7 @@
 /*ui elements*/
 .button {
 	fill: #3333ff;
+	stroke: #3333ff;
 }
 
 .btn.active {

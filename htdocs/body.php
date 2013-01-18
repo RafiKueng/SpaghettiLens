@@ -15,9 +15,22 @@
         onmousemove='hoverBtns(event);'
         onmouseover="document.getElementById('popup').style.display = 'block';"
         onmouseout="document.getElementById('popup').style.display = 'none';">
+
+        <div id="btngrpXXDO" class="toolbar_element" data-type="fix" data-order="0">
+	        <img id="undo" class="svg button" src="svg/undo.svg"
+				data-event="Undo"
+	        	data-tooltip="reverts the last action"
+	        	data-furtherinfo="http://www.google.com"
+	        	/>
+	        <img id="redo" class="svg button" src="svg/redo.svg"
+	        	data-event="Redo"
+	        	data-tooltip="reapplies the last undone action"
+	        	data-furtherinfo="http://www.google.com"
+	        	/>
+        </div>
         
         <div id="btngrpSettings" class="toolbar_element" data-type="expand" data-order="2">
-	        <img id="settings_master" class="svg button" src="svg/settings._grp.svg"
+	        <img id="settings_master" class="svg button" src="svg/settings.svg"
 	        	data-tooltip="open the settings panel"
 	        	data-furtherinfo="http://www.google.com"
 	        	/>
@@ -35,21 +48,45 @@
         
         <div id="btngrpMode" class="toolbar_element" data-type="toggle" data-event="SwitchMode" data-order="1">
 	        <img id="mode_mass" class="svg button" src="svg/mode.mass.svg"
-	        	data-value="mass"
+	        	data-event="SwitchMode" data-value="mass"
 	        	data-tooltip="places additional point masses"
 	        	data-furtherinfo="http://www.google.com"
 	        	/>
 	        <img id="mode_image" class="svg button" src="svg/mode.image.svg"
-	        	data-value="image"
+	        	data-event="SwitchMode" data-value="image"
 	        	data-tooltip="places additional images"
 	        	data-furtherinfo="http://www.google.com"
 	        	/>
 	        <img id="mode_ruler" class="svg button" src="svg/mode.ruler.svg"
-	        	data-value="ruler"
+	        	data-event="SwitchMode" data-value="ruler"
 	        	data-tooltip="places a helping ruler to estimate distances"
 	        	data-furtherinfo="http://www.google.com"
 	        	/>
         </div>
+
+        <div id="btngrpAction" class="toolbar_element" data-type="fix" data-order="0">
+	        <img id="action_prev" class="svg button" src="svg/prev.svg"
+				data-event="GotoPrevModel"
+	        	data-tooltip="goto the next model"
+	        	data-furtherinfo="http://www.google.com"
+	        	/>
+	        <img id="action_save" class="svg button" src="svg/save.svg"
+	        	data-event="SaveModel"
+	        	data-tooltip="save the current model locally and on server"
+	        	data-furtherinfo="http://www.google.com"
+	        	/>
+	        <img id="action_model" class="svg button" src="svg/calculate.svg"
+	        	data-event="CalculateModel"
+	        	data-tooltip="Simulates the model"
+	        	data-furtherinfo="http://www.google.com"
+	        	/>
+	        <img id="action_next" class="svg button" src="svg/next.svg"
+	        	data-event="GotoNextModel"
+	        	data-tooltip="goto the previous model"
+	        	data-furtherinfo="http://www.google.com"
+	        	/>
+        </div>
+
 	  </div>
 
       <div id="toolbar2" class="toolbar"
