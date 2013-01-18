@@ -112,8 +112,8 @@ intel.collapsePoint = function(pnt) {
 	
 	pnt.collapse(true);
 	//update is not needed here
-	//model.update();
-	LMT.model.repaint();
+	//LMT.model.update();
+	LMT.model.paint();
 }
 
 
