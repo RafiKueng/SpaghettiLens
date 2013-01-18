@@ -27,6 +27,12 @@ html.init = function() {
 	btns.each(function(){
 		var $btn = $(this);
 		$btn.on('click', LMT.ui.html.events.onclick);
+		$btn.on('mouseenter', function(evt){
+			$.event.trigger("ShowTooltip", [evt, $btn.data('tooltip'), $btn.data('furtherinfo')]);
+		});
+		$btn.on("mouseleave", function(evt){
+			$.event.trigger("HideTooltip");
+		});
 	});
 
 		/*	
@@ -44,12 +50,27 @@ html.init = function() {
 	$('.toolbar').each(function(){
 		var tb = new Toolbar(this);
 	});
+	
+	document.getElementById('popup').style.display = 'block';
+	$("#popup").hide();
 		
 }
 $(document).on('loadedButtons', html.init);
 	
 
 
+html.ShowTooltip = function(evt, evt2, txt, link){
+	$("#popup > #text").html(txt);
+	$("#popup > #link").html(link);
+	$("#popup").fadeIn(100);
+}
+$(document).on('ShowTooltip', html.ShowTooltip);
+
+
+html.HideTooltip = function(){
+	$("#popup").fadeOut(200);
+}
+$(document).on('HideTooltip', html.HideTooltip);
 
 
 

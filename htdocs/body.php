@@ -11,10 +11,12 @@
   
   <div id="cont">
     <div id="main">
-      <div id="toolbar1" class="toolbar"
-        onmouseover="document.getElementById('popup').style.display = 'block';"
-        onmouseout="document.getElementById('popup').style.display = 'none';">
-
+      <div id="toolbar1" class="toolbar">
+		<!--
+		onmouseover="document.getElementById('popup').style.display = 'block';"
+        onmouseout="document.getElementById('popup').style.display = 'none';"
+       -->
+        
         <div id="btngrpXXDO" class="toolbar_element" data-type="fix" data-order="0">
 	        <img id="undo" class="svg button" src="svg/undo.svg"
 				data-event="Undo"
@@ -126,7 +128,8 @@
 
   <div
     id="popup">
-    popup
+    <p id="text"></p>
+    <p id="link"></p>
   </div>
 </div>
 
