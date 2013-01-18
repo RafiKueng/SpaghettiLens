@@ -11,13 +11,14 @@ function Toolbar(domElement){
 	this.parent = domElement;
 	this.$parent = $(domElement);
 	this.$elems = $(".toolbar_element", domElement);
-	$elems.each(function(i, val){
-		var tbe = new ToolbarElement(this)
-		toolbarElements.push(tbe);
+	var self = this;
+	this.$elems.each(function(i, val){
+		var tbe = new LMT.objects.SimpleTBE(val);
+		self.toolbarElements.push(tbe);
 	});
 	
 	//sort, such that first collapsing is first
-	toolbarElements.sort(function(a, b){
+	this.toolbarElements.sort(function(a, b){
     if(a.order < b.order) return -1;
     if(a.order > b.order) return 1;
     return 0;
@@ -57,9 +58,9 @@ var tbe = {}; //toolbar elements
  * element: div element conaining the svg buttons
  */
 tbe.SimpleTBE = function(elem){
-	this.$elem = $(elemt);
-	this.type = $elem.data("type");
-	this.order = $elem.data("order");
+	this.$elem = $(elem);
+	this.type = this.$elem.data("type");
+	this.order = this.$elem.data("order");
 	this.maxWidth
 }
 
@@ -92,4 +93,4 @@ function ClickButton(){
 
 
 LMT.objects.Toolbar = Toolbar;
-LMT.objects.ToolbarElement = ToolbarElement;
+LMT.objects.SimpleTBE = tbe.SimpleTBE;

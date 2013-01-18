@@ -241,7 +241,7 @@ svg.events = {
       var coord = svg.coordTrans(evt);			
 			
 			if (LMT.settings.mode == 'image') {
-				createRootPoint(coord.x, coord.y);
+				$.event.trigger('CreateRootImagePoint', [coord]);
 			}
 			
 			else if (LMT.settings.mode == 'mass') {
@@ -258,12 +258,7 @@ svg.events = {
 	  //click on an extremalPoint
 	  else if (target.id.substring(0,5) == "point") {
 			var pnt = target.jsObj;
-      if (pnt.isExpanded) {
-        collapsePoint(pnt);
-	    }
-      else {
-        expandPoint(pnt);
-      }
+			$.event.trigger('ToggleExtremalPoint', [pnt]);
       somethinghappend = true;
   	}
   	

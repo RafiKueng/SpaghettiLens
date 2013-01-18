@@ -60,7 +60,11 @@ html.events = {
 	
 	onclick: function(evt){
 		var event = $(evt.currentTarget).data("event");
-		alert('click on '+evt.currentTarget.id + ", firing event: " + event);
+		var value = $(evt.currentTarget).data("value");
+		
+		log.write('click on '+evt.currentTarget.id + ", firing event: " + event + "("+value+")");
+		$.event.trigger(event, [value]);
+		
 	}
 	
 	

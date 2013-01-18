@@ -28,7 +28,7 @@
  */
 function ExtremalPoint(x, y, depth, type) {
 	
-	this.idnr = model.NrOf.ExtremalPoints++;
+	this.idnr = LMT.model.NrOf.ExtremalPoints++;
 	
   this.x = parseInt(x) || 0;
   this.y = parseInt(y) || 0;
@@ -51,6 +51,8 @@ function ExtremalPoint(x, y, depth, type) {
 	//the svg objects references
 	this.line = null;
 	this.circle = null;
+	
+	this.layer = LMT.ui.svg.layer.extremalpoints;
 	
 }
 
@@ -135,7 +137,7 @@ ExtremalPoint.prototype.updateType = function() {
   dphi = dphi > Math.PI ? Math.PI * 2 - dphi : dphi;
 
 	// check if close together, then the types should be different from each other
-  if (dphi < model.MinMmaxSwitchAngle) {
+  if (dphi < LMT.model.MinMmaxSwitchAngle) {
     
 	  var cng_grp = null;
 	  var oth_grp = null;
@@ -208,6 +210,7 @@ ExtremalPoint.prototype.setRoot = function(isRoot) {
 	this.isRoot = isRoot;
 } 
 
+
 /**
  * returns the relative coordinates to pnt
  * (used for creation of correct order for modelling backend)
@@ -217,6 +220,7 @@ ExtremalPoint.prototype.getRelCoordTo = function(pnt) {
   pnt.setType(this.type);
   return pnt;
 }
+
 
 /**
  sets the relations ship to other points and updates them to if possible..
@@ -294,16 +298,28 @@ ExtremalPoint.prototype.collapse = function(keepThis) {
 		}
 		
 		if (this.line) { //remove line
-			select.connectiorLinesLayer.removeChild(this.line);
+			LMT.ui.svg.layer.connectorlines.removeChild(this.line);
 			this.line = null;
 		}
 		
 		if (this.circle) { //remove the circle
-			select.extremalPointsLayer.removeChild(this.circle);
+			this.layer.removeChild(this.circle);
 			this.circle = null;
 		}
 	}
 }
+
+
+/**
+ * Move this point
+ */
+ExtremalPoint.prototype.move = function(coord) {
+	this.setCoord(coord.x, coord.y);
+	LMT.model.update();
+	LMT.model.paint();
+
+}
+
 
 
 
@@ -316,8 +332,9 @@ ExtremalPoint.prototype.paint = function() {
     this.circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     this.circle.setAttribute("id", "point" + this.idnr);
     this.circle.setAttribute("r", 10);
-    select.extremalPointsLayer.appendChild(this.circle);
-    this.circle.pnt = this;
+    this.layer.appendChild(this.circle);
+    //this.circle.pnt = this;
+    this.circle.jsObj = this;
   }
 
   this.circle.setAttribute("cx", this.x);
@@ -344,9 +361,9 @@ ExtremalPoint.prototype.paint = function() {
     if (!this.line) {
       this.line = document.createElementNS("http://www.w3.org/2000/svg", "line");
       
-      select.connectiorLinesLayer.appendChild(this.line);
+      LMT.ui.svg.layer.connectorlines.appendChild(this.line);
     }
-    var classstr = settings.paintConnectingLines ? "connectorline" : "connectorline invisible";
+    var classstr = LMT.settings.display.paintConnectingLines ? "connectorline" : "connectorline invisible";
     this.line.setAttribute("class", classstr);
     this.line.setAttribute("x1", this.x);
     this.line.setAttribute("y1", this.y);

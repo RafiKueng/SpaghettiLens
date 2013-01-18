@@ -43,12 +43,12 @@
 
 
 .ext_mass_mid {
-	fill: black;
+	fill: gray;
 }
 
 .ext_mass_circ {
 	fill: none;
-	stroke: black;
+	stroke: gray;
 }
 
 .ext_mass_handle {

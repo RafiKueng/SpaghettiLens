@@ -125,7 +125,7 @@ Ruler.prototype.remove = function() {
 
 /**
  * moves either the whole ruler, or only the handle (making the circle bigger)
- * debending on the target 
+ * depending on the target 
  */
 Ruler.prototype.move = function(coord, target) {
 	

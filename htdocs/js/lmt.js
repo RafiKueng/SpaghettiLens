@@ -21,7 +21,7 @@ LMT.settings = {
 	mode: 'ruler',  // 'none'for doing nothing; 'image' for images; 'ruler' for adding rulers; 'mass' to add external masses 
 	
 	display: {
-		Contours: true,
+		paintContours: true,
 		paintContourPoints: true,
 		paintConnectingLines: true,
 		
@@ -59,6 +59,7 @@ $(document).ready(function(){
 	LMT.ui.html.loadAllSVG();
 	
 	LMT.model = new Model();
+	LMT.model.init();
 	
 });
 

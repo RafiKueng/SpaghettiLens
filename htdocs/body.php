@@ -30,10 +30,12 @@
         </div>
         
         <div id="btngrpSettings" class="toolbar_element" data-type="expand" data-order="2">
+	        <!--
 	        <img id="settings_master" class="svg button" src="svg/settings.svg"
 	        	data-tooltip="open the settings panel"
 	        	data-furtherinfo="http://www.google.com"
 	        	/>
+        	-->
 	        <img id="settings_color" class="svg button" src="svg/settings.color.svg"
 	        	data-event="ShowColorSettings"
 	        	data-tooltip="change the color mapping"
