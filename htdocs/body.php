@@ -12,7 +12,6 @@
   <div id="cont">
     <div id="main">
       <div id="toolbar1" class="toolbar"
-        onmousemove='hoverBtns(event);'
         onmouseover="document.getElementById('popup').style.display = 'block';"
         onmouseout="document.getElementById('popup').style.display = 'none';">
 

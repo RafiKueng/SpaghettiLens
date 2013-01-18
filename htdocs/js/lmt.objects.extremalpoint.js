@@ -331,7 +331,7 @@ ExtremalPoint.prototype.paint = function() {
   if (!this.circle) {
     this.circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     this.circle.setAttribute("id", "point" + this.idnr);
-    this.circle.setAttribute("r", 10);
+    
     this.layer.appendChild(this.circle);
     //this.circle.pnt = this;
     this.circle.jsObj = this;
@@ -339,6 +339,7 @@ ExtremalPoint.prototype.paint = function() {
 
   this.circle.setAttribute("cx", this.x);
   this.circle.setAttribute("cy", this.y);
+  this.circle.setAttribute("r", ExtremalPoint.r_def / LMT.settings.display.zoompan.scale);
 	this.circle.setAttribute("class", "extremalpoint_" + this.type);
 	
 
@@ -395,6 +396,9 @@ ExtremalPoint.prototype.toJSON = function(){
 
 
 //static fnc
+ExtremalPoint.r_def = 10;
+
+
 ExtremalPoint.createFromJSONObj = function(obj) {
 	var p = new ExtremalPoint(Object.x, obj.y);
 	
@@ -423,6 +427,9 @@ ExtremalPoint.createFromJSONObj = function(obj) {
 	return p;
 		
 };
+
+
+
 
 
 

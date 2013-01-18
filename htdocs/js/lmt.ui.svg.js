@@ -121,6 +121,7 @@ svg.events = {
 	dragTarget: null,
 	preventClick: false,
 	someElementWasDragged: false,
+	lastMouseMove: 0,
 	
 	
 	onMouseDown: function(evt) {
@@ -153,6 +154,10 @@ svg.events = {
 	onMouseMove: function(evt) {
 	  evt.stopPropagation();
 	  evt.preventDefault();
+	  
+	  //prevent to high refresh rate (only each 50ms)
+	  if (evt.timeStamp - svg.events.lastMouseMove < 20) {return;}
+	  svg.events.lastMouseMove = evt.timeStamp;
 	  
 		var dx = evt.screenX - svg.events.stateOrigin.x;
 		var dy = evt.screenY - svg.events.stateOrigin.y;
@@ -189,6 +194,7 @@ svg.events = {
 			LMT.settings.display.translate.y += translate.y;
 			*/
 			svg.setTransform(svg.layer.zoompan, svg.events.newState);
+			
 			
 			svg.events.someElementWasDragged = false;
 	  	svg.events.preventClick = true;
@@ -285,6 +291,10 @@ svg.events = {
 		var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
 		LMT.settings.display.zoompan.scale *= 1 + delta*0.1;
 		svg.setTransform(svg.layer.zoompan, LMT.settings.display.zoompan);
+		
+		//repaint the model for changed radii of elements
+		LMT.model.update();
+		LMT.model.paint();
 		
 		if (evt.stopPropagation) {evt.stopPropagation();}
 		if (evt.preventDefault) {evt.preventDefault();}

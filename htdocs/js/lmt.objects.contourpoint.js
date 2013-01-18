@@ -50,7 +50,6 @@ ContourPoint.prototype.createSVG = function() {
 	if (!this.circle){
 		this.circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
 	  this.circle.setAttribute("class", "contourpoint");
-	  this.circle.setAttribute("r", 5);
 	  //this.circle.setAttribute("fill", "black");
 	  this.circle.setAttribute("id", "cpnt" + (this.idnr));
 	  
@@ -65,6 +64,7 @@ ContourPoint.prototype.createSVG = function() {
 ContourPoint.prototype.updateSVG = function() {
   this.circle.setAttribute("cx", this.x);
   this.circle.setAttribute("cy", this.y);
+  this.circle.setAttribute("r", ContourPoint.r_def / LMT.settings.display.zoompan.scale);
 }
 
 
@@ -178,7 +178,7 @@ ContourPoint.prototype.toJSON = function() {
 
 
 //static fncs
-
+ContourPoint.r_def = 5;
 
 /**
  * 
