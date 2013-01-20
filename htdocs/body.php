@@ -93,19 +93,15 @@
 
 	  </div>
 
-      <div id="toolbar2" class="toolbar"
-        onmousemove='log.write("hover btn2");'
-        onmouseover="document.getElementById('popup').style.display = 'block';"
-        onmouseout="document.getElementById('popup').style.display = 'none';">
-        btn2
+      <div id="toolbar2" class="toolbar">
+      	<span class="slide_btn" onclick="LMT.out.prev();">prev</span>
+      	<span id="nrbtn"></span>
+      	<span class="slide_btn" onclick="LMT.out.next();">next</span>
       </div>
 
       <div id="inp"></div>
       
-      <div
-        id="out">
-        out
-      </div>
+      <div id="out"></div>
       
       <div
         id="slider"

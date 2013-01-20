@@ -1,3 +1,9 @@
+<?php
+header( "Expires: Mon, 20 Dec 1998 01:00:00 GMT" );
+header( "Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT" );
+header( "Cache-Control: no-cache, must-revalidate" );
+header( "Pragma: no-cache" );
+?>
 
 <!-- START head.php -->
 
@@ -8,6 +14,7 @@
   <link rel="stylesheet" href="css/svg_elements.css" type="text/css" />
   <link rel="stylesheet" href="css/big_screen.css" type="text/css" />
   <link rel="stylesheet" href="css/small_screen.css" type="text/css" />
+
 
 
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
