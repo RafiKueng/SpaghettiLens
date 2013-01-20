@@ -45,9 +45,31 @@ Contour.prototype.init = function(extpnt) {
  * there's nothing to update here in the js datastructre
  */
 Contour.prototype.update = function() {
-	for (var i =0; i<this.cpoints.length; ++i){
-		this.cpoints[i].update();
+
+	this.cpoints[this.cpoints.length-1].update();
+
+	
+	for (var i =0; i<this.cpoints.length-1; ++i){ // do the last seperatly, because of angle check..
+		this.cpoints[i].update();		
+		// check if we need to change the order because the user messes up the contour points
+		var dp1=this.cpoints[i].d_phi; 
+		var dp2=this.cpoints[i+1].d_phi; 
+
+		if (dp2-dp1 < 0) {
+			var tmp = this.cpoints[i];
+			this.cpoints[i] = this.cpoints[i+1];
+			this.cpoints[i+1] = tmp;
+		}		
+		
+		// check if 2 points close together, then delete one
+		var d = LMT.utils.dist2(this.cpoints[i], this.cpoints[i+1]);
+		if (d<3) {
+			var rem = this.cpoints.splice(i,1);
+			rem[0].remove();
+			this.nContourPoints--;
+		}
 	}
+	
 }
 
 
@@ -64,13 +86,24 @@ Contour.prototype.createCPs = function() {
 		var r_fac = Math.abs(i - nPnts / 2.) / (0.5 * nPnts); //gives a number 0..1
     r_fac = r_fac * 0.25 + 0.50; //makes the radi between 50% and 75% of dist to parent
 
-		var cpnt = new LMT.objects.ContourPoint(r_fac, d_phi*i);
+		var cpnt = new LMT.objects.ContourPoint(r_fac, d_phi*i, this);
 		cpnt.init(this.idnr, this.extpnt);
 		cpnt.update();
 		this.cpoints.push(cpnt);
 		this.nContourPoints++;
 	}
 	this.createSVG();
+}
+
+
+
+Contour.prototype.doublicateCP = function(pnt) {
+	var newCp = new LMT.objects.ContourPoint(pnt.r_fac, pnt.d_phi+0.1, this);
+	newCp.init(this.idnr, this.extpnt);
+	newCp.update();
+	var i = this.cpoints.indexOf(pnt);
+	this.cpoints.splice(i+1, 0, newCp);
+	this.nContourPoints++;
 }
 
 
@@ -103,17 +136,83 @@ Contour.prototype.deleteSVG = function() {
  */
 Contour.prototype.paint = function() {
 	
+	var n = this.nContourPoints;
 	var pathstr = "";
 	
 	//goto first pos (parent of this contours extr point)
 	pathstr += "M" + this.extpnt.parent.x+","+ this.extpnt.parent.y+" ";
 	
+	
+	//generate first control point
+	//
+	
+	if (this.extpnt.parent.childrenInsideEachOther){
+		//is this the outer or the inner point?
+		if (LMT.utils.dist2(this.extpnt, this.extpnt.parent) < LMT.utils.dist2(this.extpnt.sibling, this.extpnt.parent)) {
+			// inner
+			
+			var cp_first = {
+				x: this.extpnt.parent.x + 0.4 * (this.extpnt.x - this.extpnt.parent.x),
+				y: this.extpnt.parent.y + 0.4 * (this.extpnt.y - this.extpnt.parent.y)
+			};
+		  var cp_last = cp_first;
+		}
+		else {
+			//outer
+			// set helper point perpendicular to |extpnt, extpnt.parent|
+			var dx = this.extpnt.x - this.extpnt.parent.x;
+			var dy = this.extpnt.y - this.extpnt.parent.y;
+			
+			var cp_first = {
+				x: this.extpnt.parent.x + 0.8 * dy,
+				y: this.extpnt.parent.y - 0.8 * dx
+			};
+		  var cp_last = {
+				x: this.extpnt.parent.x - 0.8 * dy,
+				y: this.extpnt.parent.y + 0.8 * dx
+			};
+			
+		}
+	}
+	else {
+		var cp_first = {
+			x: this.extpnt.parent.x - 0.2 * (this.extpnt.parent.x - this.cpoints[0].x),
+			y: this.extpnt.parent.y - 0.2 * (this.extpnt.parent.y - this.cpoints[0].y)
+		};
+	  var cp_last = {
+			x: this.extpnt.parent.x - 0.2 * (this.extpnt.parent.x - this.cpoints[n-1].x),
+			y: this.extpnt.parent.y - 0.2 * (this.extpnt.parent.y - this.cpoints[n-1].y)
+		};
+
+	}
+
+
+	
+	pathstr += "C" + cp_first.x + "," + cp_first.y + " ";
+
 	for (var i = 0; i<this.nContourPoints; i++){
 		this.cpoints[i].paint();
-		pathstr += this.cpoints[i].getPathStr();
+		//pathstr += this.cpoints[i].getPathStr();
+		
+		// create helper points for bezier curve
+
+		var that = this.cpoints[i];
+		var prev = (i==0)   ? this.extpnt.parent : this.cpoints[i-1]; //implement cyclic array
+		var next = (i==n-1) ? this.extpnt.parent : this.cpoints[i+1]; //implement cyclic array
+		
+		var cp = {
+			x: that.x + 0.2 * (prev.x - next.x),
+			y: that.y + 0.2 * (prev.y - next.y)
+		}
+		
+		pathstr += "" + cp.x + "," + cp.y + " " + that.x + "," + that.y + " S";
 	}
 		
-	pathstr += "Z"; //close path
+	//close path / last control point
+
+	pathstr += "" + cp_last.x + "," + cp_last.y + " " + this.extpnt.parent.x + "," + this.extpnt.parent.y + " Z";
+		
+	
 
 	
 	if (!this.path){

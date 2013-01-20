@@ -37,10 +37,18 @@ LMT.utils.toRectX = function(direction, distance) {
 }
 
 LMT.utils.toRectY = function(direction, distance) {
-  y = distance * Math.sin(direction);
+  var y = distance * Math.sin(direction);
   return (y);
 }
 
+/**
+ * calculates the distance squarred between to point like objects (have .x and .y attribute) 
+ */
+LMT.utils.dist2 = function(pnt1, pnt2) {
+  var dx = pnt1.x-pnt2.x;
+  var dy = pnt1.y-pnt2.y;
+  return (dx*dx+dy*dy);
+}
 
 
 

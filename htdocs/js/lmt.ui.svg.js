@@ -268,6 +268,13 @@ svg.events = {
       somethinghappend = true;
   	}
   	
+  	//click on contour points
+  	else if (target.id.substring(0,4) == "cpnt") {
+			var pnt = target.jsObj;
+  		$.event.trigger('DoublicateContourPoint', [pnt]);
+      somethinghappend = true;
+  	}
+  	
   	//is it something with an assigned js object? (rulers, pointmasses)
   	else if (target.jsObj) {
   		target.jsObj.remove();
@@ -307,6 +314,10 @@ svg.events = {
 	onMiddleClick: function(evt) {
 		LMT.settings.display.zoompan = {x:0, y:0, scale:1};
 		svg.setTransform(svg.layer.zoompan, LMT.settings.display.zoompan);
+		
+		LMT.model.update();
+		LMT.model.paint();
+
 		if (evt.stopPropagation) {evt.stopPropagation();}
 		if (evt.preventDefault) {evt.preventDefault();}
 	},

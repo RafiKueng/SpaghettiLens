@@ -118,6 +118,13 @@ intel.collapsePoint = function(pnt) {
 
 
 
+intel.DoublicateContourPoint = function(evt, pnt) {
+	pnt.parent.doublicateCP(pnt);
+	LMT.model.update();
+	LMT.model.paint();
+}
+$(document).on('DoublicateContourPoint', intel.DoublicateContourPoint);
+
 /**
  * An object is moved
  * jsTarget: the js object that is moved
