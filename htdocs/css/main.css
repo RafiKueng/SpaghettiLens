@@ -1,0 +1,163 @@
+/*******************************************************
+  basic page layout / arrangement styles
+ *******************************************************/
+
+html, body {
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+  min-height: 600px;
+}
+
+#doc {
+  /*height: 100%;*/
+  background-color: gray;
+  position: absolute;
+
+  top: 10px;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+}
+
+#top {
+  height: 100px;
+  background-color: yellow;
+}
+
+#cont {
+  position: absolute;
+  top: 100px;
+  bottom: 50px;
+  width: 100%;
+  background-color: black;
+}
+
+#main {
+  height: 100%;
+  position: relative;
+  background-color: magenta;
+  min-height: 400px;
+}
+
+#toolbar1 {
+  background-color: orange;
+}
+
+#toolbar2 {
+  background-color: red;
+}
+
+#inp {
+  position: absolute;
+  top: 60px;
+  left: 0px;
+  bottom: 0px;
+  background-color: aqua;
+}
+
+#out {
+  position: absolute;
+  top: 60px;
+  right: 0px;
+  bottom: 0px;
+  background-color: blue;
+}
+
+#slider {
+  position: absolute;
+  display: none; /* will be displayed in small mode*/
+  z-index: 99;
+}
+
+#footer {
+  position: absolute;
+  bottom: 0px;
+  height: 50px;
+  width: 100%;
+  
+  background-color: brown;
+  font-size: 75%;
+}
+
+#log { 
+  position: absolute;
+  height: 200px;
+  
+  background-color: lime;
+  font-size: 75%;
+  font-family: "Courier New", "Lucida Console";
+}
+
+#popup {
+  /* will only be displayed on mouse over events at that specific location*/
+  display: none; 
+  position: absolute;
+
+  z-index: 100;
+  max-width: 200px;
+
+  padding: 20px;
+  border: solid;
+	border-radius: 20px;
+	background: rgba(255, 255, 255, 0.8); /*slightly transparent*/
+}
+
+#popup.left {
+	border-top-left-radius: 0px;
+}
+
+#popup.right {
+	border-top-right-radius: 0px;
+}
+
+
+
+#svgroot {
+}
+
+
+.toolbar_element {
+	background:#AAAAAA;
+	margin: 0px;
+	padding: 5px;
+	display: inline-block;
+  border-style: solid;
+  border-color: gold;
+}
+
+
+.toolbar {
+  position: absolute;
+  top: 0px;
+  height: 60px;
+  text-align:center;
+}
+
+
+
+
+
+/*******************************************************
+  single text elements styling
+ *******************************************************/
+
+#logtitle {
+  font-weight: bolder;
+  margin: 0.5em 0.5em 0em 0.5em;
+  
+  border-bottom-style: dotted;
+  border-width: 1px;
+}
+
+#logcont {
+  margin: 0em 1.5em 0em 1.5em;
+  padding: 0px 0px 0px 3px;
+  border-left-style: dotted;
+  border-width: 1px;
+}
+
+.hidden {
+	display: none;
+}
+

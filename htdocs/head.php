@@ -1,5 +1,31 @@
-<!-- /// demo-ui.head.php start -->
+
+<!-- START head.php -->
+
 <head>
+  <meta charset="UTF-8">
+  
+  <link rel="stylesheet" href="css/main.css" type="text/css" />
+  <link rel="stylesheet" href="css/svg_elements.css" type="text/css" />
+  <link rel="stylesheet" href="css/big_screen.css" type="text/css" />
+  <link rel="stylesheet" href="css/small_screen.css" type="text/css" />
+
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+  <script type="text/javascript" src="js/lmt.js"></script>
+<?php
+  // include all script files in the folder /js
+  $handle=opendir("js/");
+
+  while (($file = readdir($handle))!==false) {
+    if ($file[0] != '.' && $file != 'lmt.js') {
+      echo '  <script type="text/javascript" src="js/' . $file . '"></script>' . "\n";
+    }
+  }
+
+  closedir($handle);
+?>
+  
+<!--
   <link rel="stylesheet" href="demo-ui.css" type="text/css" />
 
   <script type="text/javascript" src="Color.js"></script>
@@ -27,11 +53,9 @@
   <script type="text/javascript" src="demo-ui.ui-xxdo.js"></script>
   <script type="text/javascript" src="ui.popup.displaySettings.js"></script>
   <script type="text/javascript" src="ui.popup.graphicSettings.js"></script>
+-->
 
-
-
-  
-  
-  <title>Demo.UI</title>
+  <title>LensModellingTool</title>
 </head>
-<!-- \\\ demo-ui.head.php end -->
+
+<!-- END head.php -->

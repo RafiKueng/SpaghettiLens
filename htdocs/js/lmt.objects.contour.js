@@ -1,16 +1,10 @@
-/*
-XXX.obj.Contourjs script file
-*/
-
-
-
 /*****************************************************************************
  Contour around an ExtremalPoint
  
  @class represents an contour with points and path
 
  ******************************************************************************/
-
+/*(function() {*/
 
 
 /**
@@ -19,7 +13,7 @@ XXX.obj.Contourjs script file
  * 
  */
 function Contour() {
-	this.idnr = model.NrOf.Contours++;
+	this.idnr = LMT.model.NrOf.Contours++;
 	this.nContourPoints = 0;
 
 	this.extpnt = null;
@@ -63,14 +57,14 @@ Contour.prototype.update = function() {
 Contour.prototype.createCPs = function() {
 
 	this.cpoints = new Array();
-	var nPnts = settings.nPointsPerContour;
+	var nPnts = LMT.settings.nPointsPerContour;
 	var d_phi = Math.PI * 2 / nPnts;
 	
 	for (var i = 1; i < nPnts; i++) {
 		var r_fac = Math.abs(i - nPnts / 2.) / (0.5 * nPnts); //gives a number 0..1
     r_fac = r_fac * 0.25 + 0.50; //makes the radi between 50% and 75% of dist to parent
 
-		var cpnt = new ContourPoint(r_fac, d_phi*i);
+		var cpnt = new LMT.objects.ContourPoint(r_fac, d_phi*i);
 		cpnt.init(this.idnr, this.extpnt);
 		cpnt.update();
 		this.cpoints.push(cpnt);
@@ -87,10 +81,10 @@ Contour.prototype.createSVG = function() {
   this.path = document.createElementNS("http://www.w3.org/2000/svg", "path");
   this.path.setAttribute("id", "cpath" + this.idnr);
   this.path.setAttribute("class", "contourpath");
-  this.path.setAttribute("d", "");
+  this.path.setAttribute("d", "M0,0");
   //this.path.setAttribute("style", "stroke: blue; fill: none; stroke-width: 1");
 
-	select.contourLinesLayer.appendChild(this.path);
+	LMT.ui.svg.layer.contourlines.appendChild(this.path);
 }
 
 
@@ -99,7 +93,7 @@ Contour.prototype.updateSVG = function(pathstr) {
 }
 
 Contour.prototype.deleteSVG = function() {
-	select.contourLinesLayer.removeChild(this.path);
+	LMT.ui.svg.layer.contourlines.removeChild(this.path);
 	this.path = null;
 }
 
@@ -128,27 +122,8 @@ Contour.prototype.paint = function() {
 
 	this.updateSVG(pathstr);
 
-	/*	
-	if (settings.paintContour && this.path) {
-		this.updateSVG(pathstr);
-	}
-	else if (settings.paintContour && !this.path) {
-		this.createSVG();
-		this.updateSVG(pathstr);
-	}
-	else if (!settings.paintContour && this.path) {
-		this.deleteSVG();
-	}
-	else if (!settings.paintContour && !this.path) {
-		//nothing to do
-	}
-	else {
-		alert("strange error in Contour.paint");
-	}
-	*/
 	
-	
-	if (settings.paintContour){
+	if (LMT.settings.display.paintContours){
 		this.path.setAttribute("class", "contourpath");
 	}
 	else {
@@ -225,3 +200,11 @@ Contour.createFromJSONObj = function(obj) {
 	return c;
 		
 };
+
+
+
+
+
+
+LMT.objects.Contour = Contour;
+/*})();*/
