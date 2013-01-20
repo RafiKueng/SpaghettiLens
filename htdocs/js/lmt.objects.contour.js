@@ -103,17 +103,45 @@ Contour.prototype.deleteSVG = function() {
  */
 Contour.prototype.paint = function() {
 	
+	var n = this.nContourPoints;
 	var pathstr = "";
 	
 	//goto first pos (parent of this contours extr point)
 	pathstr += "M" + this.extpnt.parent.x+","+ this.extpnt.parent.y+" ";
 	
+	//generate control point
+	var cp = {
+		x: this.extpnt.parent.x + 0.2 * (this.extpnt.parent.x - this.cpoints[0].x),
+		y: this.extpnt.parent.y + 0.2 * (this.extpnt.parent.y - this.cpoints[0].y)
+	};
+	pathstr += "C" + cp.x + "," + cp.y + " ";
+
 	for (var i = 0; i<this.nContourPoints; i++){
 		this.cpoints[i].paint();
-		pathstr += this.cpoints[i].getPathStr();
+		//pathstr += this.cpoints[i].getPathStr();
+		
+		// create helper points for bezier curve
+
+		var that = this.cpoints[i];
+		var prev = (i==0)   ? this.extpnt.parent : this.cpoints[i-1]; //implement cyclic array
+		var next = (i==n-1) ? this.extpnt.parent : this.cpoints[i+1]; //implement cyclic array
+		
+		cp = {
+			x: that.x + 0.2 * (prev.x - next.x),
+			y: that.y + 0.2 * (prev.y - next.y)
+		}
+		
+		pathstr += "" + cp.x + "," + cp.y + " " + that.x + "," + that.y + " S";
 	}
 		
-	pathstr += "Z"; //close path
+	//close path
+  cp = {
+		x: this.extpnt.parent.x + 0.2 * (this.extpnt.parent.x - this.cpoints[n-1].x),
+		y: this.extpnt.parent.y + 0.2 * (this.extpnt.parent.y - this.cpoints[n-1].y)
+	};
+	pathstr += "" + cp.x + "," + cp.y + " " + this.extpnt.parent.x + "," + this.extpnt.parent.y + " Z";
+		
+	
 
 	
 	if (!this.path){

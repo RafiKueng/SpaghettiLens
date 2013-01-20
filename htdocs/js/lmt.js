@@ -29,7 +29,7 @@ LMT.settings = {
 		zoompan: {x:0, y:0, scale: 1}
 	},
 	
-	nPointsPerContour: 8, //how many points does one contour initially have
+	nPointsPerContour: 4, //how many points does one contour initially have
 	
 	nUndoActions: 20, //how many actions can be undone?
 	nRedoActions: 20, //same for redo
