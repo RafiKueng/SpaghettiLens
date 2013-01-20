@@ -28,7 +28,11 @@ html.init = function() {
 		var $btn = $(this);
 		$btn.on('click', LMT.ui.html.events.onclick);
 		$btn.on('mouseenter', function(evt){
-			$.event.trigger("ShowTooltip", [evt, $btn.data('tooltip'), $btn.data('furtherinfo')]);
+			$.event.trigger("ShowTooltip", [evt, {
+				txt: $btn.data('tooltip'),
+				link: $btn.data('furtherinfo'),
+				hotkey: $btn.data('hotkey')
+			}]);
 		});
 		$btn.on("mouseleave", function(evt){
 			$.event.trigger("HideTooltip");
@@ -50,8 +54,17 @@ html.init = function() {
 	$('.toolbar').each(function(){
 		var tb = new Toolbar(this);
 	});
-	
+
+
+	//prepare tooltip div	
 	document.getElementById('popup').style.display = 'block';
+	//on mouse enter tooltip: cancle fade out animation, display till mouseleave 
+	$("#popup").on('mouseenter', function(evt){
+		$("#popup").stop(true, true).fadeIn(200);
+	});
+	$("#popup").on('mouseleave', function(evt){
+		$("#popup").stop(true, true).fadeOut(50);
+	});
 	$("#popup").hide();
 		
 }
@@ -59,16 +72,55 @@ $(document).on('loadedButtons', html.init);
 	
 
 
-html.ShowTooltip = function(evt, evt2, txt, link){
-	$("#popup > #text").html(txt);
-	$("#popup > #link").html(link);
-	$("#popup").fadeIn(100);
+html.ShowTooltip = function(evt, orgEvt, data){
+	var offset = {top: 5, left: 5};
+	var newcss = {};
+	$("#popup > #text").html(data.txt);
+	$("#popup > #link").html(data.link);
+	$("#popup > #hotkey").html(data.hotkey);
+
+	//make change style to get position / width ect...
+	$("#popup").css({visibility: 'hidden'}).show();
+	
+	//calculate position
+	var top = orgEvt.pageY;
+	var left = $(orgEvt.currentTarget).offset().left;
+	var inpY = $('#inp').offset().top;
+
+	left = left + $(orgEvt.currentTarget).outerWidth()/2;
+	
+	//check if out of screes
+	var inpR = $('#inp').offset().left + $('#inp').outerWidth(true);
+	var sizeX = $("#popup").outerWidth(true);
+	
+	/*
+	newcss["border-top-left-radius"] = 0;
+	newcss["border-top-right-radius"] = '5px';
+	*/
+	if (left+sizeX>inpR-20) {
+		left = left - sizeX;
+		//newcss["border-top-left-radius"] = '5px';
+		//newcss["border-top-right-radius"] = 0;
+		$("#popup").addClass('right').removeClass('left');
+	}
+	else {
+		$("#popup").addClass('left').removeClass('right');
+	}
+	
+	newcss.left = left+offset.left,
+	newcss.top= inpY+offset.top;
+	newcss.visibility = 'visible';
+	
+	$("#popup").css(newcss).hide();
+	
+	$("#popup").stop(true, true).fadeIn(200);
+	
 }
 $(document).on('ShowTooltip', html.ShowTooltip);
 
 
 html.HideTooltip = function(){
-	$("#popup").fadeOut(200);
+	$("#popup").stop(true, true).fadeOut(600);
 }
 $(document).on('HideTooltip', html.HideTooltip);
 

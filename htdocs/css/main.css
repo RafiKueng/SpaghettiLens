@@ -13,6 +13,7 @@ html, body {
   /*height: 100%;*/
   background-color: gray;
   position: absolute;
+
   top: 10px;
   bottom: 10px;
   left: 10px;
@@ -94,11 +95,23 @@ html, body {
   position: absolute;
 
   z-index: 100;
+  max-width: 200px;
 
   padding: 20px;
   border: solid;
-  background: rgba(255, 255, 255, 0.6); /*slightly transparent*/
+	border-radius: 20px;
+	background: rgba(255, 255, 255, 0.8); /*slightly transparent*/
 }
+
+#popup.left {
+	border-top-left-radius: 0px;
+}
+
+#popup.right {
+	border-top-right-radius: 0px;
+}
+
+
 
 #svgroot {
 }

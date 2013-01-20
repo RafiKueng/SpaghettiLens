@@ -22,6 +22,7 @@
 				data-event="Undo"
 	        	data-tooltip="reverts the last action"
 	        	data-furtherinfo="http://www.google.com"
+	        	data-hotkey="Ctrl+Z; Q"
 	        	/>
 	        <img id="redo" class="svg button" src="svg/redo.svg"
 	        	data-event="Redo"
@@ -125,14 +126,13 @@
     <p id="logtitle">DEBUG INFORMATION / LOG:</p>
     <p id="logcont">blabla<br />blabla<br />blabla<br />blabla<br />blabla</p>
   </div>
-
-  <div
-    id="popup">
-    <p id="text"></p>
-    <p id="link"></p>
-  </div>
 </div>
 
+<div id="popup">
+	<span id="text"></span> <br/>
+	<span id="link"></span> <br/>
+	<span id="hotkey"></span>
+</div>
 
 
 
