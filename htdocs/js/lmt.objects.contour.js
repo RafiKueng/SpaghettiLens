@@ -45,9 +45,23 @@ Contour.prototype.init = function(extpnt) {
  * there's nothing to update here in the js datastructre
  */
 Contour.prototype.update = function() {
-	for (var i =0; i<this.cpoints.length; ++i){
+	
+	for (var i =0; i<this.cpoints.length-1; ++i){ // do the last seperatly, because of angle check..
+		
+		// check if we need to change the order because the user messes up the contour points
+		var dp1=this.cpoints[i].d_phi; 
+		var dp2=this.cpoints[i+1].d_phi; 
+
+		if (dp2-dp1 < 0) {
+			var tmp = this.cpoints[i];
+			this.cpoints[i] = this.cpoints[i+1];
+			this.cpoints[i+1] = tmp;
+		}		
 		this.cpoints[i].update();
 	}
+	
+	this.cpoints[this.cpoints.length-1].update();
+	
 }
 
 
