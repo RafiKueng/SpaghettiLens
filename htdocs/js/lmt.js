@@ -23,7 +23,7 @@ LMT.settings = {
 	display: {
 		paintContours: true,
 		paintContourPoints: true,
-		paintConnectingLines: true,
+		paintConnectingLines: false,
 		
 		// translation vector and scale for the canvas
 		zoompan: {x:0, y:0, scale: 1}

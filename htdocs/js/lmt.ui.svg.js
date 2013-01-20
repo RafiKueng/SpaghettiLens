@@ -314,6 +314,10 @@ svg.events = {
 	onMiddleClick: function(evt) {
 		LMT.settings.display.zoompan = {x:0, y:0, scale:1};
 		svg.setTransform(svg.layer.zoompan, LMT.settings.display.zoompan);
+		
+		LMT.model.update();
+		LMT.model.paint();
+
 		if (evt.stopPropagation) {evt.stopPropagation();}
 		if (evt.preventDefault) {evt.preventDefault();}
 	},

@@ -176,12 +176,12 @@ Contour.prototype.paint = function() {
 	}
 	else {
 		var cp_first = {
-			x: this.extpnt.parent.x + 0.2 * (this.extpnt.parent.x - this.cpoints[0].x),
-			y: this.extpnt.parent.y + 0.2 * (this.extpnt.parent.y - this.cpoints[0].y)
+			x: this.extpnt.parent.x - 0.2 * (this.extpnt.parent.x - this.cpoints[0].x),
+			y: this.extpnt.parent.y - 0.2 * (this.extpnt.parent.y - this.cpoints[0].y)
 		};
 	  var cp_last = {
-			x: this.extpnt.parent.x + 0.2 * (this.extpnt.parent.x - this.cpoints[n-1].x),
-			y: this.extpnt.parent.y + 0.2 * (this.extpnt.parent.y - this.cpoints[n-1].y)
+			x: this.extpnt.parent.x - 0.2 * (this.extpnt.parent.x - this.cpoints[n-1].x),
+			y: this.extpnt.parent.y - 0.2 * (this.extpnt.parent.y - this.cpoints[n-1].y)
 		};
 
 	}

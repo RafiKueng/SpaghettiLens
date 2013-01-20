@@ -19,7 +19,7 @@ function ContourPoint(r_fac, d_phi, parent) {
 
 	//constructor
 	this.r_fac = r_fac;
-	this.d_phi = d_phi;
+	this.d_phi = (d_phi + 20*Math.PI ) % (2*Math.PI); // make sure its between [0 ... 2pi]
 
 	//directly set with init
 	this.c_idnr = -1; //the id of the contour this one belongs to
@@ -151,6 +151,7 @@ ContourPoint.prototype.updateCoord = function(x,y) {
 	var phi = LMT.utils.toPolarAng(dx, dy);
 	
 	this.d_phi = phi - this.extpnt.dphi;
+	this.d_phi = (this.d_phi >=0 && this.d_phi <= Math.PI*2) ? this.d_phi : (this.d_phi + 10*Math.PI) % (Math.PI*2); 
 	this.r_fac = r / this.extpnt.dr;
 } 
 
