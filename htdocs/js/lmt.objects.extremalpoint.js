@@ -40,6 +40,7 @@ function ExtremalPoint(x, y, depth, type) {
 
   this.isRoot = true;	//will be set by init
   this.isExpanded = false;	//will be set by init
+  this.childrenInsideEachOther = false; //
 	
   this.parent = null;	//will be set by init
 	this.child1 = null;
@@ -138,6 +139,7 @@ ExtremalPoint.prototype.updateType = function() {
 
 	// check if close together, then the types should be different from each other
   if (dphi < LMT.model.MinMmaxSwitchAngle) {
+  	this.childrenInsideEachOther = true;
     
 	  var cng_grp = null;
 	  var oth_grp = null;
@@ -172,6 +174,8 @@ ExtremalPoint.prototype.updateType = function() {
 
 	// they are not close together, so both have the same type (same as this.wasType)
   else {
+  	this.childrenInsideEachOther = false;  	
+  	
     if (c1.isExpanded) {
       c1.wasType = this.wasType;
       c1.updateType(); //recurse
@@ -384,6 +388,7 @@ ExtremalPoint.prototype.toJSON = function(){
 		
 		isRoot: this.isRoot,
 		isExpanded: this.isExpanded,
+  	childrenInsideEachOther: this.childrenInsideEachOther,
 		type: this.type,
 		wasType: this.wasType,
 		
