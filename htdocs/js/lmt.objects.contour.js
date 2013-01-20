@@ -45,9 +45,12 @@ Contour.prototype.init = function(extpnt) {
  * there's nothing to update here in the js datastructre
  */
 Contour.prototype.update = function() {
+
+	this.cpoints[this.cpoints.length-1].update();
+
 	
 	for (var i =0; i<this.cpoints.length-1; ++i){ // do the last seperatly, because of angle check..
-		
+		this.cpoints[i].update();		
 		// check if we need to change the order because the user messes up the contour points
 		var dp1=this.cpoints[i].d_phi; 
 		var dp2=this.cpoints[i+1].d_phi; 
@@ -57,10 +60,15 @@ Contour.prototype.update = function() {
 			this.cpoints[i] = this.cpoints[i+1];
 			this.cpoints[i+1] = tmp;
 		}		
-		this.cpoints[i].update();
+		
+		// check if 2 points close together, then delete one
+		var d = LMT.utils.dist2(this.cpoints[i], this.cpoints[i+1]);
+		if (d<3) {
+			var rem = this.cpoints.splice(i,1);
+			rem[0].remove();
+			this.nContourPoints--;
+		}
 	}
-	
-	this.cpoints[this.cpoints.length-1].update();
 	
 }
 
@@ -78,13 +86,24 @@ Contour.prototype.createCPs = function() {
 		var r_fac = Math.abs(i - nPnts / 2.) / (0.5 * nPnts); //gives a number 0..1
     r_fac = r_fac * 0.25 + 0.50; //makes the radi between 50% and 75% of dist to parent
 
-		var cpnt = new LMT.objects.ContourPoint(r_fac, d_phi*i);
+		var cpnt = new LMT.objects.ContourPoint(r_fac, d_phi*i, this);
 		cpnt.init(this.idnr, this.extpnt);
 		cpnt.update();
 		this.cpoints.push(cpnt);
 		this.nContourPoints++;
 	}
 	this.createSVG();
+}
+
+
+
+Contour.prototype.doublicateCP = function(pnt) {
+	var newCp = new LMT.objects.ContourPoint(pnt.r_fac, pnt.d_phi+0.1, this);
+	newCp.init(this.idnr, this.extpnt);
+	newCp.update();
+	var i = this.cpoints.indexOf(pnt);
+	this.cpoints.splice(i+1, 0, newCp);
+	this.nContourPoints++;
 }
 
 

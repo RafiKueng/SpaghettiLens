@@ -12,8 +12,10 @@
  *	@constructor
  * 
  */
-function ContourPoint(r_fac, d_phi) {
+function ContourPoint(r_fac, d_phi, parent) {
 	this.idnr = LMT.model.NrOf.ContourPoints++;
+
+	this.parent = parent;
 
 	//constructor
 	this.r_fac = r_fac;
@@ -36,9 +38,10 @@ function ContourPoint(r_fac, d_phi) {
 /**
  * 
  */
-ContourPoint.prototype.init = function(c_idnr, extpnt){
+ContourPoint.prototype.init = function(c_idnr, extpnt, parent){
 	this.c_idnr = c_idnr;
 	this.extpnt = extpnt;
+	this.parent = this.parent || parent;
 }
 
 

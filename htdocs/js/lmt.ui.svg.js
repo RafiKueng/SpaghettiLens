@@ -268,6 +268,13 @@ svg.events = {
       somethinghappend = true;
   	}
   	
+  	//click on contour points
+  	else if (target.id.substring(0,4) == "cpnt") {
+			var pnt = target.jsObj;
+  		$.event.trigger('DoublicateContourPoint', [pnt]);
+      somethinghappend = true;
+  	}
+  	
   	//is it something with an assigned js object? (rulers, pointmasses)
   	else if (target.jsObj) {
   		target.jsObj.remove();
