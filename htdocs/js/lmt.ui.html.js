@@ -156,7 +156,7 @@ html.events = {
 	
 }
 
-$(document).keyup(html.events.onkeydown);
+$('body').on('keypress', html.events.onkeydown);
 
 
 
