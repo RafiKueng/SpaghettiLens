@@ -131,7 +131,9 @@
 </div>
 
 
-
+<div id="color_dialog" class="dialog" title="ColorPicker">
+	this is the colorpicker dialog
+</div>
 
 
 <!-- before renaming // old version

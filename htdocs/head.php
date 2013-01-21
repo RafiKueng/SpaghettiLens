@@ -15,7 +15,8 @@ header( "Pragma: no-cache" );
   <link rel="stylesheet" href="css/big_screen.css" type="text/css" />
   <link rel="stylesheet" href="css/small_screen.css" type="text/css" />
 
-
+  <link href="css/dot-luv/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+  <link rel="stylesheet" media="screen" type="text/css" href="css/colorpicker.css" />
 
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
   <script type="text/javascript" src="js/lmt.js"></script>

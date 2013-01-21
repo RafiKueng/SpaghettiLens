@@ -66,6 +66,16 @@ html.init = function() {
 		$("#popup").stop(true, true).fadeOut(50);
 	});
 	$("#popup").hide();
+	
+	
+	
+	// jquery ui stuff
+	////////////////////////////////////////////
+	
+	//dialog
+	$('.dialog').dialog({
+		autoOpen: false;
+	});
 		
 }
 $(document).on('loadedButtons', html.init);
