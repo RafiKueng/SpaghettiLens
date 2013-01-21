@@ -90,7 +90,7 @@ function Output() {
 		
 		//show the caption 3 secs
 		$('.slide_caption').slideDown();
-		window.setTimeout(function(){
+		this.captionRemoveTimer = window.setTimeout(function(){
 			$('.slide_caption').slideUp();
 		}, 3000);
 	}
