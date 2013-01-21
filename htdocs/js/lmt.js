@@ -66,6 +66,17 @@ $(document).ready(function(){
 	
 	LMT.out.load(["img/demo-ch1.png", "img/demo-ch2.png","img/demo-ch3.png","img/demo-ch3.png","img/demo-ch3.png"]);
 	
+	var url = [
+		"img/demo-ch1.png",
+		"img/demo-ch2.png",
+		"img/demo-ch3.png"
+		];
+	var ch = [
+		{r:1,g:0,b:0,contrast:1,brightness:0},
+		{r:0,g:1,b:0,contrast:1,brightness:0},
+		{r:0,g:0,b:1,contrast:1,brightness:0}
+	];
+	LMT.ui.svg.generateBG(url, ch)
 	
 });
 

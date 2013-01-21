@@ -14,6 +14,7 @@
  */
 var svg = {
 	ns: "http://www.w3.org/2000/svg",
+	xlinkns: "http://www.w3.org/1999/xlink",
 	
 	layer: {
 		zoompan: null,
@@ -39,6 +40,8 @@ svg.init = function() {
 		
 	// create the layers
 	svg.layer = {};
+	
+	svg.layer.defs = document.createElementNS(svg.ns, "defs");
 
 	svg.layer.zoompan = document.createElementNS(svg.ns, "g");
 		svg.layer.bg = document.createElementNS(svg.ns, "g");
@@ -55,6 +58,7 @@ svg.init = function() {
 	svg.root.setAttribute('id', 'svgroot');
 	svg.root.setAttribute('width', '100%');
 	svg.root.setAttribute('height', '100%');
+	svg.root.setAttribute('xmlns:xlink', svg.xlinkns);
 	svg.layer.bg.setAttribute('id', 'bg');
 
 	//set event listeners
@@ -86,6 +90,7 @@ svg.init = function() {
 	svg.layer.zoompan.appendChild(svg.layer.models);
 	svg.layer.zoompan.appendChild(svg.layer.rulers);
 
+	svg.root.appendChild(svg.layer.defs);
 	svg.root.appendChild(svg.layer.zoompan);
 	
 	parent.appendChild(svg.root);
@@ -385,6 +390,134 @@ svg.setTransform = function(element, state) {
 	element.setAttribute("transform", s);
 	LMT.objects.Ruler.r = {	mid:    LMT.objects.Ruler.r_def.mid * 1/state.scale,
 													handle: LMT.objects.Ruler.r_def.handle * 1/state.scale};
+}
+
+
+
+svg.generateBG = function(url, ch) {
+	var filter = document.createElementNS(svg.ns, "filter");
+	filter.setAttribute("id","fBG");
+
+	// the black background
+	var floodfilter = document.createElementNS(svg.ns, "feFlood");
+	floodfilter.setAttribute("flood-color","#000000");
+	floodfilter.setAttribute("flood-opacity","1");
+	floodfilter.setAttribute("result","comp");
+	filter.appendChild(floodfilter);
+	svg.bg = [];
+
+	//for each background image...
+	for (var i = 0; i<url.length; i++){
+		
+		//.. load the image
+		var img = document.createElementNS(svg.ns, "feImage");
+		img.setAttributeNS(svg.xlinkns,"href", url[i]);
+		img.setAttribute("x","0");
+		img.setAttribute("y","0");
+		img.setAttribute("width","100%");
+		img.setAttribute("height","100%");
+		img.setAttribute("result","img"+i);
+		filter.appendChild(img);
+		
+		//apply the color matrix transform
+		var cmatrix = document.createElementNS(svg.ns, "feColorMatrix");
+		cmatrix.setAttribute("type", "matrix");
+		cmatrix.setAttribute("in", "img"+i);
+		cmatrix.setAttribute("result", "cimg"+i);
+		cmatrix.setAttribute("values", svg.generateColorMatrix(ch[i]));
+		filter.appendChild(cmatrix);
+		svg.bg.push(cmatrix);
+		
+		//blend to others using porter-diff
+		var comp = document.createElementNS(svg.ns, "feComposite");
+		comp.setAttribute("in", "comp");
+		comp.setAttribute("in2", "cimg"+i);
+		comp.setAttribute("result", "comp");
+		comp.setAttribute("operator", "arithmetic");
+		comp.setAttribute("k1", "0");
+		comp.setAttribute("k2", "1");
+		comp.setAttribute("k3", "1");
+		comp.setAttribute("k4", "0");
+		filter.appendChild(comp);
+	}
+
+	var bgrect = document.createElementNS(svg.ns, "rect");
+	bgrect.setAttribute("x","0");
+	bgrect.setAttribute("y","0");
+	bgrect.setAttribute("width","100%");
+	bgrect.setAttribute("height","100%");
+	bgrect.setAttribute("filter","url(#fBG)");
+	
+	
+	svg.layer.defs.appendChild(filter);
+	svg.layer.bg.appendChild(bgrect);
+}
+
+
+svg.changeChannel = function(i, ch){
+	svg.bg[i].setAttribute("values", svg.generateColorMatrix(ch));
+}
+
+
+/**
+ * generates the value string / ColorMatrix for channel ch 
+ * ch = {
+ * 	r, g, b: color values [0 ... 255]
+ *  contrast: [0.1 ... 1 ... 10]
+ *  brightness: [-1 ... 0 ... 1]
+ * }
+ * 
+ * col vector: [r, g, b, a, 1]
+ * 
+ * col_new' = mat * col'
+ * 
+ * C in (r, g, b)
+ * C_i = M_i0 * r + M_i1 * g + M_i2 * b + M_i3 * a + M_i4
+ * 
+ * since input image is pure grayscale, only M_ii and M_i4 matter
+ * 
+ * M_ii = contrast * c_ii
+ * 
+ * ***************
+ * for brightness / contrast:
+ * new_val(old_val) = m * old_val + q
+ * 
+ * contrast adj: this is an eq through fixpoint 0.5/0.5:
+ * q = (1-m) / 2
+ * 
+ * brightness shifts this curve by adding some value to q:
+ * q' = (1-m) / 2 + br
+ * 
+ * so you get the summand you have to add (the a_i4 column), i.e:
+ * 
+ * M_i4 = (1-contrast) / 2 + brightness
+ * 
+ */
+svg.generateColorMatrix = function(ch) {
+	var r = ch.r;
+	var g = ch.g;
+	var b = ch.b;
+	var co = ch.contrast;
+	var br = ch.brightness;
+	
+	var i = (1-co)/2 + (br);
+
+	var a00 = co * r;
+	var a11 = co * g;
+	var a22 = co * b;
+	
+	var a04 = i * r;
+	var a14 = i * g;
+	var a24 = i * b;
+	var a34 = 0;
+	
+	var str = "" + 
+		a00   + " 0"  + " 0"  + " 0 " + a04 + "\n" +
+		" 0 " +  a11  + " 0"  + " 0 " + a14 + "\n" +
+		" 0"  + " 0 " +  a22  + " 0 " + a24 + "\n" +
+		" 1"  + " 0"  + " 0"  + " 0 " + a34 ;
+		
+	return str;
 }
 
 
