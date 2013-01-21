@@ -136,6 +136,37 @@ html, body {
 
 
 
+.slide {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  text-align:center;
+}
+
+.slide_img {
+	max-height:100%;
+	max-width:100%;
+}
+
+.slide_caption {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 20px;
+	z-index: 85;
+	background: rgba(255, 255, 255, 0.8); /*slightly transparent*/
+}
+
+.slide_btn {
+	display: inline-block;
+	padding: 5px;
+	border: solid;
+	background: rgba(255, 255, 255, 0.8);
+	margin-top: 10px;
+}
 
 
 /*******************************************************

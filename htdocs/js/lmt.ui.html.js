@@ -138,13 +138,25 @@ html.events = {
 		log.write('click on '+evt.currentTarget.id + ", firing event: " + event + "("+value+")");
 		$.event.trigger(event, [value]);
 		
+	},
+	
+	
+	
+	onkeydown: function(evt){
+		var code = event.which || event.keyCode;
+		log.write("keycode: "+code);
+		if (code == 13 || code == 48 || code == 96) { //enter or 0
+			LMT.ui.svg.events.onMiddleClick(evt);
+			if (evt.stopPropagation) {evt.stopPropagation();}
+			if (evt.preventDefault) {evt.preventDefault();}
+		}
 	}
 	
 	
 	
-	
-	
 }
+
+$(document).keyup(html.events.onkeydown);
 
 
 

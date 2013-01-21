@@ -61,6 +61,12 @@ $(document).ready(function(){
 	LMT.model = new Model();
 	LMT.model.init();
 	
+	LMT.out = new LMT.ui.out();
+	LMT.out.init();
+	
+	LMT.out.load(["img/demo-ch1.png", "img/demo-ch2.png","img/demo-ch3.png","img/demo-ch3.png","img/demo-ch3.png"]);
+	
+	
 });
 
 
