@@ -93,10 +93,12 @@
 	  </div>
 
       <div id="toolbar2" class="toolbar">
-      	<button id="btnOutPrev">Previous</button>
-      	<span class="slide_btn" onclick="LMT.out.prev();">prev</span>
-      	<span id="nrbtn"></span>
-      	<span class="slide_btn" onclick="LMT.out.next();">next</span>
+      	<span id="btnsetOutNav">
+      		<button id="btnOutPrev">Previous</button>
+      		<button id="btnOutNext">Next</button>
+  		</span>
+  		<button id="btnOutOverview">Overview</button>
+      	<span id="btnsetOutNrNav"></span>
       </div>
 
       <div id="inp"></div>

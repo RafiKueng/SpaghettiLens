@@ -9,7 +9,7 @@
 function Output() {
 	//config
 	this.$out = $("#out");
-	this.$btns = $("#nrbtn");
+	this.$btns = $("#btnsetOutNrNav");
 	this.$caption = null; 
 	
 	this.slides = [];
@@ -25,10 +25,29 @@ function Output() {
 		
 		$("#btnOutPrev").button({
 			text: false,
-			disabled: true,
-			icons: {primary: "ui-icon-carat-1-w" }
+			disabled: false,
+			icons: {primary: "icon-chevron-left" },
+			onclick: LMT.out.prev
+		});
+
+		$("#btnOutNext").button({
+			text: false,
+			disabled: false,
+			icons: {primary: "icon-chevron-right" },
+			onclick: LMT.out.next
 		});
 		
+		$("#btnOutOverview").button({
+			text: false,
+			disabled: true,
+			icons: {primary: "icon-th-large" },
+			onclick: LMT.out.next
+		});
+		
+		$("#btnsetOutNav").buttonset();
+		$("#btnsetOutNav > button").button({ disabled: true });
+		
+		var tmp = 1;
 	};
 	
 	
@@ -62,8 +81,9 @@ function Output() {
 			
 		});
 		
-		this.$btns.buttonset();
+		var tmp = this.$btns.buttonset();
 		
+		$("#btnsetOutNav > button").button({ disabled: false });
 		
 	};
 	
