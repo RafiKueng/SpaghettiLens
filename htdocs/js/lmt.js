@@ -47,13 +47,10 @@ function onBodyInit() {
 
 $(document).ready(function(){
 
+
   log = new LMT.utils.logger();
   log.write('init complete');
 
-  /*
-  var ep = new LMT.objects.ExtremalPoint(5);
-  ep.write();
-  */
 	LMT.ui.svg.init();
 	LMT.ui.svg.initBG();
 	LMT.ui.html.loadAllSVG();
@@ -76,7 +73,9 @@ $(document).ready(function(){
 		{r:0,g:1,b:0,contrast:1,brightness:0},
 		{r:0,g:0,b:1,contrast:1,brightness:0}
 	];
+	LMT.channels = ch;
 	LMT.ui.svg.generateBG(url, ch)
+
 	
 });
 

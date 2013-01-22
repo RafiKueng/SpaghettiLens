@@ -72,11 +72,126 @@ html.init = function() {
 	// jquery ui stuff
 	////////////////////////////////////////////
 	
-	//dialog
-	$('.dialog').dialog({
-		autoOpen: false;
+		// multiply the color settings tools for n channels
+	var $parent = $('#color_dialog');
+	var $elem = $("#csettings_ch0");
+	for (var i = 1; i<LMT.channels.length; i++){
+		$clone = $elem.clone(true, true);
+		$clone.find('*').data('id', i);
+		$clone.appendTo($parent);
+	}
+	
+	
+	// color picker dialog
+	$('#color_dialog').dialog({
+		autoOpen: false,
+		minWidth: 500,
+		open: function(){
+			 $('.mycp').each(function(i, val){
+			 		var str = (1 << 24) | (LMT.channels[i].r*255 << 16) | (LMT.channels[i].g*255 << 8) | LMT.channels[i].b*255;
+			 		$(this).val('#' + str.toString(16).substr(1)).focus();
+			 		var press = jQuery.Event("keyup");
+					press.ctrlKey = false;
+					press.which = 13;
+					$(this).trigger(press);
+			 });
+		}
 	});
+	$(document).on('ShowColorSettings', function(){$('#color_dialog').dialog("open");});
+	
+	//sliders
+	$('.slider').slider({
+		max: 1,
+		min: -1,
+		value: 0,
+		step: 0.05,
+		stop: function(evt, ui) {
+			var value = ui.value;
+			var type = $(this).data("type");
+			var id = $(this).data("id");
+			
+			if (type=="contrast"){
+				value = Math.pow(10, value); //change range from [-1...1] to [0.1 ... 10]
+			}
+			
+			LMT.channels[id][type] = value;
+			log.write("stopped sliding");
+			$.event.trigger('UpdateBG', id);
+		}
 		
+	});
+	
+	
+
+	
+	
+	$('.mycp').colorpicker({
+		parts: ['header',
+			'map',
+			'bar',
+			//'hex',
+			//'hsv',
+			//'rgb',
+			//'alpha',
+			//'lab',
+			//'cmyk',
+			//'preview',
+			'swatches',
+			'footer'],
+		colorFormat: '#HEX',
+		showOn: 'both',
+		buttonColorize: true,
+		altField: '',
+		buttonImage: 'img/cp/ui-colorpicker.png',
+		buttonImageOnly: false,
+		buttonText: 'pick',
+		showOn: 'button',
+		close: function(evt, data){
+			var id= $(this).data("id");
+			$(this).css('background', data.formatted);
+			LMT.channels[id].r = data.rgb.r;
+			LMT.channels[id].g = data.rgb.g;
+			LMT.channels[id].b = data.rgb.b;
+			log.write("picked color for "+id);
+			$.event.trigger('UpdateBG', id);
+		},
+	});
+	
+	
+	/**********************
+	 * the display settings dialog 
+	 */
+	$("#display_dialog").dialog({
+		autoOpen: false,
+		minWidth: 700,
+		open: function(){ //update button status
+			// .change is a bugfix, as described here: http://stackoverflow.com/questions/8796680/jqueryui-button-state-not-changing-on-prop-call
+			$('#conn_l').prop("checked", LMT.settings.display.paintConnectingLines).change();
+			$('#cont_p').prop("checked", LMT.settings.display.paintContourPoints).change();
+			$('#cont_l').prop("checked", LMT.settings.display.paintContours).change();
+		}
+	});
+	$(document).on('ShowDisplaySettings', function(){$('#display_dialog').dialog("open");});
+	
+	$('#dsettings').buttonset();
+	
+	$('#conn_l').click(function(evt){
+		LMT.settings.display.paintConnectingLines = this.checked;
+		log.write('toggle 1' + this.checked);
+		$.event.trigger('UpdateModel');
+	});
+	$('#cont_p').click(function(evt){
+		LMT.settings.display.paintContourPoints = this.checked;
+		log.write('toggle 2');
+		$.event.trigger('UpdateModel');
+	})
+	$('#cont_l').click(function(){
+		LMT.settings.display.paintContours = this.checked;
+		log.write('toggle 3');
+		$.event.trigger('UpdateModel');
+	});
+	
+
 }
 $(document).on('loadedButtons', html.init);
 	

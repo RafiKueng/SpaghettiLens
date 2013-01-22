@@ -169,6 +169,44 @@ html, body {
 }
 
 
+
+
+.settings_channelcontainer {
+  position: relative;
+  min-width: 400px;
+  height: 100px;
+  overflow: hidden;
+}
+
+
+.mycp {
+	margin: 5px 20px;
+	height: 30px;
+	width: 70px;
+	border: none;
+}
+
+.settings_channelcontainer .ui-button {
+	margin: 0px 20px;
+	width: 70px;
+}
+
+
+.slider {
+  margin: 20px;
+}
+
+
+
+/****************
+ * display settings dialog 
+ */
+
+#dsettings {
+	margin-top: 10px;
+}
+
+
 /*******************************************************
   single text elements styling
  *******************************************************/

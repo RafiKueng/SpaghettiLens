@@ -3,5 +3,5 @@ uses
 jquery
 jquery-ui
 colorpicker jquery addon
-  http://www.eyecon.ro/colorpicker/#about 
-  MIT & GPL
+  https://github.com/vanderlee/colorpicker#readme
+  MIT

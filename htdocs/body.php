@@ -6,9 +6,8 @@
   
   <header
     id="top">
-    top
   </header>
-  
+
   <div id="cont">
     <div id="main">
       <div id="toolbar1" class="toolbar">
@@ -111,6 +110,7 @@
     </div>
   </div>
 
+
   <footer
     id="footer">
     footer
@@ -132,8 +132,31 @@
 
 
 <div id="color_dialog" class="dialog" title="ColorPicker">
-	this is the colorpicker dialog
+	<div id="csettings_ch0" class="settings_channelcontainer">
+		<div style="
+		      float: left;
+		      width: 300px;
+		      height: 100%;">
+			<div id="csettings_ch0_contrast" data-id="0" data-type="contrast" class="slider contrast"></div>
+			<div id="csettings_ch0_brightness" data-id="0" data-type="brightness" class="slider brightness"></div>
+		</div>
+		<div style="
+		      width: 100px;
+		      height: 100%;
+		      overflow: hidden;">
+			<input id="csettings_ch0_color" data-id="0" class="mycp" value="ff0000"></input>
+		</div>
+	</div>
 </div>
+
+<div id="display_dialog" class="dialog" title="Display Settings">
+	<div id="dsettings">
+		<input type="checkbox" id="conn_l" /><label for="conn_l">ConnectingLines</label>
+		<input type="checkbox" id="cont_p" /><label for="cont_p">ContourPoints</label>
+		<input type="checkbox" id="cont_l" /><label for="cont_l">ContourLine</label>
+	</div>
+</div>
+
 
 
 <!-- before renaming // old version

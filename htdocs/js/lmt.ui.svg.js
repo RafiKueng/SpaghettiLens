@@ -454,10 +454,10 @@ svg.generateBG = function(url, ch) {
 }
 
 
-svg.changeChannel = function(i, ch){
-	svg.bg[i].setAttribute("values", svg.generateColorMatrix(ch));
+svg.changeChannel = function(evt, i){
+	svg.bg[i].setAttribute("values", svg.generateColorMatrix(LMT.channels[i]));
 }
-
+$(document).on('UpdateBG', svg.changeChannel);
 
 /**
  * generates the value string / ColorMatrix for channel ch 
