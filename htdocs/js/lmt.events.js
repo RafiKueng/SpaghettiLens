@@ -53,6 +53,18 @@ events.AppReady = {
 
 
 
+/**
+ * only make one update per time
+ * bind this function to the event, but remove it on the first occurance (.one + one time execution)
+ * and only reattach it, onces the update is finished.. 
+ */
+events.UpdateModel = function(){
+	LMT.model.update();
+	LMT.model.paint();
+	
+	$(document).one('UpdateModel', events.UpdateModel);
+}
+$(document).one('UpdateModel', events.UpdateModel);
 
 
 LMT.events = events;

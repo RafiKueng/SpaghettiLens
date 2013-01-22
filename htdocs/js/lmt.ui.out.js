@@ -38,14 +38,24 @@ function Output() {
 			
 			that.slides.push($div);
 			
-			
+			/*
 			var $nr = $('<span class="slide_btn">_' + i +'_</span>');
 			$nr.on('click', {that: that, id:i}, function(evt){
 				var that = evt.data.that;
 				that.show(evt.data.id);
 			});
 			$nr.appendTo(that.$btns);
+			*/
+			var $nr = $('<input type="radio" id="radio'+i+'" name="radio" /><label for="radio'+i+'">'+i+'</label>');
+			$nr.appendTo(that.$btns);
+			$nr.on('click', {that: that, id:i}, function(evt){
+				var that = evt.data.that;
+				that.show(evt.data.id);
+			});
+			
 		});
+		
+		this.$btns.buttonset();
 		
 		
 	};
