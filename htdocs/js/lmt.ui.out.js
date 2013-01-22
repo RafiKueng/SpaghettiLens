@@ -22,6 +22,13 @@ function Output() {
 		this.$caption.hide();
 		this.$caption.appendTo(this.$out);
 		this.tmp=1;
+		
+		$("#btnOutPrev").button({
+			text: false,
+			disabled: true,
+			icons: {primary: "ui-icon-carat-1-w" }
+		});
+		
 	};
 	
 	
