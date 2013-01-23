@@ -28,11 +28,13 @@ var svg = {
 		rulers: null
 	}
 };
-	
+
+
+
 /**
  * creates and initalises the svg input area 
  */
-svg.init = function() {
+svg.initCanvas = function() {
 	var parent = document.getElementById("inp");
 	svg.root = document.createElementNS(svg.ns, "svg");
 	
@@ -94,16 +96,16 @@ svg.init = function() {
 	svg.root.appendChild(svg.layer.zoompan);
 	
 	parent.appendChild(svg.root);
-	
-	
-	
 }
 
 
+
+
+
 /**
- * initialises the background images
- * sets up the filter chain for correct blending 
+ * initialises the background to nothing
  */
+/*
 svg.initBG = function(urls) {
 	var rect = document.createElementNS(svg.ns, "rect");
 	
@@ -116,10 +118,19 @@ svg.initBG = function(urls) {
 	
 	svg.layer.bg.appendChild(rect);
 }
+*/
+
+
+
+
+
+
 
 
 /**
- * event handlers for interaction with the svg canvas 
+ * event handlers for interaction with the svg canvas
+ * 
+ * this grabs the low level system events and converts it to contextual high level events
  */
 svg.events = {
 	state: 'none', //none, drag, pan
@@ -184,29 +195,17 @@ svg.events = {
 	  }
 	  
 	  else if (svg.events.state == 'pan') {
-	  	//TODO panning logic, use SVGPan library as vorlage
-	  	/*
-	  	var p = LMT.ui.svg.coordTrans(evt).matrixTransform(svg.events.stateTf);
-			svg.setCTM(svg.layer.zoompan, svg.events.stateTf.inverse().translate(p.x - svg.events.stateOrigin.x, p.y - svg.events.stateOrigin.y));
-			*/
-			//var x = LMT.settings.display.zoompan.x + evt.screenX - svg.events.stateOrigin.x;
-			//var y = LMT.settings.display.zoompan.y + evt.screenY - svg.events.stateOrigin.y;
+      // create a temporary state and move the layer to the new state
+      // only on mouse up the newstate will become the current state
 			svg.events.newState = {	x: LMT.settings.display.zoompan.x + dx,
 															y: LMT.settings.display.zoompan.y + dy,
 															scale: LMT.settings.display.zoompan.scale};
-			/*
-			LMT.settings.display.translate.x += translate.x;
-			LMT.settings.display.translate.y += translate.y;
-			*/
-			svg.setTransform(svg.layer.zoompan, svg.events.newState);
 			
+			$.event.trigger('Pan', [svg.events.newState]);
 			
 			svg.events.someElementWasDragged = false;
 	  	svg.events.preventClick = true;
 	  }
-
-
-	  
 	},
 	
 	
@@ -218,6 +217,7 @@ svg.events = {
 			}
 		}
 		if (svg.events.someElementWasDragged) {
+			//TODO actionstack event trigering
 			//actionstack.push(model);
 		  evt.stopPropagation();
 		  evt.preventDefault();
@@ -237,7 +237,12 @@ svg.events = {
 		// delegate click on middle button
 		// 1 according to w3c, 4 according to ms... (but this time, the ms solution is actually better...)
 		if (evt.button == 1 || evt.button == 4) {
-			svg.events.onMiddleClick(evt);
+			/**
+      * reset zoom and pan to default
+      */ 
+      $.event.trigger('ZoomPanReset');
+      if (evt.stopPropagation) {evt.stopPropagation();}
+      if (evt.preventDefault) {evt.preventDefault();}
 			return;
 		}
 		
@@ -252,7 +257,7 @@ svg.events = {
       var coord = svg.coordTrans(evt);			
 			
 			if (LMT.settings.mode == 'image') {
-				$.event.trigger('CreateRootImagePoint', [coord]);
+				$.event.trigger('CreateRootMinima', [coord]);
 			}
 			
 			else if (LMT.settings.mode == 'mass') {
@@ -276,22 +281,23 @@ svg.events = {
   	//click on contour points
   	else if (target.id.substring(0,4) == "cpnt") {
 			var pnt = target.jsObj;
-  		$.event.trigger('DoublicateContourPoint', [pnt]);
+  		$.event.trigger('CreateContourPoint', [pnt]);
       somethinghappend = true;
   	}
   	
   	//is it something with an assigned js object? (rulers, pointmasses)
   	else if (target.jsObj) {
-  		target.jsObj.remove();
+  		$.event.trigger('DeleteObject', [target.jsObj]);
       somethinghappend = true;
   	}
 
 
 	  //push the new model to the undo / action stack
 	  if (somethinghappend) {
-	  	//actionstack.push(model);
+	  	//TODO actionstack.push(model);
 	  } 
 	},
+
 	
 	/**
 	 * adds zooming function
@@ -301,31 +307,14 @@ svg.events = {
 		// cross-browser wheel delta
 		var e = window.event || evt; // old IE support
 		var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-		LMT.settings.display.zoompan.scale *= 1 + delta*0.1;
-		svg.setTransform(svg.layer.zoompan, LMT.settings.display.zoompan);
 		
-		//repaint the model for changed radii of elements
-		LMT.model.update();
-		LMT.model.paint();
-		
+		$.event.trigger('Zoom', [delta]);
+
 		if (evt.stopPropagation) {evt.stopPropagation();}
 		if (evt.preventDefault) {evt.preventDefault();}
 		
 	},
 
-	/**
-	 * reset zoom and pan to default
-	 */	
-	onMiddleClick: function(evt) {
-		LMT.settings.display.zoompan = {x:0, y:0, scale:1};
-		svg.setTransform(svg.layer.zoompan, LMT.settings.display.zoompan);
-		
-		LMT.model.update();
-		LMT.model.paint();
-
-		if (evt.stopPropagation) {evt.stopPropagation();}
-		if (evt.preventDefault) {evt.preventDefault();}
-	},
 	
 	/**
 	 * abort all operations on mouse out of svg area 
@@ -344,19 +333,6 @@ svg.events = {
  */
 svg.coordTrans = function(evt) {
 
-	/*
-  var m = evt.target.getScreenCTM();
-  var p = svg.root.createSVGPoint(); 
-
-  p.x = evt.clientX;
-  p.y = evt.clientY;
-  p = p.matrixTransform(m.inverse());
-  p.x = Math.round(p.x);
-  p.y = Math.round(p.y);
-
-	log.write(''+p.x+' / '+p.y);
-	*/
-	
 	var pt = svg.root.createSVGPoint();
 	pt.x = evt.clientX;
 	pt.y = evt.clientY;
@@ -368,96 +344,117 @@ svg.coordTrans = function(evt) {
 }
 
 
-/**
- * Sets the current transform matrix of an element.
- */
-/* OUTDATED
-svg.setCTM = function(element, matrix) {
-	var s = "matrix(" + matrix.a + "," + matrix.b + "," + matrix.c + "," + matrix.d + "," + matrix.e + "," + matrix.f + ")";
-
-	element.setAttribute("transform", s);
-}
-*/
 
 /**
- * sets the translate / scale values of the zoompan layer (ie the whole svg canvas) 
+ * Loads & Blends the background imgage(s) for the input canvas
+ * using a svg filter chain 
  */
-svg.setTransform = function(element, state) {
-
-	var s = "translate(" + (state.x) + "," +
-												 (state.y) + ") " + 
-					"scale(" + state.scale + ")";
-	element.setAttribute("transform", s);
-	LMT.objects.Ruler.r = {	mid:    LMT.objects.Ruler.r_def.mid * 1/state.scale,
-													handle: LMT.objects.Ruler.r_def.handle * 1/state.scale};
+svg.bg = {
+  init: function() {
+  
+    var url = LMT.modelData.url;
+    var ch = LMT.modelData.ch;
+    
+  	var filter = document.createElementNS(svg.ns, "filter");
+  	filter.setAttribute("id","fBG");
+  
+  	// the black background
+  	var floodfilter = document.createElementNS(svg.ns, "feFlood");
+  	floodfilter.setAttribute("flood-color","#000000");
+  	floodfilter.setAttribute("flood-opacity","1");
+  	floodfilter.setAttribute("result","comp");
+  	filter.appendChild(floodfilter);
+  	svg.bgCmatrix = [];
+  
+  	//for each background image...
+  	for (var i = 0; i<url.length; i++){
+  		
+  		//.. load the image
+  		var img = document.createElementNS(svg.ns, "feImage");
+  		img.setAttributeNS(svg.xlinkns,"href", url[i]);
+  		img.setAttribute("x","0");
+  		img.setAttribute("y","0");
+  		img.setAttribute("width","100%");
+  		img.setAttribute("height","100%");
+  		img.setAttribute("result","img"+i);
+  		filter.appendChild(img);
+  		
+  		//apply the color matrix transform
+  		var cmatrix = document.createElementNS(svg.ns, "feColorMatrix");
+  		cmatrix.setAttribute("type", "matrix");
+  		cmatrix.setAttribute("in", "img"+i);
+  		cmatrix.setAttribute("result", "cimg"+i);
+  		cmatrix.setAttribute("values", svg.generateColorMatrix(ch[i]));
+  		filter.appendChild(cmatrix);
+  		svg.bgCmatrix.push(cmatrix);
+  		
+  		//blend to others using porter-diff
+  		var comp = document.createElementNS(svg.ns, "feComposite");
+  		comp.setAttribute("in", "comp");
+  		comp.setAttribute("in2", "cimg"+i);
+  		comp.setAttribute("result", "comp");
+  		comp.setAttribute("operator", "arithmetic");
+  		comp.setAttribute("k1", "0");
+  		comp.setAttribute("k2", "1");
+  		comp.setAttribute("k3", "1");
+  		comp.setAttribute("k4", "0");
+  		filter.appendChild(comp);
+  	}
+  
+  	var bgrect = document.createElementNS(svg.ns, "rect");
+  	bgrect.setAttribute("x","0");
+  	bgrect.setAttribute("y","0");
+  	bgrect.setAttribute("width","100%");
+  	bgrect.setAttribute("height","100%");
+  	bgrect.setAttribute("filter","url(#fBG)");
+  	
+  	
+  	svg.layer.defs.appendChild(filter);
+  	svg.layer.bg.appendChild(bgrect);
+  },
+  
+  updateColor: function(evt, i){
+  	svg.bgCmatrix[i].setAttribute("values", svg.generateColorMatrix(LMT.modelData.ch[i]));
+  },
+  
+  
+  /**
+   * sets the model view zoom and pan status
+   * if state: to this coord and zoom factor, otherwise to the settings 
+   */
+  updateZoomPan: function(evt, state){
+    var s;
+    if (state){
+      s = "translate(" + (state.x) + "," +
+                             (state.y) + ") " + 
+              "scale(" + state.scale + ")";
+    }
+    else {
+      s = "translate(" + (LMT.settings.display.zoompan.x) + "," +
+                         (LMT.settings.display.zoompan.y) + ") " + 
+              "scale(" + LMT.settings.display.zoompan.scale + ")";
+    }
+    svg.layer.zoompan.setAttribute("transform", s);
+    //no RepaintModel should be needed, only in zoom case, whats already taken care of below
+  },
+  
+  zoom: function(evt, delta){
+    LMT.settings.display.zoompan.scale *= 1 + delta*0.1;
+    LMT.ui.svg.bg.updateZoomPan();
+    $.event.trigger("RepaintModel"); //is needed to change the radii of the masses, rulers ect..
+  },
+  
+  zoomPanReset: function() {
+    LMT.settings.display.zoompan.x = 0;
+    LMT.settings.display.zoompan.y = 0;
+    LMT.settings.display.zoompan.scale = 1;
+    LMT.ui.svg.bg.updateZoomPan();
+    $.event.trigger("RepaintModel"); //is needed to change the radii of the masses, rulers ect..
+  }
+  
+  
 }
 
-
-
-svg.generateBG = function(url, ch) {
-	var filter = document.createElementNS(svg.ns, "filter");
-	filter.setAttribute("id","fBG");
-
-	// the black background
-	var floodfilter = document.createElementNS(svg.ns, "feFlood");
-	floodfilter.setAttribute("flood-color","#000000");
-	floodfilter.setAttribute("flood-opacity","1");
-	floodfilter.setAttribute("result","comp");
-	filter.appendChild(floodfilter);
-	svg.bg = [];
-
-	//for each background image...
-	for (var i = 0; i<url.length; i++){
-		
-		//.. load the image
-		var img = document.createElementNS(svg.ns, "feImage");
-		img.setAttributeNS(svg.xlinkns,"href", url[i]);
-		img.setAttribute("x","0");
-		img.setAttribute("y","0");
-		img.setAttribute("width","100%");
-		img.setAttribute("height","100%");
-		img.setAttribute("result","img"+i);
-		filter.appendChild(img);
-		
-		//apply the color matrix transform
-		var cmatrix = document.createElementNS(svg.ns, "feColorMatrix");
-		cmatrix.setAttribute("type", "matrix");
-		cmatrix.setAttribute("in", "img"+i);
-		cmatrix.setAttribute("result", "cimg"+i);
-		cmatrix.setAttribute("values", svg.generateColorMatrix(ch[i]));
-		filter.appendChild(cmatrix);
-		svg.bg.push(cmatrix);
-		
-		//blend to others using porter-diff
-		var comp = document.createElementNS(svg.ns, "feComposite");
-		comp.setAttribute("in", "comp");
-		comp.setAttribute("in2", "cimg"+i);
-		comp.setAttribute("result", "comp");
-		comp.setAttribute("operator", "arithmetic");
-		comp.setAttribute("k1", "0");
-		comp.setAttribute("k2", "1");
-		comp.setAttribute("k3", "1");
-		comp.setAttribute("k4", "0");
-		filter.appendChild(comp);
-	}
-
-	var bgrect = document.createElementNS(svg.ns, "rect");
-	bgrect.setAttribute("x","0");
-	bgrect.setAttribute("y","0");
-	bgrect.setAttribute("width","100%");
-	bgrect.setAttribute("height","100%");
-	bgrect.setAttribute("filter","url(#fBG)");
-	
-	
-	svg.layer.defs.appendChild(filter);
-	svg.layer.bg.appendChild(bgrect);
-}
-
-
-svg.changeChannel = function(evt, i){
-	svg.bg[i].setAttribute("values", svg.generateColorMatrix(LMT.channels[i]));
-}
-$(document).on('UpdateBG', svg.changeChannel);
 
 /**
  * generates the value string / ColorMatrix for channel ch 

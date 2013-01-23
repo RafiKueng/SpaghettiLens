@@ -1,6 +1,6 @@
 <!-- START body.php -->
 
-<body  onload="onBodyInit();">
+<body>
 
   <div id="doc">
 
@@ -44,7 +44,7 @@
             
             <span id="btngrpSettings" class="btnset">
               <button id="btnInSettingsColor"
-                data-event="ShowColorSettings"
+                data-event="ShowDialogColorSettings"
                 data-tooltip="change the color mapping"
                 data-furtherinfo="http://www.google.com"
                 data-hotkey="C"
@@ -52,7 +52,7 @@
                 Show Color Settings
               </button>
               <button id="btnInSettingsLines"
-                data-event="ShowDisplaySettings"
+                data-event="ShowDialogDisplaySettings"
                 data-tooltip="enables / disables some heling lines"
                 data-furtherinfo="http://www.google.com"
                 data-hotkey="C"

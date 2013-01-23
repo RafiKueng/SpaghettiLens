@@ -4,9 +4,10 @@
  *****************************/
 
 // this is the root namespace of my application
-var LMT = {};
+LMT = {};
 
 //create namespaces
+LMT.events = {};
 LMT.ui = {
   html: {},       // all the html based interactions
   svg: {},        // all that happens on the svg moddeling layer (input)
@@ -38,21 +39,52 @@ LMT.settings = {
 	tmp: 0
 }
 
-LMT.addEventListener = document.addEventListener;
-
-
-function onBodyInit() {
-}
 
 
 $(document).ready(function(){
 
-
   log = new LMT.utils.logger();
   log.write('init complete');
+
+
+
+  LMT.events.startUp();
+  LMT.events.assignHandlers();
+
+
+  
+
+  //for debug purposes, trigger some events manually
+
+  var ch = [
+    {r:1,g:0,b:0,contrast:1,brightness:0},
+    {r:0,g:1,b:0,contrast:1,brightness:0},
+    {r:0,g:0,b:1,contrast:1,brightness:0}
+  ];
+  var url = [
+    "img/demo-ch1.png",
+    "img/demo-ch2.png",
+    "img/demo-ch3.png"
+    ];
+  LMT.modelData = {
+    url: url,
+    ch: ch
+  };
+  $.event.trigger('ReceivedModelData');
   
 
 
+  LMT.modelData.currentSimulationImageURLs = ["img/demo-ch1.png", "img/demo-ch2.png","img/demo-ch3.png","img/demo-ch3.png","img/demo-ch3.png"];
+  $.event.trigger("ReceivedSimulation");  
+
+
+
+  // old stuff
+
+
+  
+
+  /*
 	LMT.ui.svg.init();
 	LMT.ui.svg.initBG();
 	LMT.ui.html.loadAllSVG();
@@ -63,7 +95,7 @@ $(document).ready(function(){
 	LMT.out = new LMT.ui.out();
 	LMT.out.init();
 	
-	LMT.out.load(["img/demo-ch1.png", "img/demo-ch2.png","img/demo-ch3.png","img/demo-ch3.png","img/demo-ch3.png"]);
+	
 	
 	var url = [
 		"img/demo-ch1.png",
@@ -80,31 +112,8 @@ $(document).ready(function(){
 
   LMT.ui.html.init();
 	
-});
-
-
-
-/*gets fires as soon as all button svg elements are loaded*/
-$(document).on('loadedButtons', function(evt){
-
-	//alert("loadedButtons was triggered:");
-});
-
-
-
-/* gets fires as soon as connection to server is established and infos for model are received*/
-$(document).on('loadedModelData', function(){
+	*/
 	
 });
 
 
-/* gets fires as soon as the images for the model are loaded */
-$(document).on('loadedModelData', function(){
-	
-});
-
-
-/* gets fired as soon as everything is ready to be used */
-$(document).on('AppReady', function(){
-	
-});
