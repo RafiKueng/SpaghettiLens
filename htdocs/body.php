@@ -10,13 +10,12 @@
 
   <div id="cont">
     <div id="main">
-      <div id="toolbar1" class="toolbar">
+      <div id="toolbar1" class="toolbarContainer">
 		<!--
 		onmouseover="document.getElementById('popup').style.display = 'block';"
         onmouseout="document.getElementById('popup').style.display = 'none';"
        -->
-        
-        <span id="toolbarGrp1" class="ui-widget-header ui-corner-all" style="padding: 15px 10px;">
+        <span id="toolbarGrp1" class="toolbar ui-widget-header ui-corner-all">
 	        <span id="btnsetXxdo" class="btnset">
 		        <button id="btnInUndo"
 					data-event="Undo"
@@ -130,7 +129,6 @@
 	        	</button>	        </span>
         </span>
         
-        
 <!--
         <div id="btngrpXXDO" class="toolbar_element" data-type="fix" data-order="0">
 	        <img id="undo" class="svg button" src="svg/undo.svg"
@@ -208,14 +206,16 @@
         </div>
 -->
 	  </div>
-
-      <div id="toolbar2" class="toolbar">
-      	<span id="btnsetOutNav">
-      		<button id="btnOutPrev">Previous</button>
-      		<button id="btnOutNext">Next</button>
-  		</span>
-  		<button id="btnOutOverview">Overview</button>
-      	<span id="btnsetOutNrNav"></span>
+		
+      <div id="toolbar2" class="toolbarContainer">
+		<span id="toolbarGrp2" class="toolbar ui-widget-header ui-corner-all">
+	      	<span id="btnsetOutNav">
+	      		<button id="btnOutPrev">Previous</button>
+	      		<button id="btnOutNext">Next</button>
+	  		</span>
+	  		<button id="btnOutOverview">Overview</button>
+	      	<span id="btnsetOutNrNav"></span>
+		</span>
       </div>
 
       <div id="inp"></div>
