@@ -74,7 +74,10 @@ html.init = function() {
 	 * init toolbar
 	 */
 
-	$("#toolbarGrp1 button").add("#toolbarGrp1 input").each(function(){
+	$("#toolbarGrp1 button")
+	 .add("#toolbarGrp1 input")
+	 .add("#top button")
+	 .each(function(){
 		
 		var $this = $(this);
 		var icon = $this.data("icon");
@@ -230,6 +233,15 @@ html.init = function() {
 		$.event.trigger('UpdateModel');
 	});
 	
+
+
+
+  /***************
+   *init main ui stuff
+   * the buttons on top
+   *  
+   */
+  
 
 }
 $(document).on('loadedButtons', html.init);

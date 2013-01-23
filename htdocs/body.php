@@ -4,7 +4,21 @@
 
   <div id="doc">
 
-    <header id="top"></header>
+    <div id="top">
+      <div style="display:table-cell; height: 100%">
+        <h1>Lens Modelling Tool</h1>
+      </div>
+      <div style="display:table-cell; width: auto; text-align: right;vertical-align: bottom; padding: 10px; ">
+        <button id="btnMainLogin"
+          data-event="LoginClicked"
+          data-tooltip="loggs in"
+          data-furtherinfo="http://www.google.com"
+          data-hotkey="Ctrl+Z; Q"
+          data-icon="icon-signin">
+          Log In
+        </button>
+      </div>
+    </div>
 
     <div id="cont">
       <div id="main">
