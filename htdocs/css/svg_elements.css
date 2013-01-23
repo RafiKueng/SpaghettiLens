@@ -56,30 +56,6 @@
 }
 
 
-
-
-.xxdobtn {
-	fill: #3333ff;
-	fill-opacity:0.5;
-}
-
-
-.bg {
-	fill: #aaaaaa;
-	fill-opacity: 0.8;
-}
-
-
-/*ui elements*/
-.button {
-	fill: #3333ff;
-	stroke: #3333ff;
-}
-
-.btn.active {
-	fill: #aaaaff;
-}
-
 /* use this class for elements that are not displayed */
 .invisible {
 	visibility: hidden;

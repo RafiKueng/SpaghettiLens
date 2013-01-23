@@ -9,16 +9,22 @@ header( "Pragma: no-cache" );
 
 <head>
   <meta charset="UTF-8">
-  
+
+  <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/ui-darkness/jquery-ui.css" rel="stylesheet">
+
+  <link href="css/jquery.colorpicker.css" rel="stylesheet" type="text/css"/>
+  <link href="css/font-awesome.css" rel="stylesheet" type="text/css"/>
+
   <link rel="stylesheet" href="css/main.css" type="text/css" />
   <link rel="stylesheet" href="css/svg_elements.css" type="text/css" />
   <link rel="stylesheet" href="css/big_screen.css" type="text/css" />
   <link rel="stylesheet" href="css/small_screen.css" type="text/css" />
 
-  <link href="css/dot-luv/jquery-ui-1.10.0.custom.css" rel="stylesheet">
-  <link href="css/jquery.colorpicker.css" rel="stylesheet" type="text/css"/>
 
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.js"></script>
+  
   <script type="text/javascript" src="js/lmt.js"></script>
 <?php
   // include all script files in the folder /js

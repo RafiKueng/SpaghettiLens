@@ -50,6 +50,8 @@ $(document).ready(function(){
 
   log = new LMT.utils.logger();
   log.write('init complete');
+  
+
 
 	LMT.ui.svg.init();
 	LMT.ui.svg.initBG();
@@ -76,6 +78,7 @@ $(document).ready(function(){
 	LMT.channels = ch;
 	LMT.ui.svg.generateBG(url, ch)
 
+  LMT.ui.html.init();
 	
 });
 

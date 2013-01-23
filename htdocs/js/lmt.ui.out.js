@@ -9,7 +9,7 @@
 function Output() {
 	//config
 	this.$out = $("#out");
-	this.$btns = $("#nrbtn");
+	this.$btns = $("#btnsetOutNrNav");
 	this.$caption = null; 
 	
 	this.slides = [];
@@ -22,6 +22,32 @@ function Output() {
 		this.$caption.hide();
 		this.$caption.appendTo(this.$out);
 		this.tmp=1;
+		
+		$("#btnOutPrev").button({
+			text: false,
+			disabled: false,
+			icons: {primary: "icon-chevron-left" },
+			onclick: LMT.out.prev
+		});
+
+		$("#btnOutNext").button({
+			text: false,
+			disabled: false,
+			icons: {primary: "icon-chevron-right" },
+			onclick: LMT.out.next
+		});
+		
+		$("#btnOutOverview").button({
+			text: false,
+			disabled: true,
+			icons: {primary: "icon-th-large" },
+			onclick: LMT.out.next
+		});
+		
+		$("#btnsetOutNav").buttonset();
+		$("#btnsetOutNav > button").button({ disabled: true });
+		
+		var tmp = 1;
 	};
 	
 	
@@ -57,6 +83,7 @@ function Output() {
 		
 		this.$btns.buttonset();
 		
+		$("#btnsetOutNav > button").button({ disabled: false });
 		
 	};
 	
