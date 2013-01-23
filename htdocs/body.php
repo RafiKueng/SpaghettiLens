@@ -16,6 +16,122 @@
         onmouseout="document.getElementById('popup').style.display = 'none';"
        -->
         
+        <span id="toolbarGrp1" class="ui-widget-header ui-corner-all" style="padding: 15px 10px;">
+	        <span id="btnsetXxdo" class="btnset">
+		        <button id="btnInUndo"
+					data-event="Undo"
+		        	data-tooltip="reverts the last action"
+		        	data-furtherinfo="http://www.google.com"
+		        	data-hotkey="Ctrl+Z; Q"
+		        	data-icon="icon-undo">
+	        	Undo
+	        	</button>
+		        <button id="btnInRedo"
+					data-event="Redo"
+		        	data-tooltip="reapplies the last undone action"
+		        	data-furtherinfo="http://www.google.com"
+		        	data-hotkey="Ctrl+Y; W"
+		        	data-icon="icon-repeat">
+	        	Redo
+	        	</button>
+        	</span>
+        	
+	        <span id="btngrpSettings" class="btnset">
+		        <!--
+		        <img id="settings_master" class="svg button" src="svg/settings.svg"
+		        	data-tooltip="open the settings panel"
+		        	data-furtherinfo="http://www.google.com"
+		        	/>
+	        	-->
+	
+		        <button id="btnInSettingsColor"
+		        	data-event="ShowColorSettings"
+		        	data-tooltip="change the color mapping"
+		        	data-furtherinfo="http://www.google.com"
+		        	data-hotkey="C"
+		        	data-icon="icon-adjust">
+	        		Show Color Settings
+	        	</button>
+		        <button id="btnInSettingsLines"
+		        	data-event="ShowDisplaySettings"
+		        	data-tooltip="enables / disables some heling lines"
+		        	data-furtherinfo="http://www.google.com"
+		        	data-hotkey="C"
+		        	data-icon="icon-eye-open">
+	        		Show Display Settings
+	        	</button>
+	        </span>
+
+	        <span id="btngrpMode" class="btnset">
+		        <input type="radio" id="btnInModeMass" name="mode"
+		        	data-event="SwitchMode" data-value="mass"
+		        	data-tooltip="places additional point masses"
+		        	data-furtherinfo="http://www.google.com"
+		        	data-hotkey="C"
+		        	data-icon="icon-star" />
+	        	<label for="btnInModeMass">Choice 1</label>
+		        <input type="radio" id="btnInModeImage" name="mode"
+		        	data-event="SwitchMode" data-value="image"
+		        	data-tooltip="places additional images"
+		        	data-furtherinfo="http://www.google.com"
+		        	data-hotkey="C"
+		        	data-icon="icon-screenshot"
+		        	checked="checked"/>
+	        	<label for="btnInModeImage">Choice 2</label>
+		        <input type="radio" id="btnInModeRuler" name="mode"
+		        	data-event="SwitchMode" data-value="ruler"
+		        	data-tooltip="places a helping ruler to estimate distances"
+		        	data-furtherinfo="http://www.google.com"
+		        	data-hotkey="C"
+		        	data-icon="icon-resize-horizontal" />
+	        	<label for="btnInModeRuler">Choice 3</label>
+	        </span>
+
+	        <span id="btngrpActions" class="btnset">
+		        <button id="btnInActionPrev"
+		        	data-event="PrevModel"
+		        	data-tooltip="goto previous model"
+		        	data-furtherinfo="http://www.google.com"
+		        	data-hotkey="C"
+		        	data-icon="icon-chevron-left">
+	        		Goto Previous Model
+	        	</button>
+		        <button id="btnInActionNext"
+		        	data-event="NextModel"
+		        	data-tooltip="goto next model"
+		        	data-furtherinfo="http://www.google.com"
+		        	data-hotkey="C"
+		        	data-icon="icon-chevron-right">
+	        		Goto Next Model
+	        	</button>
+		        <button id="btnInActionSave"
+		        	data-event="Save"
+		        	data-tooltip="Save the Model (locally)"
+		        	data-furtherinfo="http://www.google.com"
+		        	data-hotkey="C"
+		        	data-icon="icon-save">
+	        		Save the model locally
+	        	</button>
+		        <button id="btnInActionUpload"
+		        	data-event="Upload"
+		        	data-tooltip="Save the final model on the server"
+		        	data-furtherinfo="http://www.google.com"
+		        	data-hotkey="C"
+		        	data-icon="icon-cloud-upload">
+	        		Save the final model on the server
+	        	</button>
+		        <button id="btnInActionRunModel"
+		        	data-event="RunModel"
+		        	data-tooltip="update the simulated results"
+		        	data-furtherinfo="http://www.google.com"
+		        	data-hotkey="C"
+		        	data-icon="icon-refresh">
+	        		Save the final model on the server
+	        	</button>	        </span>
+        </span>
+        
+        
+<!--
         <div id="btngrpXXDO" class="toolbar_element" data-type="fix" data-order="0">
 	        <img id="undo" class="svg button" src="svg/undo.svg"
 				data-event="Undo"
@@ -37,6 +153,7 @@
 	        	data-furtherinfo="http://www.google.com"
 	        	/>
         	-->
+<!--
 	        <img id="settings_color" class="svg button" src="svg/settings.color.svg"
 	        	data-event="ShowColorSettings"
 	        	data-tooltip="change the color mapping"
@@ -89,7 +206,7 @@
 	        	data-furtherinfo="http://www.google.com"
 	        	/>
         </div>
-
+-->
 	  </div>
 
       <div id="toolbar2" class="toolbar">

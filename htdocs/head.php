@@ -23,6 +23,8 @@ header( "Pragma: no-cache" );
 
 
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.js"></script>
+  
   <script type="text/javascript" src="js/lmt.js"></script>
 <?php
   // include all script files in the folder /js

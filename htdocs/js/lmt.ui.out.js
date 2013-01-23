@@ -81,7 +81,7 @@ function Output() {
 			
 		});
 		
-		var tmp = this.$btns.buttonset();
+		this.$btns.buttonset();
 		
 		$("#btnsetOutNav > button").button({ disabled: false });
 		

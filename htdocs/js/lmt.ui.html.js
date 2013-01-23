@@ -20,9 +20,20 @@ html.loader = function() {
 }
 
 
+/**
+ * fires an event when a toolbar button is pressed 
+ */
+html.fire = function(evt){
+	$.event.trigger(evt.data.name, evt.data.value);
+}
+
 html.init = function() {
 	
+	//////////////////
+	// outdated 
+	
 	//add generic event handler to each button
+	/*
 	var btns = jQuery('.button');
 	btns.each(function(){
 		var $btn = $(this);
@@ -38,7 +49,8 @@ html.init = function() {
 			$.event.trigger("HideTooltip");
 		});
 	});
-
+	*/
+	
 		/*	
 	var btngrps = jQuery('.button_group');
 	btngrps.each(function(key, value){
@@ -51,9 +63,36 @@ html.init = function() {
 
 	});
 		*/
+		/*
 	$('.toolbar').each(function(){
 		var tb = new Toolbar(this);
 	});
+	*/
+	
+	//----------------------------
+	/*
+	 * init toolbar
+	 */
+
+	$("#toolbarGrp1 button").add("#toolbarGrp1 input").each(function(){
+		
+		var $this = $(this);
+		var icon = $this.data("icon");
+		var eventName = $this.data("event");
+		var value = $this.data("value");
+		
+		$(this).button({
+			text: false,
+			disabled: false,
+			icons: {primary: icon }
+		})
+		.on('click', {name:eventName, value: value} , LMT.ui.html.fire);
+	});
+
+
+	$("#toolbarGrp1 > .btnset").buttonset();
+	
+	
 
 
 	//prepare tooltip div	
