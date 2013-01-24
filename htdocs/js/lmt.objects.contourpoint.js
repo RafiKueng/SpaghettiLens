@@ -162,8 +162,8 @@ ContourPoint.prototype.toJSON = function() {
 	return {
 		__type: "cpnt",
 		idnr: this.idnr,
-		r_fac: round(this.r_fac,4),
-		d_phi: round(this.d_phi,4)
+		r_fac: LMT.utils.round(this.r_fac,4),
+		d_phi: LMT.utils.round(this.d_phi,4)
 	}
 }
 

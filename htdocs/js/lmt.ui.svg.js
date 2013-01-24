@@ -226,8 +226,7 @@ svg.events = {
 			}
 		}
 		if (svg.events.someElementWasDragged) {
-			//TODO actionstack event trigering
-			//actionstack.push(model);
+			$.event.trigger("SaveModelState");
 		  evt.stopPropagation();
 		  evt.preventDefault();
 		}
@@ -243,7 +242,7 @@ svg.events = {
 			return;
 		}
 		
-		// delegate click on middle button
+		// click on middle button
 		// 1 according to w3c, 4 according to ms... (but this time, the ms solution is actually better...)
 		if (evt.button == 1 || evt.button == 4) {
 			/**
@@ -303,7 +302,7 @@ svg.events = {
 
 	  //push the new model to the undo / action stack
 	  if (somethinghappend) {
-	  	//TODO actionstack.push(model);
+	  	$.event.trigger("SaveModelState");
 	  } 
 	},
 

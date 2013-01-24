@@ -18,8 +18,8 @@ XXX.object.external_mass class script file
  *	@constructor
  * 
  */
-function ExtMass(x, y, r, phi) {
-	this.idnr = ExtMass.n++;
+function ExtMass(x, y, r, phi, id) {
+	this.idnr = id || ExtMass.n++;
 	this.x = x;
 	this.y = y;
 	this.r = r || ExtMass.r_def.r / LMT.settings.display.zoompan.scale;;
@@ -187,8 +187,9 @@ ExtMass.r_def = {mid: 7, handle: 5, r: 50}; //default radii of mid section and h
  * @param {Object} obj
  */
 ExtMass.createFromJSONObj = function(obj) {
-	return new ExtMass(obj.idnr, obj.x, obj.y, obj.r, obj.phi);
+	return new ExtMass(obj.x, obj.y, obj.r, obj.phi, obj.idnr);
 };
 
 
 ExtMass.n = 0;
+LMT.objects.ExternalMass = ExtMass;

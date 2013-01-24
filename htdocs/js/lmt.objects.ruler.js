@@ -13,8 +13,8 @@
  *	@constructor
  * 
  */
-function Ruler(x, y, r, phi) {
-	this.idnr = Ruler.n++;
+function Ruler(x, y, r, phi, id) {
+	this.idnr = id || Ruler.n++;
 	this.x = x;
 	this.y = y;
 	this.r = r || Ruler.r_def.r / LMT.settings.display.zoompan.scale;
@@ -176,7 +176,7 @@ Ruler.r_def = {mid: 7, handle: 5, r: 50}; //default radii of mid section and han
  * @param {Object} obj
  */
 Ruler.createFromJSONObj = function(obj) {
-	return new Ruler(obj.idnr, obj.x, obj.y, obj.r, obj.phi);
+	return new Ruler(obj.x, obj.y, obj.r, obj.phi, obj.idnr);
 };
 
 

@@ -103,13 +103,20 @@ Model.prototype.paint = function() {
   }
   for (i = 0; i < this.Rulers.length; ++i) {
     this.Rulers[i].paint();
-  }}
+  }
+}
 
 
 Model.prototype.remove = function() {
-	for (i = 0; i < this.Sources.length; ++i) {
+	for (var i = this.Sources.length-1; i >= 0 ; i--) {
 		this.Sources[i].collapse(false);
 	}
+  for (var i = this.ExternalMasses.length-1; i>=0 ; i--) {
+    this.ExternalMasses[i].remove();
+  }
+  for (var i = this.Rulers.length-1; i>=0 ; i--) {
+    this.Rulers[i].remove();
+  }
 }
 
 
@@ -235,7 +242,7 @@ Model.getModelFormJSONString = function(str) {
 					return val;
 					break; 
 				case "extpnt":
-					var p = Point.createFromJSONObj(val);
+					var p = ExtremalPoint.createFromJSONObj(val);
 					return p;
 					break;
 				case "cpnt":
@@ -250,6 +257,13 @@ Model.getModelFormJSONString = function(str) {
 					var m = Model.createFromJSONObj(val);
 					return m;
 					break;
+				case "ruler":
+				  var r = LMT.objects.Ruler.createFromJSONObj(val);
+				  return r;
+				case "ext_mass":
+				  var r = LMT.objects.ExternalMass.createFromJSONObj(val);
+				  return r;
+				  
 				default:
 					alert("Invalid object in json string..");
 			}
@@ -275,11 +289,8 @@ Model.createFromJSONObj = function(obj) {
 		m[key] = obj[key];
 	}
 	
-	
 	m.init();
-	m.update();
-	m.repaint();
-	
+
 	return m;
 };
 
