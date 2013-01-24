@@ -280,6 +280,40 @@ ExtremalPoint.prototype.setChildren = function(child1, child2) {
 }
 
 
+
+/**
+ * expands a min / max in a saddle that has 2 children, each either min or max 
+ */
+ExtremalPoint.prototype.expand = function() {
+
+  var dx = 50;
+  var dy = 50;
+  
+  var p2e = this;
+  
+  //claculate the new coordinates of the spawned points
+  var p1x = p2e.x + dx / (p2e.depth / 3 + 1);
+  var p2x = p2e.x - dx / (p2e.depth / 3 + 1);
+  var pny = p2e.y + dy / (p2e.depth / 3 + 1);
+
+  //create the points
+  var child1 = new LMT.objects.ExtremalPoint(p1x, pny, p2e.depth+1, p2e.type);
+  var child2 = new LMT.objects.ExtremalPoint(p2x, pny, p2e.depth+1, p2e.type);
+
+  child1.init(p2e, child2);
+  child2.init(p2e, child1);
+
+  child1.updateCoord();
+  child2.updateCoord(); 
+  
+  p2e.wasType = p2e.type;
+  p2e.setType("sad");
+  
+  p2e.setChildren(child1, child2);
+}
+
+
+
 /**
  *	Delete self
  * (recursivly remove all assosiated svg elements)
@@ -399,9 +433,35 @@ ExtremalPoint.prototype.toJSON = function(){
 	}
 }
 
+/************************************************
+ * static fncs
+ ************************************************/
 
-//static fnc
 ExtremalPoint.r_def = 10;
+
+
+/*
+ * event handlers
+ */
+
+/**
+ * delegates to according object method
+ */
+ExtremalPoint.ToggleExtremalPoint = function(evt, jsObj){
+    if (jsObj.isExpanded) {
+      jsObj.collapse(true);
+      $.event.trigger('RepaintModel');
+    }
+    else {
+      jsObj.expand();
+      $.event.trigger('UpdateRepaintModel');
+    }
+}
+
+
+
+
+
 
 
 ExtremalPoint.createFromJSONObj = function(obj) {

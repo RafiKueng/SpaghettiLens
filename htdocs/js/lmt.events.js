@@ -26,6 +26,7 @@ var events = {
     LMT.ui.out.init();
     
     LMT.model = new LMT.objects.Model();
+    LMT.model.init();
     
   },
   
@@ -61,14 +62,16 @@ var events = {
 
 
 
-    $(document).on('SwitchMode', fnc);
+    $(document).on('SwitchMode', LMT.ui.svg.SwitchMode);
+    $(document).on('ModeSwitched', LMT.ui.html.Toolbar.update);
 
 
     
     $(document).on('SaveModel', fnc);
     $(document).on('UploadModel', fnc);
     $(document).on('SimulateModel', fnc);
-    $(document).one('RepaintModel', LMT.events.RepaintModel); //can only be called once, once finished with the update, it reassigns itself
+    $(document).one('UpdateRepaintModel', LMT.events.UpdateRepaintModel); //can only be called once, once finished with the update, it reassigns itself
+    $(document).on('RepaintModel', LMT.objects.Model.Repaint); //can only be called once, once finished with the update, it reassigns itself
 
 
     
@@ -77,18 +80,19 @@ var events = {
     $(document).on('DisplayOutputSlide', LMT.ui.out.show); //needs a id
     $(document).on('DisplayOutputSlideNext', LMT.ui.out.next);
     $(document).on('DisplayOutputSlidePrev', LMT.ui.out.prev);
-    $(document).on('DisplayOutputSlideOverview', LMT.ui.out.showOverview);
+    $(document).on('DisplayOutputSlideOverview', LMT.ui.out.showOverview); //not yet implemented
 
 
     
-    $(document).on('CreateRootMinima', fnc);
-    $(document).on('ToggleExtremalPoint', fnc);
-    $(document).on('CreateContourPoint', fnc);
+    $(document).on('CreateRootMinima', LMT.objects.Model.CreateRootMinima);
+    // expans or collapses an extremalpoint
+    $(document).on('ToggleExtremalPoint', LMT.objects.ExtremalPoint.ToggleExtremalPoint);
+    $(document).on('CreateContourPoint', LMT.objects.ContourPoint.Doublicate);
     $(document).on('DeleteContourPoint', fnc);
-    $(document).on('MoveObject', fnc);
-    $(document).on('CreateExternalMass', fnc);
-    $(document).on('CreateRuler', fnc);
-    $(document).on('DeleteObject', fnc); // something like jsObj.remove()
+    $(document).on('MoveObject', LMT.events.MoveObject);
+    $(document).on('CreateExternalMass', LMT.objects.Model.CreateExternalMass);
+    $(document).on('CreateRuler', LMT.objects.Model.CreateRuler);
+    $(document).on('DeleteObject', LMT.objects.Model.RemoveObject); // expects supplied jsObj to be removed
     
 
 
@@ -104,17 +108,30 @@ var events = {
 }  
   
 /**
+ * updates all the coordinates of the model and then repaints it
+ * 
  * only make one update per time
  * bind this function to the event, but remove it on the first occurance (.one + one time execution)
  * and only reattach it, onces the update is finished.. 
  */
-
-events.RepaintModel = function(){
+events.UpdateRepaintModel = function(){
   LMT.model.update();
   LMT.model.paint();
-  $(document).one('UpdateModel', events.RepaintModel);
+  $(document).one('UpdateRepaintModel', events.UpdateRepaintModel);
 }
 
+
+
+
+/**
+ * moves any jsObj on the svg canvas.
+ * DON'T trigger a action stack push here
+ * this will be called many^100 times 
+ */
+events.MoveObject = function(evt, jsTarget, svgTarget, coord){
+  jsTarget.move(coord, svgTarget);
+  $(document).one('UpdateRepaintModel', events.UpdateRepaintModel);
+}
 
 
 

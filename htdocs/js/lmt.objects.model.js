@@ -19,10 +19,13 @@ function Model() {
 	};
 
   this.Sources = null; //this contains all the modeled sources (of length nSources)
+  this.ExternalMasses = null;
+  this.Rulers = null;
 
   this.MinMmaxSwitchAngle = Math.PI / 3.; //limit angle between two children, when the children will switch to different type (min/min to min/max; max/max to min/max)
   
   //color and channel settings
+  /*
   this.brightness = 0.5;
   this.contrast = 0.5;
   this.channels = [
@@ -40,6 +43,7 @@ function Model() {
   
   this.brightness = 0.5;
   this.contrast = 0.5;
+  */
 }
 
 
@@ -52,6 +56,26 @@ Model.prototype.init = function() {
 	else {
 		this.Sources = new Array();
 	}
+
+  if (this.ExternalMasses) {
+    for (i = 0; i < this.ExternalMasses.length; ++i) {
+      this.ExternalMasses[i].init();
+    }
+  }
+  else {
+    this.ExternalMasses = new Array();
+  }
+
+  if (this.Rulers) {
+    for (i = 0; i < this.Rulers.length; ++i) {
+      this.Rulers[i].init();
+    }
+  }
+  else {
+    this.Rulers = new Array();
+  }
+
+
 }
 
 /**
@@ -61,6 +85,12 @@ Model.prototype.update = function() {
 	for (i = 0; i < this.Sources.length; ++i) {
 		this.Sources[i].update();
 	}
+  for (i = 0; i < this.ExternalMasses.length; ++i) {
+    this.ExternalMasses[i].update();
+  }
+  for (i = 0; i < this.Rulers.length; ++i) {
+    this.Rulers[i].update();
+  }
 }
 
 
@@ -68,7 +98,12 @@ Model.prototype.paint = function() {
 	for (i = 0; i < this.Sources.length; ++i) {
 		this.Sources[i].paint();
 	}
-}
+  for (i = 0; i < this.ExternalMasses.length; ++i) {
+    this.ExternalMasses[i].paint();
+  }
+  for (i = 0; i < this.Rulers.length; ++i) {
+    this.Rulers[i].paint();
+  }}
 
 
 Model.prototype.remove = function() {
@@ -93,6 +128,92 @@ Model.prototype.getStateAsString = function() {
 /***********************************************
  * Static methods
  ***********************************************/
+
+/**
+ * eventhandler:
+ * creates a new roo minima for the current model 
+ */
+Model.CreateRootMinima = function(evt, coord){
+  var model = LMT.model;
+  var p = new ExtremalPoint(coord.x, coord.y);
+  p.init();
+  p.depth = 0;
+  p.setType("min");
+  p.update();
+  model.NrOf.Sources++;
+  model.Sources.push(p);
+  model.paint();
+}
+
+
+
+/**
+ * eventhandler:
+ *  
+ * @param {Object} evt
+ */
+Model.CreateRuler = function(evt, coord){
+  var model = LMT.model;
+
+  var newElem = new Ruler(coord.x, coord.y, 30);
+  newElem.update();
+  newElem.paint();
+
+  model.Rulers.push(newElem);  
+};
+
+
+/**
+ *eventhandler: 
+ * creates a new external mass object
+ * 
+ * coord.x: x pos
+ * coord.y: y pos
+ */
+Model.CreateExternalMass = function(evt, coord){
+  var model = LMT.model;
+    
+  var newElem = new ExtMass(coord.x, coord.y, 30);
+  newElem.update();
+  newElem.paint();
+  
+  model.ExternalMasses.push(newElem);
+}
+
+
+/**
+ * eventhandler:
+ * removes an arbitrary helper object (external mass, ruler) 
+ */
+Model.RemoveObject = function(evt, jsObj){
+
+  var arr;
+  if (jsObj.constructor.name == "Ruler") {
+    arr = LMT.model.Rulers;
+  }
+  else if (jsObj.constructor.name == "ExtMass") {
+    arr = LMT.model.ExternalMasses;
+  }
+  else {
+    return false;
+  }
+  for(var i = arr.length; i>=0; i--){
+    if(arr[i]==jsObj){
+      arr.splice(i,1);
+      jsObj.remove();
+      return true;
+    }
+  }
+}
+
+
+/**
+ * does only a repaint, no ew coordinates are calculated 
+ */
+Model.Repaint = function(evt){
+  LMT.model.paint();
+}
+
 
 
 /**

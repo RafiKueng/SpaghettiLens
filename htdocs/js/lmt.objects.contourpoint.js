@@ -180,9 +180,25 @@ ContourPoint.prototype.toJSON = function() {
 	}
 }
 
+/************************************
+ * static fncs 
+ ************************************/
 
-//static fncs
 ContourPoint.r_def = 5;
+
+
+/**
+ * event handler
+ *  
+ */
+ContourPoint.Doublicate = function(evt, jsObj){
+  jsObj.parent.doublicateCP(jsObj); //actually, the contour takes care of the cp's
+  $.event.trigger("UpdateRepaintModel");
+}
+
+
+
+
 
 /**
  * 

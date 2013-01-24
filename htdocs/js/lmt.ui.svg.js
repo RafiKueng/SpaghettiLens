@@ -120,7 +120,16 @@ svg.initBG = function(urls) {
 }
 */
 
-
+/**
+ * event handler:
+ * switch the input mode
+ * (what kind of object does a click into nothing create) 
+ */
+svg.SwitchMode = function(evt, newMode){
+  LMT.settings.mode = newMode;
+  $.event.trigger("ModeSwitched");
+  log.append("mode switched to " + newMode);
+}
 
 
 

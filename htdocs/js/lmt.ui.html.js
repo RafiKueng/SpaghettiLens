@@ -38,8 +38,19 @@ html.Toolbar = {
   	});
   
   	$("#toolbarGrp1 > .btnset").buttonset();
+
+    //set buttons to correct state  	
+    $('input[data-value="'+LMT.settings.mode+'"]')[0].checked = true;
+    $('input[name="mode"]').change();
   },
   
+  /**
+   * updates the radiobuttons for mode selection 
+   */
+  update: function(evt) {
+    $('input[data-value="'+LMT.settings.mode+'"]')[0].checked = true;
+    $('input[name="mode"]').change();
+  },
   
   /**
    * fires an event when a toolbar button is pressed 

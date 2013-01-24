@@ -15,47 +15,13 @@
 var intel = {};
 
 
-/**
- * 
- *  
- * @param {Object} evt
- */
-intel.CreateRuler = function(evt, coord){
-  var newElem = new Ruler(coord.x, coord.y, 30);
-  newElem.update();
-  newElem.paint();
-};
-
-
-/**
- * creates a new external mass object
- * 
- * coord.x: x pos
- * coord.y: y pos
- */
-intel.CreateExternalMass = function(evt, coord){
-	var newElem = new ExtMass(coord.x, coord.y, 30);
-	newElem.update();
-	newElem.paint();
-}
-
-
-
-intel.CreateRootImagePoint = function(evt, coord){
-	var p = new ExtremalPoint(coord.x, coord.y);
-	p.init();
-	p.depth = 0;
-	p.setType("min");
-	p.update();
-	LMT.model.NrOf.Sources++;
-	LMT.model.Sources.push(p);
-	LMT.model.paint();
-}
-$(document).on('CreateRootImagePoint', intel.CreateRootImagePoint);
 
 
 
 
+
+
+/*
 intel.ToggleExtremalPoint = function(evt, jsObj){
     if (jsObj.isExpanded) {
       intel.collapsePoint(jsObj);
@@ -65,7 +31,7 @@ intel.ToggleExtremalPoint = function(evt, jsObj){
     }
 }
 $(document).on('ToggleExtremalPoint', intel.ToggleExtremalPoint);
-
+*/
 
 
 /**
@@ -73,6 +39,8 @@ $(document).on('ToggleExtremalPoint', intel.ToggleExtremalPoint);
  *
  *	@param {Point} pointToExpand 
  */
+
+/*
 intel.expandPoint = function(pointToExpand) {
 	
 	var dx = 50;
@@ -103,11 +71,12 @@ intel.expandPoint = function(pointToExpand) {
 	LMT.model.update();
 	LMT.model.paint();
 }
-
+*/
 
 /**
  * this collapses a point and all sub points
  */
+/*
 intel.collapsePoint = function(pnt) {
 	
 	pnt.collapse(true);
@@ -115,15 +84,17 @@ intel.collapsePoint = function(pnt) {
 	//LMT.model.update();
 	LMT.model.paint();
 }
+*/
 
-
-
+/*
 intel.DoublicateContourPoint = function(evt, pnt) {
 	pnt.parent.doublicateCP(pnt);
 	LMT.model.update();
 	LMT.model.paint();
 }
 $(document).on('DoublicateContourPoint', intel.DoublicateContourPoint);
+*/
+
 
 /**
  * An object is moved
@@ -131,20 +102,21 @@ $(document).on('DoublicateContourPoint', intel.DoublicateContourPoint);
  * svgTarget: the svg element that was actually moved
  * coord: to where (canvas coordinates)
  */
+/*
 intel.MoveObject = function(evt, jsTarget, svgTarget, coord){
 	
 	jsTarget.move(coord, svgTarget);
 }
+*/
 
-
-
+/*
 intel.SwitchMode = function(evt, newMode){
 	LMT.settings.mode = newMode;
 	$.event.trigger("ModeSwitched");
 	log.append("mode switched to " + newMode);
 }
 $(document).on('SwitchMode', intel.SwitchMode);
-
+*/
 
 intel.UpdateModel = function(evt){
 	
@@ -166,11 +138,11 @@ intel.ModelChanged = function(evt){
  * assign the event handler 
  */
 
-
+/*
 $(document).on('CreateRuler', intel.CreateRuler);
 $(document).on('CreateExternalMass', intel.CreateExternalMass);
 $(document).on('MoveObject', intel.MoveObject);
-
+*/
 
 
 
