@@ -56,6 +56,7 @@ $(document).ready(function(){
 
   //for debug purposes, trigger some events manually
 
+
   var ch = [
     {r:1,g:0,b:0,contrast:1,brightness:0},
     {r:0,g:1,b:0,contrast:1,brightness:0},
@@ -71,7 +72,20 @@ $(document).ready(function(){
     ch: ch
   };
   $.event.trigger('ReceivedModelData');
+
+/*
+  maybe switch to besser data structre like this
+  modelData[i] = {
+    short: 'K',
+    name: 'near IR',
+    color: {r:1, g:0, b:0},
+    brightness: 0,
+    contrast: 1;
+    img_url: 'http:....',
+  }
+*/
   
+  //----------------------  
 
 
   LMT.modelData.currentSimulationImageURLs = ["img/demo-ch1.png", "img/demo-ch2.png","img/demo-ch3.png","img/demo-ch3.png","img/demo-ch3.png"];
@@ -79,40 +93,6 @@ $(document).ready(function(){
 
 
 
-  // old stuff
-
-
-  
-
-  /*
-	LMT.ui.svg.init();
-	LMT.ui.svg.initBG();
-	LMT.ui.html.loadAllSVG();
-	
-	LMT.model = new Model();
-	LMT.model.init();
-	
-	LMT.out = new LMT.ui.out();
-	LMT.out.init();
-	
-	
-	
-	var url = [
-		"img/demo-ch1.png",
-		"img/demo-ch2.png",
-		"img/demo-ch3.png"
-		];
-	var ch = [
-		{r:1,g:0,b:0,contrast:1,brightness:0},
-		{r:0,g:1,b:0,contrast:1,brightness:0},
-		{r:0,g:0,b:1,contrast:1,brightness:0}
-	];
-	LMT.channels = ch;
-	LMT.ui.svg.generateBG(url, ch)
-
-  LMT.ui.html.init();
-	
-	*/
 	
 });
 

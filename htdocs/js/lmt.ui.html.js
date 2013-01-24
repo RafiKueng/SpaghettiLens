@@ -283,11 +283,22 @@ html.KeyboardListener = {
   keyEvent: function(evt){
     var code = event.which || event.keyCode;
     log.write("keycode: "+code);
-    if (code == 13 || code == 48 || code == 96) { //enter or 0
-      LMT.ui.svg.events.onMiddleClick(evt);
-      if (evt.stopPropagation) {evt.stopPropagation();}
-      if (evt.preventDefault) {evt.preventDefault();}
+    
+    switch (code) {
+      case 13: //enter and numEnter
+      case 48:
+      case 96: //num0
+        $.event.trigger("ZoomPanReset");
+        break;
+      
+      case 43: //num+
+        $.event.trigger("Zoom", [+1]);
+        break;
+      default:
+        return;
     }
+    if (evt.stopPropagation) {evt.stopPropagation();}
+    if (evt.preventDefault) {evt.preventDefault();}
   }
 }
 

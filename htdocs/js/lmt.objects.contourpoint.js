@@ -106,19 +106,6 @@ ContourPoint.prototype.update = function() {
  * 
  */
 ContourPoint.prototype.paint = function() {
-	/*
-	this.update();
-
-  this.circle.setAttribute("cx", this.x);
-  this.circle.setAttribute("cy", this.y);
-  
-	if (settings.paintContourPoints) {
-	  this.circle.setAttribute("r", 5);
-	}
-	else {
-	  this.circle.setAttribute("r", 0);
-	}
-	*/
 	
 	if (!this.circle) {
 		this.createSVG();
@@ -179,6 +166,7 @@ ContourPoint.prototype.toJSON = function() {
 		d_phi: round(this.d_phi,4)
 	}
 }
+
 
 /************************************
  * static fncs 

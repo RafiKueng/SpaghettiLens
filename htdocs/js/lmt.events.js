@@ -7,6 +7,8 @@
  * 
  * events will be triggered at UI elements
  * the according objects listen to those events
+ * 
+ * below are some shortcut functions for events
  */
 
 
@@ -44,11 +46,9 @@ var events = {
     $(document).on('ChangedModelData', LMT.ui.svg.bg.updateColor);
     
 
-
-    
     $(document).on('Undo', fnc);
     $(document).on('Redo', fnc);
-
+    $(document).on('ActionStackUpdated', fnc);
 
 
     $(document).on('Zoom', LMT.ui.svg.bg.zoom); // expects 1 arg: +1: zoom in, -1 zoom out;
@@ -56,15 +56,12 @@ var events = {
     $(document).on('ZoomPanReset', LMT.ui.svg.bg.zoomPanReset);
 
 
-
     $(document).on('ShowDialogColorSettings', LMT.ui.html.ColorSettingsDialog.show);
     $(document).on('ShowDialogDisplaySettings', LMT.ui.html.DisplaySettingsDialog.show);
 
 
-
     $(document).on('SwitchMode', LMT.ui.svg.SwitchMode);
     $(document).on('ModeSwitched', LMT.ui.html.Toolbar.update);
-
 
     
     $(document).on('SaveModel', fnc);
@@ -73,7 +70,6 @@ var events = {
     $(document).one('UpdateRepaintModel', LMT.events.UpdateRepaintModel); //can only be called once, once finished with the update, it reassigns itself
     $(document).on('RepaintModel', LMT.objects.Model.Repaint); //can only be called once, once finished with the update, it reassigns itself
 
-
     
     $(document).on('ReceivedSimulation', LMT.ui.out.load);
     
@@ -81,7 +77,6 @@ var events = {
     $(document).on('DisplayOutputSlideNext', LMT.ui.out.next);
     $(document).on('DisplayOutputSlidePrev', LMT.ui.out.prev);
     $(document).on('DisplayOutputSlideOverview', LMT.ui.out.showOverview); //not yet implemented
-
 
     
     $(document).on('CreateRootMinima', LMT.objects.Model.CreateRootMinima);
@@ -93,12 +88,6 @@ var events = {
     $(document).on('CreateExternalMass', LMT.objects.Model.CreateExternalMass);
     $(document).on('CreateRuler', LMT.objects.Model.CreateRuler);
     $(document).on('DeleteObject', LMT.objects.Model.RemoveObject); // expects supplied jsObj to be removed
-    
-
-
-
-    $(document).on('ActionStackUpdated', fnc);
-
 
     
     $(document).on('ShowTooltip', html.Tooltip.show);
@@ -106,7 +95,10 @@ var events = {
   },
   
 }  
-  
+
+
+
+
 /**
  * updates all the coordinates of the model and then repaints it
  * 
@@ -134,86 +126,5 @@ events.MoveObject = function(evt, jsTarget, svgTarget, coord){
 }
 
 
-
-
-
-/**
- * custom event management / Creation
- * 
- * event handling is taken care of in the according section (mostly in the intelligence script)
- * here, new events will be created in dependence of previous events
- */
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * Fires AppReady when the app has completly loaded and is ready to be used
- * 
- * (this is one instance of an anonymous class)
- */
-
-/*
-events.AppReady = {
-	loadedButtons: false,
-	loadedModelData: false,
-	loadedModelImages: false,
-
-	init: function() {
-		// add handler to listen to
-		// inside the handler, make events.Appready available as 'that'
-		// 'this' is the document (the jquery selector noted)
-		$(document).on('loadedButtons', {that: this}, function(evt){
-			var that = evt.data.that;
-			that.loadedButtons = true;
-			that.check();
-		});
-		
-		$(document).on('loadedModelData', {that: this}, function(evt){
-			var that = evt.data.that;
-			this.loadedModelData  = true;
-			this.check();
-		});
-		
-		$(document).on('loadedModelImages', {that: this}, function(evt){
-			var that = evt.data.that;
-			this.loadedModelImages = true ;
-			this.check();
-		});
-		return this;
-	},
-	
-	check: function() {
-		if (this.loadedButtons && this.loadedModelData && this.loadedModelImages) {
-			$.event.trigger('AppReady');
-		}
-	}
-}.init();
-*/
-
-
-/**
- * only make one update per time
- * bind this function to the event, but remove it on the first occurance (.one + one time execution)
- * and only reattach it, onces the update is finished.. 
- */
-
-/*
-events.UpdateModel = function(){
-	LMT.model.update();
-	LMT.model.paint();
-	
-	$(document).one('UpdateModel', events.UpdateModel);
-}
-$(document).one('UpdateModel', events.UpdateModel);
-*/
 
 LMT.events = events;
