@@ -64,6 +64,7 @@ Contour.prototype.update = function() {
 		// check if 2 points close together, then delete one
 		var d = LMT.utils.dist2(this.cpoints[i], this.cpoints[i+1]);
 		if (d<3) {
+		  //$.event.trigger("DeleteContourPoint");
 			var rem = this.cpoints.splice(i,1);
 			rem[0].remove();
 			this.nContourPoints--;
@@ -276,7 +277,11 @@ Contour.prototype.toJSON = function() {
 
 
 
-//static fncs
+
+/*******************************************
+ * static fncs
+ ******************************************/
+
 
 /**
  *  

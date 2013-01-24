@@ -27,22 +27,23 @@ function Output() {
 			text: false,
 			disabled: false,
 			icons: {primary: "icon-chevron-left" },
-			onclick: LMT.out.prev
 		});
+		$("#btnOutPrev").on('click', function(){$.event.trigger('DisplayOutputSlidePrev');});
+
 
 		$("#btnOutNext").button({
 			text: false,
 			disabled: false,
 			icons: {primary: "icon-chevron-right" },
-			onclick: LMT.out.next
 		});
+    $("#btnOutNext").on('click', function(){$.event.trigger('DisplayOutputSlideNext');});
 		
 		$("#btnOutOverview").button({
 			text: false,
 			disabled: true,
 			icons: {primary: "icon-th-large" },
-			onclick: LMT.out.next
 		});
+    $("#btnOutOverview").on('click', function(){$.event.trigger('DisplayOutputSlideOverview');});
 		
 		$("#btnsetOutNav").buttonset();
 		$("#btnsetOutNav > button").button({ disabled: true });
@@ -51,10 +52,11 @@ function Output() {
 	};
 	
 	
-	this.load = function(urls) {
-		
-		this.slides = [];
-		var that = this;
+	this.load = function() {
+
+    var that = LMT.ui.out; //since this is a callback, this is document, not this object
+		that.slides = [];
+		var urls = LMT.modelData.currentSimulationImageURLs;
 		
 		$.each(urls, function(i, val) {
 			var $div = $('<div class="slide"><img class="slide_img" src="'+ val +'" /></div>');
@@ -72,32 +74,57 @@ function Output() {
 			});
 			$nr.appendTo(that.$btns);
 			*/
-			var $nr = $('<input type="radio" id="radio'+i+'" name="radio" /><label for="radio'+i+'">'+i+'</label>');
+			var $nr = $('<input type="radio" id="radio'+i+'" name="slideNr" /><label for="radio'+i+'">'+i+'</label>');
 			$nr.appendTo(that.$btns);
-			$nr.on('click', {that: that, id:i}, function(evt){
+			$nr.on('click', {id:i}, function(evt){
+				$.event.trigger('DisplayOutputSlide', [evt.data.id]);
+				/*
 				var that = evt.data.that;
 				that.show(evt.data.id);
+				*/
 			});
 			
 		});
 		
-		this.$btns.buttonset();
+		that.$btns.buttonset();
 		
 		$("#btnsetOutNav > button").button({ disabled: false });
 		
 	};
 	
-	this.next = function(){
-		var tmp;
+	/**
+	 * callback, displays next slide 
+	 */
+	this.next = function(evt){
+	  var that = LMT.ui.out;
+	  var i = that.shownImage+1;
+	  if (i > that.slides.length-1) {
+	    i = 0;
+	  }
+		LMT.ui.out.showSlide(i);
+		$('input[name="slideNr"]')[i].checked = true;
+		$('input[name="slideNr"]').change();
 	};
 	
 	
+	/**
+	 * callback, displays prev slide 
+	 */
 	this.prev = function(){
-		var tmp;
+    var that = LMT.ui.out;
+    var i = that.shownImage-1;
+    if (i < 0) {
+      i = that.slides.length-1;
+    }
+    LMT.ui.out.showSlide(i);
+    $('input[name="slideNr"]')[i].checked = true;
+    $('input[name="slideNr"]').change();
 	};
+
+
 	
-	this.show = function(i){
-		this.showSlide(i);
+	this.show = function(evt, i){
+		LMT.ui.out.showSlide(i);
 	};
 	
 	/**
@@ -130,12 +157,17 @@ function Output() {
 		this.captionRemoveTimer = window.setTimeout(function(){
 			$('.slide_caption').slideUp();
 		}, 3000);
-	}
+	};
+	
+	
+	this.showOverview = function(){
+	  return false;
+	};
 	
 } 
 
 
-LMT.ui.out = Output;
+LMT.ui.output = Output;
 
 
 /*})();*/

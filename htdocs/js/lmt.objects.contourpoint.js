@@ -106,19 +106,6 @@ ContourPoint.prototype.update = function() {
  * 
  */
 ContourPoint.prototype.paint = function() {
-	/*
-	this.update();
-
-  this.circle.setAttribute("cx", this.x);
-  this.circle.setAttribute("cy", this.y);
-  
-	if (settings.paintContourPoints) {
-	  this.circle.setAttribute("r", 5);
-	}
-	else {
-	  this.circle.setAttribute("r", 0);
-	}
-	*/
 	
 	if (!this.circle) {
 		this.createSVG();
@@ -181,8 +168,25 @@ ContourPoint.prototype.toJSON = function() {
 }
 
 
-//static fncs
+/************************************
+ * static fncs 
+ ************************************/
+
 ContourPoint.r_def = 5;
+
+
+/**
+ * event handler
+ *  
+ */
+ContourPoint.Doublicate = function(evt, jsObj){
+  jsObj.parent.doublicateCP(jsObj); //actually, the contour takes care of the cp's
+  $.event.trigger("UpdateRepaintModel");
+}
+
+
+
+
 
 /**
  * 
