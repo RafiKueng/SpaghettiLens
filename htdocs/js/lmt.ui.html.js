@@ -39,17 +39,27 @@ html.Toolbar = {
   
   	$("#toolbarGrp1 > .btnset").buttonset();
 
-    //set buttons to correct state  	
+    //set buttons to correct state 
+    
+    //mode radio buttons	
     $('input[data-value="'+LMT.settings.mode+'"]')[0].checked = true;
     $('input[name="mode"]').change();
+    
+    //un/re do buttons:
+    $('#btnInUndo').add('#btnInRedo').button("disable");
+    
   },
   
   /**
-   * updates the radiobuttons for mode selection 
+   * updates the buttons
    */
   update: function(evt) {
+    //radiobuttons for mode selection 
     $('input[data-value="'+LMT.settings.mode+'"]')[0].checked = true;
     $('input[name="mode"]').change();
+    // un / redo buttons whether there is something to be undone / redone
+    $('#btnInUndo').button(LMT.actionstack.undoSize>0 ? "enable" : "disable");
+    $('#btnInRedo').button(LMT.actionstack.redoSize>0 ? "enable" : "disable");
   },
   
   /**

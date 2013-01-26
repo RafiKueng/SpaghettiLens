@@ -19,6 +19,7 @@ LMT.utils = {};   // some utils
 
 
 LMT.settings = {
+  
 	mode: 'ruler',  // 'none'for doing nothing; 'image' for images; 'ruler' for adding rulers; 'mass' to add external masses 
 	
 	display: {
@@ -91,7 +92,7 @@ $(document).ready(function(){
   LMT.modelData.currentSimulationImageURLs = ["img/demo-ch1.png", "img/demo-ch2.png","img/demo-ch3.png","img/demo-ch3.png","img/demo-ch3.png"];
   $.event.trigger("ReceivedSimulation");  
 
-
+  
 
 	
 });

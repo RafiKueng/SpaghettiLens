@@ -50,6 +50,11 @@ LMT.utils.dist2 = function(pnt1, pnt2) {
   return (dx*dx+dy*dy);
 }
 
+LMT.utils.round = function(number, digits) {
+  var multiple = Math.pow(10, digits);
+  var rndedNum = Math.round(number * multiple) / multiple;
+  return rndedNum;
+}
 
 
 /**

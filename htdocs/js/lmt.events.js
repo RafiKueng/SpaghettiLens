@@ -30,6 +30,9 @@ var events = {
     LMT.model = new LMT.objects.Model();
     LMT.model.init();
     
+    LMT.actionstack = new LMT.objects.ActionStack();
+    
+    
   },
   
   
@@ -41,14 +44,19 @@ var events = {
     // the server sent the starting data for the model, like urls to the background image(s) and default color binding
     $(document).on('ReceivedModelData', LMT.ui.html.ColorSettingsDialog.init);
     $(document).on('ReceivedModelData', LMT.ui.svg.bg.init);
+    $(document).on('ReceivedModelData', LMT.events.AppReadyHandler);
+    
+    //everything is loaded and init
+    $(document).on('AppReady', LMT.events.ready);
     
     // the background images / channels color settings were changed
     $(document).on('ChangedModelData', LMT.ui.svg.bg.updateColor);
     
 
-    $(document).on('Undo', fnc);
-    $(document).on('Redo', fnc);
-    $(document).on('ActionStackUpdated', fnc);
+    $(document).on('Undo', LMT.objects.ActionStack.Undo);
+    $(document).on('Redo', LMT.objects.ActionStack.Redo);
+    $(document).on('SaveModelState', LMT.objects.ActionStack.SaveModelState); //something happend that one can undo
+    $(document).on('ActionStackUpdated', LMT.ui.html.Toolbar.update); //lets the buttons know that they need to update themselves
 
 
     $(document).on('Zoom', LMT.ui.svg.bg.zoom); // expects 1 arg: +1: zoom in, -1 zoom out;
@@ -68,7 +76,7 @@ var events = {
     $(document).on('UploadModel', fnc);
     $(document).on('SimulateModel', fnc);
     $(document).one('UpdateRepaintModel', LMT.events.UpdateRepaintModel); //can only be called once, once finished with the update, it reassigns itself
-    $(document).on('RepaintModel', LMT.objects.Model.Repaint); //can only be called once, once finished with the update, it reassigns itself
+    $(document).on('RepaintModel', LMT.objects.Model.Repaint);
 
     
     $(document).on('ReceivedSimulation', LMT.ui.out.load);
@@ -94,9 +102,22 @@ var events = {
     $(document).on('HideTooltip', html.Tooltip.hide);
   },
   
+  ready: function(){
+    //push initial state to actionstack
+    $.event.trigger("SaveModelState");
+  }
+  
 }  
 
 
+
+/**
+ * 
+ */
+events.AppReadyHandler = function(){
+  //TODO maybe some check if everything is really ready
+  $.event.trigger("AppReady");
+}
 
 
 /**
@@ -109,7 +130,7 @@ var events = {
 events.UpdateRepaintModel = function(){
   LMT.model.update();
   LMT.model.paint();
-  $(document).one('UpdateRepaintModel', events.UpdateRepaintModel);
+  $(document).one('UpdateRepaintModel', LMT.events.UpdateRepaintModel);
 }
 
 
@@ -122,7 +143,7 @@ events.UpdateRepaintModel = function(){
  */
 events.MoveObject = function(evt, jsTarget, svgTarget, coord){
   jsTarget.move(coord, svgTarget);
-  $(document).one('UpdateRepaintModel', events.UpdateRepaintModel);
+  $(document).one('UpdateRepaintModel', LMT.events.UpdateRepaintModel);
 }
 
 
