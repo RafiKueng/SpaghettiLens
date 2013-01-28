@@ -3,6 +3,9 @@
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+import djcelery
+djcelery.setup_loader()
+
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
@@ -119,6 +122,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'djcelery',
     'Model',
 )
 
@@ -150,3 +154,13 @@ LOGGING = {
         },
     }
 }
+
+
+# Celery Configuration
+BROKER_URL = 'amqp://lmt:qwerty@localhost:5672/lmt_vhost'
+#BROKER_HOST = 'localhost'
+#BROKER_PORT = 5672
+#BROKER_USER = 'lmt'
+#BROKER_PASSWORD = 'qwerty'
+#BROKER_VHOST = 'lmt_vhost'
+CELERY_IMPORTS = ("lms.tasks", )

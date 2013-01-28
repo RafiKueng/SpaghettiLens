@@ -14,7 +14,7 @@ LMT.ui = {
   output: {},     // takes care of displaying the results
   };
 LMT.objects = {}; // collection of all objects available
-LMT.comm = {};    // all the communication routines (websocket)
+LMT.com = {};    // all the communication routines (websocket)
 LMT.utils = {};   // some utils
 
 
