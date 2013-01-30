@@ -32,9 +32,9 @@ class Point(object):
     return self.__repr__()
 
 
-class GlassConfig:
+class EvalAndSaveJSON:
   
-  def __init__(self, user_obj, data_obj, **kwargs):
+  def __init__(self, user_obj, data_obj, jsonStr, **kwargs):
     #self.username = "anonymous"
     self.logfilename = "bla.log"
     self.hubbletime = 13.7
@@ -56,7 +56,7 @@ class GlassConfig:
     self.imgpath = "../htdocs/img/"
     self.img1_name = "image1.png"
     
-    self.cfg_path = "/"
+    self.cfg_path = ""
     self.cfg_file = "blabla.gls"
     
 
@@ -64,17 +64,26 @@ class GlassConfig:
 
     #replacce default settings with setttings provided
     for key, value in kwargs.iteritems():
-      setattr(self, key, value)
+      if hasattr(self, key):
+        setattr(self, key, value)
       
     #save databse elements / objects
     self.basic_data_obj = data_obj
     self.user_obj = user_obj
     self.username = self.user_obj.username
+    self.jsonStr = jsonStr
     
     
     
+    # lets got to work
+    self.evalModelString()
+    self.orderPoints()
+    self.createConfigFile()
+    self.createModellingResult()
     
-  def evalModelString(self, str):
+    
+    
+  def evalModelString(self):
     
     def objHook(dct):
       print "in ObjHook"
@@ -91,9 +100,8 @@ class GlassConfig:
           return None
       return dct
         
-        
-    self.jsonObj = json.loads(str, object_hook=objHook)
-    return self.jsonObj
+    self.jsonObj = json.loads(self.jsonStr, object_hook=objHook)
+    #return self.jsonObj
   
   
   
@@ -158,10 +166,10 @@ class GlassConfig:
       return res
     
     #start the recursiveWalker
-    pnt = self.jsonObj['Sources'][0]
+    pnt = self.jsonObj['Sources'][0] #TODO: here is hardcoded that only the fors soucre is supported
     res = recursiveWalker(pnt, None)
     self.points = res
-    return res
+    #return res
     
   
   
@@ -239,14 +247,14 @@ class GlassConfig:
     f.write(_.gls)
     f.close()
     
-    return _.gls
+    #return _.gls
 
 
   
   def createModellingResult(self):
     mr = ModellingResult(
       basic_data_obj = self.basic_data_obj,
-      model_str      = self.model_str,
+      json_str      = self.jsonStr,
       is_f           = self.is_final)
     
     mr.created_by = self.user_obj
@@ -279,4 +287,4 @@ class GlassConfig:
             result         = mr)
     ms.save()
     
-    return mr
+    #return mr

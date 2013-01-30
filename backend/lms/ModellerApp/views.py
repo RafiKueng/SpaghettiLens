@@ -2,17 +2,21 @@
 from django.http import HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
+
+
 #from django.utils import date
-from datetime import datetime
+#from datetime import datetime
 
 from lmt import tasks
 
 #import simplejson as json
 
 from ModellerApp.models import BasicLensData, ModellingResult
+from ModellerApp.utils import EvalAndSaveJSON
+from django.contrib.auth.models import User
 
 import json
-import lmt
+
 
 @csrf_exempt
 def getModelData(request, model_id):
@@ -63,22 +67,33 @@ def saveModel(request):
     
     r = request.POST
     #print "Got Data: ", int(r['modelid']), r['string'], r['isFinal'] in ["True", "true"]
-    mid = int(r['modelid'])
-    st = r['string']
-    isf = r['isFinal'] in ["True", "true"]
-    
-    m = BasicLensData.objects.get(id=mid)
-    r = ModellingResult(  model= m,
-                          string = st,
-                          isFinalResult = isf)
     try:
-      r.save()
-      data = json.dumps({"status":"OK"})
+      mid = int(r['modelid'])
+      st = r['string']
+      isf = r['isFinal'] in ["True", "true"]
+    except KeyError:
+      data = json.dumps({"status":"BAD_JSON_DATA","desc":"the saveModel view couldn't access expected attributes in POST information"})
+      response = HttpResponseNotFound(data, content_type="application/json")
+      response['Access-Control-Allow-Origin'] = "*"
+      return response
 
-      response = HttpResponse(data, content_type="application/json")
-    except:
-      data = json.dumps({"status":"BAD__JSON_DATA_INVALID_OR_MODEL_NOT_FOUND"})
-      response = HttpResponseNotFound("error", content_type="application/json")
+    try:
+      m = BasicLensData.objects.get(id=mid)
+
+    except BasicLensData.DoesNotExist:
+      data = json.dumps({"status":"BAD_MODELID_DOES_NOT_EXIST","desc":"the saveModel view couldn't the basic_data_obj you wanted to save a result for"})
+      response = HttpResponseNotFound(data, content_type="application/json")
+      response['Access-Control-Allow-Origin'] = "*"
+      return response
+
+
+    obj = EvalAndSaveJSON(User.objects.all()[0], # request.user,
+                          basic_data_obj= m,
+                          json_str = st,
+                          is_final_result = isf)
+    r.save()
+    data = json.dumps({"status":"OK"})
+    response = HttpResponse(data, content_type="application/json")
       
     response['Access-Control-Allow-Origin'] = "*"
     return response

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from djcelery.models import TaskMeta
 
 # Create your models here.
 class BasicLensData(models.Model):
@@ -83,14 +84,17 @@ class Catalog(models.Model):
 class ModellingResult(models.Model):
   #id = models.AutoField(primary_key=True)
   basic_data_obj = models.ForeignKey(BasicLensData)
-  model_str = models.TextField() # the json model string from the frontside UI
+  json_str = models.TextField() # the json model string from the frontside UI
   is_final_result = models.BooleanField() # did the user send this model in for storage (true) or was it temprarily saved for a test rendering
 
   #administrative fields
   created = models.DateTimeField(auto_now_add=True) #when was it added
   created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)# by who was it added
   rendered_last = models.DateTimeField(blank=True, null=True) #when was it last rendered
+  last_accessed = models.DateTimeField(blank=True, null=True) #when was it last rendered
   is_rendered = models.BooleanField(blank=True) # are the results (images) still available?
+  task = models.ForeignKey(TaskMeta, blank=True, null=True, on_delete=models.SET_NULL)
+  local_url = models.CharField(max_length=200, blank=True)
   
   # some data about this simulation that will be kept direcly in the database
   
