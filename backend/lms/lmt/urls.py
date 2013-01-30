@@ -6,17 +6,17 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    # url(r'^$', 'lms.views.home', name='home'),
-    # url(r'^lms/', include('lms.foo.urls')),
+    # url(r'^$', 'lmt.views.home', name='home'),
+    # url(r'^lmt/', include('lmt.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^get_modeldata/(?P<model_id>\d+)', 'Model.views.getModelData'),
-    url(r'^save_model/', 'Model.views.saveModel'),
-    url(r'^load_model/', 'Model.views.loadModel'),
-    url(r'^calc_model/', 'Model.views.calcModel'),
+    url(r'^get_modeldata/(?P<model_id>\d+)', 'ModellerApp.views.getModelData'),
+    url(r'^save_model/', 'ModellerApp.views.saveModel'),
+    url(r'^load_model/', 'ModellerApp.views.loadModel'),
+    url(r'^calc_model/', 'ModellerApp.views.calcModel'),
    
 )

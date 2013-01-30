@@ -4,12 +4,11 @@ Created on 26.01.2013
 @author: RafiK
 '''
 
-from Model.models import ModelData
-from Model.models import Result
+from ModellerApp.models import BasicLensData, ModellingResult, ModellingSession
 from django.contrib import admin
 
 
-class ModelAdmin(admin.ModelAdmin):
+class BasicLensDataAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,               {'fields': ['name', 'imgType']}),
         ('Channel Information', {'fields': ['channel1_data', 'channel1_imgurl', 'channel1_type',
@@ -17,6 +16,9 @@ class ModelAdmin(admin.ModelAdmin):
                                             'channel3_data', 'channel3_imgurl', 'channel3_type']}),
     ]
 
-admin.site.register(ModelData, ModelAdmin)
 
-admin.site.register(Result)
+
+#admin.site.register(BasicLensData, BasicLensDataAdmin)
+admin.site.register(BasicLensData)
+admin.site.register(ModellingResult)
+admin.site.register(ModellingSession)

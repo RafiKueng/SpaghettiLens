@@ -1,4 +1,4 @@
-# Django settings for lms project.
+# Django settings for lmt project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -15,7 +15,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'D:/myProjects/master/backend/lms/db/lms.db',                      # Or path to database file if using sqlite3.
+        'NAME': 'D:/myProjects/master/backend/lms/db/lmt.db',                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -100,10 +100,10 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'lms.urls'
+ROOT_URLCONF = 'lmt.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'lms.wsgi.application'
+WSGI_APPLICATION = 'lmt.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -123,6 +123,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'djcelery',
+    'lazysignup', 
     'ModellerApp',
 )
 
@@ -155,12 +156,23 @@ LOGGING = {
     }
 }
 
+#######################
+# my added stuff
+
 
 # Celery Configuration
+
 BROKER_URL = 'amqp://lmt:qwerty@localhost:5672/lmt_vhost'
 #BROKER_HOST = 'localhost'
 #BROKER_PORT = 5672
 #BROKER_USER = 'lmt'
 #BROKER_PASSWORD = 'qwerty'
 #BROKER_VHOST = 'lmt_vhost'
-CELERY_IMPORTS = ("lms.tasks", )
+CELERY_IMPORTS = ("lmt.tasks", )
+
+
+# lazysignup
+AUTHENTICATION_BACKENDS = (
+  'django.contrib.auth.backends.ModelBackend',
+  'lazysignup.backends.LazySignupBackend',
+)

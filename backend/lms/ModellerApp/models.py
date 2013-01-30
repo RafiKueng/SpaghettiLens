@@ -5,27 +5,28 @@ from django.contrib.auth.models import User
 class BasicLensData(models.Model):
   id = models.AutoField(primary_key=True)
   name = models.CharField(max_length=200)
+  catalog = models.CharField(max_length=200, blank=True)
   
   IMGTYPE_CHOICES = (
     ('BW', 'multi channels, each a grayscale image'),
     ('CO', 'multi channels, one single color image'),
   )
   BAND_CHOICES = (
-    ('U', 'UV, 365nm'),
-    ('B', 'blue, 445nm'),
-    ('V', 'visual, 551nm'),
-    ('G', 'green, 551nm'),
-    ('R', 'red, 658nm'),
-    ('I', 'nearIR, 806nm'),
-    ('Z', 'nearIR, 900nm'),
-    ('Y', 'nearIR, 1020nm'),
-    ('J', 'nearIR, 1220nm'),
-    ('H', 'nearIR, 1630nm'),
-    ('K', 'nearIR, 2190nm'),
-    ('L', 'nearIR, 3450nm'),
-    ('M', 'midIR, 4750nm'),
-    ('N', 'midIR, ????nm'),
-    ('Q', 'midIR, ????nm'),
+    ('U', 'U: UV, 365nm'),
+    ('B', 'B: blue, 445nm'),
+    ('V', 'V: visual, 551nm'),
+    ('G', 'G: green, 551nm'),
+    ('R', 'R: red, 658nm'),
+    ('I', 'I: nearIR, 806nm'),
+    ('Z', 'Z: nearIR, 900nm'),
+    ('Y', 'Y: nearIR, 1020nm'),
+    ('J', 'J: nearIR, 1220nm'),
+    ('H', 'H: nearIR, 1630nm'),
+    ('K', 'K: nearIR, 2190nm'),
+    ('L', 'L: nearIR, 3450nm'),
+    ('M', 'M: midIR, 4750nm'),
+    ('N', 'N: midIR, ????nm'),
+    ('Q', 'Q: midIR, ????nm'),
   )
   
   imgType = models.CharField(max_length=2, choices=IMGTYPE_CHOICES)
@@ -46,43 +47,46 @@ class BasicLensData(models.Model):
   modellers = models.ManyToManyField(User, through='ModellingSession')
     
   def __unicode__(self):
-    return ''.join([`self.pk`, ' ("', self.name, '" type: ', self.imgType, ')'])
+    return ''.join(['LensData [ id: ', `self.pk`,
+                    ' | name: '      , self.name,
+                    ' | catalog: '   , self.catalog,
+                    ' | type: '      , self.imgType, ' ]'])
 
 
 
   
 class ModellingResult(models.Model):
   #id = models.AutoField(primary_key=True)
-  model_id = models.ForeignKey(BasicLensData)
+  model = models.ForeignKey(BasicLensData)
   model_str = models.TextField() # the json model string from the frontside UI
   is_final_result = models.BooleanField() # did the user send this model in for storage (true) or was it temprarily saved for a test rendering
 
   #administrative fields
   created = models.DateTimeField(auto_now_add=True) #when was it added
   created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)# by who was it added
-  rendered_last = models.DateTimeField(blank=True) #when was it last rendered
+  rendered_last = models.DateTimeField(blank=True, null=True) #when was it last rendered
   is_rendered = models.BooleanField(blank=True) # are the results (images) still available?
   
   # some data about this simulation that will be kept direcly in the database
   
   # first some general glass settings
   # for the meaning look at a example glass config file, like: glass/Examples/b1115.gls
-  n_models = models.IntegerField(blank=True)
-  pixrad = models.IntegerField(blank=True)
-  steepness_min = models.FloatField(blank=True)
-  steepness_max = models.FloatField(blank=True)
-  smooth_val = models.FloatField(blank=True)
+  n_models = models.IntegerField(blank=True, null=True)
+  pixrad = models.IntegerField(blank=True, null=True)
+  steepness_min = models.FloatField(blank=True, null=True)
+  steepness_max = models.FloatField(blank=True, null=True)
+  smooth_val = models.FloatField(blank=True, null=True)
   smooth_include_central = models.BooleanField(blank=True)
-  local_gradient = models.FloatField(blank=True)
+  local_gradient = models.FloatField(blank=True, null=True)
   is_symm = models.BooleanField(blank=True)
-  maprad = models.FloatField(blank=True)
-  shear = models.FloatField(blank=True)
+  maprad = models.FloatField(blank=True, null=True)
+  shear = models.FloatField(blank=True, null=True)
   
   #some glass settings originating from the model  
-  redshift_lens = models.FloatField(blank=True)
-  redshift_source = models.FloatField(blank=True)
-  n_sources = models.FloatField(blank=True) # the number of sources in the image
-  n_images = models.IntegerField(blank=True) # the overal count of images (from all sources)
+  redshift_lens = models.FloatField(blank=True, null=True)
+  redshift_source = models.FloatField(blank=True, null=True)
+  n_sources = models.FloatField(blank=True, null=True) # the number of sources in the image
+  n_images = models.IntegerField(blank=True, null=True) # the overal count of images (from all sources)
   
   # some of the results from the simulation
   log_text = models.TextField(blank=True) # the resulting log file contents (from the LAST time this simulation was run)
@@ -90,9 +94,11 @@ class ModellingResult(models.Model):
 
 
   def __unicode__(self):
-    return ''.join(['res: ', `self.pk`, ' (modelid: ',
-                    `self.model.id`, ' @', str(self.dateTime),
-                    " final:", ('X' if self.isFinalResult else "_"), ")"])
+    return ''.join(['ModRes [ id: ', `self.pk`,
+                    ' | modelId: ' , `self.model.id`,
+                    ' | userId: '  , (self.created_by.username if self.created_by is not None else "-----"),
+                    ' | @ '        , str(self.created),
+                    ' | final: '   , ('X' if self.is_final_result else "_"), " ]"])
   
 
 
@@ -109,3 +115,16 @@ class ModellingSession(models.Model):
   lens_data = models.ForeignKey(BasicLensData)
   created = models.DateTimeField(auto_now_add=True) #when was it added
   result = models.ForeignKey('ModellingResult')
+  
+  
+  def __unicode__(self):
+    return ''.join(['ModSession [ id:', `self.pk`,
+                    ' | user: ', self.user.username,
+                    ' | modelID: ', `self.lens_data.pk`,
+                    ' | resultID: ', `self.result.pk`,
+                    ' | @ ', str(self.created), ' ]' ])
+    
+    
+    
+    
+    

@@ -5,13 +5,14 @@ from django.core import serializers
 #from django.utils import date
 from datetime import datetime
 
-from lms import tasks
+from lmt import tasks
 
 #import simplejson as json
 
-from Model.models import ModelData, Result
+from ModellerApp.models import BasicLensData, ModellingResult
 
 import json
+import lmt
 
 @csrf_exempt
 def getModelData(request, model_id):
@@ -23,10 +24,10 @@ def getModelData(request, model_id):
     #print "i got: ", str(request.POST)
     
     try:
-      m = ModelData.objects.get(id=model_id)
+      m = BasicLensData.objects.get(id=model_id)
       data = serializers.serialize("json", [m])
       response = HttpResponse(data, content_type="application/json")
-    except ModelData.DoesNotExist:
+    except BasicLensData.DoesNotExist:
       response = HttpResponseNotFound("this model is not available", content_type="text/plain")
       
     response['Access-Control-Allow-Origin'] = "*"
@@ -66,10 +67,10 @@ def saveModel(request):
     st = r['string']
     isf = r['isFinal'] in ["True", "true"]
     
-    m = ModelData.objects.get(id=mid)
-    r = Result(  model= m,
-                 string = st,
-                 isFinalResult = isf)
+    m = BasicLensData.objects.get(id=mid)
+    r = ModellingResult(  model= m,
+                          string = st,
+                          isFinalResult = isf)
     try:
       r.save()
       data = json.dumps({"status":"OK"})
