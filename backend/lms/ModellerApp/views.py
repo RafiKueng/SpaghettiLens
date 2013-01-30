@@ -88,7 +88,13 @@ def saveModel(request):
 def loadModel(request):
   pass
 
+
+
 def calcModel(request):
   tsk = tasks.calculateModel.delay(4, 5)
   
   pass
+
+
+
+

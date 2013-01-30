@@ -5,7 +5,14 @@ from django.contrib.auth.models import User
 class BasicLensData(models.Model):
   id = models.AutoField(primary_key=True)
   name = models.CharField(max_length=200)
-  catalog = models.CharField(max_length=200, blank=True)
+  
+  # is this data part of a set (like castles)? enter some infos about it here
+  catalog = models.ForeignKey('Catalog', blank=True, null=True, on_delete=models.SET_NULL)
+  catalog_img_id = models.IntegerField(blank=True, null=True) # does it have an id in this set? store it here for reference
+  
+  # if these are already known, enter them here
+  z_lens = models.FloatField(blank=True, null=True)
+  z_source = models.FloatField(blank=True, null=True)
   
   IMGTYPE_CHOICES = (
     ('BW', 'multi channels, each a grayscale image'),
@@ -31,6 +38,11 @@ class BasicLensData(models.Model):
   
   imgType = models.CharField(max_length=2, choices=IMGTYPE_CHOICES)
   
+  # if image type = grayscale multichannel, enter the information for each channel (up to 5)
+  # if already a composite color image, just fill in the first channel url
+  # data is a json object representing default values for color, brightness and contrast for this channel in the UI
+  # r, g, b from 0..1, [co]ntrast from 0.1 .. 1 .. 10; [br]ightness from -1..0..1, see the UI for deatils
+  # {"r": "1", g: 0, b:0, co: 1, br:0}
   channel1_imgurl = models.CharField(max_length=200)
   channel1_type = models.CharField(max_length=1, choices=BAND_CHOICES, blank=True)
   channel1_data = models.CharField(max_length=200, blank=True)
@@ -42,22 +54,35 @@ class BasicLensData(models.Model):
   channel3_imgurl = models.CharField(max_length=200, blank=True)
   channel3_data = models.CharField(max_length=200, blank=True)
   channel3_type = models.CharField(max_length=1, choices=BAND_CHOICES, blank=True)
+
+  channel4_imgurl = models.CharField(max_length=200, blank=True)
+  channel4_data = models.CharField(max_length=200, blank=True)
+  channel4_type = models.CharField(max_length=1, choices=BAND_CHOICES, blank=True)
   
+  channel5_imgurl = models.CharField(max_length=200, blank=True)
+  channel5_data = models.CharField(max_length=200, blank=True)
+  channel5_type = models.CharField(max_length=1, choices=BAND_CHOICES, blank=True)
+    
   # who has already modeled this dataset? a many to one relation ship
   modellers = models.ManyToManyField(User, through='ModellingSession')
     
   def __unicode__(self):
     return ''.join(['LensData [ id: ', `self.pk`,
                     ' | name: '      , self.name,
-                    ' | catalog: '   , self.catalog,
+                    ' | catalog: '   , self.catalog if self.catalog else "-----",
                     ' | type: '      , self.imgType, ' ]'])
 
+
+# this represents a collection of images
+class Catalog(models.Model):
+  name =  models.CharField(max_length=32) #identifier
+  description = models.CharField(max_length=300) # further description
 
 
   
 class ModellingResult(models.Model):
   #id = models.AutoField(primary_key=True)
-  model = models.ForeignKey(BasicLensData)
+  basic_data_obj = models.ForeignKey(BasicLensData)
   model_str = models.TextField() # the json model string from the frontside UI
   is_final_result = models.BooleanField() # did the user send this model in for storage (true) or was it temprarily saved for a test rendering
 
@@ -73,6 +98,7 @@ class ModellingResult(models.Model):
   # for the meaning look at a example glass config file, like: glass/Examples/b1115.gls
   n_models = models.IntegerField(blank=True, null=True)
   pixrad = models.IntegerField(blank=True, null=True)
+  hubbletime = models.FloatField(blank=True, null=True)
   steepness_min = models.FloatField(blank=True, null=True)
   steepness_max = models.FloatField(blank=True, null=True)
   smooth_val = models.FloatField(blank=True, null=True)
@@ -112,7 +138,7 @@ class ModellingResult(models.Model):
 # deletion of this entry even thou the user is deleted. this is NOT prevented here)
 class ModellingSession(models.Model):
   user = models.ForeignKey(User)
-  lens_data = models.ForeignKey(BasicLensData)
+  basic_data_obj = models.ForeignKey(BasicLensData)
   created = models.DateTimeField(auto_now_add=True) #when was it added
   result = models.ForeignKey('ModellingResult')
   
