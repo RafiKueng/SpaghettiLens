@@ -1,11 +1,17 @@
 cd /srv
-mkdir lmt
+
+git clone -b dev https://github.com/RafiKueng/LensTools.git lmt
+git clone -b master https://github.com/RafiKueng/LensTools.git lmt
+
+cd lmt
+
 virtualenv python_env
 source python_env/bin/activate
 
 pip install django
 pip install django-celery
 pip install flower
+pip install django-lazysignup
 
 
     Add the following line to your /etc/apt/sources.list:
@@ -33,4 +39,9 @@ setup rabbitmq
  rabbitmqctl add_vhost lmt_vhost
  rabbitmqctl set_permissions -p lmt_vhost lmt ".*" ".*" ".*"
 
- 
+
+test django:
+cd backend
+python manage.py runserver 0.0.0.0:8000
+
+
