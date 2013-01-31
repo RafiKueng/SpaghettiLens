@@ -45,3 +45,12 @@ cd backend
 python manage.py runserver 0.0.0.0:8000
 
 
+install gunicorn
+
+ 
+ sudo apt-get install libevent-dev
+ pip install greenlet
+ pip install gunicorn
+
+ setup autostart
+ 
