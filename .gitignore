@@ -54,3 +54,6 @@ glass/
 # allow for individual starter page
 ##########################################################
 /index.html
+
+# OOo temp files
+.~lock*
