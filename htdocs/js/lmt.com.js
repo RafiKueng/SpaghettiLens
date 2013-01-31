@@ -10,6 +10,7 @@ var com = {
   serverUrl: "http://localhost:8000",
   
   getModelDataUrl: "/get_modeldata",
+  saveDataUrl: "/save_model/"
   
 };
 
@@ -31,7 +32,7 @@ com.getModelData = function(model_id) {
     // obj[0].fields['channel1_data']
     // obj[0].fields['channel1_url']
     
-    log.write("success1: <br/>" + obj + "<br/>" + status_text + "<br/>" + resp);
+    log.write("success: <br/>" + obj + "<br/>" + status_text + "<br/>" + resp);
     
     LMT.modelData = obj[0].fields;
     LMT.modelData.id = obj[0].pk;
@@ -100,6 +101,7 @@ com.getModelData = function(model_id) {
 
 
 /**
+ * event handler 
  * save the resulting model string in the database
  * - model name
  * - model string: the serialized model data (json)
@@ -108,10 +110,10 @@ com.getModelData = function(model_id) {
  * post returns json 
  * {status: "OK" or "BAD..."
  */
-com.saveModel = function(model_id, modelstring, isFinal) {
+com.UploadModel = function() {
 
   var success = function(jsonResp, statusTxt, XHRRespObj) {
-    log.write("success1: <br/>" + jsonResp + "<br/>" + statusTxt + "<br/>" + XHRRespObj);
+    log.write("success1: <br/>result_id:" + jsonResp.result_id);
   };
   
   var fail = function(a, b, c) {
@@ -119,13 +121,13 @@ com.saveModel = function(model_id, modelstring, isFinal) {
   };
 
 
-  $.ajax(LMT.com.serverUrl, {
+  $.ajax(LMT.com.serverUrl + LMT.com.saveDataUrl, {
       type:"POST",
       contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
       data: {
-        modelid: model_id,
-        string: modelstring,
-        isFinal: isFinal
+        modelid: LMT.modelData.id,
+        string: LMT.actionstack.current.stateStr,
+        isFinal: false //isFinal
       }, 
       dataType:"json", //data type expected from server
       success:success,
@@ -137,6 +139,10 @@ com.saveModel = function(model_id, modelstring, isFinal) {
 
 
 
+
+com.GetSimulation = function(){
+  log.append("get sim");
+}
 
 
 

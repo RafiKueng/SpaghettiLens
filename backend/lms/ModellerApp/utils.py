@@ -34,14 +34,15 @@ class Point(object):
 
 class EvalAndSaveJSON:
   
-  def __init__(self, user_obj, data_obj, jsonStr, **kwargs):
+  def __init__(self, user_obj, data_obj, jsonStr, is_final, **kwargs):
+    print "init easj"
     #self.username = "anonymous"
     self.logfilename = "bla.log"
     self.hubbletime = 13.7
     self.lensidentifier = ""
     self.z_lens = 1.00
     self.pixrad = 3
-    self.steep_min = `0`
+    self.steep_min = 0
     self.steep_max = "None"
     self.smooth_val = 2
     self.smooth_ic = "False"
@@ -72,6 +73,7 @@ class EvalAndSaveJSON:
     self.user_obj = user_obj
     self.username = self.user_obj.username
     self.jsonStr = jsonStr
+    self.is_final = is_final
     
     
     
@@ -84,6 +86,7 @@ class EvalAndSaveJSON:
     
     
   def evalModelString(self):
+    print "eval easj"
     
     def objHook(dct):
       print "in ObjHook"
@@ -106,6 +109,8 @@ class EvalAndSaveJSON:
   
   
   def orderPoints(self):
+    print "order easj"
+    
     # recursive function returning all the points coordinates for ONE source
     # relative to origin
     # origin is the max of the root group (or the point more close to the saddle
@@ -175,6 +180,8 @@ class EvalAndSaveJSON:
   
   
   def createConfigFile(self):
+    print "create easj"
+
     _ = self
     
     gls = [
@@ -252,22 +259,24 @@ class EvalAndSaveJSON:
 
   
   def createModellingResult(self):
+    print "createMR easj"
+
     mr = ModellingResult(
       basic_data_obj = self.basic_data_obj,
       json_str      = self.jsonStr,
-      is_f           = self.is_final)
+      is_final_result = self.is_final)
     
     mr.created_by = self.user_obj
     #mr.log_text = self.logfilename = "bla.log"
     mr.is_rendered = False
-    
+ 
     mr.hubbletime = self.hubbletime
     mr.redshift_lens = self.z_lens
     mr.pixrad = self.pixrad
     mr.steepness_min = self.steep_min
     mr.steepness_max = self.steep_max
     mr.smooth_val = self.smooth_val
-    mr.smooth_include_central = self.smooth_ic == "True"
+    mr.smooth_include_central = (self.smooth_ic == "True")
     mr.local_gradient = self.loc_grad
     mr.is_symm = self.isSym
     mr.maprad = self.maprad
@@ -286,5 +295,8 @@ class EvalAndSaveJSON:
             created        = mr.created,
             result         = mr)
     ms.save()
+    print "created ms"
     
+    self.result = ms
+    self.result_id = ms.id
     #return mr

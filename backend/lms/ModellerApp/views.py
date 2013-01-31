@@ -63,7 +63,7 @@ def getModelData(request, model_id):
 def saveModel(request):
   if request.method == "POST":
     
-    #print repr(request.POST)
+    print repr(request.POST)
     
     r = request.POST
     #print "Got Data: ", int(r['modelid']), r['string'], r['isFinal'] in ["True", "true"]
@@ -76,7 +76,7 @@ def saveModel(request):
       response = HttpResponseNotFound(data, content_type="application/json")
       response['Access-Control-Allow-Origin'] = "*"
       return response
-
+    
     try:
       m = BasicLensData.objects.get(id=mid)
 
@@ -86,16 +86,19 @@ def saveModel(request):
       response['Access-Control-Allow-Origin'] = "*"
       return response
 
-
-    obj = EvalAndSaveJSON(User.objects.all()[0], # request.user,
-                          basic_data_obj= m,
-                          json_str = st,
-                          is_final_result = isf)
-    r.save()
-    data = json.dumps({"status":"OK"})
+    u = User.objects.all()[0]
+    
+    obj = EvalAndSaveJSON(user_obj = u, # request.user,
+                          data_obj= m,
+                          jsonStr = st,
+                          is_final= False)
+    
+    #r.save()
+    data = json.dumps({"status":"OK", "result_id":obj.result_id})
     response = HttpResponse(data, content_type="application/json")
       
     response['Access-Control-Allow-Origin'] = "*"
+    print "sending response"
     return response
 
 

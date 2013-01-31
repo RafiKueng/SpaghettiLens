@@ -106,23 +106,23 @@
                 Goto Next Model
               </button>
               <button id="btnInActionSave"
-                data-event="Save"
-                data-tooltip="Save the Model (locally)"
+                data-event="SaveModel"
+                data-tooltip="Save the Model"
                 data-furtherinfo="http://www.google.com"
                 data-hotkey="C"
                 data-icon="icon-save">
                 Save the model locally
               </button>
               <button id="btnInActionUpload"
-                data-event="Upload"
+                data-event="UploadModel"
                 data-tooltip="Save the final model on the server"
                 data-furtherinfo="http://www.google.com"
                 data-hotkey="C"
                 data-icon="icon-cloud-upload">
                 Save the final model on the server
               </button>
-              <button id="btnInActionRunModel"
-                data-event="RunModel"
+              <button id="btnInActionSimulateModel"
+                data-event="SimulateModel"
                 data-tooltip="update the simulated results"
                 data-furtherinfo="http://www.google.com"
                 data-hotkey="C"

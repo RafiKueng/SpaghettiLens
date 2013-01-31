@@ -104,7 +104,7 @@ class ModellingResult(models.Model):
   pixrad = models.IntegerField(blank=True, null=True)
   hubbletime = models.FloatField(blank=True, null=True)
   steepness_min = models.FloatField(blank=True, null=True)
-  steepness_max = models.FloatField(blank=True, null=True)
+  steepness_max = models.CharField(max_length=200, blank=True)
   smooth_val = models.FloatField(blank=True, null=True)
   smooth_include_central = models.BooleanField(blank=True)
   local_gradient = models.FloatField(blank=True, null=True)
@@ -125,7 +125,7 @@ class ModellingResult(models.Model):
 
   def __unicode__(self):
     return ''.join(['ModRes [ id: ', `self.pk`,
-                    ' | modelId: ' , `self.model.id`,
+                    ' | modelId: ' , `self.basic_data_obj.id`,
                     ' | userId: '  , (self.created_by.username if self.created_by is not None else "-----"),
                     ' | @ '        , str(self.created),
                     ' | final: '   , ('X' if self.is_final_result else "_"), " ]"])
@@ -150,7 +150,7 @@ class ModellingSession(models.Model):
   def __unicode__(self):
     return ''.join(['ModSession [ id:', `self.pk`,
                     ' | user: ', self.user.username,
-                    ' | modelID: ', `self.lens_data.pk`,
+                    ' | modelID: ', `self.basic_data_obj.pk`,
                     ' | resultID: ', `self.result.pk`,
                     ' | @ ', str(self.created), ' ]' ])
     
