@@ -54,6 +54,7 @@ glass/
 # allow for individual starter page
 ##########################################################
 /index.html
+python_env/*
 
 # OOo temp files
 .~lock*

@@ -54,3 +54,12 @@ install gunicorn
 
  setup autostart
  
+ 
+ 
+don't use gunicorn for the moment, just use a apache using mod_wsgi
+sudo aptitude install libapache2-mod-wsgi
+
+
+ok, change of plans, use gunicorn never the less...
+from /srv/lmt/backend
+gunicorn -c lmt/gunicorn_settings.py lmt.wsgi:application
