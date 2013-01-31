@@ -93,7 +93,7 @@ html.ColorSettingsDialog = {
   		minWidth: 500,
   		open: function(){
   			 $('.mycp').each(function(i, val){
-  			 		var str = (1 << 24) | (ch[i].r*255 << 16) | (ch[i].g*255 << 8) | ch[i].b*255;
+  			   	var str = (1 << 24) | (ch[i].r*255 << 16) | (ch[i].g*255 << 8) | ch[i].b*255;
   			 		$(this).val('#' + str.toString(16).substr(1)).focus();
   			 		
   			 		// hack that should update the field so they get their color from beginning
@@ -121,7 +121,7 @@ html.ColorSettingsDialog = {
   				value = Math.pow(10, value); //change range from [-1...1] to [0.1 ... 10]
   			}
   			
-  			LMT.modelData.ch[id][type] = value;
+  			LMT.modelData.ch[id][type.substr(0,2)] = value;
   			log.write("stopped sliding");
   			$.event.trigger('ChangedModelData', id);
   		}

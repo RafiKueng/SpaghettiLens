@@ -14,9 +14,11 @@ LMT.ui = {
   output: {},     // takes care of displaying the results
   };
 LMT.objects = {}; // collection of all objects available
-LMT.comm = {};    // all the communication routines (websocket)
+LMT.com = {};    // all the communication routines (websocket)
 LMT.utils = {};   // some utils
 
+
+LMT.modelData = {};
 
 LMT.settings = {
   
@@ -57,7 +59,7 @@ $(document).ready(function(){
 
   //for debug purposes, trigger some events manually
 
-
+  /*
   var ch = [
     {r:1,g:0,b:0,contrast:1,brightness:0},
     {r:0,g:1,b:0,contrast:1,brightness:0},
@@ -73,6 +75,8 @@ $(document).ready(function(){
     ch: ch
   };
   $.event.trigger('ReceivedModelData');
+  */
+
 
 /*
   maybe switch to besser data structre like this

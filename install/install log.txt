@@ -1,0 +1,36 @@
+cd /srv
+mkdir lmt
+virtualenv python_env
+source python_env/bin/activate
+
+pip install django
+pip install django-celery
+pip install flower
+
+
+    Add the following line to your /etc/apt/sources.list:
+
+    deb http://www.rabbitmq.com/debian/ testing main
+
+    (Please note that the word testing in this line refers to the state of our release of RabbitMQ, not any particular Debian distribution. You can use it with Debian stable, testing or unstable, as well as with Ubuntu. We describe the release as "testing" to emphasise that we release somewhat frequently.)
+    (optional) To avoid warnings about unsigned packages, add our public key to your trusted key list using apt-key(8):
+
+    wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc
+    sudo apt-key add rabbitmq-signing-key-public.asc
+
+    Run apt-get update.
+    Install packages as usual; for instance,
+
+    sudo apt-get install rabbitmq-server
+
+    
+ rm rabbitmq-signing-key-public.asc
+ 
+
+setup rabbitmq
+
+ rabbitmqctl add_user lmt password
+ rabbitmqctl add_vhost lmt_vhost
+ rabbitmqctl set_permissions -p lmt_vhost lmt ".*" ".*" ".*"
+
+ 

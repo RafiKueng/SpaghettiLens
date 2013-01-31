@@ -31,6 +31,7 @@ var events = {
     LMT.model.init();
     
     LMT.actionstack = new LMT.objects.ActionStack();
+    LMT.com.getModelData(1);
     
     
   },
@@ -73,12 +74,12 @@ var events = {
 
     
     $(document).on('SaveModel', fnc);
-    $(document).on('UploadModel', fnc);
-    $(document).on('SimulateModel', fnc);
+    $(document).on('UploadModel', LMT.com.UploadModel);
+    $(document).on('SimulateModel', LMT.events.SimulateModel);
     $(document).one('UpdateRepaintModel', LMT.events.UpdateRepaintModel); //can only be called once, once finished with the update, it reassigns itself
     $(document).on('RepaintModel', LMT.objects.Model.Repaint);
 
-    
+    $(document).on('GetSimulation', LMT.com.GetSimulation);
     $(document).on('ReceivedSimulation', LMT.ui.out.load);
     
     $(document).on('DisplayOutputSlide', LMT.ui.out.show); //needs a id
@@ -146,6 +147,13 @@ events.MoveObject = function(evt, jsTarget, svgTarget, coord){
   $(document).one('UpdateRepaintModel', LMT.events.UpdateRepaintModel);
 }
 
+
+
+events.SimulateModel = function(){
+  $.event.trigger("UploadModel");
+  $.event.trigger("GetSimulation");
+  
+}
 
 
 LMT.events = events;

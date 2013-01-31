@@ -360,7 +360,7 @@ svg.coordTrans = function(evt) {
 svg.bg = {
   init: function() {
   
-    var url = LMT.modelData.url;
+    //var url = LMT.modelData.url;
     var ch = LMT.modelData.ch;
     
   	var filter = document.createElementNS(svg.ns, "filter");
@@ -375,11 +375,11 @@ svg.bg = {
   	svg.bgCmatrix = [];
   
   	//for each background image...
-  	for (var i = 0; i<url.length; i++){
+  	for (var i = 0; i<ch.length; i++){
   		
   		//.. load the image
   		var img = document.createElementNS(svg.ns, "feImage");
-  		img.setAttributeNS(svg.xlinkns,"href", url[i]);
+  		img.setAttributeNS(svg.xlinkns,"href", ch[i].url);
   		img.setAttribute("x","0");
   		img.setAttribute("y","0");
   		img.setAttribute("width","100%");
@@ -387,19 +387,22 @@ svg.bg = {
   		img.setAttribute("result","img"+i);
   		filter.appendChild(img);
   		
-  		//apply the color matrix transform
-  		var cmatrix = document.createElementNS(svg.ns, "feColorMatrix");
-  		cmatrix.setAttribute("type", "matrix");
-  		cmatrix.setAttribute("in", "img"+i);
-  		cmatrix.setAttribute("result", "cimg"+i);
-  		cmatrix.setAttribute("values", svg.generateColorMatrix(ch[i]));
-  		filter.appendChild(cmatrix);
-  		svg.bgCmatrix.push(cmatrix);
+  		if (LMT.modelData.img_type == "BW"){
+    		//apply the color matrix transform
+    		var cmatrix = document.createElementNS(svg.ns, "feColorMatrix");
+    		cmatrix.setAttribute("type", "matrix");
+    		cmatrix.setAttribute("in", "img"+i);
+    		cmatrix.setAttribute("result", "cimg"+i);
+    		cmatrix.setAttribute("values", svg.generateColorMatrix(ch[i]));
+    		filter.appendChild(cmatrix);
+    		svg.bgCmatrix.push(cmatrix);
+  		}
   		
   		//blend to others using porter-diff
   		var comp = document.createElementNS(svg.ns, "feComposite");
   		comp.setAttribute("in", "comp");
-  		comp.setAttribute("in2", "cimg"+i);
+      if (LMT.modelData.img_type == "BW"){comp.setAttribute("in2", "cimg"+i);}
+  		else {comp.setAttribute("in2", "img"+i);}
   		comp.setAttribute("result", "comp");
   		comp.setAttribute("operator", "arithmetic");
   		comp.setAttribute("k1", "0");
@@ -502,8 +505,8 @@ svg.generateColorMatrix = function(ch) {
 	var r = ch.r;
 	var g = ch.g;
 	var b = ch.b;
-	var co = ch.contrast;
-	var br = ch.brightness;
+	var co = ch.co;
+	var br = ch.br;
 	
 	var i = (1-co)/2 + (br);
 
