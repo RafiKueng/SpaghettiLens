@@ -31,6 +31,7 @@ var events = {
     LMT.model.init();
     
     LMT.actionstack = new LMT.objects.ActionStack();
+    LMT.com.getModelData(1);
     
     
   },

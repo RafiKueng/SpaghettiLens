@@ -70,8 +70,8 @@ class BasicLensData(models.Model):
   def __unicode__(self):
     return ''.join(['LensData [ id: ', `self.pk`,
                     ' | name: '      , self.name,
-                    ' | catalog: '   , self.catalog if self.catalog else "-----",
-                    ' | type: '      , self.imgType, ' ]'])
+                    ' | catalog: '   , self.catalog.name if self.catalog else "-----",
+                    ' | type: '      , self.img_type, ' ]'])
 
 
 # this represents a collection of images

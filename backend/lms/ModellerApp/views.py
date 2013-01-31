@@ -64,6 +64,7 @@ def saveModel(request):
   if request.method == "POST":
     
     print repr(request.POST)
+    print request.user.username
     
     r = request.POST
     #print "Got Data: ", int(r['modelid']), r['string'], r['isFinal'] in ["True", "true"]
@@ -142,6 +143,8 @@ def getSimulationJSON(request, result_id):
   return response
 
 
+
+@csrf_exempt
 def getSimulationFiles(request, result_id, filename):
   
   print 'result_id: %s; filename: %s'%(result_id, filename)
@@ -161,3 +164,8 @@ def getSimulationFiles(request, result_id, filename):
   return response
 
 
+
+
+@csrf_exempt
+def getData(request):
+  pass

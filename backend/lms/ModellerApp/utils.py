@@ -35,7 +35,7 @@ class Point(object):
 class EvalAndSaveJSON:
   
   def __init__(self, user_obj, data_obj, jsonStr, is_final, **kwargs):
-    print "init easj"
+    #print "init easj"
     #self.username = "anonymous"
     self.logfilename = "bla.log"
     self.hubbletime = 13.7
@@ -86,10 +86,10 @@ class EvalAndSaveJSON:
     
     
   def evalModelString(self):
-    print "eval easj"
+    #print "eval easj"
     
     def objHook(dct):
-      print "in ObjHook"
+      #print "in ObjHook"
       if '__type' in dct:
         if dct['__type'] == "extpnt":
           return Point(x=dct['x']/100., y=dct['y']/100., _type=dct['type'], child1=dct['child1'], child2=dct['child2'])
@@ -109,7 +109,7 @@ class EvalAndSaveJSON:
   
   
   def orderPoints(self):
-    print "order easj"
+    #print "order easj"
     
     # recursive function returning all the points coordinates for ONE source
     # relative to origin
@@ -122,9 +122,9 @@ class EvalAndSaveJSON:
     # (ported from js)
     def recursiveWalker(pnt, origin, i=0):
       res = []
-      print " "*(3*i), "recW ", `i`
-      print " "*(3*i), "pnt:    ", pnt
-      print " "*(3*i), "origin: ", origin
+      #print " "*(3*i), "recW ", `i`
+      #print " "*(3*i), "pnt:    ", pnt
+      #print " "*(3*i), "origin: ", origin
 
       if (pnt.child1):
         ps = pnt
@@ -138,15 +138,15 @@ class EvalAndSaveJSON:
           c1 = c2;
           c2 = tmp
 
-        print " "*(3*i), "c1d: ", c1.distParent2
-        print " "*(3*i), "c2d: ", c2.distParent2        
+        #print " "*(3*i), "c1d: ", c1.distParent2
+        #print " "*(3*i), "c2d: ", c2.distParent2        
         
         skiporigin = False
         if not origin: #if origin of type None
-          print " "*(3*i), "not jet origin: setting to c2 "
+          #print " "*(3*i), "not jet origin: setting to c2 "
           origin = c2
           skiporigin = True
-          print " "*(3*i), "go on with"
+          #print " "*(3*i), "go on with"
           p2arr = recursiveWalker(c2, origin, i+1)
           res.extend(p2arr)
           
@@ -180,7 +180,7 @@ class EvalAndSaveJSON:
   
   
   def createConfigFile(self):
-    print "create easj"
+    #print "create easj"
 
     _ = self
     
@@ -259,7 +259,7 @@ class EvalAndSaveJSON:
 
   
   def createModellingResult(self):
-    print "createMR easj"
+    #print "createMR easj"
 
     mr = ModellingResult(
       basic_data_obj = self.basic_data_obj,

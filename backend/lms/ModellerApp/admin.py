@@ -10,7 +10,7 @@ from django.contrib import admin
 
 class BasicLensDataAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None,                  {'fields': ['name', 'catalog', 'catalog_img_id', 'imgType', 'z_lens', 'z_source']}),
+        (None,                  {'fields': ['name', 'catalog', 'catalog_img_id', 'img_type', 'z_lens', 'z_source']}),
         ('Channel Information', {'classes': ['collapse'],
                                  'fields': [('channel1_data', 'channel1_imgurl', 'channel1_type'),
                                             ('channel2_data', 'channel2_imgurl', 'channel2_type'),
