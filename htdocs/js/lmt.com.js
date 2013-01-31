@@ -40,7 +40,7 @@ com.getModelData = function(model_id) {
     LMT.modelData.ch = [];
     
     
-    if (LMT.modelData['imgType'] == "CO") {
+    if (LMT.modelData['img_type'] == "CO") {
       var data = LMT.modelData['channel1_data']=="" ? {co:1, br:0} : JSON.parse(LMT.modelData['channel1_data']);
       LMT.modelData.ch.push({
         r: 0,

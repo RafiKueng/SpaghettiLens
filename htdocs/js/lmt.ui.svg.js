@@ -387,7 +387,7 @@ svg.bg = {
   		img.setAttribute("result","img"+i);
   		filter.appendChild(img);
   		
-  		if (LMT.modelData.imgType == "BW"){
+  		if (LMT.modelData.img_type == "BW"){
     		//apply the color matrix transform
     		var cmatrix = document.createElementNS(svg.ns, "feColorMatrix");
     		cmatrix.setAttribute("type", "matrix");
@@ -401,7 +401,7 @@ svg.bg = {
   		//blend to others using porter-diff
   		var comp = document.createElementNS(svg.ns, "feComposite");
   		comp.setAttribute("in", "comp");
-      if (LMT.modelData.imgType == "BW"){comp.setAttribute("in2", "cimg"+i);}
+      if (LMT.modelData.img_type == "BW"){comp.setAttribute("in2", "cimg"+i);}
   		else {comp.setAttribute("in2", "img"+i);}
   		comp.setAttribute("result", "comp");
   		comp.setAttribute("operator", "arithmetic");

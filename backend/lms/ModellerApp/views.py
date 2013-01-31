@@ -107,12 +107,57 @@ def loadModel(request):
   pass
 
 
-
-def calcModel(request):
-  tsk = tasks.calculateModel.delay(4, 5)
+@csrf_exempt
+def getSimulationJSON(request, result_id):
+  print "in getSimulationJSON"
   
-  pass
+  try:
+    res = ModellingResult.objects.get(id=result_id)
+  except:
+    raise
+  print res.__dict__
+  
+  if res.is_rendered:
+    #deliver images
+    pass
+  elif hasattr(res.task, id):
+    #check status of task
+    #if still running, return status
+    #if finished:
+    #delete task
+    #set res.is_rendered = True
+    #return image links
+    pass
+  else:
+    #start the new task, retrun status information
+    pass
+  
+  
+
+  data = json.dumps({"status":"OK", "result_id":""})
+  response = HttpResponse(data, content_type="application/json")
+  
+  response['Access-Control-Allow-Origin'] = "*"
+  print "sending response"
+  return response
 
 
+def getSimulationFiles(request, result_id, filename):
+  
+  print 'result_id: %s; filename: %s'%(result_id, filename)
+  
+  # if filename on harddisk tmp dir > deliver
+  # if not:
+  #   kick of task to create the files
+  #  check task every 10sec for one minute
+  #  if no answer till then, redirect so same url and start again
+  
+  
+  data = json.dumps({"status":"OK", "result_id":""})
+  response = HttpResponse(data, content_type="application/json")
+  
+  response['Access-Control-Allow-Origin'] = "*"
+  print "sending response"
+  return response
 
 

@@ -37,7 +37,7 @@ class BasicLensData(models.Model):
     ('Q', 'Q: midIR, ????nm'),
   )
   
-  imgType = models.CharField(max_length=2, choices=IMGTYPE_CHOICES)
+  img_type = models.CharField(max_length=2, choices=IMGTYPE_CHOICES)
   
   # if image type = grayscale multichannel, enter the information for each channel (up to 5)
   # if already a composite color image, just fill in the first channel url
@@ -77,9 +77,12 @@ class BasicLensData(models.Model):
 # this represents a collection of images
 class Catalog(models.Model):
   name =  models.CharField(max_length=32) #identifier
-  description = models.CharField(max_length=300) # further description
+  description = models.CharField(max_length=300, blank=True) # further description
 
-
+  def __unicode__(self):
+    return ''.join(['Catalog [ id: ', `self.pk`,
+                    ' | name: '      , self.name,
+                    ' | descr: '   , self.description if self.description else "-----", ' ]'])
   
 class ModellingResult(models.Model):
   #id = models.AutoField(primary_key=True)

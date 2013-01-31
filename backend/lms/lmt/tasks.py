@@ -6,6 +6,6 @@ import time
 
 #@celery.task
 @task()
-def calculateModel(x, y):
-  time.sleep(y);
-  return x + y
+def calculateModel(x):
+  time.sleep(x);
+  return "slept for %f secs" % x

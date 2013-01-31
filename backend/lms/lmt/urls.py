@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^get_modeldata/(?P<model_id>\d+)', 'ModellerApp.views.getModelData'),
     url(r'^save_model/', 'ModellerApp.views.saveModel'),
     url(r'^load_model/', 'ModellerApp.views.loadModel'),
-    url(r'^calc_model/', 'ModellerApp.views.calcModel'),
-   
+    url(r'^result/(?P<result_id>\d+).json', 'ModellerApp.views.getSimulationJSON'),
+    url(r'^result/(?P<result_id>\d+)/(?P<filename>.*\.\w{1,4}$)', 'ModellerApp.views.getSimulationFiles'),
+    
 )
