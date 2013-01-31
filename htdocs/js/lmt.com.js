@@ -31,18 +31,61 @@ com.getModelData = function(model_id) {
     // obj[0].fields['channel1_data']
     // obj[0].fields['channel1_url']
     
-    log.write("success1: <br/>" + a + "<br/>" + b + "<br/>" + c);
+    log.write("success1: <br/>" + obj + "<br/>" + status_text + "<br/>" + resp);
+    
+    LMT.modelData = obj[0].fields;
+    LMT.modelData.id = obj[0].pk;
+    
+    LMT.modelData.ch = [];
+    
+    
+    if (LMT.modelData['imgType'] == "CO") {
+      var data = LMT.modelData['channel1_data']=="" ? {co:1, br:0} : JSON.parse(LMT.modelData['channel1_data']);
+      LMT.modelData.ch.push({
+        r: 0,
+        g: 0,
+        b: 0,
+        co: data.co,
+        br: data.br,
+        url: LMT.modelData['channel1_imgurl'],
+        type: LMT.modelData['channel1_type']
+      });
+    }    
+    else {
+      for (var i = 1; i<=5; i++){
+        if (LMT.modelData['channel'+i+'_imgurl']==""){
+          continue;
+        }
+        
+        if (LMT.modelData['channel'+i+'_data'] && LMT.modelData['channel'+i+'_data'].length>0){
+          var data = JSON.parse(LMT.modelData['channel'+i+'_data']);
+        }
+        else {
+          var data = {r:Math.random(), g:Math.random(), b:Math.random(), co:1, br:0};
+        }
+        LMT.modelData.ch.push({
+          r: data.r,
+          g: data.g,
+          b: data.b,
+          co: data.co,
+          br: data.br,
+          url: LMT.modelData['channel'+i+'_imgurl'],
+          type: LMT.modelData['channel'+i+'_type']
+        });
+      }
+    }    
+    $.event.trigger('ReceivedModelData');
   };
   
   var fail = function(resp, status_text, code) {
     if (resp.status == 404) {}
     if (resp.responseText == "this model is not available") {}
     
-    log.write("fail: <br/>" + a + "<br/>" + b + "<br/>" + c);
+    log.write("fail: <br/>" + obj + "<br/>" + b + "<br/>" + c);
   };
 
 
-  $.ajax(LMT.com.serverUrl + LMT.com.getModelDataUrl+'/'+model_id {
+  $.ajax(LMT.com.serverUrl + LMT.com.getModelDataUrl+'/'+model_id, {
       type:"POST",
       contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
       data: {action: "something"}, 
