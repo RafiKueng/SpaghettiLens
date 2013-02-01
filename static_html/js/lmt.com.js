@@ -7,10 +7,12 @@
 
 
 var com = {
-  serverUrl: "http://localhost:8000",
+  //serverUrl: "http://localhost:8000",
+  serverUrl: "", //in production setup those are locally
   
   getModelDataUrl: "/get_modeldata",
-  saveDataUrl: "/save_model/"
+  saveDataUrl: "/save_model/",
+  
   
 };
 
@@ -139,7 +141,11 @@ com.UploadModel = function() {
 
 
 
-
+/*
+ * can be called after saving a result
+ * will return a json obj with the urls to the images
+ * that can be gotten with long pulling later
+ */
 com.GetSimulation = function(){
   log.append("get sim");
 }

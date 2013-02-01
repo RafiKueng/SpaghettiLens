@@ -124,3 +124,38 @@ location /static_django { alias /srv/lmt/backend/static/; }
 
 and then run on the SERVER
 ./manage.py collectstatic
+
+
+
+
+
+
+
+
+##################
+starting everything up
+
+nginx: sutomatic
+	/etc/init.d/nginx {start | stop | reload}
+	
+php5-fpm: automatic
+	/etc/init.d/php5-fpm {start | stop}
+	
+gunicorn: manual
+	cd /srv/lmt/backend/
+	source ../python_env/bin/activate
+	./start_gunicorn.sh
+	
+RabbitMQ: automatic
+	rabbitmqctl {start_app | stop | stop_app | reset }
+	
+Cerlery Worker: manual
+	cd /srv/lmt/backend/
+	source ../python_env/bin/activate
+	python manage.py celery worker --loglevel=info
+	
+Flower: manual, optional
+	cd /srv/lmt/backend/
+	source ../python_env/bin/activate
+	celery flower --broker=amqp://lmt:password@localhost:5673/lmt_vhost
+

@@ -37,7 +37,7 @@ class EvalAndSaveJSON:
   def __init__(self, user_obj, data_obj, jsonStr, is_final, **kwargs):
     #print "init easj"
     #self.username = "anonymous"
-    self.logfilename = "bla.log"
+    self.logfilename = "../tmp_media/" + str(data_obj.id) + "log.log"
     self.hubbletime = 13.7
     self.lensidentifier = ""
     self.z_lens = 1.00
@@ -53,12 +53,12 @@ class EvalAndSaveJSON:
     self.z_src = 1.00
     self.n_models = 1000
 
-    self.statefilepath = "../../tmp/bla.state"
-    self.imgpath = "../htdocs/img/"
+    self.statefilepath = "../tmp_media/" + str(data_obj.id) + "/state.state"
+    self.imgpath = "../tmp_media/" + str(data_obj.id)
     self.img1_name = "image1.png"
     
-    self.cfg_path = ""
-    self.cfg_file = "blabla.gls"
+    self.cfg_path = "../tmp_media/" + str(data_obj.id)
+    self.cfg_file = "cfg.gls"
     
 
     #self.points = [Pnt(2,3), Pnt(2,1), Pnt(5,2)]  
