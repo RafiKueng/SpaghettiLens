@@ -41,7 +41,7 @@ class EvalAndSaveJSON:
     #self.username = "anonymous"
     self.hubbletime = 13.7
     self.z_lens = 0.50
-    self.pixrad = 3
+    self.pixrad = 6
     self.steep_min = 0
     self.steep_max = "None"
     self.smooth_val = 2
@@ -51,7 +51,7 @@ class EvalAndSaveJSON:
     self.maprad = 0 #1.9637 #set 0 to turn off
     self.shear = 0.01
     self.z_src = 1.00
-    self.n_models = 1000
+    self.n_models = 200
     
 
     #self.points = [Pnt(2,3), Pnt(2,1), Pnt(5,2)]  
@@ -246,6 +246,7 @@ class EvalAndSaveJSON:
       "savestate('%s')" % _.statefilepath                                   ,
       "env().make_ensemble_average()"                                       ,
       "env().arrival_plot(env().ensemble_average, only_contours=True)"      ,
+      #kappa_plot(g.ensemble_average, 0, with_contours=True, clevels=20, vmax=1); 
       "pl.savefig('%s%s')" % (_.imgpath, _.img1_name)
     ])
  
