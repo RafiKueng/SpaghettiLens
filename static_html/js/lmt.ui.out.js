@@ -56,10 +56,10 @@ function Output() {
 
     var that = LMT.ui.out; //since this is a callback, this is document, not this object
 		that.slides = [];
-		var urls = LMT.modelData.currentSimulationImageURLs;
+		var urls = LMT.simulationData.img;
 		
 		$.each(urls, function(i, val) {
-			var $div = $('<div class="slide"><img class="slide_img" src="'+ val +'" /></div>');
+			var $div = $('<div class="slide"><img class="slide_img" src="'+ val.url +'" /></div>');
 			$div.hide();
 			
 			$div.appendTo(that.$out);

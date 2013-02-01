@@ -18,6 +18,7 @@ var events = {
   // special event on startup
   startUp: function(){
 
+    initGetVars()
     LMT.ui.html.Toolbar.init();
     LMT.ui.html.DisplaySettingsDialog.init();
     LMT.ui.html.Tooltip.init();
@@ -31,7 +32,12 @@ var events = {
     LMT.model.init();
     
     LMT.actionstack = new LMT.objects.ActionStack();
-    LMT.com.getModelData(1);
+    
+    var id = 1;
+    if (LMT.GET.hasOwnProperty("id")){
+      id = parseInt(LMT.GET["id"]);
+    }
+    LMT.com.getModelData(id);
     
     
   },
@@ -151,7 +157,7 @@ events.MoveObject = function(evt, jsTarget, svgTarget, coord){
 
 events.SimulateModel = function(){
   $.event.trigger("UploadModel");
-  $.event.trigger("GetSimulation");
+  setTimeout(function(){$.event.trigger("GetSimulation");},500); //prevent race contidion where get is faster than save: nix gut
   
 }
 
