@@ -127,9 +127,21 @@ and then run on the SERVER
 
 
 
+### get and install glass (currently not open)
+cd /srv/lmt
+svn checkout https://svn.physik.uzh.ch/repos/itp/glass glass
+source python_env/bin/activate
+cd glass
+make
 
+pip install numpy
+apt-get install libfreetype6 libfreetype6-dev libpng12-dev 
+pip install matplotlib
+apt-get install libblas-dev libblas3gf liblapack-dev libatlas-base-dev libatlas-dev
+apt-get install gfortran
+pip install scipy
 
-
+(of just enable external packages for virualenv (delete the no-global...txt file under lib/python..))
 
 
 ##################
