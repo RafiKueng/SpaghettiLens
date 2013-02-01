@@ -162,7 +162,7 @@ LOGGING = {
 
 # Celery Configuration
 
-BROKER_URL = 'amqp://lmt:qwerty@localhost:5672/lmt_vhost'
+BROKER_URL = 'amqp://lmt:password@localhost:5672/lmt_vhost'
 #BROKER_HOST = 'localhost'
 #BROKER_PORT = 5672
 #BROKER_USER = 'lmt'
