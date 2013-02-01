@@ -109,3 +109,18 @@ setup nginx and django
                 proxy_read_timeout 10;
                 proxy_pass http://localhost:8001/;
         }
+
+				
+				
+fix the delivery of static django files
+https://docs.djangoproject.com/en/dev/howto/static-files/
+
+in django settings:
+STATIC_ROOT = '/srv/lmt/backend/static/'
+STATIC_URL = '/static_django/'
+
+and in nginx vhost config:
+location /static_django { alias /srv/lmt/backend/static/; }
+
+and then run on the SERVER
+./manage.py collectstatic
