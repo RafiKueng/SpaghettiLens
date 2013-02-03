@@ -150,9 +150,13 @@ com.GetSimulation = function(){
     
     LMT.simulationData.img = [];
     if (jsonResp.status!="READY"){ //polling
-      if (LMT.com.refreshCounter>30*5) { //if more than 5min waiting time... assume 1 refresh / sec
+      if (LMT.com.refreshCounter>30*5) { //if more than 5min waiting time... assume 0.5 refresh / sec
         alert("server not available");
         LMT.com.refreshCounter = 0;
+        return false;
+      }
+      if (jsonResp.status=="FAILURE") {
+        alert("error with worker: crash");
         return false;
       }
       setTimeout(function(){$.event.trigger("GetSimulation");}, 2000);

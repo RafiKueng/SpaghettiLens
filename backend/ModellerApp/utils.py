@@ -334,11 +334,12 @@ class EvalAndSaveJSON:
       "env().kappa_plot(env().ensemble_average, 0, with_contours=True, clevels=20, vmax=1)",
       "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%2))                    ,
       "pl.close()"                                                          ,
-      "env().kappa_plot(env().ensemble_average, 0, with_contours=True, clevels=20, vmax=1)",
-      "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%3))                    ,
-      "pl.close()"                                                          ,
-
-      
+      #"env().kappa_plot(env().ensemble_average, 0, with_contours=True, clevels=20, vmax=1)",
+      #"pl.savefig('%s%s')" % (_.imgpath, (_.img_name%3))                    ,
+      #"pl.close()"                                                          ,
+      #"env().srcdiff_plot(env().ensemble_average, 0, 0)"                    ,
+      #"pl.savefig('%s%s')" % (_.imgpath, (_.img_name%3))                    ,
+      #"pl.close()"                                                          ,
     ])
  
     
