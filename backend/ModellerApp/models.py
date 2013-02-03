@@ -93,10 +93,10 @@ class ModellingResult(models.Model):
   #administrative fields
   created = models.DateTimeField(auto_now_add=True) #when was it added
   created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)# by who was it added
-  rendered_last = models.DateTimeField(blank=True, null=True) #when was it last rendered
-  last_accessed = models.DateTimeField(blank=True, null=True) #when was it last rendered
+  rendered_last = models.DateTimeField(blank=True, null=True) #when was it last rendered (then was it started?)
+  last_accessed = models.DateTimeField(blank=True, null=True) #when was it last accessed
   is_rendered = models.BooleanField(blank=True) # are the results (images) still available?
-  task = models.ForeignKey(TaskMeta, blank=True, null=True, on_delete=models.SET_NULL)
+  task_id = models.CharField(max_length=100, blank=True)
   local_url = models.CharField(max_length=200, blank=True)
   
   # some data about this simulation that will be kept direcly in the database

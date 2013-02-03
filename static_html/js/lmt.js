@@ -19,6 +19,7 @@ LMT.utils = {};   // some utils
 
 
 LMT.modelData = {};
+LMT.simulationData = {};
 
 LMT.settings = {
   
@@ -42,6 +43,23 @@ LMT.settings = {
 	tmp: 0
 }
 
+/*
+this fnc saves the arguments attached to the url to an $_GET object
+(similar to php)
+*/
+function initGetVars() {
+  var parts = window.location.search.substr(1).split("&");
+  GET = {};
+  GET['nArgs'] = parts.length;
+  GET['array'] = new Array();
+
+  for (var i = 0; i < parts.length; i++) {
+      var temp = parts[i].split("=");
+      GET[decodeURIComponent(temp[0])] = decodeURIComponent(temp[1]);
+      GET['array'].push(parts[i]);
+  }
+  LMT.GET = GET;
+}
 
 
 $(document).ready(function(){
@@ -92,10 +110,10 @@ $(document).ready(function(){
   
   //----------------------  
 
-
+/*
   LMT.modelData.currentSimulationImageURLs = ["img/demo-ch1.png", "img/demo-ch2.png","img/demo-ch3.png","img/demo-ch3.png","img/demo-ch3.png"];
   $.event.trigger("ReceivedSimulation");  
-
+*/
   
 
 	

@@ -165,12 +165,12 @@ Contour.prototype.paint = function() {
 			var dy = this.extpnt.y - this.extpnt.parent.y;
 			
 			var cp_first = {
-				x: this.extpnt.parent.x + 0.8 * dy,
-				y: this.extpnt.parent.y - 0.8 * dx
+				x: this.extpnt.parent.x + 0.3 * dy,
+				y: this.extpnt.parent.y - 0.3 * dx
 			};
 		  var cp_last = {
-				x: this.extpnt.parent.x - 0.8 * dy,
-				y: this.extpnt.parent.y + 0.8 * dx
+				x: this.extpnt.parent.x - 0.3 * dy,
+				y: this.extpnt.parent.y + 0.3 * dx
 			};
 			
 		}

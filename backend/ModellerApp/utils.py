@@ -1,6 +1,7 @@
 from ModellerApp.models import ModellingResult, ModellingSession
 
 import json
+import os
 
 class Point(object):
   def __init__(self, x, y, _type='min', _delay="", child1=None, child2=None):
@@ -35,13 +36,12 @@ class Point(object):
 class EvalAndSaveJSON:
   
   def __init__(self, user_obj, data_obj, jsonStr, is_final, **kwargs):
+
     #print "init easj"
     #self.username = "anonymous"
-    self.logfilename = "bla.log"
     self.hubbletime = 13.7
-    self.lensidentifier = ""
-    self.z_lens = 1.00
-    self.pixrad = 3
+    self.z_lens = 0.50
+    self.pixrad = 5
     self.steep_min = 0
     self.steep_max = "None"
     self.smooth_val = 2
@@ -51,14 +51,7 @@ class EvalAndSaveJSON:
     self.maprad = 0 #1.9637 #set 0 to turn off
     self.shear = 0.01
     self.z_src = 1.00
-    self.n_models = 1000
-
-    self.statefilepath = "../../tmp/bla.state"
-    self.imgpath = "../htdocs/img/"
-    self.img1_name = "image1.png"
-    
-    self.cfg_path = ""
-    self.cfg_file = "blabla.gls"
+    self.n_models = 200
     
 
     #self.points = [Pnt(2,3), Pnt(2,1), Pnt(5,2)]  
@@ -80,10 +73,9 @@ class EvalAndSaveJSON:
     # lets got to work
     self.evalModelString()
     self.orderPoints()
-    self.createConfigFile()
     self.createModellingResult()
-    
-    
+    self.createConfigFile()    
+        
     
   def evalModelString(self):
     #print "eval easj"
@@ -182,6 +174,16 @@ class EvalAndSaveJSON:
   def createConfigFile(self):
     #print "create easj"
 
+
+    self.logfilename = "../tmp_media/" + str(self.result_id) + "/log.log"
+    self.lensidentifier = str(self.result_id) + "__" + str(self.basic_data_obj.name) + "__" + str(self.basic_data_obj.catalog.name)
+    self.statefilepath = "../tmp_media/" + str(self.result_id) + "/state.state"
+    self.imgpath = "../tmp_media/" + str(self.result_id) + "/"
+    self.img_name = "img%i.png"
+    
+    self.cfg_path = "../tmp_media/" + str(self.result_id) + "/"
+    self.cfg_file = "cfg.gls"
+
     _ = self
     
     gls = [
@@ -244,11 +246,26 @@ class EvalAndSaveJSON:
       "savestate('%s')" % _.statefilepath                                   ,
       "env().make_ensemble_average()"                                       ,
       "env().arrival_plot(env().ensemble_average, only_contours=True)"      ,
-      "pl.savefig('%s%s')" % (_.imgpath, _.img1_name)
+      "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%1))                    ,
+      "pl.close()"                                                          ,
+      "env().kappa_plot(env().ensemble_average, 0, with_contours=True, clevels=20, vmax=1)",
+      "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%2))                    ,
+      "pl.close()"                                                          ,
+      "env().kappa_plot(env().ensemble_average, 0, with_contours=True, clevels=20, vmax=1)",
+      "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%3))                    ,
+      "pl.close()"                                                          ,
+
+      
     ])
  
     
     _.gls = '\n'.join(gls)
+    
+    print "saving config"
+    
+    if not os.path.exists(_.cfg_path):
+      print "create path"
+      os.makedirs(_.cfg_path)
     
     f = open(_.cfg_path + _.cfg_file, 'w')
     f.write(_.gls)
@@ -295,7 +312,7 @@ class EvalAndSaveJSON:
             created        = mr.created,
             result         = mr)
     ms.save()
-    print "created ms"
+    print "created ms with id:" + `ms.id` + " " + str(ms.id)
     
     self.result = ms
     self.result_id = ms.id

@@ -3,11 +3,13 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 
+from celery.result import AsyncResult
 
 #from django.utils import date
 #from datetime import datetime
 
 from lmt import tasks
+from datetime import datetime
 
 #import simplejson as json
 
@@ -15,7 +17,10 @@ from ModellerApp.models import BasicLensData, ModellingResult
 from ModellerApp.utils import EvalAndSaveJSON
 from django.contrib.auth.models import User
 
+from lmt.tasks import calculateModel
+
 import json
+import os
 
 
 @csrf_exempt
@@ -118,24 +123,64 @@ def getSimulationJSON(request, result_id):
     raise
   print res.__dict__
   
-  if res.is_rendered:
+  imgExists = os.path.exists("../tmp_media/"+str(result_id)+"/img1.png")
+  
+  if res.is_rendered: #and imgExists: #nginx will catch this case for images, but not for the json objects..
     #deliver images
-    pass
-  elif hasattr(res.task, id):
-    #check status of task
-    #if still running, return status
-    #if finished:
-    #delete task
-    #set res.is_rendered = True
-    #return image links
-    pass
+    # check imgExists: because a clean up prog could have deleted the files in the mean time and forgot to set the right flags in the db.. evil prog...
+    data = json.dumps({"status":"READY",
+                         "cached": True,
+                         "result_id":result_id,
+                         "n_img": 3,
+                         "img1url": "/result/"+str(result_id)+"/img1.png",
+                         "img1desc": "Contour Lines",
+                         "img1url": "/result/"+str(result_id)+"/img1.png",
+                         "img1desc": "Contour Lines",
+                         "img1url": "/result/"+str(result_id)+"/img1.png",
+                         "img1desc": "Contour Lines",
+                         "img1url": "/result/"+str(result_id)+"/img1.png",
+                         "img1desc": "Contour Lines"
+                         })
+    res.last_accessed = datetime.now()
+    res.save()
+
+  elif not isinstance(res.task_id, type(None)) and len(res.task_id) > 2:
+    print "task is started already"
+
+    task = AsyncResult(res.task_id)
+    print "status: ", task.state
+    
+    if task.state == "SUCCESS":
+      res.task_id = "";
+      res.is_rendered = True;
+      res.last_accessed = datetime.now()
+      res.save()
+      
+      data = json.dumps({"status":"READY",
+                         "result_id":result_id,
+                         "n_img": 1,
+                         "img1url": "/result/"+str(result_id)+"/img1.png",
+                         "img1desc": "Contour Lines"
+                         })
+    else:
+      data = json.dumps({"status":"PENDING", "result_id":result_id})
+    
   else:
+    print "starting new task"
+    print result_id
+    print type(result_id)
+    task = calculateModel.delay(result_id)
+    res.is_rendered = False
+    res.task_id = task.task_id
+    res.rendered_last = datetime.now();
+    res.save()
     #start the new task, retrun status information
+    data = json.dumps({"status":"STARTED", "result_id":result_id})
     pass
   
   
 
-  data = json.dumps({"status":"OK", "result_id":""})
+
   response = HttpResponse(data, content_type="application/json")
   
   response['Access-Control-Allow-Origin'] = "*"
@@ -156,7 +201,7 @@ def getSimulationFiles(request, result_id, filename):
   #  if no answer till then, redirect so same url and start again
   
   
-  data = json.dumps({"status":"OK", "result_id":""})
+  data = json.dumps({"status":result_id, "result_id":filename})
   response = HttpResponse(data, content_type="application/json")
   
   response['Access-Control-Allow-Origin'] = "*"

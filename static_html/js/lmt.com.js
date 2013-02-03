@@ -7,11 +7,13 @@
 
 
 var com = {
-  serverUrl: "http://localhost:8000",
+  //serverUrl: "http://localhost:8000",
+  serverUrl: "", //in production setup those are locally
   
   getModelDataUrl: "/get_modeldata",
-  saveDataUrl: "/save_model/"
-  
+  saveDataUrl: "/save_model/",
+  resultUrl: "/result/",
+  refreshCounter: 0,
 };
 
 
@@ -114,6 +116,7 @@ com.UploadModel = function() {
 
   var success = function(jsonResp, statusTxt, XHRRespObj) {
     log.write("success1: <br/>result_id:" + jsonResp.result_id);
+    LMT.simulationData.resultId = jsonResp.result_id;
   };
   
   var fail = function(a, b, c) {
@@ -139,9 +142,56 @@ com.UploadModel = function() {
 
 
 
-
+/*
+ * can be called after saving a result
+ * will return a json obj with the urls to the images
+ * that can be gotten with long pulling later
+ */
 com.GetSimulation = function(){
-  log.append("get sim");
+  var success = function(jsonResp, statusTxt, XHRRespObj) {
+    log.write("success1: " + jsonResp.status + " " + jsonResp.result_id);
+    
+    LMT.simulationData.img = [];
+    if (jsonResp.status!="READY"){ //polling
+      if (LMT.com.refreshCounter>30*5) { //if more than 5min waiting time... assume 1 refresh / sec
+        alert("server not available");
+        LMT.com.refreshCounter = 0;
+        return false;
+      }
+      setTimeout(function(){$.event.trigger("GetSimulation");}, 2000);
+      LMT.com.refreshCounter += 1;
+      return;
+    }
+    
+    var n = parseInt(jsonResp.n_img);
+    for (var i = 1; i<=n; i++){
+      imgdata = {
+        desc: jsonResp['img'+i+'desc'],
+        url: jsonResp['img'+i+'url'], 
+      }
+      LMT.simulationData.img.push(imgdata);
+    }
+    $.event.trigger("ReceivedSimulation");
+  };
+  
+  var fail = function(a, b, c) {
+    log.write("fail: <br/>" + a + "<br/>" + b + "<br/>" + c + "<hr>" + a.responseText);
+  };
+
+
+  $.ajax(LMT.com.serverUrl + LMT.com.resultUrl + LMT.simulationData.resultId + ".json", {
+      type:"GET",
+      //contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
+      //data: {
+      //  modelid: LMT.modelData.id,
+      //  string: LMT.actionstack.current.stateStr,
+      //  isFinal: false //isFinal
+      //}, 
+      //dataType:"json", //data type expected from server
+      success:success,
+      error: fail
+      //mimeType: "text/plain"
+  });
 }
 
 
