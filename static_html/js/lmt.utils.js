@@ -84,3 +84,20 @@ LMT.utils.toggleClassSVG = function($sel, classname) {
 		this.classList.toggle(classname)});
 }
 
+
+
+
+/**
+ * gets a simple hashcode from any string
+ * used for hashing modelstrings and check for changes 
+ */
+String.prototype.hashCode = function(){
+    var hash = 0, i, char;
+    if (this.length == 0) return hash;
+    for (i = 0; i < this.length; i++) {
+        char = this.charCodeAt(i);
+        hash = ((hash<<5)-hash)+char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+};

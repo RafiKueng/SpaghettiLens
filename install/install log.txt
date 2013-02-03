@@ -147,6 +147,9 @@ pip install scipy
 ##################
 starting everything up
 
+django collect static files
+  manage.pz collectstatic
+
 nginx: sutomatic
 	/etc/init.d/nginx {start | stop | reload}
 	

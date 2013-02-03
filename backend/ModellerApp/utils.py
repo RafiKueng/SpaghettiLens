@@ -4,12 +4,13 @@ import json
 import os
 
 class Point(object):
-  def __init__(self, x, y, _type='min', _delay="", child1=None, child2=None):
+  def __init__(self, x, y, _type='min', _delay="", child1=None, child2=None, wasType=""):
     self.x = x
     self.y = y
     self.child1 = child1
     self.child2 = child2
     self.type = _type
+    self.wasType = wasType
     self.delay = _delay #either float in days, or empty string for None (messured)
     self.distParent2 = -1 #init to no parent, if it has one, the parent will change this setting
     
@@ -20,11 +21,16 @@ class Point(object):
         dy = child.y - self.y
         child.distParent2 = dx*dx+dy*dy
         
+  def getDist2To(self, other):
+    dx = other.x - self.x
+    dy = other.y - self.y
+    return dx*dx+dy*dy
+    
   # calculates the relative coordinates, returns a SimplePoint
   def getRelCoordTo(self, pnt):
     dx = self.x - pnt.x
     dy = self.y - pnt.y
-    print " "*30, "in new point: ", self.type
+    #print " "*30, "in new point: ", self.type, self.wasType
     return Point(x=dx, y=dy, _type=self.type);
   
   def __repr__(self):
@@ -41,7 +47,7 @@ class EvalAndSaveJSON:
     #self.username = "anonymous"
     self.hubbletime = 13.7
     self.z_lens = 0.50
-    self.pixrad = 3
+    self.pixrad = 5
     self.steep_min = 0
     self.steep_max = "None"
     self.smooth_val = 2
@@ -51,7 +57,7 @@ class EvalAndSaveJSON:
     self.maprad = 0 #1.9637 #set 0 to turn off
     self.shear = 0.01
     self.z_src = 1.00
-    self.n_models = 1000
+    self.n_models = 200
     
 
     #self.points = [Pnt(2,3), Pnt(2,1), Pnt(5,2)]  
@@ -71,10 +77,15 @@ class EvalAndSaveJSON:
     
     
     # lets got to work
+    print "EAS: eval"
     self.evalModelString()
-    self.orderPoints()
+    print "EAS: oder"
+    self.orderPoints2()
+    print "EAS: create mr"
     self.createModellingResult()
+    print "EAS: create cfg"
     self.createConfigFile()    
+    print "EAS: done"
         
     
   def evalModelString(self):
@@ -84,7 +95,7 @@ class EvalAndSaveJSON:
       #print "in ObjHook"
       if '__type' in dct:
         if dct['__type'] == "extpnt":
-          return Point(x=dct['x']/100., y=dct['y']/100., _type=dct['type'], child1=dct['child1'], child2=dct['child2'])
+          return Point(x=dct['x']/100., y=dct['y']/100., _type=dct['type'], child1=dct['child1'], child2=dct['child2'], wasType=dct['wasType'])
         if dct['__type'] == "contour":
           return None
         if dct['__type'] == "cpnt":
@@ -98,6 +109,72 @@ class EvalAndSaveJSON:
     self.jsonObj = json.loads(self.jsonStr, object_hook=objHook)
     #return self.jsonObj
   
+  
+  
+  
+  def orderPoints2(self):
+    # find origin first
+    pnt = self.jsonObj['Sources'][0] #TODO: here is hardcoded that only the fors soucre is supported
+    
+    try:
+      origin = pnt
+      for child in [pnt.child1, pnt.child2]:
+        if child.type == "max" or child.wasType == "max":
+          origin = child
+          break
+      
+    except: # this source doen't have any children
+      return [pnt]
+
+    
+    
+    def recWalker(pnt, origin, depth=0, level=0):
+      res = []
+      a = " "*(depth*3)
+      print a, "rec:", level, pnt.x, pnt.y, pnt.type, pnt.wasType
+      
+      try:
+        ch1type = pnt.child1.wasType if pnt.child1.type == "sad" else pnt.child1.type
+        ch2type = pnt.child2.wasType if pnt.child2.type == "sad" else pnt.child2.type
+        
+        if (ch1type == ch2type):
+          d1 = (1.0 if ch1type == "max" else -1.0)
+          d2 = d1
+          v = pnt.getDist2To(pnt.child1) / pnt.getDist2To(pnt.child2)
+          if v >= 1:
+            d2 /= v
+          else:
+            d1 *= v
+        else:
+          d1 = (1.0 if ch1type == "max" else -1.0)
+          d2 = d1 * (-1.0)
+        
+        d1 /= depth
+        d2 /= depth
+        print a, "next walker: ch1:"
+        res.extend(recWalker(pnt.child1, origin, depth=depth+1, level = level+d1))
+        print a, "next walker: ch2:"
+        res.extend(recWalker(pnt.child2, origin, depth=depth+1, level = level+d2))
+      except:
+        print " "*(depth*3), "no children"
+        pass
+      print a, "get new point:"
+      npnt = pnt.getRelCoordTo(origin)
+      npnt.level = level
+      npnt.depth = depth
+      print a, "-> ", npnt.x, npnt.y, npnt.type, npnt.level
+      res.append(npnt)
+      return res
+      
+      
+    res = recWalker(pnt, origin, depth=1, level=0)
+    res.sort(key=lambda pnt: pnt.level)
+    print "sorted"
+    for r in res:
+      print r, "-> x:%.2f, y:%.2f, type:%s, level:%.2f, depth:%i" % (r.x, r.y, r.type, r.level, r.depth)
+    self.points = res
+    
+    
   
   
   def orderPoints(self):
@@ -162,7 +239,7 @@ class EvalAndSaveJSON:
         
       return res
     
-    #start the recursiveWalker
+    print "start the recursiveWalker"
     pnt = self.jsonObj['Sources'][0] #TODO: here is hardcoded that only the fors soucre is supported
     res = recursiveWalker(pnt, None)
     self.points = res
@@ -172,19 +249,25 @@ class EvalAndSaveJSON:
   
   
   def createConfigFile(self):
-    #print "create easj"
-
+    #print "in cfg: start"
+    #print self.result_id
 
     self.logfilename = "../tmp_media/" + str(self.result_id) + "/log.log"
-    self.lensidentifier = str(self.result_id) + "__" + str(self.basic_data_obj.name) + "__" + str(self.basic_data_obj.catalog)
+    try:
+      cat_name = "__" + str(self.basic_data_obj.catalog.name)
+    except:
+      cat_name = ""
+    self.lensidentifier = str(self.result_id) + "__" + str(self.basic_data_obj.name) + cat_name
     self.statefilepath = "../tmp_media/" + str(self.result_id) + "/state.state"
     self.imgpath = "../tmp_media/" + str(self.result_id) + "/"
-    self.img1_name = "img1.png"
+    self.img_name = "img%i.png"
     
     self.cfg_path = "../tmp_media/" + str(self.result_id) + "/"
     self.cfg_file = "cfg.gls"
 
     _ = self
+    
+    #print "start gls"
     
     gls = [
       "import matplotlib as mpl"                                            ,
@@ -226,7 +309,7 @@ class EvalAndSaveJSON:
     gls.append(
       "source(%.2f," % _.z_src
     )
-    
+    #print "adding points"
     for i in range(len(_.points)):
       if i>0:
         if _.points[i].delay != "":
@@ -246,13 +329,23 @@ class EvalAndSaveJSON:
       "savestate('%s')" % _.statefilepath                                   ,
       "env().make_ensemble_average()"                                       ,
       "env().arrival_plot(env().ensemble_average, only_contours=True)"      ,
-      "pl.savefig('%s%s')" % (_.imgpath, _.img1_name)
+      "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%1))                    ,
+      "pl.close()"                                                          ,
+      "env().kappa_plot(env().ensemble_average, 0, with_contours=True, clevels=20, vmax=1)",
+      "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%2))                    ,
+      "pl.close()"                                                          ,
+      #"env().kappa_plot(env().ensemble_average, 0, with_contours=True, clevels=20, vmax=1)",
+      #"pl.savefig('%s%s')" % (_.imgpath, (_.img_name%3))                    ,
+      #"pl.close()"                                                          ,
+      #"env().srcdiff_plot(env().ensemble_average, 0, 0)"                    ,
+      #"pl.savefig('%s%s')" % (_.imgpath, (_.img_name%3))                    ,
+      #"pl.close()"                                                          ,
     ])
  
     
     _.gls = '\n'.join(gls)
     
-    print "saving config"
+    #print "saving config"
     
     if not os.path.exists(_.cfg_path):
       print "create path"

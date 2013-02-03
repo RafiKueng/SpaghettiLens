@@ -57,6 +57,8 @@ function Output() {
     var that = LMT.ui.out; //since this is a callback, this is document, not this object
 		that.slides = [];
 		var urls = LMT.simulationData.img;
+		that.$out.empty(); //remove previous results
+		that.$btns.empty(); //remove the number navigation buttons from previous results
 		
 		$.each(urls, function(i, val) {
 			var $div = $('<div class="slide"><img class="slide_img" src="'+ val.url +'" /></div>');
