@@ -119,6 +119,21 @@ def loadModel(request):
 def getSimulationJSON(request, result_id):
   print "in getSimulationJSON"
   
+  def returnDataIfReady():
+    return json.dumps({"status":"READY",
+                         "cached": True,
+                         "result_id":result_id,
+                         "n_img": 2,
+                         "img1url": "/result/"+str(result_id)+"/img1.png",
+                         "img1desc": "Contour Lines",
+                         "img2url": "/result/"+str(result_id)+"/img2.png",
+                         "img2desc": "Contour Lines",
+#                         "img3url": "/result/"+str(result_id)+"/img3.png",
+#                         "img3desc": "Contour Lines",
+#                         "img4url": "/result/"+str(result_id)+"/img4.png",
+#                         "img4desc": "Contour Lines"
+                         })
+  
   try:
     res = ModellingResult.objects.get(id=result_id)
   except:
@@ -130,19 +145,7 @@ def getSimulationJSON(request, result_id):
   if res.is_rendered: #and imgExists: #nginx will catch this case for images, but not for the json objects..
     #deliver images
     # check imgExists: because a clean up prog could have deleted the files in the mean time and forgot to set the right flags in the db.. evil prog...
-    data = json.dumps({"status":"READY",
-                         "cached": True,
-                         "result_id":result_id,
-                         "n_img": 3,
-                         "img1url": "/result/"+str(result_id)+"/img1.png",
-                         "img1desc": "Contour Lines",
-                         "img1url": "/result/"+str(result_id)+"/img1.png",
-                         "img1desc": "Contour Lines",
-                         "img1url": "/result/"+str(result_id)+"/img1.png",
-                         "img1desc": "Contour Lines",
-                         "img1url": "/result/"+str(result_id)+"/img1.png",
-                         "img1desc": "Contour Lines"
-                         })
+    data = returnDataIfReady()
     res.last_accessed = datetime.now()
     res.save()
 
@@ -158,12 +161,10 @@ def getSimulationJSON(request, result_id):
       res.last_accessed = datetime.now()
       res.save()
       
-      data = json.dumps({"status":"READY",
-                         "result_id":result_id,
-                         "n_img": 1,
-                         "img1url": "/result/"+str(result_id)+"/img1.png",
-                         "img1desc": "Contour Lines"
-                         })
+      data = returnDataIfReady()
+    elif task.state == "FAILURE":
+      data = json.dumps({"status":"FAILURE", "result_id":result_id})
+      
     else:
       data = json.dumps({"status":"PENDING", "result_id":result_id})
     

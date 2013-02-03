@@ -78,12 +78,12 @@ com.getModelData = function(model_id) {
   };
   
   var fail = function(resp, status_text, code) {
-    if (resp.status == 404) {}
-    if (resp.responseText == "this model is not available") {}
+    if (resp.status == 404) {alert("server configuration error: can't get model data from url: "+LMT.com.getModelDataUrl);}
+    if (resp.responseText == "this model is not available") {alert("you asked for a model that's not on the server");}
+    if (status_text == "error") {alert("server is down, please try later");}
     
     log.write("fail: <br/>" + resp + "<br/>" + status_text + "<br/>" + code);
   };
-
 
   $.ajax(LMT.com.serverUrl + LMT.com.getModelDataUrl+'/'+model_id, {
       type:"POST",
@@ -114,6 +114,8 @@ com.UploadModel = function() {
   var success = function(jsonResp, statusTxt, XHRRespObj) {
     log.write("success1: <br/>result_id:" + jsonResp.result_id);
     LMT.simulationData.resultId = jsonResp.result_id;
+    LMT.simulationData.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
+    $.event.trigger("UploadModelComplete")
   };
   
   var fail = function(a, b, c) {
@@ -121,6 +123,11 @@ com.UploadModel = function() {
   };
 
 
+  if (LMT.model.Sources.length==0){
+    alert("Please create a model first before uploading");
+    return false;
+  }
+  
   $.ajax(LMT.com.serverUrl + LMT.com.saveDataUrl, {
       type:"POST",
       contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
@@ -150,15 +157,16 @@ com.GetSimulation = function(){
     
     LMT.simulationData.img = [];
     if (jsonResp.status!="READY"){ //polling
+      if (jsonResp.status=="FAILURE") { // did the worker crash?
+        alert("error with worker: crash");
+        return false;
+      }
       if (LMT.com.refreshCounter>30*5) { //if more than 5min waiting time... assume 0.5 refresh / sec
         alert("server not available");
         LMT.com.refreshCounter = 0;
         return false;
       }
-      if (jsonResp.status=="FAILURE") {
-        alert("error with worker: crash");
-        return false;
-      }
+
       setTimeout(function(){$.event.trigger("GetSimulation");}, 2000);
       LMT.com.refreshCounter += 1;
       return;

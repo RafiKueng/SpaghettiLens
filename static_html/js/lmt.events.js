@@ -157,8 +157,7 @@ events.MoveObject = function(evt, jsTarget, svgTarget, coord){
 
 events.SimulateModel = function(){
   $.event.trigger("UploadModel");
-  setTimeout(function(){$.event.trigger("GetSimulation");},500); //prevent race contidion where get is faster than save: nix gut
-  
+  $(document).one('UploadModelComplete', function(){$.event.trigger("GetSimulation");});
 }
 
 
