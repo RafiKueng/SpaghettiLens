@@ -265,6 +265,16 @@ class EvalAndSaveJSON:
     self.cfg_path = "../tmp_media/" + str(self.result_id) + "/"
     self.cfg_file = "cfg.gls"
 
+
+    self.logfilename = "../tmp_media/" + str(self.result_id) + "/log.log"
+    self.lensidentifier = str(self.result_id) + "__" + str(self.basic_data_obj.name) + "__" + str(self.basic_data_obj.catalog.name)
+    self.statefilepath = "../tmp_media/" + str(self.result_id) + "/state.state"
+    self.imgpath = "../tmp_media/" + str(self.result_id) + "/"
+    self.img_name = "img%i.png"
+    
+    self.cfg_path = "../tmp_media/" + str(self.result_id) + "/"
+    self.cfg_file = "cfg.gls"
+
     _ = self
     
     #print "start gls"
@@ -334,9 +344,6 @@ class EvalAndSaveJSON:
       "env().kappa_plot(env().ensemble_average, 0, with_contours=True, clevels=20, vmax=1)",
       "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%2))                    ,
       "pl.close()"                                                          ,
-      #"env().kappa_plot(env().ensemble_average, 0, with_contours=True, clevels=20, vmax=1)",
-      #"pl.savefig('%s%s')" % (_.imgpath, (_.img_name%3))                    ,
-      #"pl.close()"                                                          ,
       #"env().srcdiff_plot(env().ensemble_average, 0, 0)"                    ,
       #"pl.savefig('%s%s')" % (_.imgpath, (_.img_name%3))                    ,
       #"pl.close()"                                                          ,
@@ -345,7 +352,7 @@ class EvalAndSaveJSON:
     
     _.gls = '\n'.join(gls)
     
-    #print "saving config"
+    print "saving config"
     
     if not os.path.exists(_.cfg_path):
       print "create path"
