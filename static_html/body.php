@@ -187,7 +187,7 @@
     
   </div>
 
-  <div id="popup">
+  <div id="popup" class="initHidden">
     <span id="text"></span>
     <br/>
     <span id="link"></span>
@@ -195,7 +195,7 @@
     <span id="hotkey"></span>
   </div>
 
-  <div id="color_dialog" class="dialog" title="ColorPicker">
+  <div id="color_dialog" class="dialog initHidden" title="ColorPicker">
     <div id="csettings_ch0" class="settings_channelcontainer">
       <div style="
       float: left;
@@ -214,7 +214,7 @@
     </div>
   </div>
 
-  <div id="display_dialog" class="dialog" title="Display Settings">
+  <div id="display_dialog" class="dialog initHidden" title="Display Settings">
     <div id="dsettings">
       <input type="checkbox" id="conn_l" />
       <label for="conn_l">ConnectingLines</label>

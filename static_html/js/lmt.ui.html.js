@@ -159,11 +159,17 @@ html.ColorSettingsDialog = {
   			$.event.trigger('ChangedModelData', id);
   		},
   	});
+  	
+  	$parent.removeClass("initHidden");
+  	
   },
   
   show: function(){
     $('#color_dialog').dialog("open");
   }
+  
+  
+  
 }
   	
 	
@@ -203,6 +209,9 @@ html.DisplaySettingsDialog = {
   		log.write('toggle 3');
   		$.event.trigger('RepaintModel');
   	});
+  	
+  	$("#display_dialog").removeClass("initHidden");
+  	
 	},
 	
 	show: function() {

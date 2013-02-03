@@ -7,9 +7,6 @@
 
 
 var com = {
-  //serverUrl: "http://localhost:8000",
-  serverUrl: "", //in production setup those are locally
-  
   getModelDataUrl: "/get_modeldata",
   saveDataUrl: "/save_model/",
   resultUrl: "/result/",
@@ -84,7 +81,7 @@ com.getModelData = function(model_id) {
     if (resp.status == 404) {}
     if (resp.responseText == "this model is not available") {}
     
-    log.write("fail: <br/>" + obj + "<br/>" + b + "<br/>" + c);
+    log.write("fail: <br/>" + resp + "<br/>" + status_text + "<br/>" + code);
   };
 
 

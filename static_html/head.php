@@ -38,6 +38,8 @@ header( "Pragma: no-cache" );
 
   closedir($handle);
 ?>
+  <script type="text/javascript" src="js/lmt.settings.js"></script>
+
   
 <!--
   <link rel="stylesheet" href="demo-ui.css" type="text/css" />

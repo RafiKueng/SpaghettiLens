@@ -78,6 +78,7 @@ def saveModel(request):
       st = r['string']
       isf = r['isFinal'] in ["True", "true"]
     except KeyError:
+      print "KeyError in save model"
       data = json.dumps({"status":"BAD_JSON_DATA","desc":"the saveModel view couldn't access expected attributes in POST information"})
       response = HttpResponseNotFound(data, content_type="application/json")
       response['Access-Control-Allow-Origin'] = "*"
@@ -87,18 +88,19 @@ def saveModel(request):
       m = BasicLensData.objects.get(id=mid)
 
     except BasicLensData.DoesNotExist:
+      print "BLD not found in save model"
       data = json.dumps({"status":"BAD_MODELID_DOES_NOT_EXIST","desc":"the saveModel view couldn't the basic_data_obj you wanted to save a result for"})
       response = HttpResponseNotFound(data, content_type="application/json")
       response['Access-Control-Allow-Origin'] = "*"
       return response
 
     u = User.objects.all()[0]
-    
+    print "evaland save"
     obj = EvalAndSaveJSON(user_obj = u, # request.user,
                           data_obj= m,
                           jsonStr = st,
                           is_final= False)
-    
+    print "after eval and save"
     #r.save()
     data = json.dumps({"status":"OK", "result_id":obj.result_id})
     response = HttpResponse(data, content_type="application/json")
@@ -131,7 +133,13 @@ def getSimulationJSON(request, result_id):
     data = json.dumps({"status":"READY",
                          "cached": True,
                          "result_id":result_id,
-                         "n_img": 1,
+                         "n_img": 3,
+                         "img1url": "/result/"+str(result_id)+"/img1.png",
+                         "img1desc": "Contour Lines",
+                         "img1url": "/result/"+str(result_id)+"/img1.png",
+                         "img1desc": "Contour Lines",
+                         "img1url": "/result/"+str(result_id)+"/img1.png",
+                         "img1desc": "Contour Lines",
                          "img1url": "/result/"+str(result_id)+"/img1.png",
                          "img1desc": "Contour Lines"
                          })

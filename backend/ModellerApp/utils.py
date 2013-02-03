@@ -41,7 +41,7 @@ class EvalAndSaveJSON:
     #self.username = "anonymous"
     self.hubbletime = 13.7
     self.z_lens = 0.50
-    self.pixrad = 6
+    self.pixrad = 5
     self.steep_min = 0
     self.steep_max = "None"
     self.smooth_val = 2
@@ -71,10 +71,15 @@ class EvalAndSaveJSON:
     
     
     # lets got to work
+    print "EAS: eval"
     self.evalModelString()
+    print "EAS: oder"
     self.orderPoints()
+    print "EAS: create mr"
     self.createModellingResult()
+    print "EAS: create cfg"
     self.createConfigFile()    
+    print "EAS: done"
         
     
   def evalModelString(self):
@@ -172,19 +177,25 @@ class EvalAndSaveJSON:
   
   
   def createConfigFile(self):
-    #print "create easj"
-
+    #print "in cfg: start"
+    #print self.result_id
 
     self.logfilename = "../tmp_media/" + str(self.result_id) + "/log.log"
-    self.lensidentifier = str(self.result_id) + "__" + str(self.basic_data_obj.name) + "__" + str(self.basic_data_obj.catalog)
+    try:
+      cat_name = "__" + str(self.basic_data_obj.catalog.name)
+    except:
+      cat_name = ""
+    self.lensidentifier = str(self.result_id) + "__" + str(self.basic_data_obj.name) + cat_name
     self.statefilepath = "../tmp_media/" + str(self.result_id) + "/state.state"
     self.imgpath = "../tmp_media/" + str(self.result_id) + "/"
-    self.img1_name = "img1.png"
+    self.img_name = "img%i.png"
     
     self.cfg_path = "../tmp_media/" + str(self.result_id) + "/"
     self.cfg_file = "cfg.gls"
 
     _ = self
+    
+    #print "start gls"
     
     gls = [
       "import matplotlib as mpl"                                            ,
@@ -226,7 +237,7 @@ class EvalAndSaveJSON:
     gls.append(
       "source(%.2f," % _.z_src
     )
-    
+    #print "adding points"
     for i in range(len(_.points)):
       if i>0:
         if _.points[i].delay != "":
@@ -246,14 +257,22 @@ class EvalAndSaveJSON:
       "savestate('%s')" % _.statefilepath                                   ,
       "env().make_ensemble_average()"                                       ,
       "env().arrival_plot(env().ensemble_average, only_contours=True)"      ,
-      #kappa_plot(g.ensemble_average, 0, with_contours=True, clevels=20, vmax=1); 
-      "pl.savefig('%s%s')" % (_.imgpath, _.img1_name)
+      "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%1))                    ,
+      "pl.close()"                                                          ,
+      "env().kappa_plot(env().ensemble_average, 0, with_contours=True, clevels=20, vmax=1)",
+      "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%2))                    ,
+      "pl.close()"                                                          ,
+      "env().kappa_plot(env().ensemble_average, 0, with_contours=True, clevels=20, vmax=1)",
+      "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%3))                    ,
+      "pl.close()"                                                          ,
+
+      
     ])
  
     
     _.gls = '\n'.join(gls)
     
-    print "saving config"
+    #print "saving config"
     
     if not os.path.exists(_.cfg_path):
       print "create path"
