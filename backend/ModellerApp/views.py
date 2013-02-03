@@ -145,7 +145,9 @@ def getSimulationJSON(request, result_id):
   if res.is_rendered: #and imgExists: #nginx will catch this case for images, but not for the json objects..
     #deliver images
     # check imgExists: because a clean up prog could have deleted the files in the mean time and forgot to set the right flags in the db.. evil prog...
+
     data = returnDataIfReady()
+
     res.last_accessed = datetime.now()
     res.save()
 
@@ -162,6 +164,7 @@ def getSimulationJSON(request, result_id):
       res.save()
       
       data = returnDataIfReady()
+
     elif task.state == "FAILURE":
       data = json.dumps({"status":"FAILURE", "result_id":result_id})
       
