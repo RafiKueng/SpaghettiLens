@@ -41,7 +41,7 @@ class Point(object):
 
 class EvalAndSaveJSON:
   
-  def __init__(self, user_obj, data_obj, jsonStr, is_final, **kwargs):
+  def __init__(self, user_obj, data_obj, jsonStr, is_final, prefs={}):
 
     #print "init easj"
     #self.username = "anonymous"
@@ -63,7 +63,7 @@ class EvalAndSaveJSON:
     #self.points = [Pnt(2,3), Pnt(2,1), Pnt(5,2)]  
 
     #replacce default settings with setttings provided
-    for key, value in kwargs.iteritems():
+    for key, value in prefs.iteritems():
       if hasattr(self, key):
         setattr(self, key, value)
       
@@ -252,27 +252,17 @@ class EvalAndSaveJSON:
     #print "in cfg: start"
     #print self.result_id
 
-    self.logfilename = "../tmp_media/" + str(self.result_id) + "/log.log"
+    self.logfilename = "../tmp_media/%06i/log.txt" % self.result_id
     try:
       cat_name = "__" + str(self.basic_data_obj.catalog.name)
     except:
       cat_name = ""
     self.lensidentifier = str(self.result_id) + "__" + str(self.basic_data_obj.name) + cat_name
-    self.statefilepath = "../tmp_media/" + str(self.result_id) + "/state.state"
-    self.imgpath = "../tmp_media/" + str(self.result_id) + "/"
+    self.statefilepath = "../tmp_media/%06i/state.txt" % self.result_id
+    self.imgpath = "../tmp_media/%06i/" % self.result_id
     self.img_name = "img%i.png"
     
-    self.cfg_path = "../tmp_media/" + str(self.result_id) + "/"
-    self.cfg_file = "cfg.gls"
-
-
-    self.logfilename = "../tmp_media/" + str(self.result_id) + "/log.log"
-    self.lensidentifier = str(self.result_id) + "__" + str(self.basic_data_obj.name) + "__" + str(self.basic_data_obj.catalog.name)
-    self.statefilepath = "../tmp_media/" + str(self.result_id) + "/state.state"
-    self.imgpath = "../tmp_media/" + str(self.result_id) + "/"
-    self.img_name = "img%i.png"
-    
-    self.cfg_path = "../tmp_media/" + str(self.result_id) + "/"
+    self.cfg_path = "../tmp_media/%06i/" % self.result_id
     self.cfg_file = "cfg.gls"
 
     _ = self

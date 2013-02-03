@@ -120,6 +120,13 @@ com.UploadModel = function() {
   
   var fail = function(a, b, c) {
     log.write("fail: <br/>" + a + "<br/>" + b + "<br/>" + c + "<hr>" + a.responseText);
+    var win=window.open('about:blank');
+    with(win.document)
+    {
+      open();
+      write(a.responseText);
+      close();
+    }
   };
 
 
@@ -134,7 +141,8 @@ com.UploadModel = function() {
       data: {
         modelid: LMT.modelData.id,
         string: LMT.actionstack.current.stateStr,
-        isFinal: false //isFinal
+        isFinal: false, //isFinal
+        hubbletime: 14
       }, 
       dataType:"json", //data type expected from server
       success:success,
