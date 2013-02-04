@@ -23,7 +23,7 @@ LMT.simulationData = {};
 
 LMT.settings = {
   
-	mode: 'ruler',  // 'none'for doing nothing; 'image' for images; 'ruler' for adding rulers; 'mass' to add external masses 
+	mode: 'image',  // 'none'for doing nothing; 'image' for images; 'ruler' for adding rulers; 'mass' to add external masses 
 	
 	display: {
 		paintContours: true,
