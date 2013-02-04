@@ -168,11 +168,13 @@ com.GetSimulation = function(){
     if (jsonResp.status!="READY"){ //polling
       if (jsonResp.status=="FAILURE") { // did the worker crash?
         alert("error with worker: crash");
+        $('body').css('cursor', '');
         return false;
       }
       if (LMT.com.refreshCounter>30*5) { //if more than 5min waiting time... assume 0.5 refresh / sec
         alert("server not available");
         LMT.com.refreshCounter = 0;
+        $('body').css('cursor', '');
         return false;
       }
 
@@ -189,6 +191,7 @@ com.GetSimulation = function(){
       }
       LMT.simulationData.img.push(imgdata);
     }
+    $('body').css('cursor', '');
     $.event.trigger("ReceivedSimulation");
   };
   
@@ -210,6 +213,7 @@ com.GetSimulation = function(){
       error: fail
       //mimeType: "text/plain"
   });
+  $('body').css('cursor', 'progress');
 }
 
 
