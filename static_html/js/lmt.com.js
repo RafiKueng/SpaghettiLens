@@ -120,6 +120,13 @@ com.UploadModel = function() {
   
   var fail = function(a, b, c) {
     log.write("fail: <br/>" + a + "<br/>" + b + "<br/>" + c + "<hr>" + a.responseText);
+    var win=window.open('about:blank');
+    with(win.document)
+    {
+      open();
+      write(a.responseText);
+      close();
+    }
   };
 
 
@@ -128,14 +135,16 @@ com.UploadModel = function() {
     return false;
   }
   
+  data = {
+        modelid: LMT.modelData.id,
+        string: LMT.actionstack.current.stateStr,
+        isFinal: false, //isFinal
+    };
+  
   $.ajax(LMT.com.serverUrl + LMT.com.saveDataUrl, {
       type:"POST",
       contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
-      data: {
-        modelid: LMT.modelData.id,
-        string: LMT.actionstack.current.stateStr,
-        isFinal: false //isFinal
-      }, 
+      data: data, 
       dataType:"json", //data type expected from server
       success:success,
       error: fail
@@ -159,11 +168,13 @@ com.GetSimulation = function(){
     if (jsonResp.status!="READY"){ //polling
       if (jsonResp.status=="FAILURE") { // did the worker crash?
         alert("error with worker: crash");
+        $('body').css('cursor', '');
         return false;
       }
       if (LMT.com.refreshCounter>30*5) { //if more than 5min waiting time... assume 0.5 refresh / sec
         alert("server not available");
         LMT.com.refreshCounter = 0;
+        $('body').css('cursor', '');
         return false;
       }
 
@@ -180,6 +191,7 @@ com.GetSimulation = function(){
       }
       LMT.simulationData.img.push(imgdata);
     }
+    $('body').css('cursor', '');
     $.event.trigger("ReceivedSimulation");
   };
   
@@ -201,6 +213,7 @@ com.GetSimulation = function(){
       error: fail
       //mimeType: "text/plain"
   });
+  $('body').css('cursor', 'progress');
 }
 
 

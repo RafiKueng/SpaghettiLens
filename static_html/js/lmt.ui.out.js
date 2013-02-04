@@ -48,6 +48,16 @@ function Output() {
 		$("#btnsetOutNav").buttonset();
 		$("#btnsetOutNav > button").button({ disabled: true });
 		
+		
+    $("#btnOutGlassConfig").button({
+      text: false,
+      disabled: false,
+      icons: {primary: "icon-tasks" },
+    });
+    $("#btnOutGlassConfig").on('click', function(){$.event.trigger('ShowDialogGlassSettings');});
+
+    $("#btnsetOutConfig").buttonset();
+		
 		var tmp = 1;
 	};
 	

@@ -107,7 +107,7 @@ html.ColorSettingsDialog = {
   	
   	
   	//sliders
-  	$('.slider').slider({
+  	$('#color_dialog .slider').slider({
   		max: 1,
   		min: -1,
   		value: 0,
@@ -219,6 +219,76 @@ html.DisplaySettingsDialog = {
 	}
 }
 	
+
+
+html.GlassSettingsDialog = {
+  init: function(){
+    $("#glass_dialog").dialog({
+      autoOpen: false,
+      minWidth: 700,
+      open: function(){}
+    });
+    
+    
+    $("#gset_redshift_slide").slider({
+      range: true,
+      min: 0,
+      max: 2,
+      step: 0.01,
+      values: [0.5, 1],
+      slide: function(evt, ui){
+        $("#gset_redshift_out").val("zLens: " + ui.values[0] + " / zSource: " + ui.values[1]);
+      },
+      stop: function(evt, ui){
+        LMT.model.GlassSettings.z_lens = ui.values[0];
+        LMT.model.GlassSettings.z_src = ui.values[1];
+        
+      }
+    });
+    
+
+    $("#gset_pixrad_slide").slider({
+      range: false,
+      min: 3,
+      max: 8,
+      step: 1,
+      value: 5,
+      slide: function(evt, ui){
+        $("#gset_pixrad_out").val("PixRad: " + ui.value);
+      },
+      stop: function(evt, ui){
+        LMT.model.GlassSettings.pixrad = ui.value;
+      }
+    });
+
+
+    $("#gset_nmodels_slide").slider({
+      range: false,
+      min: 50,
+      max: 2000,
+      step: 50,
+      value: 200,
+      slide: function(evt, ui){
+        $("#gset_nmodels_out").val("nModels: " + ui.value);
+      },
+      stop: function(evt, ui){
+        LMT.model.GlassSettings.n_models = ui.value;
+      }
+    });
+
+    
+    //set defaults
+    $("#gset_redshift_out").val("zLens: " + $("#gset_redshift_slide").slider( "values", 0 ) + " / zSource: " + $("#gset_redshift_slide").slider( "values", 1 ));
+    $("#gset_pixrad_out").val("PixRad: " + $("#gset_pixrad_slide").slider( "value"));
+    $("#gset_nmodels_out").val("nModels: " + $("#gset_nmodels_slide").slider( "value"));
+   
+    $("#glass_dialog").removeClass("initHidden");
+  },
+  
+  show: function() {
+    $('#glass_dialog').dialog("open");
+  }
+}
 
 
 

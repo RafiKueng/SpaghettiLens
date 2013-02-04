@@ -68,15 +68,19 @@ def getModelData(request, model_id):
 def saveModel(request):
   if request.method == "POST":
     
-    print repr(request.POST)
-    print request.user.username
+    #print repr(request.POST)
+    print "username:", request.user.username
     
     r = request.POST
     #print "Got Data: ", int(r['modelid']), r['string'], r['isFinal'] in ["True", "true"]
+    #print r.__dict__
+    
     try:
       mid = int(r['modelid'])
       st = r['string']
       isf = r['isFinal'] in ["True", "true"]
+
+      
     except KeyError:
       print "KeyError in save model"
       data = json.dumps({"status":"BAD_JSON_DATA","desc":"the saveModel view couldn't access expected attributes in POST information"})
@@ -95,14 +99,14 @@ def saveModel(request):
       return response
 
     u = User.objects.all()[0]
-    print "evaland save"
+    print "eval and save"
     obj = EvalAndSaveJSON(user_obj = u, # request.user,
                           data_obj= m,
                           jsonStr = st,
                           is_final= False)
     print "after eval and save"
     #r.save()
-    data = json.dumps({"status":"OK", "result_id":obj.result_id})
+    data = json.dumps({"status":"OK", "result_id": "%06i" % obj.result_id})
     response = HttpResponse(data, content_type="application/json")
       
     response['Access-Control-Allow-Origin'] = "*"
@@ -117,18 +121,19 @@ def loadModel(request):
 
 @csrf_exempt
 def getSimulationJSON(request, result_id):
+  result_id = int(result_id)
   print "in getSimulationJSON"
   
   def returnDataIfReady():
     return json.dumps({"status":"READY",
                          "cached": True,
-                         "result_id":result_id,
+                         "result_id": "%06i" % result_id,
                          "n_img": 2,
-                         "img1url": "/result/"+str(result_id)+"/img1.png",
+                         "img1url": "/result/%06i/img1.png" % result_id,
                          "img1desc": "Contour Lines",
-                         "img2url": "/result/"+str(result_id)+"/img2.png",
+                         "img2url": "/result/%06i/img2.png" % result_id,
                          "img2desc": "Contour Lines",
-#                         "img3url": "/result/"+str(result_id)+"/img3.png",
+#                         "img3url": "/result/%06i/img3.png" % result_id,
 #                         "img3desc": "Contour Lines",
 #                         "img4url": "/result/"+str(result_id)+"/img4.png",
 #                         "img4desc": "Contour Lines"
@@ -138,9 +143,9 @@ def getSimulationJSON(request, result_id):
     res = ModellingResult.objects.get(id=result_id)
   except:
     raise
-  print res.__dict__
+  #print res.__dict__
   
-  imgExists = os.path.exists("../tmp_media/"+str(result_id)+"/img1.png")
+  imgExists = os.path.exists("../tmp_media/%06i/img1.png" % result_id)
   
   if res.is_rendered: #and imgExists: #nginx will catch this case for images, but not for the json objects..
     #deliver images
@@ -166,10 +171,10 @@ def getSimulationJSON(request, result_id):
       data = returnDataIfReady()
 
     elif task.state == "FAILURE":
-      data = json.dumps({"status":"FAILURE", "result_id":result_id})
+      data = json.dumps({"status":"FAILURE", "result_id": "%06i" % result_id})
       
     else:
-      data = json.dumps({"status":"PENDING", "result_id":result_id})
+      data = json.dumps({"status":"PENDING", "result_id": "%06i" % result_id})
     
   else:
     print "starting new task"
@@ -181,7 +186,7 @@ def getSimulationJSON(request, result_id):
     res.rendered_last = datetime.now();
     res.save()
     #start the new task, retrun status information
-    data = json.dumps({"status":"STARTED", "result_id":result_id})
+    data = json.dumps({"status":"STARTED", "result_id": "%06i" % result_id})
     pass
   
   

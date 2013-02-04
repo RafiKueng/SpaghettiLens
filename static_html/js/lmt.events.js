@@ -21,6 +21,7 @@ var events = {
     initGetVars()
     LMT.ui.html.Toolbar.init();
     LMT.ui.html.DisplaySettingsDialog.init();
+    LMT.ui.html.GlassSettingsDialog.init();
     LMT.ui.html.Tooltip.init();
     LMT.ui.html.KeyboardListener.init();
 
@@ -73,6 +74,7 @@ var events = {
 
     $(document).on('ShowDialogColorSettings', LMT.ui.html.ColorSettingsDialog.show);
     $(document).on('ShowDialogDisplaySettings', LMT.ui.html.DisplaySettingsDialog.show);
+    $(document).on('ShowDialogGlassSettings', LMT.ui.html.GlassSettingsDialog.show); //not yet implemented
 
 
     $(document).on('SwitchMode', LMT.ui.svg.SwitchMode);

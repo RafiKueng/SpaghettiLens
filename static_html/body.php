@@ -135,16 +135,25 @@
 
 
         <div id="toolbar2" class="toolbarContainer">
-          <span id="toolbarGrp2" class="toolbar ui-widget-header ui-corner-all"> <span id="btnsetOutNav">
-            <button id="btnOutPrev">
-              Previous
-            </button>
-            <button id="btnOutNext">
-              Next
-            </button> </span>
+          <span id="toolbarGrp2" class="toolbar ui-widget-header ui-corner-all">
+            <span id="btnsetOutNav">
+              <button id="btnOutPrev">
+                Previous
+              </button>
+              <button id="btnOutNext">
+                Next
+              </button>
+            </span>
             <button id="btnOutOverview">
               Overview
-            </button> <span id="btnsetOutNrNav"></span> </span>
+            </button>
+            <span id="btnsetOutNrNav"></span>
+            <span id="btnsetOutConfig">
+              <button id="btnOutGlassConfig">
+                Configure Glass (backend simulation program)
+              </button>
+            </span>
+          </span>
         </div>
 
 
@@ -222,6 +231,25 @@
       <label for="cont_p">ContourPoints</label>
       <input type="checkbox" id="cont_l" />
       <label for="cont_l">ContourLine</label>
+    </div>
+  </div>
+  
+
+  <div id="glass_dialog" class="dialog" title="Glass Configuration">
+    <div>
+      <p style="display: inline">Redshift Lens/Source:</p>
+      <div style="display: block; width: 300px" id="gset_redshift_slide" class="slider"></div>
+      <input type="text" id="gset_redshift_out" style="display: inline, border: 0; color: #f6931f; font-weight: bold;" />
+    </div>
+    <div>
+      <p style="display: inline">PixelRadius:</p>
+      <div style="display: block; width: 300px" id="gset_pixrad_slide" class="slider"></div>
+      <input type="text" id="gset_pixrad_out" style="display: inline, border: 0; color: #f6931f; font-weight: bold;" />
+    </div>
+    <div>
+      <p style="display: inline">nModels:</p>
+      <div style="display: block; width: 300px" id="gset_nmodels_slide" class="slider"></div>
+      <input type="text" id="gset_nmodels_out" style="display: inline, border: 0; color: #f6931f; font-weight: bold;" />
     </div>
   </div>
 

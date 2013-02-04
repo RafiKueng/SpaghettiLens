@@ -148,18 +148,19 @@ pip install scipy
 starting everything up
 
 django collect static files
-  manage.pz collectstatic
+  python manage.py collectstatic
 
-nginx: sutomatic
+nginx: automatic
 	/etc/init.d/nginx {start | stop | reload}
 	
 php5-fpm: automatic
 	/etc/init.d/php5-fpm {start | stop}
 	
 gunicorn: manual
-	cd /srv/lmt/backend/
-	source ../python_env/bin/activate
-	./start_gunicorn.sh
+
+cd /srv/lmt/backend/
+source ../python_env/bin/activate
+./start_gunicorn.sh
 	
 RabbitMQ: automatic
 	rabbitmqctl {start_app | stop | stop_app | reset }
