@@ -24,6 +24,8 @@ function Model() {
 
   this.MinMmaxSwitchAngle = Math.PI / 3.; //limit angle between two children, when the children will switch to different type (min/min to min/max; max/max to min/max)
   
+  this.GlassSettings = {}; //overriding default settings of glass
+  
   //color and channel settings
   /*
   this.brightness = 0.5;

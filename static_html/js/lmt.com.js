@@ -135,15 +135,16 @@ com.UploadModel = function() {
     return false;
   }
   
-  $.ajax(LMT.com.serverUrl + LMT.com.saveDataUrl, {
-      type:"POST",
-      contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
-      data: {
+  data = {
         modelid: LMT.modelData.id,
         string: LMT.actionstack.current.stateStr,
         isFinal: false, //isFinal
-        hubbletime: 14
-      }, 
+    };
+  
+  $.ajax(LMT.com.serverUrl + LMT.com.saveDataUrl, {
+      type:"POST",
+      contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
+      data: data, 
       dataType:"json", //data type expected from server
       success:success,
       error: fail

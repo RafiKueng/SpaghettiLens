@@ -87,6 +87,8 @@ class EvalAndSaveJSON:
     self.createConfigFile()    
     print "EAS: done"
         
+  def __setitem__(self, key, value):
+    self.__dict__[key] = value
     
   def evalModelString(self):
     #print "eval easj"
@@ -107,6 +109,39 @@ class EvalAndSaveJSON:
       return dct
         
     self.jsonObj = json.loads(self.jsonStr, object_hook=objHook)
+    
+    print "converted json str"
+    print self.jsonObj
+    
+    gs = self.jsonObj["GlassSettings"]
+    
+
+    # make sure to check the passed parameters and to cast it to expected types, to prevent script injection
+    glassParameter = {'hubbletime': float,
+                      'z_lens': float,
+                      'pixrad': int,
+                      'steep_min': float,
+                      'steep_max': str,
+                      'smooth_val': int,
+                      'smooth_ic': str,
+                      'loc_grad': int,
+                      'isSym': bool,
+                      'maprad': float,
+                      'shear': float,
+                      'z_src': float,
+                      'n_models': int}
+    
+    for attr, type in glassParameter.iteritems():
+      #print "trying ", attr, ":",  attr in r
+      if attr in gs:
+        if type == bool:
+          value = gs[attr] in ["True", "true"]
+        else:
+          value = type(gs[attr])
+        print "found attr: ", attr, str(type), ":", value, gs[attr] 
+        self[attr] = value
+    
+    
     #return self.jsonObj
   
   

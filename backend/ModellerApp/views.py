@@ -79,32 +79,7 @@ def saveModel(request):
       mid = int(r['modelid'])
       st = r['string']
       isf = r['isFinal'] in ["True", "true"]
-      glassPref = {};
-      
-      # pay save here and cast these parameters to what i expect it to be.. preventing code injection as goog as possible
-      glassParameter = {'hubbletime': float,
-                        'z_lens': float,
-                        'pixrad': int,
-                        'steep_min': float,
-                        'steep_max': str,
-                        'smooth_val': int,
-                        'smooth_ic': str,
-                        'loc_grad': int,
-                        'isSym': bool,
-                        'maprad': float,
-                        'shear': float,
-                        'z_src': float,
-                        'n_models': int}
-      
-      for attr, type in glassParameter.iteritems():
-        #print "trying ", attr, ":",  attr in r
-        if attr in r:
-          if type == bool:
-            value = r[attr] in ["True", "true"]
-          else:
-            value = type(r[attr])
-          print "found attr: ", attr, str(type), ":", value, r[attr] 
-          glassPref[attr] = value
+
       
     except KeyError:
       print "KeyError in save model"
@@ -128,8 +103,7 @@ def saveModel(request):
     obj = EvalAndSaveJSON(user_obj = u, # request.user,
                           data_obj= m,
                           jsonStr = st,
-                          is_final= False,
-                          prefs = glassPref)
+                          is_final= False)
     print "after eval and save"
     #r.save()
     data = json.dumps({"status":"OK", "result_id": "%06i" % obj.result_id})
