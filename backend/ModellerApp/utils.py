@@ -53,7 +53,7 @@ class EvalAndSaveJSON:
     self.smooth_val = 2
     self.smooth_ic = "False"
     self.loc_grad = 45
-    self.isSym = False
+    self.isSym = True
     self.maprad = 0 #1.9637 #set 0 to turn off
     self.shear = 0.01
     self.z_src = 1.00

@@ -8,22 +8,22 @@
 }
 
 .extremalpoint_sad {
-	fill: yellow;
+	fill: #ffff00;
 }
 
 .contourpoint {
-	fill: #555555;
+	fill: #ff00ff;
 }
 
 .connectorline {
-	stroke: #555555;
-	stroke-width:1;
+	stroke: #ff00ff;
+	stroke-width:3;
 }
 
 .contourpath {
-	stroke: #555555;
+	stroke: #ff00ff;
 	fill: none;
-	stroke-width: 1;
+	stroke-width: 3;
 }
 
 
