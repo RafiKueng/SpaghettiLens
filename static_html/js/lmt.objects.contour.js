@@ -152,14 +152,60 @@ Contour.prototype.paint = function() {
 	var n = this.cpoints.length-1;
 	
 	if (this.extpnt.parent.childrenInsideEachOther) {
+    //cosphi = 0.7071; //rot with phi 45 degrees = 1/sqrt(2)
+    //sinphi = 0.7071;
+
+	  if (this.extpnt.getDist2ToParent() > this.extpnt.sibling.getDist2ToParent()){
+      var o = +1.0;
+      var cosphi = 0.7071; //rot with phi 45 degrees = 1/sqrt(2)
+      var sinphi = 0.7071;      
+	  }
+	  else {
+	    var o = +1.0;
+      var cosphi = 0.7071; //rot with phi -45 degrees = 1/sqrt(2)
+      var sinphi = -0.7071;
+	  }
+
+    var dx1 = this.cpoints[0].x - sib_cps[m].x;
+    var dy1 = this.cpoints[0].y - sib_cps[m].y;
+    
+    var dx2 = sib_cps[0].x - this.cpoints[n].x;
+    var dy2 = sib_cps[0].y - this.cpoints[n].y;
+
     var cp_first = {
-      x: this.extpnt.parent.x + 0.2*(sib_cps[0].x - this.cpoints[n].x),
-      y: this.extpnt.parent.y + 0.2*(sib_cps[0].y - this.cpoints[n].y),
+      x: this.extpnt.parent.x + 0.2*( + cosphi*dx1 + sinphi*dy1),
+      y: this.extpnt.parent.y + 0.2*( - sinphi*dx1 + cosphi*dy1),
+      //x:0, y:0,
     };
     var cp_last = {
-      x: this.extpnt.parent.x + 0.2*(-this.cpoints[0].x + sib_cps[m].x),
-      y: this.extpnt.parent.y + 0.2*(-this.cpoints[0].y + sib_cps[m].y),
+      x: this.extpnt.parent.x - 0.2*( + cosphi*dx2 - sinphi*dy2),
+      y: this.extpnt.parent.y - 0.2*( + sinphi*dx2 + cosphi*dy2),
+      //x: 0, y:0,
     };
+
+	  
+	  /*
+	  if (this.extpnt.getDist2ToParent() > this.extpnt.sibling.getDist2ToParent()){
+      var cp_first = {
+        x: this.extpnt.parent.x + 0.2*(this.cpoints[0].y - sib_cps[m].y),
+        y: this.extpnt.parent.y - 0.2*(this.cpoints[0].x - sib_cps[m].x),
+      };
+      var cp_last = {
+        x: this.extpnt.parent.x + 0.2*(sib_cps[0].y - this.cpoints[n].y),
+        y: this.extpnt.parent.y - 0.2*(sib_cps[0].x - this.cpoints[n].x),
+      };
+    }
+    else {
+      var cp_first = {
+        x: this.extpnt.parent.x - 0.2*(this.cpoints[0].y - sib_cps[m].y),
+        y: this.extpnt.parent.y + 0.2*(this.cpoints[0].x - sib_cps[m].x),
+      };
+      var cp_last = {
+        x: this.extpnt.parent.x - 0.2*(sib_cps[0].y - this.cpoints[n].y),
+        y: this.extpnt.parent.y + 0.2*(sib_cps[0].x - this.cpoints[n].x),
+      };
+    }
+    */
 	}
 	else {
     var cp_first = {

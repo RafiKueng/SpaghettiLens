@@ -226,6 +226,12 @@ ExtremalPoint.prototype.getRelCoordTo = function(pnt) {
 }
 
 
+ExtremalPoint.prototype.getDist2ToParent = function(pnt) {
+  return this.dx*this.dx + this.dy*this.dy; 
+}
+
+
+
 /**
  sets the relations ship to other points and updates them to if possible..
  */
