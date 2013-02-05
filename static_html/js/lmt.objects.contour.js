@@ -34,7 +34,7 @@ Contour.prototype.init = function(extpnt) {
 	}
 	else { //if the points are there, but this fn is called, that means they come from json and are not initialiesed
 		for (var i =0; i<this.cpoints.length; ++i){
-			this.cpoints[i].init(this.idnr, this.extpnt);
+			this.cpoints[i].init(this.idnr, this.extpnt, this);
 		}
 	}
 }
