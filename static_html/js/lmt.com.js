@@ -206,7 +206,7 @@ com.GetSimulation = function(){
         $('body').css('cursor', '');
         return false;
       }
-      if (LMT.com.refreshCounter>30*5) { //if more than 5min waiting time... assume 0.5 refresh / sec
+      if (LMT.com.refreshCounter>30*10) { //if more than 10min waiting time... assume 0.5 refresh / sec
         alert("server not available");
         LMT.com.refreshCounter = 0;
         $('body').css('cursor', '');

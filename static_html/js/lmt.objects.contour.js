@@ -152,22 +152,27 @@ Contour.prototype.paint = function() {
 	var n = this.cpoints.length-1;
 	
 	if (this.extpnt.parent.childrenInsideEachOther) {
-    var u = 0;
-    var v = m;
+    var cp_first = {
+      x: this.extpnt.parent.x + 0.2*(sib_cps[0].x - this.cpoints[n].x),
+      y: this.extpnt.parent.y + 0.2*(sib_cps[0].y - this.cpoints[n].y),
+    };
+    var cp_last = {
+      x: this.extpnt.parent.x + 0.2*(-this.cpoints[0].x + sib_cps[m].x),
+      y: this.extpnt.parent.y + 0.2*(-this.cpoints[0].y + sib_cps[m].y),
+    };
 	}
 	else {
-    var u = m;
-    var v = 0;
-	}
+    var cp_first = {
+      x: this.extpnt.parent.x + 0.2*(this.cpoints[0].x - sib_cps[0].x),
+      y: this.extpnt.parent.y + 0.2*(this.cpoints[0].y - sib_cps[0].y),
+    };
+    var cp_last = {
+      x: this.extpnt.parent.x + 0.2*(this.cpoints[n].x - sib_cps[m].x),
+      y: this.extpnt.parent.y + 0.2*(this.cpoints[n].y - sib_cps[m].y),
+    };
+  }
 	
-	var cp_first = {
-	  x: this.extpnt.parent.x + 0.2*(this.cpoints[0].x - sib_cps[v].x),
-    y: this.extpnt.parent.y + 0.2*(this.cpoints[0].y - sib_cps[v].y),
-	};
-	var cp_last = {
-    x: this.extpnt.parent.x + 0.2*(this.cpoints[n].x - sib_cps[u].x),
-    y: this.extpnt.parent.y + 0.2*(this.cpoints[n].y - sib_cps[u].y),
-	};
+
 	
 	
 	pathstr += "C" + cp_first.x + "," + cp_first.y + " ";
