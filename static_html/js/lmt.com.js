@@ -7,11 +7,38 @@
 
 
 var com = {
+  getCataloguesUrl: "/get_initdata",
   getModelDataUrl: "/get_modeldata",
   saveDataUrl: "/save_model/",
   resultUrl: "/result/",
   refreshCounter: 0,
 };
+
+
+
+
+com.getInitData = function(evt) {
+  
+  var success = function(jsonObj, b, c){
+    
+    
+    //LMT.ui.html.SelectModelDialog.onCatalogueLoad(jsonObj);
+    $.event.trigger("GotInitData", jsonObj);
+  }
+  
+  var fail = function(a, b, c){
+    tmp=0;
+  }  
+  
+  $.ajax(LMT.com.serverUrl + LMT.com.getCataloguesUrl + "/", {
+      type:"GET",
+      success: success,
+      error: fail,
+      dataType:"json", //data type expected from server
+  });
+  
+}
+
 
 
 /**
@@ -24,7 +51,7 @@ var com = {
  * can call for a specific model_id or a random model
  * if auth user: you'll get a model you havent already done
  */
-com.getModelData = function(model_id) {
+com.getModelData = function(evt, model_id, catalog_id) {
   
   var success = function(obj, status_text, resp) {
     // obj[0].fields['name']
@@ -78,17 +105,25 @@ com.getModelData = function(model_id) {
   };
   
   var fail = function(resp, status_text, code) {
-    if (resp.status == 404) {alert("server configuration error: can't get model data from url: "+LMT.com.getModelDataUrl);}
-    if (resp.responseText == "this model is not available") {alert("you asked for a model that's not on the server");}
-    if (status_text == "error") {alert("server is down, please try later");}
+    if (resp.responseText == "this model is not available") {
+      alert("you asked for a model that's not on the server");
+      $.event.trigger("ShowSelectModelDataDialog");
+    }
+    else if (resp.status == 404) {
+      alert("server configuration error: can't get model data from url: "+LMT.com.getModelDataUrl);
+    }
+    else if (status_text == "error") {
+      alert("server is down, please try later");
+    }
     
     log.write("fail: <br/>" + resp + "<br/>" + status_text + "<br/>" + code);
   };
 
+
   $.ajax(LMT.com.serverUrl + LMT.com.getModelDataUrl+'/'+model_id, {
       type:"POST",
       contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
-      data: {action: "something"}, 
+      data: {model_id: model_id, catalog_id: catalog_id}, 
       dataType:"json", //data type expected from server
       success:success,
       error: fail

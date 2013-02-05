@@ -3,7 +3,7 @@
 debug = true;
 
 //developper mode (are wo local?)
-local = false;
+local = true;
 
 
 if (local) {

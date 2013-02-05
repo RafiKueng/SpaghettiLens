@@ -2,6 +2,8 @@
 from django.http import HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
+from django.utils import simplejson as sjson
+#import simplejson as sjson
 
 from celery.result import AsyncResult
 
@@ -13,7 +15,7 @@ from datetime import datetime
 
 #import simplejson as json
 
-from ModellerApp.models import BasicLensData, ModellingResult
+from ModellerApp.models import BasicLensData, ModellingResult, Catalog
 from ModellerApp.utils import EvalAndSaveJSON
 from django.contrib.auth.models import User
 
@@ -23,12 +25,44 @@ import json
 import os
 
 
+# this provides the client with a list of the catalogues and lenses
+# available for modelling
+@csrf_exempt
+def getInitData(request):
+  
+  
+  if request.method in ["GET", "POST"]:
+    
+    try:
+      cs = Catalog.objects.values("id", "name", "description")
+      lenses = BasicLensData.objects.values("id", "name", "catalog")
+
+      jdata = sjson.dumps({"catalogues": list(cs), "lenses": list(lenses)})
+      response = HttpResponse(jdata, content_type="application/json")
+      
+    except BasicLensData.DoesNotExist:
+      response = HttpResponseNotFound("internal server error.. can't access teh models and catalogues", content_type="text/plain")
+    
+    response['Access-Control-Allow-Origin'] = "*"      
+    return response
+  
+  elif request.method == "OPTIONS":
+    #print "in options"  
+    response = HttpResponse("")
+    response['Access-Control-Allow-Origin'] = "*"
+    response['Access-Control-Allow-Methods'] = "GET, POST, OPTIONS"
+    response['Access-Control-Allow-Headers'] = "x-requested-with, x-requested-by"
+    response['Access-Control-Max-Age'] = "180"
+    return response
+
+
+
 @csrf_exempt
 def getModelData(request, model_id):
   
   #print "in getModelData"
   
-  if request.method == "POST":
+  if request.method == "POST" or request.method == "GET":
     #print "in post"
     #print "i got: ", str(request.POST)
     
@@ -51,15 +85,11 @@ def getModelData(request, model_id):
     response['Access-Control-Allow-Headers'] = "x-requested-with, x-requested-by"
     response['Access-Control-Max-Age'] = "180"
     return response
-  
-  
-  elif request.method == "GET":
-    print "in get"
-    return HttpResponse("in GET")  
+
   
   else:
-    print "in neither"
-    return HttpResponse("no post request")  
+    print "strange access"
+    return HttpResponse("no post/get/otions request")  
 
 
 

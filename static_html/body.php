@@ -252,6 +252,20 @@
       <input type="text" id="gset_nmodels_out" style="display: inline, border: 0; color: #f6931f; font-weight: bold;" />
     </div>
   </div>
+  
+  <div id="select_model_dialog" class="dialog" title="Select Lenses to Work on..">
+    <p>Either select a whole catalogue to work on</p>
+    <select id="selmod_cat" data-placeholder="Choose a Catalogue" style="width:375px;" class="chzn-select-deselect" tabindex="7">
+      <option value=""></option>
+    </select>
+    <p>or select a particular Lens, by id or name:</p>
+    <select id="selmod_lensid" data-placeholder="ID" style="width:70px;" class="chzn-select-deselect" tabindex="7">
+      <option value=""></option>
+    </select>
+    <select id="selmod_lens" data-placeholder="Name (Catalogue)" style="width:300px;" class="chzn-select-deselect" tabindex="7">
+      <option value=""></option>
+    </select>
+  </div>
 
 </body>
 

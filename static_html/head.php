@@ -13,6 +13,7 @@ header( "Pragma: no-cache" );
   <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/ui-darkness/jquery-ui.css" rel="stylesheet">
 
   <link href="css/jquery.colorpicker.css" rel="stylesheet" type="text/css"/>
+  <link href="css/jquery.chosen.css" rel="stylesheet" />
   <link href="css/font-awesome.css" rel="stylesheet" type="text/css"/>
 
   <link rel="stylesheet" href="css/main.css" type="text/css" />
