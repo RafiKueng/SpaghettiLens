@@ -97,7 +97,7 @@ class EvalAndSaveJSON:
       #print "in ObjHook"
       if '__type' in dct:
         if dct['__type'] == "extpnt":
-          return Point(x=dct['x']/100., y=dct['y']/100., _type=dct['type'], child1=dct['child1'], child2=dct['child2'], wasType=dct['wasType'])
+          return Point(x=dct['x']/100., y=dct['y']/(-100.), _type=dct['type'], child1=dct['child1'], child2=dct['child2'], wasType=dct['wasType'])
         if dct['__type'] == "contour":
           return None
         if dct['__type'] == "cpnt":

@@ -141,7 +141,11 @@ function Output() {
 	};
 	
 	/**
-	 *internal, does really show the image 
+	 *internal, does really show the image
+	 * zindex layers:
+	 * 80 default
+	 * 81 the old image, thats being showed, but replaced with a new one
+	 * 82 the new image that will be faded to
 	 */
 	this.showSlide = function(i){
 		//cancle current timeout of caption
@@ -151,18 +155,21 @@ function Output() {
 
 		if (this.shownImage > -1 && i != this.shownImage) {
 			var $curr = this.slides[this.shownImage];
-			$curr.css({zIndex: 80});
+			$curr.css({zIndex: 81});
 			$curr.addClass('bg');
+			$curr.stop(true, true); //it this obj is still animated, cancle all animations and go immideatly to end state
 		}
 		
 		var $new = this.slides[i];
-		$new.css({zIndex: 81});
-		this.shownImage = i;
+		$new.hide();            //hide the new element in foreground
+		$new.css({zIndex: 82}); //make it top
+		this.shownImage = i; 
 		
-		$new.fadeIn(400, function(){
+		$new.fadeIn(400, function(){ //and fade it in
 			var $elem = $('.slide.bg');
 			$elem.toggleClass('bg');
-			$elem.hide();
+			$elem.css({zIndex: 80});
+			//$elem.hide();
 		});
 		
 		//show the caption 3 secs
