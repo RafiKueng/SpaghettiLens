@@ -16,6 +16,104 @@ html.fire = function(evt){
 
 
 
+html.SelectModelDialog = {
+  
+  init: function() {
+    
+    $('#select_model_dialog').dialog({
+      autoOpen: false,
+      minWidth: 500,
+      minHeight: 500,
+      modal: true,
+      open: function(){},
+      buttons: [{
+        text: "Ok",
+        click: function(evt){
+          tmp1 = $("#selmod_cat").val();
+          tmp2 = $("#selmod_lens").val();
+          if (tmp1=="" && tmp2==""){
+            alert("please choose some lens");
+            return;
+          }
+          else {
+            modelid = parseInt(tmp2);
+            $.event.trigger("GetModelData", model_id = modelid);
+            $('#select_model_dialog').dialog("close");
+          }
+        }},
+        {
+        text: "GetRandomModel",
+        click: function(){
+          
+        }}
+      ]
+        
+   });
+    
+    
+    $("#selmod_cat").chosen({allow_single_deselect:true});
+    $("#selmod_cat").chosen().change(function(){
+      if ($("#selmod_cat").val() != "0" ){
+        $("#selmod_lens").val('0').trigger("liszt:updated");
+        $("#selmod_lensid").val('0').trigger("liszt:updated");
+      }
+    });
+    
+    $("#selmod_lens").chosen({allow_single_deselect:true});
+    $("#selmod_lens").chosen().change(function(){
+      if ($("#selmod_lens").val() != "0" ){
+        $("#selmod_cat").val('0').trigger("liszt:updated");
+        $("#selmod_lensid").val($("#selmod_lens").val()).trigger("liszt:updated");
+      }
+    });
+    
+    $("#selmod_lensid").chosen({allow_single_deselect:true});
+    $("#selmod_lensid").chosen().change(function(){
+      if ($("#selmod_lensid").val() != "0" ){
+        $("#selmod_cat").val('0').trigger("liszt:updated");
+        $("#selmod_lens").val($("#selmod_lensid").val()).trigger("liszt:updated");
+      }
+    });
+        
+    //LMT.com.getInitData(); //this will trigger an update
+  },
+  
+  //event handler
+  show: function(evt){
+    $.event.trigger("GetInitData");
+    $('#select_model_dialog').dialog("open");
+  },
+  
+  onInitData: function(evt, jsonObj) {
+    $parent = $("#selmod_cat")
+    for (var i=0; i<jsonObj.catalogues.length; i++){
+      var cat = jsonObj.catalogues[i];
+      var elem = $('<option value="' + cat.id + '">'
+        + cat.name + ' (' + cat.description + ')</option>');
+      $parent.append(elem);
+    }
+    $parent.trigger("liszt:updated");
+
+    $parent1 = $("#selmod_lens")
+    $parent2 = $("#selmod_lensid")
+    for (var i=0; i<jsonObj.lenses.length; i++){
+      var lens = jsonObj.lenses[i];
+      var cat = jsonObj.catalogues[lens.catalog-1] ? ' (catalogue: '+ jsonObj.catalogues[lens.catalog-1].name + ")": ""
+      var elem1 = $('<option value="' + lens.id + '">' + lens.name +  cat + '</option>');
+      $parent1.append(elem1);
+      var elem2 = $('<option value="' + lens.id + '">' + lens.id + '</option>');
+      $parent2.append(elem2);
+    }
+    $parent1.trigger("liszt:updated");
+    $parent2.trigger("liszt:updated");
+  }
+  
+}
+
+
+
+
+
 html.Toolbar = {
   init: function() {
   

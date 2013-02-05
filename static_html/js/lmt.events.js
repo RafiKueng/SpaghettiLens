@@ -19,27 +19,44 @@ var events = {
   startUp: function(){
 
     initGetVars()
+
+    // first init some objects in the namespace
+    
+    LMT.ui.out = new LMT.ui.output(); //TODO change this not to be an object
+    LMT.ui.out.init();    
+    
+    LMT.model = new LMT.objects.Model();
+    LMT.model.init();
+    
+    LMT.actionstack = new LMT.objects.ActionStack();    
+    
+    
+    // then assign handlers
+    
+    LMT.events.assignHandlers();
+    
+    
+    // then initalise the rest
+    
+    LMT.ui.html.SelectModelDialog.init();
     LMT.ui.html.Toolbar.init();
     LMT.ui.html.DisplaySettingsDialog.init();
     LMT.ui.html.GlassSettingsDialog.init();
     LMT.ui.html.Tooltip.init();
     LMT.ui.html.KeyboardListener.init();
-
+    
     LMT.ui.svg.initCanvas();
-    LMT.ui.out = new LMT.ui.output(); //TODO change this not to be an object
-    LMT.ui.out.init();
-    
-    LMT.model = new LMT.objects.Model();
-    LMT.model.init();
-    
-    LMT.actionstack = new LMT.objects.ActionStack();
-    
-    var id = 1;
+
     if (LMT.GET.hasOwnProperty("id")){
       id = parseInt(LMT.GET["id"]);
+      $.event.trigger("GetModelData", model_id=id);
     }
-    LMT.com.getModelData(id);
+    else {
+      $.event.trigger("ShowSelectModelDataDialog"); //this will trigger the getmodedata on close
+      //LMT.ui.html.SelectModelDialog.show();
+    }
     
+    //LMT.com.getModelData(id);
     
   },
   
@@ -49,6 +66,13 @@ var events = {
     // dummy function
     var fnc = function(){return false;}
     
+    // get the inital data, available lenses and catalogues, if no identifier provided in get string
+    $(document).on('GetInitData', LMT.com.getInitData);
+    $(document).on('GotInitData', LMT.ui.html.SelectModelDialog.onInitData);
+
+    // ask the server for a particular modelid
+    $(document).on('GetModelData', LMT.com.getModelData);    
+    $(document).on('ShowSelectModelDataDialog', LMT.ui.html.SelectModelDialog.show);    
     // the server sent the starting data for the model, like urls to the background image(s) and default color binding
     $(document).on('ReceivedModelData', LMT.ui.html.ColorSettingsDialog.init);
     $(document).on('ReceivedModelData', LMT.ui.svg.bg.init);

@@ -70,7 +70,7 @@ $(document).ready(function(){
 
 
   LMT.events.startUp();
-  LMT.events.assignHandlers();
+
 
 
   

@@ -14,6 +14,8 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    
+    url(r'^get_initdata/', 'ModellerApp.views.getInitData'),
     url(r'^get_modeldata/(?P<model_id>\d+)', 'ModellerApp.views.getModelData'),
     url(r'^save_model/', 'ModellerApp.views.saveModel'),
     url(r'^load_model/', 'ModellerApp.views.loadModel'),
