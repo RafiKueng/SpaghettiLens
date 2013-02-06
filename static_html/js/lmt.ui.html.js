@@ -86,10 +86,12 @@ html.SelectModelDialog = {
   
   onInitData: function(evt, jsonObj) {
     $parent = $("#selmod_cat")
+    var cat = {};
     for (var i=0; i<jsonObj.catalogues.length; i++){
-      var cat = jsonObj.catalogues[i];
-      var elem = $('<option value="' + cat.id + '">'
-        + cat.name + ' (' + cat.description + ')</option>');
+      var id = jsonObj.catalogues[i].id;
+      cat[id] = jsonObj.catalogues[i];
+      var elem = $('<option value="' + id + '">'
+        + cat[id].name + ' (' + cat[id].description + ')</option>');
       $parent.append(elem);
     }
     $parent.trigger("liszt:updated");
@@ -98,8 +100,8 @@ html.SelectModelDialog = {
     $parent2 = $("#selmod_lensid")
     for (var i=0; i<jsonObj.lenses.length; i++){
       var lens = jsonObj.lenses[i];
-      var cat = jsonObj.catalogues[lens.catalog-1] ? ' (catalogue: '+ jsonObj.catalogues[lens.catalog-1].name + ")": ""
-      var elem1 = $('<option value="' + lens.id + '">' + lens.name +  cat + '</option>');
+      var lenscat = cat[lens.catalog] ? ' (catalogue: '+ cat[lens.catalog].name + ")": ""
+      var elem1 = $('<option value="' + lens.id + '">' + lens.name +  lenscat + '</option>');
       $parent1.append(elem1);
       var elem2 = $('<option value="' + lens.id + '">' + lens.id + '</option>');
       $parent2.append(elem2);
