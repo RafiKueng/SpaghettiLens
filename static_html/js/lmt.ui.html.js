@@ -325,7 +325,7 @@ html.GlassSettingsDialog = {
   init: function(){
     $("#glass_dialog").dialog({
       autoOpen: false,
-      minWidth: 700,
+      minWidth: 400,
       open: function(){}
     });
     
