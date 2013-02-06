@@ -55,11 +55,15 @@ Contour.prototype.update = function() {
 		var dp1=this.cpoints[i].d_phi; 
 		var dp2=this.cpoints[i+1].d_phi; 
 
-		if (dp2-dp1 < 0) {
+    /* dont do any ordering of the contour points at all.. moar freedom for the user :)
+		if (dp2-dp1 < 0) {// && dp2-dp1 > -Math.PI){ //&& (i>0 && i<this.cpoints.length-2)) { //i>0: skip reodering if it's the first or the last point (last point indirectly)
+		  if (dp2-dp1 < -Math.PI) {continue;}
+		  if (i==0 || i == this.cpoints.length-2) {continue;}
 			var tmp = this.cpoints[i];
 			this.cpoints[i] = this.cpoints[i+1];
 			this.cpoints[i+1] = tmp;
-		}		
+		}	
+		*/	
 		
 		// check if 2 points close together, then delete one
 		var d = LMT.utils.dist2(this.cpoints[i], this.cpoints[i+1]);
