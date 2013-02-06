@@ -149,7 +149,7 @@ com.UploadModel = function() {
   var success = function(jsonResp, statusTxt, XHRRespObj) {
     log.write("success1: <br/>result_id:" + jsonResp.result_id);
     LMT.simulationData.resultId = jsonResp.result_id;
-    LMT.simulationData.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
+    //LMT.simulationData.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
     $.event.trigger("UploadModelComplete")
   };
   
@@ -170,11 +170,14 @@ com.UploadModel = function() {
     return false;
   }
   
-  data = {
+  var data = {
         modelid: LMT.modelData.id,
-        string: LMT.actionstack.current.stateStr,
+        string: LMT.model.getStateAsString(),
         isFinal: false, //isFinal
     };
+  
+  LMT.simulationData.resultId = -1;
+  LMT.simulationData.resultModelHash = data.string.hashCode();
   
   $.ajax(LMT.com.serverUrl + LMT.com.saveDataUrl, {
       type:"POST",
