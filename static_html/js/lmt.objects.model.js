@@ -232,6 +232,8 @@ Model.getModelFormJSONString = function(str) {
 	
 	// helper fnc to convert the json object to actual object
 	var h_fnc = function(key, val) {
+	  
+	  // typeof == 'object', special case: array
 		if (val instanceof Array) {
 			return val;
 		}
@@ -265,11 +267,21 @@ Model.getModelFormJSONString = function(str) {
 				case "ext_mass":
 				  var r = LMT.objects.ExternalMass.createFromJSONObj(val);
 				  return r;
-				  
-				default:
-					alert("Invalid object in json string..");
 			}
+      switch (key) {
+        case "GlassSettings":
+          return val;
+        default: // prevent injection to client side of unexpected code 
+          alert("Invalid object in json string..");
+          return {};
+        }
 		}
+    else if (val && typeof(val) == "function") {
+      //there should ne a function in here... how did it get injected?
+      alert("theres a function in the json string... please report that with the model you were currently using to the admin of the page")
+      return {};
+    }
+		
 		return val;
 	}
 	// END helper function
