@@ -237,19 +237,16 @@
 
   <div id="glass_dialog" class="dialog" title="Glass Configuration">
     <div>
-      <p style="display: inline">Redshift Lens/Source:</p>
+      <p style="display: inline">Redshifts: </p><p id='gset_redshift_out' style="display: inline"></p>
       <div style="display: block; width: 300px" id="gset_redshift_slide" class="slider"></div>
-      <input type="text" id="gset_redshift_out" style="display: inline, border: 0; color: #f6931f; font-weight: bold;" />
     </div>
     <div>
-      <p style="display: inline">PixelRadius:</p>
+      <p style="display: inline">PixelRadius: </p><p id='gset_pixrad_out' style="display: inline"></p>
       <div style="display: block; width: 300px" id="gset_pixrad_slide" class="slider"></div>
-      <input type="text" id="gset_pixrad_out" style="display: inline, border: 0; color: #f6931f; font-weight: bold;" />
     </div>
     <div>
-      <p style="display: inline">nModels:</p>
+      <p style="display: inline">nModels: </p><p id='gset_nmodels_out' style="display: inline"></p>
       <div style="display: block; width: 300px" id="gset_nmodels_slide" class="slider"></div>
-      <input type="text" id="gset_nmodels_out" style="display: inline, border: 0; color: #f6931f; font-weight: bold;" />
     </div>
   </div>
   

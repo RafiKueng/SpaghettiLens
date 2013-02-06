@@ -337,7 +337,7 @@ html.GlassSettingsDialog = {
       step: 0.01,
       values: [0.5, 1],
       slide: function(evt, ui){
-        $("#gset_redshift_out").val("zLens: " + ui.values[0] + " / zSource: " + ui.values[1]);
+        $("#gset_redshift_out").html("(Lens: " + ui.values[0] + " / Source: " + ui.values[1] + ")");
       },
       stop: function(evt, ui){
         LMT.model.GlassSettings.z_lens = ui.values[0];
@@ -354,7 +354,7 @@ html.GlassSettingsDialog = {
       step: 1,
       value: 5,
       slide: function(evt, ui){
-        $("#gset_pixrad_out").val("PixRad: " + ui.value);
+        $("#gset_pixrad_out").html("("+ui.value+")");
       },
       stop: function(evt, ui){
         LMT.model.GlassSettings.pixrad = ui.value;
@@ -369,7 +369,7 @@ html.GlassSettingsDialog = {
       step: 50,
       value: 200,
       slide: function(evt, ui){
-        $("#gset_nmodels_out").val("nModels: " + ui.value);
+        $("#gset_nmodels_out").html("("+ui.value+")");
       },
       stop: function(evt, ui){
         LMT.model.GlassSettings.n_models = ui.value;
@@ -378,9 +378,9 @@ html.GlassSettingsDialog = {
 
     
     //set defaults
-    $("#gset_redshift_out").val("zLens: " + $("#gset_redshift_slide").slider( "values", 0 ) + " / zSource: " + $("#gset_redshift_slide").slider( "values", 1 ));
-    $("#gset_pixrad_out").val("PixRad: " + $("#gset_pixrad_slide").slider( "value"));
-    $("#gset_nmodels_out").val("nModels: " + $("#gset_nmodels_slide").slider( "value"));
+    $("#gset_redshift_out").html("(Lens: " + $("#gset_redshift_slide").slider( "values", 0 ) + " / Source: " + $("#gset_redshift_slide").slider( "values", 1 ) + ")");
+    $("#gset_pixrad_out").html("(" + $("#gset_pixrad_slide").slider( "value") + ")");
+    $("#gset_nmodels_out").html("(" + $("#gset_nmodels_slide").slider( "value") + ")");
    
     $("#glass_dialog").removeClass("initHidden");
   },
