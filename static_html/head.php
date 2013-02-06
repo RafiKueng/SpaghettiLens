@@ -41,6 +41,8 @@ header( "Pragma: no-cache" );
 ?>
   <script type="text/javascript" src="js/lmt.settings.js"></script>
 
+
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
   
 <!--
   <link rel="stylesheet" href="demo-ui.css" type="text/css" />
