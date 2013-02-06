@@ -86,10 +86,12 @@ html.SelectModelDialog = {
   
   onInitData: function(evt, jsonObj) {
     $parent = $("#selmod_cat")
+    var cat = {};
     for (var i=0; i<jsonObj.catalogues.length; i++){
-      var cat = jsonObj.catalogues[i];
-      var elem = $('<option value="' + cat.id + '">'
-        + cat.name + ' (' + cat.description + ')</option>');
+      var id = jsonObj.catalogues[i].id;
+      cat[id] = jsonObj.catalogues[i];
+      var elem = $('<option value="' + id + '">'
+        + cat[id].name + ' (' + cat[id].description + ')</option>');
       $parent.append(elem);
     }
     $parent.trigger("liszt:updated");
@@ -98,8 +100,8 @@ html.SelectModelDialog = {
     $parent2 = $("#selmod_lensid")
     for (var i=0; i<jsonObj.lenses.length; i++){
       var lens = jsonObj.lenses[i];
-      var cat = jsonObj.catalogues[lens.catalog-1] ? ' (catalogue: '+ jsonObj.catalogues[lens.catalog-1].name + ")": ""
-      var elem1 = $('<option value="' + lens.id + '">' + lens.name +  cat + '</option>');
+      var lenscat = cat[lens.catalog] ? ' (catalogue: '+ cat[lens.catalog].name + ")": ""
+      var elem1 = $('<option value="' + lens.id + '">' + lens.name +  lenscat + '</option>');
       $parent1.append(elem1);
       var elem2 = $('<option value="' + lens.id + '">' + lens.id + '</option>');
       $parent2.append(elem2);
@@ -323,7 +325,7 @@ html.GlassSettingsDialog = {
   init: function(){
     $("#glass_dialog").dialog({
       autoOpen: false,
-      minWidth: 700,
+      minWidth: 400,
       open: function(){}
     });
     
@@ -335,7 +337,7 @@ html.GlassSettingsDialog = {
       step: 0.01,
       values: [0.5, 1],
       slide: function(evt, ui){
-        $("#gset_redshift_out").val("zLens: " + ui.values[0] + " / zSource: " + ui.values[1]);
+        $("#gset_redshift_out").html("(Lens: " + ui.values[0] + " / Source: " + ui.values[1] + ")");
       },
       stop: function(evt, ui){
         LMT.model.GlassSettings.z_lens = ui.values[0];
@@ -352,7 +354,7 @@ html.GlassSettingsDialog = {
       step: 1,
       value: 5,
       slide: function(evt, ui){
-        $("#gset_pixrad_out").val("PixRad: " + ui.value);
+        $("#gset_pixrad_out").html("("+ui.value+")");
       },
       stop: function(evt, ui){
         LMT.model.GlassSettings.pixrad = ui.value;
@@ -367,18 +369,32 @@ html.GlassSettingsDialog = {
       step: 50,
       value: 200,
       slide: function(evt, ui){
-        $("#gset_nmodels_out").val("nModels: " + ui.value);
+        $("#gset_nmodels_out").html("("+ui.value+")");
       },
       stop: function(evt, ui){
         LMT.model.GlassSettings.n_models = ui.value;
       }
     });
+    
+    $("#gset_issymm")
+      .button()
+      .click(function( evt ) {
+        var $btn = $(this);
+        var state = !($btn.attr("checked")? true : false); //get old state, invert it to have new state
+        $btn.attr("checked", state);
+        LMT.model.GlassSettings.isSym = state;
+        log.write(state);
+        $btn.button( "option", "label", state ? "Yes" : "No" );
+      });
 
     
     //set defaults
-    $("#gset_redshift_out").val("zLens: " + $("#gset_redshift_slide").slider( "values", 0 ) + " / zSource: " + $("#gset_redshift_slide").slider( "values", 1 ));
-    $("#gset_pixrad_out").val("PixRad: " + $("#gset_pixrad_slide").slider( "value"));
-    $("#gset_nmodels_out").val("nModels: " + $("#gset_nmodels_slide").slider( "value"));
+    $("#gset_redshift_out").html("(Lens: " + $("#gset_redshift_slide").slider( "values", 0 ) + " / Source: " + $("#gset_redshift_slide").slider( "values", 1 ) + ")");
+    $("#gset_pixrad_out").html("(" + $("#gset_pixrad_slide").slider( "value") + ")");
+    $("#gset_nmodels_out").html("(" + $("#gset_nmodels_slide").slider( "value") + ")");
+   
+    $("#gset_issymm").button("option", "label", "No");
+    
    
     $("#glass_dialog").removeClass("initHidden");
   },
