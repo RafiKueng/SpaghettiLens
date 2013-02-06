@@ -375,12 +375,26 @@ html.GlassSettingsDialog = {
         LMT.model.GlassSettings.n_models = ui.value;
       }
     });
+    
+    $("#gset_issymm")
+      .button()
+      .click(function( evt ) {
+        var $btn = $(this);
+        var state = !($btn.attr("checked")? true : false); //get old state, invert it to have new state
+        $btn.attr("checked", state);
+        LMT.model.GlassSettings.isSym = state;
+        log.write(state);
+        $btn.button( "option", "label", state ? "Yes" : "No" );
+      });
 
     
     //set defaults
     $("#gset_redshift_out").html("(Lens: " + $("#gset_redshift_slide").slider( "values", 0 ) + " / Source: " + $("#gset_redshift_slide").slider( "values", 1 ) + ")");
     $("#gset_pixrad_out").html("(" + $("#gset_pixrad_slide").slider( "value") + ")");
     $("#gset_nmodels_out").html("(" + $("#gset_nmodels_slide").slider( "value") + ")");
+   
+    $("#gset_issymm").button("option", "label", "No");
+    
    
     $("#glass_dialog").removeClass("initHidden");
   },

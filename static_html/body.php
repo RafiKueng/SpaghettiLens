@@ -248,6 +248,10 @@
       <p style="display: inline">nModels: </p><p id='gset_nmodels_out' style="display: inline"></p>
       <div style="display: block; width: 300px" id="gset_nmodels_slide" class="slider"></div>
     </div>
+    <div>
+      <p style="display: inline">is the model symmetrical? </p>
+      <input type="checkbox" id="gset_issymm" /><label for="gset_issymm">true</label>
+    </div>
   </div>
   
   <div id="select_model_dialog" class="dialog" title="Select Lenses to Work on..">
