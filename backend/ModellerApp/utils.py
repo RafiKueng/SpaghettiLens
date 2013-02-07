@@ -135,10 +135,10 @@ class EvalAndSaveJSON:
       #print "trying ", attr, ":",  attr in r
       if attr in gs:
         if type == bool:
-          value = gs[attr] in ["True", "true"]
+          value = gs[attr] in ["True", "true", True, 1]
         else:
           value = type(gs[attr])
-        print "found attr: ", attr, str(type), ":", value, gs[attr] 
+        print "found attr:", attr, str(type), ":", value, gs[attr] 
         self[attr] = value
         
     #self.isSym = True;
