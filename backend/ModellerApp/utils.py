@@ -209,6 +209,10 @@ class EvalAndSaveJSON:
     print "sorted"
     for r in res:
       print r, "-> x:%.2f, y:%.2f, type:%s, level:%.2f, depth:%i" % (r.x, r.y, r.type, r.level, r.depth)
+      
+    # if the last point is a max, take it out
+    if res[-1].type == "max":
+      res = res[:-1]
     self.points = res
     
     
