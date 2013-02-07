@@ -140,6 +140,8 @@ class EvalAndSaveJSON:
           value = type(gs[attr])
         print "found attr: ", attr, str(type), ":", value, gs[attr] 
         self[attr] = value
+        
+    #self.isSym = True;
     
     
     #return self.jsonObj
@@ -369,9 +371,9 @@ class EvalAndSaveJSON:
       "env().kappa_plot(env().ensemble_average, 0, with_contours=True, clevels=20, vmax=1)",
       "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%2))                    ,
       "pl.close()"                                                          ,
-      #"env().srcdiff_plot(env().ensemble_average, 0, 0)"                    ,
-      #"pl.savefig('%s%s')" % (_.imgpath, (_.img_name%3))                    ,
-      #"pl.close()"                                                          ,
+      "env().srcdiff_plot(env().ensemble_average)"                    ,
+      "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%3))                    ,
+      "pl.close()"                                                          ,
     ])
  
     

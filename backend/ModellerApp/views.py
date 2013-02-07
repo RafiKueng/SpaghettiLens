@@ -160,11 +160,11 @@ def getSimulationJSON(request, result_id):
                          "result_id": "%06i" % result_id,
                          "n_img": 2,
                          "img1url": "/result/%06i/img1.png" % result_id,
-                         "img1desc": "Contour Lines",
+                         "img1desc": "Contour Plot",
                          "img2url": "/result/%06i/img2.png" % result_id,
-                         "img2desc": "Contour Lines",
-#                         "img3url": "/result/%06i/img3.png" % result_id,
-#                         "img3desc": "Contour Lines",
+                         "img2desc": "Mass Distribution",
+                         "img3url": "/result/%06i/img3.png" % result_id,
+                         "img3desc": "Arrival Time Plot",
 #                         "img4url": "/result/"+str(result_id)+"/img4.png",
 #                         "img4desc": "Contour Lines"
                          })
