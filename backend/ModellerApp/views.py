@@ -165,8 +165,6 @@ def getSimulationJSON(request, result_id):
                          "img2desc": "Mass Distribution",
                          "img3url": "/result/%06i/img3.png" % result_id,
                          "img3desc": "Arrival Time Plot",
-#                         "img4url": "/result/"+str(result_id)+"/img4.png",
-#                         "img4desc": "Contour Lines"
                          })
   
   try:
