@@ -1,7 +1,7 @@
 LensTools
 =========
 
-Webbased Gravitational Lens Modelling Tool
+A Web-based Gravitational Lens Modelling Tool
 
-Try the alpha version on the developpment server:
+Try the alpha version on the development server:
 http://rk-dev.no-ip.org/lmt.php
