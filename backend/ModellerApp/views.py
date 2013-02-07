@@ -158,7 +158,7 @@ def getSimulationJSON(request, result_id):
     return json.dumps({"status":"READY",
                          "cached": True,
                          "result_id": "%06i" % result_id,
-                         "n_img": 2,
+                         "n_img": 3,
                          "img1url": "/result/%06i/img1.png" % result_id,
                          "img1desc": "Contour Plot",
                          "img2url": "/result/%06i/img2.png" % result_id,
