@@ -119,11 +119,22 @@ com.getModelData = function(evt, model_id, catalog_id) {
     log.write("fail: <br/>" + resp + "<br/>" + status_text + "<br/>" + code);
   };
 
-
+  /*
   $.ajax(LMT.com.serverUrl + LMT.com.getModelDataUrl+'/'+model_id, {
       type:"POST",
       contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
       data: {model_id: model_id, catalog_id: catalog_id}, 
+      dataType:"json", //data type expected from server
+      success:success,
+      error: fail
+      //mimeType: "text/plain"
+  });
+  */
+ 
+  $.ajax(LMT.com.serverUrl + LMT.com.getModelDataUrl+'/', {
+      type:"POST",
+      contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
+      data: {action: 'init', models: model_id, catalog: catalog_id}, 
       dataType:"json", //data type expected from server
       success:success,
       error: fail

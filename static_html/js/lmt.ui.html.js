@@ -22,29 +22,34 @@ html.SelectModelDialog = {
     
     $('#select_model_dialog').dialog({
       autoOpen: false,
-      minWidth: 500,
-      minHeight: 500,
+      minWidth: 550,
+      minHeight: 700,
       modal: true,
       open: function(){},
-      buttons: [{
+      buttons: [
+      {
+        text: "Login and continue previous session",
+        click: function(){
+          alert("not yet implemented, please use the selection again");
+        }
+      },
+      {
         text: "Ok",
         click: function(evt){
-          tmp1 = $("#selmod_cat").val();
-          tmp2 = $("#selmod_lens").val();
-          if (tmp1=="" && tmp2==""){
-            alert("please choose some lens");
+          //tmp1 = $("#selmod_cat").val();
+          //tmp2 = $("#selmod_lens").val();
+          tmp3 = $("#selmod_lens").val();
+          if (tmp3==""){
+            //todo in this case, load all ids
+            alert("please choose at least one lens");
             return;
           }
           else {
-            modelid = parseInt(tmp2);
-            $.event.trigger("GetModelData", model_id = modelid);
+            //modelid = parseInt(tmp2);
+            for(var i=0; i<tmp3.length;i++) {tmp3[i] = +tmp3[i];} //parse to int
+            $.event.trigger("GetModelData", models = tmp3);
             $('#select_model_dialog').dialog("close");
           }
-        }},
-        {
-        text: "GetRandomModel",
-        click: function(){
-          
         }}
       ]
         
@@ -55,25 +60,29 @@ html.SelectModelDialog = {
     $("#selmod_cat").chosen().change(function(){
       if ($("#selmod_cat").val() != "0" ){
         $("#selmod_lens").val('0').trigger("liszt:updated");
-        $("#selmod_lensid").val('0').trigger("liszt:updated");
+        //$("#selmod_lensid").val('0').trigger("liszt:updated");
+        LMT.ui.html.SelectModelDialog.updateLensList();
       }
     });
     
     $("#selmod_lens").chosen({allow_single_deselect:true});
     $("#selmod_lens").chosen().change(function(){
       if ($("#selmod_lens").val() != "0" ){
-        $("#selmod_cat").val('0').trigger("liszt:updated");
-        $("#selmod_lensid").val($("#selmod_lens").val()).trigger("liszt:updated");
+        //$("#selmod_cat").val('0').trigger("liszt:updated");
+        //$("#selmod_lensid").val($("#selmod_lens").val()).trigger("liszt:updated");
       }
     });
     
+    /*
     $("#selmod_lensid").chosen({allow_single_deselect:true});
     $("#selmod_lensid").chosen().change(function(){
       if ($("#selmod_lensid").val() != "0" ){
         $("#selmod_cat").val('0').trigger("liszt:updated");
         $("#selmod_lens").val($("#selmod_lensid").val()).trigger("liszt:updated");
       }
+      
     });
+    */
         
     //LMT.com.getInitData(); //this will trigger an update
   },
@@ -85,7 +94,11 @@ html.SelectModelDialog = {
   },
   
   onInitData: function(evt, jsonObj) {
-    $parent = $("#selmod_cat")
+    LMT.ui.html.SelectModelDialog.availObj = jsonObj; 
+    
+    $parent = $("#selmod_cat");
+
+    $parent.append($('<option value="-1">NONE (all lenses NOT in a catalog)</option>'));
     var cat = {};
     for (var i=0; i<jsonObj.catalogues.length; i++){
       var id = jsonObj.catalogues[i].id;
@@ -95,19 +108,48 @@ html.SelectModelDialog = {
       $parent.append(elem);
     }
     $parent.trigger("liszt:updated");
+    
+    LMT.ui.html.SelectModelDialog.catalogs = cat; 
+    
+    LMT.ui.html.SelectModelDialog.updateLensList();
 
+    /*
     $parent1 = $("#selmod_lens")
-    $parent2 = $("#selmod_lensid")
+    //$parent2 = $("#selmod_lensid")
     for (var i=0; i<jsonObj.lenses.length; i++){
       var lens = jsonObj.lenses[i];
-      var lenscat = cat[lens.catalog] ? ' (catalogue: '+ cat[lens.catalog].name + ")": ""
+      var lenscat = cat[lens.catalog] ? ' (catalog: '+ cat[lens.catalog].name + ")": ""
       var elem1 = $('<option value="' + lens.id + '">' + lens.name +  lenscat + '</option>');
       $parent1.append(elem1);
-      var elem2 = $('<option value="' + lens.id + '">' + lens.id + '</option>');
-      $parent2.append(elem2);
+      //var elem2 = $('<option value="' + lens.id + '">' + lens.id + '</option>');
+      //$parent2.append(elem2);
     }
     $parent1.trigger("liszt:updated");
-    $parent2.trigger("liszt:updated");
+    //$parent2.trigger("liszt:updated");
+    */
+  },
+  
+  updateLensList: function() {
+    availObj = LMT.ui.html.SelectModelDialog.availObj;
+    cat = LMT.ui.html.SelectModelDialog.catalogs;
+    $parent = $("#selmod_lens")
+    
+    $parent.empty();
+    $parent.append($('<option value=""></option>'));
+
+    catId = +$("#selmod_cat").val(); //+ casts string to int
+
+    for (var i=0; i<availObj.lenses.length; i++){
+      var lens = availObj.lenses[i];
+      if (lens.catalog == catId || catId == 0 || //only add if the lenses catalog is selected or no calatog selected
+        (catId==-1 && lens.catalog==null) ){ // or the NONE option is selected and this lens doesnt have a cat 
+        var lenscat = cat[lens.catalog] ? ' (cat: '+ cat[lens.catalog].name + ")": ""
+        var elem1 = $('<option value="' + lens.id + '">id:' + lens.id + ' ' + lens.name +  lenscat + '</option>');
+        $parent.append(elem1);
+      }
+    }
+
+    $parent.trigger("liszt:updated");
   }
   
 }

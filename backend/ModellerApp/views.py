@@ -58,11 +58,14 @@ def getInitData(request):
 
 
 @csrf_exempt
-def getModelData(request, model_id):
-  
+def getSingeModelData(request, model_id):
+  '''returns a single model from a request url /get_modeldata/1
+  only for legacy, not really used anymore
+  '''
   #print "in getModelData"
   
-  if request.method == "POST" or request.method == "GET":
+  #if request.method == "POST" or request.method == "GET":
+  if request.method in ["GET", "POST"]:
     #print "in post"
     #print "i got: ", str(request.POST)
     
@@ -91,6 +94,105 @@ def getModelData(request, model_id):
     print "strange access"
     return HttpResponse("no post/get/otions request")  
 
+
+
+@csrf_exempt
+def getModelData(request):
+  '''returns a model from a request url /get_modeldata/
+  expects post with model ids and / or catalogue ids to work on for this session
+  '''
+  print "in new getModelData"
+  
+  if request.method in ["POST"]:
+    #print "in post"
+    #print "i got: ", str(request.POST)
+    
+    request.session['model_ids'] = [1,2,3]
+    ids = request.session['model_ids']
+    
+    POST = request.POST
+    session = request.session
+    
+    if "action" in POST:
+      action = POST['action']
+      
+      if action == "init":
+        print "init"
+        print POST.get('models', " [none models] ")
+        print POST.get('catalog', " [none cats] ")
+        
+        
+        if "models" in POST and "catalog" in POST:
+          print "error: got both, please decide"
+        
+        elif "models" in POST:
+          
+        
+          print "got models"
+
+          session["todo"] = POST['models']
+          session["isInit"] = True
+          
+          m = BasicLensData.objects.get(id=model_id)
+          
+          
+        elif "catalog" in POST:
+          print "got catalog"
+          
+          session["todo"] = POST['models']
+          session["isInit"] = True
+          
+          m = BasicLensData.objects.filter(catalog_id__exact=POST['catalog'])
+          
+          
+        else:
+          print "error: got neither model ids nor catalogues"
+          
+        
+        session["isInit"] = True
+        
+      
+      elif action == "prev" and session.get("isInit", False):
+        print "get prev"
+      
+      elif action == "next" and session.get("isInit", False):
+        print "get next"
+      
+      elif not session.get("isInit", False):
+        print "bad request, not yet init.. (action:", action
+        
+      else:
+        print "bad request, unknown action:", action
+      
+      
+    else:
+      print "bad request"
+    
+    
+    try:
+      m = BasicLensData.objects.get(id=model_id)
+      data = serializers.serialize("json", [m])
+      response = HttpResponse(data, content_type="application/json")
+    except BasicLensData.DoesNotExist:
+      response = HttpResponseNotFound("this model is not available", content_type="text/plain")
+      
+    response['Access-Control-Allow-Origin'] = "*"
+    return response
+  
+  
+  elif request.method == "OPTIONS":
+    #print "in options"  
+    response = HttpResponse("")
+    response['Access-Control-Allow-Origin'] = "*"
+    response['Access-Control-Allow-Methods'] = "GET, POST, OPTIONS"
+    response['Access-Control-Allow-Headers'] = "x-requested-with, x-requested-by"
+    response['Access-Control-Max-Age'] = "180"
+    return response
+
+  
+  else:
+    print "strange access"
+    return HttpResponse("no post/get/otions request")  
 
 
 

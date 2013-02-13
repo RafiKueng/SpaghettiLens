@@ -255,15 +255,17 @@
   </div>
   
   <div id="select_model_dialog" class="dialog" title="Select Lenses to Work on..">
-    <p>Either select a whole catalogue to work on</p>
-    <select id="selmod_cat" data-placeholder="Choose a Catalogue" style="width:375px;" class="chzn-select-deselect" tabindex="7">
+    <p>Select a catalog to filter lenses list:</p>
+    <select id="selmod_cat" data-placeholder="Choose a Catalogue" style="width:500px;" class="chzn-select-deselect" tabindex="7">
       <option value=""></option>
     </select>
-    <p>or select a particular Lens, by id or name:</p>
-    <select id="selmod_lensid" data-placeholder="ID" style="width:70px;" class="chzn-select-deselect" tabindex="7">
+    <p>Select particular Lenses:<br>(none selected: all; type to search)</p>
+    <!--
+    <select id="selmod_lensid" data-placeholder="ID" multiple style="width:70px;" class="chzn-select-deselect" tabindex="7">
       <option value=""></option>
     </select>
-    <select id="selmod_lens" data-placeholder="Name (Catalogue)" style="width:300px;" class="chzn-select-deselect" tabindex="7">
+    -->
+    <select id="selmod_lens" data-placeholder="Name (Catalogue)" multiple style="width:500px;" class="chzn-select-deselect" tabindex="7">
       <option value=""></option>
     </select>
   </div>
