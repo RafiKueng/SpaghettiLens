@@ -1,0 +1,62 @@
+/* SVG elements */
+.extremalpoint_min {
+	fill: green;
+}
+
+.extremalpoint_max {
+	fill: blue;
+}
+
+.extremalpoint_sad {
+	fill: #ffff00;
+}
+
+.contourpoint {
+	fill: #ff00ff;
+}
+
+.connectorline {
+	stroke: #ff00ff;
+	stroke-width:3;
+}
+
+.contourpath {
+	stroke: #ff00ff;
+	fill: none;
+	stroke-width: 3;
+}
+
+
+.ruler_mid {
+	r: 7;
+	fill: white;
+}
+
+.ruler_circ {
+	fill: none;
+	stroke: white;
+}
+
+.ruler_handle {
+	fill: #ffaaaa;
+}
+
+
+.ext_mass_mid {
+	fill: gray;
+}
+
+.ext_mass_circ {
+	fill: none;
+	stroke: gray;
+}
+
+.ext_mass_handle {
+	fill: #00a;
+}
+
+
+/* use this class for elements that are not displayed */
+.invisible {
+	visibility: hidden;
+}

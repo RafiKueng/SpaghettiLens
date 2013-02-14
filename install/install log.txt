@@ -1,0 +1,177 @@
+cd /srv
+
+git clone -b dev https://github.com/RafiKueng/LensTools.git lmt
+git clone -b master https://github.com/RafiKueng/LensTools.git lmt
+
+cd lmt
+
+virtualenv python_env
+source python_env/bin/activate
+
+pip install django
+pip install django-celery
+pip install flower
+pip install django-lazysignup
+
+
+    Add the following line to your /etc/apt/sources.list:
+
+    deb http://www.rabbitmq.com/debian/ testing main
+
+    (Please note that the word testing in this line refers to the state of our release of RabbitMQ, not any particular Debian distribution. You can use it with Debian stable, testing or unstable, as well as with Ubuntu. We describe the release as "testing" to emphasise that we release somewhat frequently.)
+    (optional) To avoid warnings about unsigned packages, add our public key to your trusted key list using apt-key(8):
+
+    wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc
+    sudo apt-key add rabbitmq-signing-key-public.asc
+
+    Run apt-get update.
+    Install packages as usual; for instance,
+
+    sudo apt-get install rabbitmq-server
+
+    
+ rm rabbitmq-signing-key-public.asc
+ 
+
+setup rabbitmq
+
+ rabbitmqctl add_user lmt password
+ rabbitmqctl add_vhost lmt_vhost
+ rabbitmqctl set_permissions -p lmt_vhost lmt ".*" ".*" ".*"
+
+
+test django:
+cd backend
+python manage.py runserver 0.0.0.0:8000
+
+
+install gunicorn
+
+ 
+ sudo apt-get install libevent-dev
+ pip install greenlet
+ pip install gunicorn
+
+ setup autostart
+ 
+ 
+ 
+don't use gunicorn for the moment, just use a apache using mod_wsgi
+sudo aptitude install libapache2-mod-wsgi
+
+
+ok, change of plans, use gunicorn never the less...
+from /srv/lmt/backend
+gunicorn -c lmt/gunicorn_settings.py lmt.wsgi:application
+
+
+install webserver nginx
+http://www.howtoforge.de/anleitung/installation-von-nginx-mit-php5-und-php-fpm-mit-mysql-unterstutzung-unter-ubuntu-11-10/
+http://senko.net/en/django-nginx-gunicorn/
+
+apt-get install nginx
+apt-get install php5-fpm
+
+/etc/init.d/php5-fpm
+
+config the site;
+cp /etc/nginx/sites-available/default lmt
+ln -s sites-available/lmt sites-enabled
+
+nano lmt:
+[insert from config file]
+
+make nginx and php communicate with socket:
+nano /etc/php5/fpm/pool.d/www.conf
+...
+listen = /tmp/php5-fpm.sock
+...
+
+
+and in lmt.conf:
+fastcgi_pass unix:/tmp/php5-fpm.sock;
+
+/etc/init.d/php5-fpm restart
+/etc/init.d/nginx reload
+
+
+cgi.fix_pathinfo to 0 in the php.ini when using Nginx with PHP-FPM/FastCGI, otherwise something as simple as /forum/avatars/user2.jpg/index.php could be used to execute an uploaded php script hidden as an image.
+
+setup nginx and django
+
+        location / {
+                proxy_pass_header Server;
+                proxy_set_header Host $http_host;
+                proxy_redirect off;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Scheme $scheme;
+                proxy_connect_timeout 10;
+                proxy_read_timeout 10;
+                proxy_pass http://localhost:8001/;
+        }
+
+				
+				
+fix the delivery of static django files
+https://docs.djangoproject.com/en/dev/howto/static-files/
+
+in django settings:
+STATIC_ROOT = '/srv/lmt/backend/static/'
+STATIC_URL = '/static_django/'
+
+and in nginx vhost config:
+location /static_django { alias /srv/lmt/backend/static/; }
+
+and then run on the SERVER
+./manage.py collectstatic
+
+
+
+### get and install glass (currently not open)
+cd /srv/lmt
+svn checkout https://svn.physik.uzh.ch/repos/itp/glass glass
+source python_env/bin/activate
+cd glass
+make
+
+pip install numpy
+apt-get install libfreetype6 libfreetype6-dev libpng12-dev 
+pip install matplotlib
+apt-get install libblas-dev libblas3gf liblapack-dev libatlas-base-dev libatlas-dev
+apt-get install gfortran
+pip install scipy
+
+(of just enable external packages for virualenv (delete the no-global...txt file under lib/python..))
+
+
+##################
+starting everything up
+
+django collect static files
+  python manage.py collectstatic
+
+nginx: automatic
+	/etc/init.d/nginx {start | stop | reload}
+	
+php5-fpm: automatic
+	/etc/init.d/php5-fpm {start | stop}
+	
+gunicorn: manual
+
+cd /srv/lmt/backend/
+source ../python_env/bin/activate
+./start_gunicorn.sh
+	
+RabbitMQ: automatic
+	rabbitmqctl {start_app | stop | stop_app | reset }
+	
+Cerlery Worker: manual
+	cd /srv/lmt/backend/
+	source ../python_env/bin/activate
+	python manage.py celery worker --loglevel=info
+	
+Flower: manual, optional
+	cd /srv/lmt/backend/
+	source ../python_env/bin/activate
+	celery flower --broker=amqp://lmt:password@localhost:5673/lmt_vhost
+

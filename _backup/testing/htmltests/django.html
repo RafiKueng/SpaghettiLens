@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>django test</title>
+  
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js"></script>
+  
+  <script>
+    function getmodeldata(){
+      var out = $('#out');
+      out.html("clicked send");
+      
+      var url = "http://localhost:8000/get_modeldata/0";
+      var data = {id: 5, name: "bla"};
+      var success = function(a, b, c) {
+        out.html("success1: <br/>" + a + "<br/>" + b + "<br/>" + c);
+      };
+      
+      var fail = function(a, b, c) {
+        out.html("fail: <br/>" + a + "<br/>" + b + "<br/>" + c);
+      };
+
+
+      $.ajax(url, {
+          type:"POST",
+          contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
+          data: {action: "something"}, 
+          dataType:"json", //data type expected from server
+          success:success,
+          error: fail
+          //mimeType: "text/plain"
+      });
+      
+
+    };
+    
+    
+    function code2(){
+      var out = $('#out');
+      out.html("clicked send");
+      
+      var url = "http://localhost:8000/save_model/";
+      var success = function(a, b, c) {
+        out.html("success1: <br/>" + a + "<br/>" + b + "<br/>" + c);
+      };
+      
+      var fail = function(a, b, c) {
+        out.html("fail: <br/>" + a + "<br/>" + b + "<br/>" + c + "<hr>" + a.responseText);
+      };
+
+
+      $.ajax(url, {
+          type:"POST",
+          contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
+          data: {modelid:1, string: "[some json model string]", isFinal: true}, 
+          dataType:"json", //data type expected from server
+          success:success,
+          error: fail
+          //mimeType: "text/plain"
+      });
+      
+
+    }
+    
+  </script>
+  
+</head>
+<body>
+
+<button onclick="code2();">Send</button>
+
+<div id="out"></div>
+
+
+</body>
+</html>

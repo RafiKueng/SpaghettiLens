@@ -1,0 +1,27 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="640" height="950" viewBox="0 0 640 950" version="1.1"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+     
+  <title>Additive color example</title>
+
+<defs>
+
+    <filter id="additive-color" filterUnits="objectBoundingBox" 
+            x="0" y="0" width="1" height="1">
+
+   <feFlood x="0" y="0" width="100" height ="100" flood-color="#FF0000" flood-opacity ="1" result="red"/>  
+   <feFlood x="50" y="0" width="100" height ="100" flood-color="#00FF00" flood-opacity ="1" result="green"/>    
+   <feFlood x="25" y="50" width="100" height ="100" flood-color="#0000FF" flood-opacity ="1" result="blue"/>    
+
+     <feBlend mode="lighten" in="red" in2="blue" result="purple"/>
+     <feBlend mode="lighten" in="purple" in2="green" result="final"/>
+
+    </filter>
+
+  </defs>
+
+<rect filter="url(#additive-color)" x="0" y="0" width="400" height="400" fill="none" stroke="black"/> 
+
+</svg>
