@@ -47,7 +47,7 @@ html.SelectModelDialog = {
           else {
             //modelid = parseInt(tmp2);
             for(var i=0; i<tmp3.length;i++) {tmp3[i] = +tmp3[i];} //parse to int
-            $.event.trigger("GetModelData", [models = tmp3, catalog=+$("#selmod_cat").val()]);
+            $.event.trigger("GetModelData", [models = tmp3, catalog=+$("#selmod_cat").val(), action='init']);
             $('#select_model_dialog').dialog("close");
           }
         }}
@@ -193,6 +193,8 @@ html.Toolbar = {
     
     //un/re do buttons:
     $('#btnInUndo').add('#btnInRedo').button("disable");
+    
+    $("#toolbarGrpTop button").button("disable");
     
   },
   

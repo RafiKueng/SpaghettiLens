@@ -9,7 +9,7 @@
         <h1>Lens Modelling Tool</h1>
       </div>
       <div id="toolbarTop" style="display:table-cell; width: auto; text-align: right;vertical-align: bottom; padding: 10px; ">
-        <span id="toolbarGrp1" class="toolbar ui-widget-header ui-corner-all">
+        <span id="toolbarGrpTop" class="toolbar ui-widget-header ui-corner-all">
           <span id="btngrpMainNav" class="btnset">
             <button id="btnMainActionPrev"
               data-event="PrevModel"

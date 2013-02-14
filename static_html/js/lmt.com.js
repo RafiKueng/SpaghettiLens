@@ -51,7 +51,7 @@ com.getInitData = function(evt) {
  * can call for a specific model_id or a random model
  * if auth user: you'll get a model you havent already done
  */
-com.getModelData = function(evt, model_ids, catalog) {
+com.getModelData = function(evt, model_ids, catalog, action) {
   
   var success = function(obj, status_text, resp) {
     // obj[0].fields['name']
@@ -62,6 +62,12 @@ com.getModelData = function(evt, model_ids, catalog) {
     
     LMT.modelData = obj[0].fields;
     LMT.modelData.id = obj[0].pk;
+    LMT.modelData.nTodo = obj[1].todo;
+    LMT.modelData.nDone = obj[1].done;
+    LMT.modelData.nLenses = obj[1].nr;
+    LMT.modelData.nextAvail = obj[1].next_avail;
+    LMT.modelData.prevAvail = obj[1].prev_avail;
+    
     
     LMT.modelData.ch = [];
     
@@ -134,7 +140,7 @@ com.getModelData = function(evt, model_ids, catalog) {
   $.ajax(LMT.com.serverUrl + LMT.com.getModelDataUrl+'/', {
       type:"POST",
       contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
-      data: {action: 'init', models: model_ids, catalog: catalog}, 
+      data: {action: action, models: model_ids, catalog: catalog}, 
       dataType:"json", //data type expected from server
       success:success,
       error: fail

@@ -21,7 +21,7 @@ from django.contrib.auth.models import User
 
 from lmt.tasks import calculateModel
 
-import json
+
 import os
 
 
@@ -129,26 +129,21 @@ def getModelData(request):
           
           print "list", list
 
-          session["todo"] = list
-          session["done"] = []
+          session["lensesTodo"] = list
+          session["isLensDone"] = [False] * len(list)
+          workingOn = 0
+          session["workingOnTodoListNr"] = workingOn
           session["isInit"] = True
           
-          nextId = session["todo"].pop(0)
-          session["done"].append(nextId)
-          
-          print "nextId", nextId
-          
-          try:
-            m = BasicLensData.objects.get(id=nextId)
-            data = serializers.serialize("json", [m])
-            response = HttpResponse(data, content_type="application/json")
-          except BasicLensData.DoesNotExist:
-            response = HttpResponseNotFound("this model is not available", content_type="text/plain")
-          
+          nextId = session["lensesTodo"][workingOn]
+
+
         else:
           print "error, no models supplied"
           response = HttpResponseNotFound("wrong post format, model[] expected", content_type="text/plain")
-          
+          response['Access-Control-Allow-Origin'] = "*"
+          return response
+                  
         if "catalog" in POST:
           # do something with it, but it's not important
           print "got catalog, don't care"
@@ -157,52 +152,30 @@ def getModelData(request):
         else:
           pass
 
-        response['Access-Control-Allow-Origin'] = "*"
-        return response
-
-
 
       elif action == "cont" and session.get("isInit", False):
         print "continue previous session"
         #TODO: implement user sessions
       
+
+      
+      
       elif action == "prev" and session.get("isInit", False):
         print "get prev"
         
-        nextId = session["done"].pop() # get last item of queue
-        session["todo"].insert(0,nextId)
-        
-        print "nextId", nextId
-        
-        try:
-          m = BasicLensData.objects.get(id=nextId)
-          data = serializers.serialize("json", [m])
-          response = HttpResponse(data, content_type="application/json")
-        except BasicLensData.DoesNotExist:
-          response = HttpResponseNotFound("this model is not available", content_type="text/plain")
-
-        response['Access-Control-Allow-Origin'] = "*"
-        return response
+        list = session["lensesTodo"]
+        session["workingOnTodoListNr"] -= 1
+        workingOn = session["workingOnTodoListNr"]
+        nextId = session["lensesTodo"][workingOn]
 
       
       elif action == "next" and session.get("isInit", False):
         print "get next"
-        
-        
-        nextId = session["todo"].pop(0)
-        session["done"].append(nextId)
-        
-        print "nextId", nextId
-        
-        try:
-          m = BasicLensData.objects.get(id=nextId)
-          data = serializers.serialize("json", [m])
-          response = HttpResponse(data, content_type="application/json")
-        except BasicLensData.DoesNotExist:
-          response = HttpResponseNotFound("this model is not available", content_type="text/plain")
 
-        response['Access-Control-Allow-Origin'] = "*"
-        return response
+        list = session["lensesTodo"]
+        session["workingOnTodoListNr"] += 1
+        workingOn = session["workingOnTodoListNr"]
+        nextId = session["lensesTodo"][workingOn]
   
         
       
@@ -215,6 +188,36 @@ def getModelData(request):
 
       else:
         print "bad request, unknown action:", action
+        response = HttpResponseNotFound("bad request, unknown action", content_type="text/plain")
+        response['Access-Control-Allow-Origin'] = "*"
+        return response        
+
+      
+      print "nextId", nextId
+      
+      try:
+        m = BasicLensData.objects.get(id=nextId)
+        nDone = sum(session["isLensDone"])
+        nLenses = len(list)
+        nTodo = nLenses - nDone
+        n = {'todo': nTodo,
+             'done': nDone,
+             'nr': nLenses,
+             'next_avail': workingOn < len(list)-1,
+             'prev_avail': workingOn > 0}
+        data1 = serializers.serialize("json", [m])
+        data2 = sjson.dumps(n)
+        #print "data1", data1
+        print "data2", data2
+        
+        data = data1[0:-1] + ',' + data2 + ']'
+        
+        response = HttpResponse(data, content_type="application/json")
+      except BasicLensData.DoesNotExist:
+        response = HttpResponseNotFound("this model is not available", content_type="text/plain")
+
+      response['Access-Control-Allow-Origin'] = "*"
+      return response        
       
       
     else:
