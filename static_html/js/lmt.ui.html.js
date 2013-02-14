@@ -157,7 +157,9 @@ html.SelectModelDialog = {
 
 
 
-
+/**
+ * initalises the toolpars on the top and the one on the input / left side
+ */
 html.Toolbar = {
   init: function() {
   
@@ -179,7 +181,9 @@ html.Toolbar = {
   		.on('click', {name:eventName, value: value} , LMT.ui.html.Toolbar.fire);
   	});
   
-  	$("#toolbarGrp1 > .btnset").buttonset();
+    $("#toolbarGrp1 > .btnset").buttonset();
+    $("#toolbarTop > .btnset").buttonset();
+  	
 
     //set buttons to correct state 
     

@@ -8,22 +8,44 @@
       <div style="display:table-cell; height: 100%">
         <h1>Lens Modelling Tool</h1>
       </div>
-      <div style="display:table-cell; width: auto; text-align: right;vertical-align: bottom; padding: 10px; ">
-        <button id="btnMainLogin"
-          data-event="LoginClicked"
-          data-tooltip="loggs in"
-          data-furtherinfo="http://www.google.com"
-          data-hotkey="Ctrl+Z; Q"
-          data-icon="icon-signin">
-          Log In
-        </button>
+      <div id="toolbarTop" style="display:table-cell; width: auto; text-align: right;vertical-align: bottom; padding: 10px; ">
+        <span id="toolbarGrp1" class="toolbar ui-widget-header ui-corner-all">
+          <span id="btngrpMainNav" class="btnset">
+            <button id="btnMainActionPrev"
+              data-event="PrevModel"
+              data-tooltip="goto previous model"
+              data-furtherinfo="http://www.google.com"
+              data-hotkey="C"
+              data-icon="icon-chevron-left">
+              Goto Previous Model
+            </button>
+            <button id="btnMainActionNext"
+              data-event="NextModel"
+              data-tooltip="goto next model"
+              data-furtherinfo="http://www.google.com"
+              data-hotkey="C"
+              data-icon="icon-chevron-right">
+              Goto Next Model
+            </button>
+          </span>
+          
+          <button id="btnMainLogin"
+            data-event="LoginClicked"
+            data-tooltip="loggs in"
+            data-furtherinfo="http://www.google.com"
+            data-hotkey="Ctrl+Z; Q"
+            data-icon="icon-signin">
+            Log In
+          </button>
+        </span>
       </div>
     </div>
 
     <div id="cont">
       <div id="main">
         <div id="toolbar1" class="toolbarContainer">
-          <span id="toolbarGrp1" class="toolbar ui-widget-header ui-corner-all"> <span id="btnsetXxdo" class="btnset">
+          <span id="toolbarGrp1" class="toolbar ui-widget-header ui-corner-all">
+            <span id="btnsetXxdo" class="btnset">
               <button id="btnInUndo"
                 data-event="Undo"
                 data-tooltip="reverts the last action"
@@ -68,7 +90,7 @@
                 data-furtherinfo="http://www.google.com"
                 data-hotkey="C"
                 data-icon="icon-star" />
-              <label for="btnInModeMass">Choice 1</label>
+              <label for="btnInModeMass">Place Point Masses</label>
 
               <input type="radio" id="btnInModeImage" name="mode"
                 data-event="SwitchMode" data-value="image"
@@ -77,7 +99,7 @@
                 data-hotkey="C"
                 data-icon="icon-screenshot"
                 checked="checked"/>
-              <label for="btnInModeImage">Choice 2</label>
+              <label for="btnInModeImage">Mark Images</label>
 
               <input type="radio" id="btnInModeRuler" name="mode"
                 data-event="SwitchMode" data-value="ruler"
@@ -85,26 +107,11 @@
                 data-furtherinfo="http://www.google.com"
                 data-hotkey="C"
                 data-icon="icon-resize-horizontal" />
-              <label for="btnInModeRuler">Choice 3</label>
+              <label for="btnInModeRuler">Add Ruler to esimate Distances</label>
             </span>
             
             <span id="btngrpActions" class="btnset">
-              <button id="btnInActionPrev"
-                data-event="PrevModel"
-                data-tooltip="goto previous model"
-                data-furtherinfo="http://www.google.com"
-                data-hotkey="C"
-                data-icon="icon-chevron-left">
-                Goto Previous Model
-              </button>
-              <button id="btnInActionNext"
-                data-event="NextModel"
-                data-tooltip="goto next model"
-                data-furtherinfo="http://www.google.com"
-                data-hotkey="C"
-                data-icon="icon-chevron-right">
-                Goto Next Model
-              </button>
+              <!--
               <button id="btnInActionSave"
                 data-event="SaveModel"
                 data-tooltip="Save the Model"
@@ -113,6 +120,8 @@
                 data-icon="icon-save">
                 Save the model locally
               </button>
+              -->
+              <!--
               <button id="btnInActionUpload"
                 data-event="UploadModel"
                 data-tooltip="Save the final model on the server"
@@ -121,6 +130,7 @@
                 data-icon="icon-cloud-upload">
                 Save the final model on the server
               </button>
+              -->
               <button id="btnInActionSimulateModel"
                 data-event="SimulateModel"
                 data-tooltip="update the simulated results"
