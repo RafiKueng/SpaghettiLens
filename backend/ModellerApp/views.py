@@ -104,11 +104,11 @@ def getModelData(request):
   print "in new getModelData"
   
   if request.method in ["POST"]:
-    #print "in post"
-    #print "i got: ", str(request.POST)
+    print "in post"
+    print "i got: ", str(request.POST)
     
-    request.session['model_ids'] = [1,2,3]
-    ids = request.session['model_ids']
+    #request.session['model_ids'] = [1,2,3]
+    #ids = request.session['model_ids']
     
     POST = request.POST
     session = request.session
@@ -118,48 +118,101 @@ def getModelData(request):
       
       if action == "init":
         print "init"
-        print POST.get('models', " [none models] ")
+        print POST.getlist('models[]', " [none models] ")
         print POST.get('catalog', " [none cats] ")
         
         
-        if "models" in POST and "catalog" in POST:
-          print "error: got both, please decide"
-        
-
-        elif "models" in POST:
+        if "models[]" in POST:
           print "got models"
 
-          session["todo"] = POST['models']
+          list = [int(x) for x in POST.getlist('models[]', [])]
+          
+          print "list", list
+
+          session["todo"] = list
+          session["done"] = []
           session["isInit"] = True
           
-          m = BasicLensData.objects.get(id=model_id)
+          nextId = session["todo"].pop(0)
+          session["done"].append(nextId)
           
+          print "nextId", nextId
           
-        elif "catalog" in POST:
-          print "got catalog"
-          
-          session["todo"] = POST['models']
-          session["isInit"] = True
-          
-          m = BasicLensData.objects.filter(catalog_id__exact=POST['catalog'])
-          
+          try:
+            m = BasicLensData.objects.get(id=nextId)
+            data = serializers.serialize("json", [m])
+            response = HttpResponse(data, content_type="application/json")
+          except BasicLensData.DoesNotExist:
+            response = HttpResponseNotFound("this model is not available", content_type="text/plain")
           
         else:
-          print "error: got neither model ids nor catalogues"
+          print "error, no models supplied"
+          response = HttpResponseNotFound("wrong post format, model[] expected", content_type="text/plain")
           
-        
-        session["isInit"] = True
-        
+        if "catalog" in POST:
+          # do something with it, but it's not important
+          print "got catalog, don't care"
+          
+          #m = BasicLensData.objects.filter(catalog_id__exact=POST['catalog'])
+        else:
+          pass
+
+        response['Access-Control-Allow-Origin'] = "*"
+        return response
+
+
+
+      elif action == "cont" and session.get("isInit", False):
+        print "continue previous session"
+        #TODO: implement user sessions
       
       elif action == "prev" and session.get("isInit", False):
         print "get prev"
+        
+        nextId = session["done"].pop() # get last item of queue
+        session["todo"].insert(0,nextId)
+        
+        print "nextId", nextId
+        
+        try:
+          m = BasicLensData.objects.get(id=nextId)
+          data = serializers.serialize("json", [m])
+          response = HttpResponse(data, content_type="application/json")
+        except BasicLensData.DoesNotExist:
+          response = HttpResponseNotFound("this model is not available", content_type="text/plain")
+
+        response['Access-Control-Allow-Origin'] = "*"
+        return response
+
       
       elif action == "next" and session.get("isInit", False):
         print "get next"
+        
+        
+        nextId = session["todo"].pop(0)
+        session["done"].append(nextId)
+        
+        print "nextId", nextId
+        
+        try:
+          m = BasicLensData.objects.get(id=nextId)
+          data = serializers.serialize("json", [m])
+          response = HttpResponse(data, content_type="application/json")
+        except BasicLensData.DoesNotExist:
+          response = HttpResponseNotFound("this model is not available", content_type="text/plain")
+
+        response['Access-Control-Allow-Origin'] = "*"
+        return response
+  
+        
       
       elif not session.get("isInit", False):
         print "bad request, not yet init.. (action:", action
         
+        response = HttpResponseNotFound("this model is not available", content_type="text/plain")
+        response['Access-Control-Allow-Origin'] = "*"
+        return response        
+
       else:
         print "bad request, unknown action:", action
       
@@ -167,7 +220,7 @@ def getModelData(request):
     else:
       print "bad request"
     
-    
+    '''
     try:
       m = BasicLensData.objects.get(id=model_id)
       data = serializers.serialize("json", [m])
@@ -177,6 +230,7 @@ def getModelData(request):
       
     response['Access-Control-Allow-Origin'] = "*"
     return response
+    '''
   
   
   elif request.method == "OPTIONS":
