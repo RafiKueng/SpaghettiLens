@@ -125,9 +125,8 @@ def getModelData(request):
         if "models" in POST and "catalog" in POST:
           print "error: got both, please decide"
         
+
         elif "models" in POST:
-          
-        
           print "got models"
 
           session["todo"] = POST['models']

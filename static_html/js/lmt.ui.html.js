@@ -47,7 +47,7 @@ html.SelectModelDialog = {
           else {
             //modelid = parseInt(tmp2);
             for(var i=0; i<tmp3.length;i++) {tmp3[i] = +tmp3[i];} //parse to int
-            $.event.trigger("GetModelData", models = tmp3);
+            $.event.trigger("GetModelData", [models = tmp3, catalog=+$("#selmod_cat").val()]);
             $('#select_model_dialog').dialog("close");
           }
         }}

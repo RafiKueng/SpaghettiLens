@@ -51,7 +51,7 @@ com.getInitData = function(evt) {
  * can call for a specific model_id or a random model
  * if auth user: you'll get a model you havent already done
  */
-com.getModelData = function(evt, model_id, catalog_id) {
+com.getModelData = function(evt, model_ids, catalog) {
   
   var success = function(obj, status_text, resp) {
     // obj[0].fields['name']
@@ -134,7 +134,7 @@ com.getModelData = function(evt, model_id, catalog_id) {
   $.ajax(LMT.com.serverUrl + LMT.com.getModelDataUrl+'/', {
       type:"POST",
       contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
-      data: {action: 'init', models: model_id, catalog: catalog_id}, 
+      data: {action: 'init', models: model_ids, catalog: catalog}, 
       dataType:"json", //data type expected from server
       success:success,
       error: fail
