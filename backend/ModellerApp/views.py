@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 from django.utils import simplejson as sjson
+from django.conf import settings
 #import simplejson as sjson
 
 from celery.result import AsyncResult
@@ -67,10 +68,13 @@ def getSingeModelData(request, model_id):
   #print "in getSingleModelData"
   #print 'testcookie:', request.session.test_cookie_worked()
 
-  if not request.session.test_cookie_worked():
-    response = HttpResponseNotFound("Cookies not enabled, please enable", content_type="text/plain")
-    response['Access-Control-Allow-Origin'] = "*"
-    return response
+  # check if cookies enabled: disabled in debug
+  print 'debug:',  DEBUG
+  if not lmt.settings.DEBUG:
+    if not request.session.test_cookie_worked():
+      response = HttpResponseNotFound("Cookies not enabled, please enable", content_type="text/plain")
+      response['Access-Control-Allow-Origin'] = "*"
+      return response
   
   #if request.method == "POST" or request.method == "GET":
   if request.method in ["GET", "POST"]:
@@ -117,10 +121,12 @@ def getModelData(request):
     print "i got: ", str(request.POST)
     print "session has: ", str(request.session.__dict__)
 
-    if not request.session.test_cookie_worked():
-      response = HttpResponseNotFound("Cookies not enabled, please enable", content_type="text/plain")
-      response['Access-Control-Allow-Origin'] = "*"
-      return response
+
+    if not settings.DEBUG:
+      if not request.session.test_cookie_worked():
+        response = HttpResponseNotFound("Cookies not enabled, please enable", content_type="text/plain")
+        response['Access-Control-Allow-Origin'] = "*"
+        return response
 
     
     #request.session['model_ids'] = [1,2,3]
@@ -257,8 +263,9 @@ def getModelData(request):
   
   else:
     print "strange access"
-    return HttpResponse("no post/get/otions request")  
-
+    response = HttpResponseNotFound("no post/get/otions request", content_type="text/plain")
+    response['Access-Control-Allow-Origin'] = "*"
+    return response   
 
 
 @csrf_exempt

@@ -237,10 +237,11 @@ h1 {
 /*  background: none !important;*/
   background-image: none !important;
   text-indent: 0 !important;
-/*  padding: 0em 0 0 0.2em !important; */
+  margin-left: -10px !important;
+  margin-top: -10px !important;
 
-  font-size: 0.8em;
-
+  font-size: 1.2em;
+  font-weight: normal !important;
 }
 
 

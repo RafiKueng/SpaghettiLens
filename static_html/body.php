@@ -19,6 +19,14 @@
               data-icon="icon-chevron-left">
               Goto Previous Model
             </button>
+            <button id="btnMainFinish"
+              data-event="UploadModel"
+              data-tooltip="Save the final model on the server"
+              data-furtherinfo="http://www.google.com"
+              data-hotkey="s"
+              data-icon="icon-ok">
+              Save the final model on the server
+            </button>
             <button id="btnMainActionNext"
               data-event="NextModel"
               data-tooltip="goto next model"
@@ -37,6 +45,15 @@
             data-icon="icon-signin">
             Log In
           </button>
+
+          <input id="btnMainHelp" type="checkbox"
+            data-event="ToggleHelp"
+            data-tooltip="Displays the mouseover help"
+            data-furtherinfo="http://www.google.com"
+            data-hotkey="H, F1"
+            data-icon="icon-question-sign" />
+          <label for="btnMainHelp">Toggle Mouseover Help</label>
+                    
         </span>
       </div>
     </div>
@@ -136,7 +153,7 @@
                 data-tooltip="update the simulated results"
                 data-furtherinfo="http://www.google.com"
                 data-hotkey="C"
-                data-icon="icon-refresh">
+                data-icon="icon-cogs">
                 Simulate the Model and Refresh the Output Images
               </button>
             </span>
@@ -146,6 +163,7 @@
 
         <div id="toolbar2" class="toolbarContainer">
           <span id="toolbarGrp2" class="toolbar ui-widget-header ui-corner-all">
+            <!--
             <span id="btnsetOutNav">
               <button id="btnOutPrev">
                 Previous
@@ -157,6 +175,7 @@
             <button id="btnOutOverview">
               Overview
             </button>
+            -->
             <span id="btnsetOutNrNav"></span>
             <span id="btnsetOutConfig">
               <button id="btnOutGlassConfig">

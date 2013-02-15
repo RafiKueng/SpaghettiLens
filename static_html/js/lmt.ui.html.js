@@ -165,7 +165,8 @@ html.Toolbar = {
   
   	$("#toolbarGrp1 button")
   	 .add("#toolbarGrp1 input")
-  	 .add("#top button")
+  	 .add("#toolbarTop button")
+  	 .add("#toolbarTop input")
   	 .each(function(){
   		
   		var $this = $(this);
@@ -185,7 +186,10 @@ html.Toolbar = {
   	//init top buttons correctly
     $('#btnMainActionPrev').on('click', function() {$.event.trigger('GetModelData', [null,null,'prev']);})
     $('#btnMainActionNext').on('click', function() {$.event.trigger('GetModelData', [null,null,'next']);})
-  	
+    $("#toolbarGrpTop button").button("disable");
+    $('#btnMainHelp').button("enable");
+    $('#btnMainHelp').prop('checked', true);
+    $('#btnMainHelp').change(); 	
   	
     // make buttongroups
     $("#toolbarGrp1 > .btnset").buttonset();
@@ -201,7 +205,6 @@ html.Toolbar = {
     //un/re do buttons:
     $('#btnInUndo').add('#btnInRedo').button("disable");
     
-    $("#toolbarGrpTop button").button("disable");
     
   },
   
