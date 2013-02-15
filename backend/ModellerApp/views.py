@@ -64,11 +64,13 @@ def getSingeModelData(request, model_id):
   '''returns a single model from a request url /get_modeldata/1
   only for legacy, not really used anymore
   '''
-  print "in getSingleModelData"
-  request.session.set_test_cookie()
-  print 'testcookie:', request.session.test_cookie_worked()
-  print request.session.get('test')
-  request.session['test'] = 'bla'
+  #print "in getSingleModelData"
+  #print 'testcookie:', request.session.test_cookie_worked()
+
+  if not request.session.test_cookie_worked():
+    response = HttpResponseNotFound("Cookies not enabled, please enable", content_type="text/plain")
+    response['Access-Control-Allow-Origin'] = "*"
+    return response
   
   #if request.method == "POST" or request.method == "GET":
   if request.method in ["GET", "POST"]:
@@ -108,12 +110,18 @@ def getModelData(request):
   expects post with model ids and / or catalogue ids to work on for this session
   '''
   print "in new getModelData"
-  print 'testcookie:', request.session.test_cookie_worked()
+#  print 'testcookie:', request.session.test_cookie_worked()
   
   if request.method in ["POST"]:
     print "in post"
     print "i got: ", str(request.POST)
-    print "session has", str(request.session.__dict__)
+    print "session has: ", str(request.session.__dict__)
+
+    if not request.session.test_cookie_worked():
+      response = HttpResponseNotFound("Cookies not enabled, please enable", content_type="text/plain")
+      response['Access-Control-Allow-Origin'] = "*"
+      return response
+
     
     #request.session['model_ids'] = [1,2,3]
     #ids = request.session['model_ids']
@@ -231,18 +239,10 @@ def getModelData(request):
       
     else:
       print "bad request"
+      response = HttpResponseNotFound("this was a bad request", content_type="text/plain")
+      response['Access-Control-Allow-Origin'] = "*"
+      return response        
     
-    '''
-    try:
-      m = BasicLensData.objects.get(id=model_id)
-      data = serializers.serialize("json", [m])
-      response = HttpResponse(data, content_type="application/json")
-    except BasicLensData.DoesNotExist:
-      response = HttpResponseNotFound("this model is not available", content_type="text/plain")
-      
-    response['Access-Control-Allow-Origin'] = "*"
-    return response
-    '''
   
   
   elif request.method == "OPTIONS":
