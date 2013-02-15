@@ -234,6 +234,23 @@
   </div>
 
   <div id="color_dialog" class="dialog initHidden" title="ColorPicker">
+    
+    <div id="cd_table" style="display: table">
+      <div class="cd_row" style="display: table-row">
+        <div class='cd_cell_name dashed' style="display: table-cell;">
+          <p>Ch1</p>
+        </div>
+        <div class='cd_cell_slider dashed' style="display: table-cell;">
+          <p>line 1</p>
+          <p>line 2</p>
+        </div>
+        <div class="cd_cell_cp dashed" style="display: table-cell;">
+          <p>colorpicker</p>
+        </div>
+      </div>
+    </div>
+    
+    <!--
     <div id="csettings_ch0" class="settings_channelcontainer">
       <div style="
       float: left;
@@ -250,6 +267,7 @@
         </input>
       </div>
     </div>
+    -->
   </div>
 
   <div id="display_dialog" class="dialog initHidden" title="Display Settings">

@@ -266,3 +266,10 @@ h1 {
 .initHidden {
   visibility:hidden;
 }
+
+
+.dashed {
+  border-color: #333333;
+  border-style:dashed;
+  border-width:1px;
+}
