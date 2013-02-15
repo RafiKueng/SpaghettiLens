@@ -180,9 +180,16 @@ html.Toolbar = {
   		})
   		.on('click', {name:eventName, value: value} , LMT.ui.html.Toolbar.fire);
   	});
-  
+  	
+  	
+  	//init top buttons correctly
+    $('#btnMainActionPrev').on('click', function() {$.event.trigger('GetModelData', [null,null,'prev']);})
+    $('#btnMainActionNext').on('click', function() {$.event.trigger('GetModelData', [null,null,'next']);})
+  	
+  	
+    // make buttongroups
     $("#toolbarGrp1 > .btnset").buttonset();
-    $("#toolbarTop > .btnset").buttonset();
+    $("#toolbarGrpTop > .btnset").buttonset();
   	
 
     //set buttons to correct state 
@@ -208,6 +215,14 @@ html.Toolbar = {
     // un / redo buttons whether there is something to be undone / redone
     $('#btnInUndo').button(LMT.actionstack.undoSize>0 ? "enable" : "disable");
     $('#btnInRedo').button(LMT.actionstack.redoSize>0 ? "enable" : "disable");
+  },
+  
+  /**
+   * updates the top toolbar buttons 
+   */
+  updateTop: function(evt) {
+    $('#btnMainActionPrev').button(LMT.modelData.prevAvail ? "enable" : "disable");
+    $('#btnMainActionNext').button(LMT.modelData.nextAvail ? "enable" : "disable");
   },
   
   /**

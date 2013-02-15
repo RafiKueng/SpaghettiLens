@@ -30,6 +30,8 @@ import os
 @csrf_exempt
 def getInitData(request):
   
+  request.session.set_test_cookie()
+  
   
   if request.method in ["GET", "POST"]:
     
@@ -62,7 +64,11 @@ def getSingeModelData(request, model_id):
   '''returns a single model from a request url /get_modeldata/1
   only for legacy, not really used anymore
   '''
-  #print "in getModelData"
+  print "in getSingleModelData"
+  request.session.set_test_cookie()
+  print 'testcookie:', request.session.test_cookie_worked()
+  print request.session.get('test')
+  request.session['test'] = 'bla'
   
   #if request.method == "POST" or request.method == "GET":
   if request.method in ["GET", "POST"]:
@@ -102,10 +108,12 @@ def getModelData(request):
   expects post with model ids and / or catalogue ids to work on for this session
   '''
   print "in new getModelData"
+  print 'testcookie:', request.session.test_cookie_worked()
   
   if request.method in ["POST"]:
     print "in post"
     print "i got: ", str(request.POST)
+    print "session has", str(request.session.__dict__)
     
     #request.session['model_ids'] = [1,2,3]
     #ids = request.session['model_ids']
@@ -217,6 +225,7 @@ def getModelData(request):
         response = HttpResponseNotFound("this model is not available", content_type="text/plain")
 
       response['Access-Control-Allow-Origin'] = "*"
+      print "session has", str(request.session.__dict__)
       return response        
       
       
