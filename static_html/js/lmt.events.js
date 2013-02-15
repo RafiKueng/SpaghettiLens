@@ -75,6 +75,7 @@ var events = {
     $(document).on('ShowSelectModelDataDialog', LMT.ui.html.SelectModelDialog.show);    
     // the server sent the starting data for the model, like urls to the background image(s) and default color binding
     $(document).on('ReceivedModelData', LMT.ui.html.ColorSettingsDialog.init);
+    $(document).on('ReceivedModelData', LMT.ui.html.Toolbar.updateTop);
     $(document).on('ReceivedModelData', LMT.ui.svg.bg.init);
     $(document).on('ReceivedModelData', LMT.events.AppReadyHandler);
     

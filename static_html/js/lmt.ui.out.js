@@ -23,6 +23,7 @@ function Output() {
 		this.$caption.appendTo(this.$out);
 		this.tmp=1;
 		
+		
 		$("#btnOutPrev").button({
 			text: false,
 			disabled: false,
@@ -56,7 +57,11 @@ function Output() {
     });
     $("#btnOutGlassConfig").on('click', function(){$.event.trigger('ShowDialogGlassSettings');});
 
+
     $("#btnsetOutConfig").buttonset();
+    
+    
+
 		
 		var tmp = 1;
 	};

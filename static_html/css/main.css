@@ -96,7 +96,8 @@ html, body {
   font-size: 75%;
 }
 
-#log { 
+#log {
+  display: none;
   position: absolute;
   height: 200px;
   
