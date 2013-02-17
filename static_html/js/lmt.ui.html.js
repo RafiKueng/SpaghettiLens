@@ -74,7 +74,14 @@ html.SelectModelDialog = {
         $("#selmod_lens").val($("#selmod_lensid").val()).trigger("liszt:updated");
       }
     });
-        
+    
+    $('#btnSliderChange').button({
+        text: false,
+        disabled: false,
+        icons: {primary: 'icon-resize-horizontal' }
+      })
+      .on('click', {name:''} , LMT.ui.html.Toolbar.fire);
+    
     //LMT.com.getInitData(); //this will trigger an update
   },
   
@@ -505,6 +512,30 @@ html.KeyboardListener = {
   }
 }
 
+
+
+/**
+ * when in small screen mode, toggles the shown display 
+ */
+html.ToggleDisplay = function(evt){
+  //alert("sliderklick");
+  LMT.ui.html.dispState = $("#slider").hasClass('left') ? 'left' : 'right';
+  $("#slider").toggleClass('left right');
+  $("#slider i").toggleClass('icon-double-angle-right icon-double-angle-left');
+  
+  if (LMT.ui.html.dispState == 'left') {
+    $front = $("#toolbar2").add("#out");
+    $back = $("#toolbar1").add("#inp");
+  }
+  else {
+    $back = $("#toolbar2").add("#out");
+    $front = $("#toolbar1").add("#inp");
+  }
+    
+  $back.hide().css({'z-index':'16'});
+  $front.css({'z-index':'15'});
+  $back.fadeIn(200);
+}
 
 
 LMT.ui.html = html;
