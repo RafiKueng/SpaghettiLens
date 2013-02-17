@@ -66,6 +66,8 @@ var events = {
     // dummy function
     var fnc = function(){return false;}
     
+    $(document).on('ToggleDisplay', LMT.ui.html.ToggleDisplay);
+    
     // get the inital data, available lenses and catalogues, if no identifier provided in get string
     $(document).on('GetInitData', LMT.com.getInitData);
     $(document).on('GotInitData', LMT.ui.html.SelectModelDialog.onInitData);
