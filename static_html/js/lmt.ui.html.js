@@ -75,13 +75,6 @@ html.SelectModelDialog = {
       }
     });
     
-    $('#btnSliderChange').button({
-        text: false,
-        disabled: false,
-        icons: {primary: 'icon-resize-horizontal' }
-      })
-      .on('click', {name:''} , LMT.ui.html.Toolbar.fire);
-    
     //LMT.com.getInitData(); //this will trigger an update
   },
   
