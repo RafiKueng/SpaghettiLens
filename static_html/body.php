@@ -194,8 +194,13 @@
         <div id="out"></div>
 
 
-        <div id="slider" onclick="sliderclick();">
-          &lt;&lt;&gt;&gt;
+        <div id="slider" class="right" onclick="$.event.trigger('ToggleDisplay');">
+          <div style="position:absolute; top: 50%; left: 50%; margin-top: -0.75em; margin-left: -0.25em;">
+          <i class="icon-double-angle-left icon-4x"></i>
+          </div>
+          <!--
+            <button id="btnSliderChange">Change View</button>
+          -->
         </div>
 
       </div>
