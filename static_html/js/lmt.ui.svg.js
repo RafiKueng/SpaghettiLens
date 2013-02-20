@@ -373,6 +373,7 @@ svg.bg = {
   	floodfilter.setAttribute("result","comp");
   	filter.appendChild(floodfilter);
   	svg.bgCmatrix = [];
+  	svg.compFilter = [];
   
   	//for each background image...
   	for (var i = 0; i<ch.length; i++){
@@ -409,6 +410,7 @@ svg.bg = {
   		comp.setAttribute("k2", "1");
   		comp.setAttribute("k3", "1");
   		comp.setAttribute("k4", "0");
+  		svg.compFilter.push(comp)
   		filter.appendChild(comp);
   	}
   
@@ -425,7 +427,13 @@ svg.bg = {
   },
   
   updateColor: function(evt, i){
-  	svg.bgCmatrix[i].setAttribute("values", svg.generateColorMatrix(LMT.modelData.ch[i]));
+    if (LMT.modelData.img_type == "BW"){
+    	svg.bgCmatrix[i].setAttribute("values", svg.generateColorMatrix(LMT.modelData.ch[i]));
+  	}
+  	else {
+      svg.compFilter[i].setAttribute("k3", LMT.modelData.ch[i].co);
+      svg.compFilter[i].setAttribute("k4", LMT.modelData.ch[i].br);
+  	}
   },
   
   
