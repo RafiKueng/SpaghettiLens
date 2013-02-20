@@ -238,7 +238,51 @@
     <span id="hotkey"></span>
   </div>
 
-  <div id="color_dialog" class="dialog initHidden" title="ColorPicker">
+  <div id="color_dialog" class="dialog initHidden" title="Brightness / Contrast / Color Settings">
+    
+    <div id="cd_table">
+      <div class="cd_row">
+        <div class='cd_cell cd_cell_name '>
+          <p>Ch1</p>
+        </div>
+        
+        <div class="cd_cell cd_cell_sliders">
+          <div class="cd_i_table">
+          
+            <div style="display: table-row;">
+              <div class="cd_cell cd_cell_icon">
+                <i class="icon-adjust"></i>
+              </div>
+              <div class="cd_cell cd_cell_slider">
+                <div id="csettings_ch0_contrast" data-id="0" data-type="contrast" class="slider contrast"></div>
+              </div>
+              <div class="cd_cell cd_cell_value">
+                <p>0.00</p>
+              </div>
+            </div>
+            
+            <div style="display: table-row;">
+              <div class="cd_cell cd_cell_icon">
+                <i class="icon-lightbulb"></i>
+              </div>
+              <div class="cd_cell cd_cell_slider">
+                <div id="csettings_ch0_brightness" data-id="0" data-type="brightness" class="slider brightness"></div>
+              </div>
+              <div class="cd_cell cd_cell_value">
+                <p>0.00</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="cd_cell cd_cell_cp">
+          <input id="csettings_ch0_color" data-id="0" value="ff0000" class="mycp"></input>
+        </div>
+        
+      </div>
+    </div>
+    
+    <!--
     <div id="csettings_ch0" class="settings_channelcontainer">
       <div style="
       float: left;
@@ -255,6 +299,7 @@
         </input>
       </div>
     </div>
+    -->
   </div>
 
   <div id="display_dialog" class="dialog initHidden" title="Display Settings">

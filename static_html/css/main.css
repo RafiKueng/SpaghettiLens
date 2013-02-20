@@ -177,13 +177,6 @@ html, body {
 }
 
 
-.mycp {
-	margin: 5px 20px;
-	height: 30px;
-	width: 70px;
-	border: none;
-}
-
 .settings_channelcontainer .ui-button {
 	margin: 0px 20px;
 	width: 70px;
@@ -191,7 +184,7 @@ html, body {
 
 
 .slider {
-  margin: 20px;
+  margin: 5px 20px 10px;
 }
 
 
@@ -202,6 +195,78 @@ html, body {
 
 #dsettings {
 	margin-top: 10px;
+}
+
+
+/************
+ * Color settings dialog
+ */
+
+#cd_table {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.cd_row {
+  display: table-row;
+  border-color: #333333;
+  border-style:dashed;
+  border-width:1px;
+}
+
+.cd_cell {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+/* outer cells */
+
+.cd_cell_name {
+  width: 70px;
+  text-align: center;
+}
+
+.cd_cell_sliders {
+  width: auto;
+}
+
+.cd_cell_cp {
+  width: 100px;
+  text-align: center;
+}
+
+/* inner table */
+.cd_i_table {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.cd_cell_icon {
+  width: 40px;
+  text-align: center;
+}
+
+.cd_cell_slider {
+}
+
+.cd_cell_value {
+  width: 50px;
+  text-align: center;
+}
+
+/* special elements */
+.cd_cell > i {
+  margin: auto !important;
+}
+
+.cd_cell > p {
+  margin: 00px 0px;
+}
+
+.cd_cell_cp > input {
+  width: 80px;
 }
 
 
@@ -265,4 +330,11 @@ h1 {
 
 .initHidden {
   visibility:hidden;
+}
+
+
+.dashed {
+  border-color: #333333;
+  border-style:dashed;
+  border-width:1px;
 }

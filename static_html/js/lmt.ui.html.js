@@ -242,32 +242,37 @@ html.ColorSettingsDialog = {
   init: function(){	
 	
   		// multiply the color settings tools for n channels
-  	var $parent = $('#color_dialog');
-  	var $elem = $("#csettings_ch0");
+  	var $parent = $('#cd_table');
+  	var $elem = $("#cd_table > .cd_row");
   	var ch = LMT.modelData.ch;
   	
   	for (var i = 1; i<ch.length; i++){
   		$clone = $elem.clone(true, true);
-  		$clone.find('*').data('id', i);
+  		var e = $clone.find('*');
+  		e.data('id', i);
+  		e.first().children().text("Ch"+(i+1));
   		$clone.appendTo($parent);
   	}
   	
   	
   	// color picker dialog
-  	$('#color_dialog').dialog({
-  		autoOpen: false,
+    $('#color_dialog').dialog({
+  	 	autoOpen: false,
   		minWidth: 500,
   		open: function(){
   			 $('.mycp').each(function(i, val){
-  			   	var str = (1 << 24) | (ch[i].r*255 << 16) | (ch[i].g*255 << 8) | ch[i].b*255;
-  			 		$(this).val('#' + str.toString(16).substr(1)).focus();
-  			 		
-  			 		// hack that should update the field so they get their color from beginning
-  			 		var press = jQuery.Event("keyup");
-  					press.ctrlKey = false;
-  					press.which = 13;
-  					$(this).trigger(press);
+  			   //get color in hex notation   
+           var str = (1 << 24) | (ch[i].r*255 << 16) | (ch[i].g*255 << 8) | ch[i].b*255;
+           $(this).val('#' + str.toString(16).substr(1)).focus();
+           
+           // hack that should update the field so they get their color from beginning
+           /*
+           var press = jQuery.Event("keyup");
+           press.ctrlKey = false;
+           press.which = 13;
+           $(this).trigger(press);*/
   			 });
+  			 
   		}
   	});
   	
@@ -278,6 +283,15 @@ html.ColorSettingsDialog = {
   		min: -1,
   		value: 0,
   		step: 0.05,
+  		slide: function(evt, ui) {
+  		  //only update labels
+        var value = ui.value;
+        var type = $(this).data("type");
+        if (type=="contrast"){
+          value = Math.pow(10, value); //change range from [-1...1] to [0.1 ... 10]
+        }
+        $(this).parent().siblings('.cd_cell_value').children().text(value.toFixed(2));
+  		},
   		stop: function(evt, ui) {
   			var value = ui.value;
   			var type = $(this).data("type");
@@ -293,6 +307,16 @@ html.ColorSettingsDialog = {
   		}
   		
   	});
+  	
+  	var e = $('.cd_cell_value > p');
+  	e.filter(':even').text("1.00");
+    e.filter(':odd').text("0.00");
+  	
+	  // if color image, hide color settings
+	  if (LMT.modelData.img_type == "CO"){
+	    $(".cd_cell_cp").add(".cd_cell_name").hide();
+	  }
+	
 	
   	$('.mycp').colorpicker({
   		parts: ['header',
@@ -326,7 +350,7 @@ html.ColorSettingsDialog = {
   		},
   	});
   	
-  	$parent.removeClass("initHidden");
+  	$parent.parent().removeClass("initHidden");
   	
   },
   
