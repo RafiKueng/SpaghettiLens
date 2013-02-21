@@ -155,6 +155,7 @@ out = {
 	 */
 	draw: function(i){
 	  
+	  var that = LMT.ui.out; 
     var ctx = that.ctx[i]
     var data = that.imgData[i];
 	  var newData = jQuery.extend(true, {}, data); // make deep copy to operate on
