@@ -105,7 +105,7 @@ out = {
         var canvas = document.createElement('canvas');
         canvas.width = this.width;
         canvas.height = this.height;
-        var cxt =  canvas.getContext("2d");
+        var ctx =  canvas.getContext("2d");
         
         ctx.drawImage(this,0,0);
         var data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
