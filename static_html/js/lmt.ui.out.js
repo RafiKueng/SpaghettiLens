@@ -6,22 +6,23 @@
 
 /*(function(){*/
 
-function Output() {
+out = {
 	//config
-	this.$out = $("#out");
-	this.$btns = $("#btnsetOutNrNav");
-	this.$caption = null; 
+	$out: $("#out"),
+	$btns: $("#btnsetOutNrNav"),
+	$caption: null, 
 	
-	this.slides = [];
-	this.shownImage = -1;
+	slides: [],
+	shownImage: -1,
 	
-	this.tmp=0;
+	tmp: 0,
 
-	this.init = function() {
-		this.$caption = $('<div class="slide_caption">blabla</div>');
-		this.$caption.hide();
-		this.$caption.appendTo(this.$out);
-		this.tmp=1;
+	init: function() {
+	  var that = LMT.ui.out; 
+		that.$caption = $('<div class="slide_caption">blabla</div>');
+		that.$caption.hide();
+		that.$caption.appendTo(that.$out);
+		that.tmp=1;
 		
 		
 		$("#btnOutPrev").button({
@@ -38,13 +39,15 @@ function Output() {
 			icons: {primary: "icon-chevron-right" },
 		});
     $("#btnOutNext").on('click', function(){$.event.trigger('DisplayOutputSlideNext');});
-		
+
+		/*
 		$("#btnOutOverview").button({
 			text: false,
 			disabled: true,
 			icons: {primary: "icon-th-large" },
 		});
     $("#btnOutOverview").on('click', function(){$.event.trigger('DisplayOutputSlideOverview');});
+		*/
 		
 		$("#btnsetOutNav").buttonset();
 		$("#btnsetOutNav > button").button({ disabled: true });
