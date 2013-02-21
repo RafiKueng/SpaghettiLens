@@ -80,19 +80,48 @@ out = {
 	load: function(evt) {
 
     var that = LMT.ui.out; //since this is a callback, this is document, not this object
-		that.slides = [];
+		that.slides = [0,1,2]; //init slides to something
+		that.ctx = [0,1,2]; //canvas contexts
+		that.imgData = [0,1,2]; //original raw image data
 		var urls = LMT.simulationData.img;
 
 		that.$out.empty(); //remove previous results
 		that.$btns.empty(); //remove the number navigation buttons from previous results
 		
 		$.each(urls, function(i, val) {
+		  /*
 			var $div = $('<div class="slide"><img class="slide_img" src="'+ val.url +'" /></div>');
 			$div.hide();
-			
 			$div.appendTo(that.$out);
-			
 			that.slides.push($div);
+      */
+      var imageObj = new Image();
+      imageObj.onload = function(){
+        // this = imageObj
+        var that = LMT.ui.out; 
+        
+        var $div = $('<div class="slide"></div>');
+        $div.hide();
+        var canvas = document.createElement('canvas');
+        canvas.width = this.width;
+        canvas.height = this.height;
+        var cxt =  canvas.getContext("2d");
+        
+        ctx.drawImage(this,0,0);
+        var data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        
+        that.ctx[i] = ctx;
+        that.imgData[i] = data;
+        
+        canvas.appendTo($parent);
+        $div.appendTo(that.$out);
+        that.slides[i] = $div;
+        
+        that.draw(i);
+      };
+      imageObj.src = val.url;
+
+
 			
 			/*
 			var $nr = $('<span class="slide_btn">_' + i +'_</span>');
@@ -118,6 +147,28 @@ out = {
 		
 		$("#btnsetOutNav > button").button({ disabled: false });
 		
+	},
+	
+	
+	/**
+	 *actually draws the i-th image on the canvas, considering brightness und constrast settings 
+	 */
+	draw: function(i){
+	  
+    var ctx = that.ctx[i]
+    var data = that.imgData[i];
+	  var newData = jQuery.extend(true, {}, data); // make deep copy to operate on
+	  var br = 0;
+	  var co = 1;
+	  
+	  for (var i = 0; i < data.length; i += 4) {
+      newData[i  ] = data[i  ] * co + br; //r
+      newData[i+1] = data[i+1] * co + br; //g
+      newData[i+2] = data[i+2] * co + br; //b
+      newData[i+3] = data[i+3];           //a
+	  }
+	  
+	  ctx.putImageData(newData, 0, 0);
 	},
 	
 	/**
