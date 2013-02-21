@@ -13,12 +13,12 @@ out = {
 	  var that = LMT.ui.out; 
 
     //config
-    $out: $("#out"),
-    $btns: $("#btnsetOutNrNav"),
-    $caption: null, 
+    that.$out: $("#out"),
+    that.$btns: $("#btnsetOutNrNav"),
+    that.$caption: null, 
     
-    slides: [],
-    shownImage: -1,
+    that.slides: [],
+    that.shownImage: -1,
 
 		that.$caption = $('<div class="slide_caption">blabla</div>');
 		that.$caption.hide();
