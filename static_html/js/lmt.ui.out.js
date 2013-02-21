@@ -202,7 +202,7 @@ out = {
 	 */
 	showOverview: function(){
 	  return false;
-	};
+	},
 	
 } 
 
