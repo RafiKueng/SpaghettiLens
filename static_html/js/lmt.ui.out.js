@@ -25,6 +25,7 @@ out = {
 		that.tmp=1;
 		
 		
+		/*
 		$("#btnOutPrev").button({
 			text: false,
 			disabled: false,
@@ -39,6 +40,7 @@ out = {
 			icons: {primary: "icon-chevron-right" },
 		});
     $("#btnOutNext").on('click', function(){$.event.trigger('DisplayOutputSlideNext');});
+    */
 
 		/*
 		$("#btnOutOverview").button({
@@ -67,10 +69,14 @@ out = {
 
 		
 		var tmp = 1;
-	};
+	},
 	
 	
-	this.load = function() {
+	/**
+	 * callback
+	 * if a result is received, load images into dom 
+	 */
+	load: function(evt) {
 
     var that = LMT.ui.out; //since this is a callback, this is document, not this object
 		that.slides = [];
@@ -111,12 +117,12 @@ out = {
 		
 		$("#btnsetOutNav > button").button({ disabled: false });
 		
-	};
+	},
 	
 	/**
 	 * callback, displays next slide 
 	 */
-	this.next = function(evt){
+	next: function(evt){
 	  var that = LMT.ui.out;
 	  var i = that.shownImage+1;
 	  if (i > that.slides.length-1) {
@@ -125,13 +131,13 @@ out = {
 		LMT.ui.out.showSlide(i);
 		$('input[name="slideNr"]')[i].checked = true;
 		$('input[name="slideNr"]').change();
-	};
+	},
 	
 	
 	/**
 	 * callback, displays prev slide 
 	 */
-	this.prev = function(){
+	prev: function(evt){
     var that = LMT.ui.out;
     var i = that.shownImage-1;
     if (i < 0) {
@@ -140,13 +146,13 @@ out = {
     LMT.ui.out.showSlide(i);
     $('input[name="slideNr"]')[i].checked = true;
     $('input[name="slideNr"]').change();
-	};
+	},
 
 
 	
-	this.show = function(evt, i){
+	show: function(evt, i){
 		LMT.ui.out.showSlide(i);
-	};
+	},
 	
 	/**
 	 *internal, does really show the image
@@ -155,23 +161,25 @@ out = {
 	 * 81 the old image, thats being showed, but replaced with a new one
 	 * 82 the new image that will be faded to
 	 */
-	this.showSlide = function(i){
+	showSlide: function(i){
+	  
+	  var that = LMT.ui.out;
 		//cancle current timeout of caption
-		if (this.captionRemoveTimer){
-			window.clearTimeout(this.captionRemoveTimer);
+		if (that.captionRemoveTimer){
+			window.clearTimeout(that.captionRemoveTimer);
 		}
 
-		if (this.shownImage > -1 && i != this.shownImage) {
-			var $curr = this.slides[this.shownImage];
+		if (that.shownImage > -1 && i != that.shownImage) {
+			var $curr = that.slides[that.shownImage];
 			$curr.css({zIndex: 81});
 			$curr.addClass('bg');
 			$curr.stop(true, true); //it this obj is still animated, cancle all animations and go immideatly to end state
 		}
 		
-		var $new = this.slides[i];
+		var $new = that.slides[i];
 		$new.hide();            //hide the new element in foreground
 		$new.css({zIndex: 82}); //make it top
-		this.shownImage = i; 
+		that.shownImage = i; 
 		
 		$new.fadeIn(400, function(){ //and fade it in
 			var $elem = $('.slide.bg');
@@ -182,20 +190,24 @@ out = {
 		
 		//show the caption 3 secs
 		$('.slide_caption').slideDown();
-		this.captionRemoveTimer = window.setTimeout(function(){
+		that.captionRemoveTimer = window.setTimeout(function(){
 			$('.slide_caption').slideUp();
 		}, 3000);
-	};
+	},
 	
 	
-	this.showOverview = function(){
+	/**
+	 * show all output images side by side
+	 * not implemented 
+	 */
+	showOverview: function(){
 	  return false;
 	};
 	
 } 
 
 
-LMT.ui.output = Output;
+LMT.ui.out = out;
 
 
 /*})();*/
