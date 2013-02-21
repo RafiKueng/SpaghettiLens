@@ -7,18 +7,19 @@
 /*(function(){*/
 
 out = {
-	//config
-	$out: $("#out"),
-	$btns: $("#btnsetOutNrNav"),
-	$caption: null, 
-	
-	slides: [],
-	shownImage: -1,
-	
 	tmp: 0,
 
 	init: function() {
 	  var that = LMT.ui.out; 
+
+    //config
+    $out: $("#out"),
+    $btns: $("#btnsetOutNrNav"),
+    $caption: null, 
+    
+    slides: [],
+    shownImage: -1,
+
 		that.$caption = $('<div class="slide_caption">blabla</div>');
 		that.$caption.hide();
 		that.$caption.appendTo(that.$out);
