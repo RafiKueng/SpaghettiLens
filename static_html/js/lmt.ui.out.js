@@ -113,7 +113,7 @@ out = {
         that.ctx[i] = ctx;
         that.imgData[i] = data;
         
-        canvas.appendTo($parent);
+        $parent.append(canvas);
         $div.appendTo(that.$out);
         that.slides[i] = $div;
         
