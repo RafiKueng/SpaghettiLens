@@ -83,6 +83,7 @@ out = {
 		that.slides = [0,1,2]; //init slides to something
 		that.ctx = [0,1,2]; //canvas contexts
 		that.imgData = [0,1,2]; //original raw image data
+		that.img = [0,1,2]; // image objects
 		var urls = LMT.simulationData.img;
 
 		that.$out.empty(); //remove previous results
@@ -113,14 +114,16 @@ out = {
         that.ctx[i] = ctx;
         that.imgData[i] = data;
         
-        $parent.append(canvas);
+        var $canv = $(canvas);
+        $canv.addClass("slide_img");
+        $canv.appendTo($div);
         $div.appendTo(that.$out);
         that.slides[i] = $div;
         
         that.draw(i);
       };
       imageObj.src = val.url;
-
+      that.img[i] = imageObj;
 
 			
 			/*
@@ -158,7 +161,8 @@ out = {
 	  var that = LMT.ui.out; 
     var ctx = that.ctx[i]
     var data = that.imgData[i];
-	  var newData = jQuery.extend(true, {}, data); // make deep copy to operate on
+	  var newImgData = ctx.createImageData(that.img[i].width, that.img[i].height); // make deep copy to operate on
+	  var newData = newImgData.data; 
 	  var br = 0;
 	  var co = 1;
 	  
@@ -169,7 +173,7 @@ out = {
       newData[i+3] = data[i+3];           //a
 	  }
 	  
-	  ctx.putImageData(newData, 0, 0);
+	  ctx.putImageData(newImgData, 0, 0);
 	},
 	
 	/**
