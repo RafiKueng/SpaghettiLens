@@ -247,12 +247,14 @@ out = {
 		if (that.captionRemoveTimer){
 			window.clearTimeout(that.captionRemoveTimer);
 		}
+    
+    if (i == that.shownImage){
+      return;
+    }
 
 		if (that.shownImage > -1 && i != that.shownImage) {
-			var $curr = that.slides[that.shownImage];
-			$curr.css({zIndex: 81});
-			$curr.addClass('bg');
-			$curr.stop(true, true); //it this obj is still animated, cancle all animations and go immideatly to end state
+      var $all = $(".slide");
+			$all.stop(true, true); //it this obj is still animated, cancle all animations and go immideatly to end state
 		}
 		
 		var $new = that.slides[i];
@@ -261,10 +263,11 @@ out = {
 		that.shownImage = i; 
 		
 		$new.fadeIn(400, function(){ //and fade it in
-			var $elem = $('.slide.bg');
-			$elem.toggleClass('bg');
-			$elem.css({zIndex: 80});
-			//$elem.hide();
+		  // after finish, reset zlevels to normal
+      var $curr = that.slides[that.shownImage];
+      var $others = $(".slide").not($curr);
+      $others.css({zIndex: 80});
+      $curr.css({zIndex: 81});
 		});
 		
 		//show the caption 3 secs
