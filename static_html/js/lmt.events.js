@@ -20,28 +20,24 @@ var events = {
 
     initGetVars()
 
+    
     // first init some objects in the namespace
-    
-    LMT.ui.out = new LMT.ui.output(); //TODO change this not to be an object
-    LMT.ui.out.init();    
-    
     LMT.model = new LMT.objects.Model();
     LMT.model.init();
     
     LMT.actionstack = new LMT.objects.ActionStack();    
     
-    
     // then assign handlers
-    
     LMT.events.assignHandlers();
     
-    
     // then initalise the rest
-    
+    LMT.ui.out.init();    
     LMT.ui.html.SelectModelDialog.init();
     LMT.ui.html.Toolbar.init();
     LMT.ui.html.DisplaySettingsDialog.init();
     LMT.ui.html.GlassSettingsDialog.init();
+    LMT.ui.html.ColorSettingsOutputDialog.init();
+    
     LMT.ui.html.Tooltip.init();
     LMT.ui.html.KeyboardListener.init();
     
@@ -55,8 +51,6 @@ var events = {
       $.event.trigger("ShowSelectModelDataDialog"); //this will trigger the getmodedata on close
       //LMT.ui.html.SelectModelDialog.show();
     }
-    
-    //LMT.com.getModelData(id);
     
   },
   
@@ -101,7 +95,9 @@ var events = {
 
     $(document).on('ShowDialogColorSettings', LMT.ui.html.ColorSettingsDialog.show);
     $(document).on('ShowDialogDisplaySettings', LMT.ui.html.DisplaySettingsDialog.show);
-    $(document).on('ShowDialogGlassSettings', LMT.ui.html.GlassSettingsDialog.show); //not yet implemented
+    $(document).on('ShowDialogGlassSettings', LMT.ui.html.GlassSettingsDialog.show); 
+    $(document).on('ShowDialogOutputGraphics', LMT.ui.html.ColorSettingsOutputDialog.show);
+    $(document).on('RedrawCurrentOutput', LMT.ui.out.updateImg);
 
 
     $(document).on('SwitchMode', LMT.ui.svg.SwitchMode);

@@ -287,7 +287,7 @@ def saveModel(request):
       
     except KeyError:
       print "KeyError in save model"
-      data = json.dumps({"status":"BAD_JSON_DATA","desc":"the saveModel view couldn't access expected attributes in POST information"})
+      data = sjson.dumps({"status":"BAD_JSON_DATA","desc":"the saveModel view couldn't access expected attributes in POST information"})
       response = HttpResponseNotFound(data, content_type="application/json")
       response['Access-Control-Allow-Origin'] = "*"
       return response
@@ -297,7 +297,7 @@ def saveModel(request):
 
     except BasicLensData.DoesNotExist:
       print "BLD not found in save model"
-      data = json.dumps({"status":"BAD_MODELID_DOES_NOT_EXIST","desc":"the saveModel view couldn't the basic_data_obj you wanted to save a result for"})
+      data = sjson.dumps({"status":"BAD_MODELID_DOES_NOT_EXIST","desc":"the saveModel view couldn't the basic_data_obj you wanted to save a result for"})
       response = HttpResponseNotFound(data, content_type="application/json")
       response['Access-Control-Allow-Origin'] = "*"
       return response
@@ -310,7 +310,7 @@ def saveModel(request):
                           is_final= False)
     print "after eval and save"
     #r.save()
-    data = json.dumps({"status":"OK", "result_id": "%06i" % obj.result_id})
+    data = sjson.dumps({"status":"OK", "result_id": "%06i" % obj.result_id})
     response = HttpResponse(data, content_type="application/json")
       
     response['Access-Control-Allow-Origin'] = "*"
@@ -329,7 +329,7 @@ def getSimulationJSON(request, result_id):
   print "in getSimulationJSON"
   
   def returnDataIfReady():
-    return json.dumps({"status":"READY",
+    return sjson.dumps({"status":"READY",
                          "cached": True,
                          "result_id": "%06i" % result_id,
                          "n_img": 3,
@@ -373,10 +373,10 @@ def getSimulationJSON(request, result_id):
       data = returnDataIfReady()
 
     elif task.state == "FAILURE":
-      data = json.dumps({"status":"FAILURE", "result_id": "%06i" % result_id})
+      data = sjson.dumps({"status":"FAILURE", "result_id": "%06i" % result_id})
       
     else:
-      data = json.dumps({"status":"PENDING", "result_id": "%06i" % result_id})
+      data = sjson.dumps({"status":"PENDING", "result_id": "%06i" % result_id})
     
   else:
     print "starting new task"
@@ -388,7 +388,7 @@ def getSimulationJSON(request, result_id):
     res.rendered_last = datetime.now();
     res.save()
     #start the new task, retrun status information
-    data = json.dumps({"status":"STARTED", "result_id": "%06i" % result_id})
+    data = sjson.dumps({"status":"STARTED", "result_id": "%06i" % result_id})
     pass
   
   
@@ -414,7 +414,7 @@ def getSimulationFiles(request, result_id, filename):
   #  if no answer till then, redirect so same url and start again
   
   
-  data = json.dumps({"status":result_id, "result_id":filename})
+  data = sjson.dumps({"status":result_id, "result_id":filename})
   response = HttpResponse(data, content_type="application/json")
   
   response['Access-Control-Allow-Origin'] = "*"

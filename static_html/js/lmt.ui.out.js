@@ -6,24 +6,27 @@
 
 /*(function(){*/
 
-function Output() {
-	//config
-	this.$out = $("#out");
-	this.$btns = $("#btnsetOutNrNav");
-	this.$caption = null; 
-	
-	this.slides = [];
-	this.shownImage = -1;
-	
-	this.tmp=0;
+out = {
+	tmp: 0,
 
-	this.init = function() {
-		this.$caption = $('<div class="slide_caption">blabla</div>');
-		this.$caption.hide();
-		this.$caption.appendTo(this.$out);
-		this.tmp=1;
+	init: function() {
+	  var that = LMT.ui.out; 
+
+    //config
+    that.$out = $("#out"),
+    that.$btns = $("#btnsetOutNrNav"),
+    that.$caption = null, 
+    
+    that.slides = [],
+    that.shownImage = -1,
+
+		that.$caption = $('<div class="slide_caption">blabla</div>');
+		that.$caption.hide();
+		that.$caption.appendTo(that.$out);
+		that.tmp=1;
 		
 		
+		/*
 		$("#btnOutPrev").button({
 			text: false,
 			disabled: false,
@@ -38,13 +41,16 @@ function Output() {
 			icons: {primary: "icon-chevron-right" },
 		});
     $("#btnOutNext").on('click', function(){$.event.trigger('DisplayOutputSlideNext');});
-		
+    */
+
+		/*
 		$("#btnOutOverview").button({
 			text: false,
 			disabled: true,
 			icons: {primary: "icon-th-large" },
 		});
     $("#btnOutOverview").on('click', function(){$.event.trigger('DisplayOutputSlideOverview');});
+		*/
 		
 		$("#btnsetOutNav").buttonset();
 		$("#btnsetOutNav > button").button({ disabled: true });
@@ -58,31 +64,75 @@ function Output() {
     $("#btnOutGlassConfig").on('click', function(){$.event.trigger('ShowDialogGlassSettings');});
 
 
+    var $btn = $("#btnOutGraphics");
+    $btn.button({
+      text: false,
+      disabled: true,
+      icons: {primary: $btn.data("icon") },
+    });
+    $("#btnOutGraphics").on('click', function(){$.event.trigger($btn.data("event"));});
+
     $("#btnsetOutConfig").buttonset();
     
     
 
 		
 		var tmp = 1;
-	};
+	},
 	
 	
-	this.load = function() {
+	/**
+	 * callback
+	 * if a result is received, load images into dom 
+	 */
+	load: function(evt) {
 
     var that = LMT.ui.out; //since this is a callback, this is document, not this object
-		that.slides = [];
+		that.slides = [0,1,2]; //init slides to something
+		that.ctx = [0,1,2]; //canvas contexts
+		that.imgData = [0,1,2]; //original raw image data
+		that.img = [0,1,2]; // image objects
 		var urls = LMT.simulationData.img;
 
 		that.$out.empty(); //remove previous results
 		that.$btns.empty(); //remove the number navigation buttons from previous results
 		
 		$.each(urls, function(i, val) {
+		  /*
 			var $div = $('<div class="slide"><img class="slide_img" src="'+ val.url +'" /></div>');
 			$div.hide();
-			
 			$div.appendTo(that.$out);
-			
 			that.slides.push($div);
+      */
+      var imageObj = new Image();
+      imageObj.onload = function(){
+        // this = imageObj
+        var that = LMT.ui.out; 
+        
+        var $div = $('<div class="slide"></div>');
+        $div.hide();
+        var canvas = document.createElement('canvas');
+        canvas.width = this.width;
+        canvas.height = this.height;
+        var ctx =  canvas.getContext("2d");
+        
+        ctx.drawImage(this,0,0);
+        var data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        
+        that.ctx[i] = ctx;
+        that.imgData[i] = data;
+        
+        var $canv = $(canvas);
+        $canv.addClass("slide_img");
+        $canv.appendTo($div);
+        $div.appendTo(that.$out);
+        that.slides[i] = $div;
+        
+        that.draw(i);
+      };
+      imageObj.src = val.url;
+      that.img[i] = imageObj;
+
 			
 			/*
 			var $nr = $('<span class="slide_btn">_' + i +'_</span>');
@@ -106,14 +156,52 @@ function Output() {
 		
 		that.$btns.buttonset();
 		
-		$("#btnsetOutNav > button").button({ disabled: false });
+		//reset the output color/contrast
+		LMT.settings.display.out = [{br:0, co:1},{br:0, co:1},{br:0, co:1}];
 		
-	};
+		$("#btnsetOutNav > button").button({ disabled: false });
+		$('#btnOutGraphics').button({disabled: false});
+	},
+	
+	
+	/**
+	 *actually draws the i-th image on the canvas, considering brightness und constrast settings 
+	 */
+	draw: function(i){
+	  
+	  var that = LMT.ui.out; 
+    var ctx = that.ctx[i]
+    var data = that.imgData[i];
+	  var newImgData = ctx.createImageData(that.img[i].width, that.img[i].height); // make deep copy to operate on
+	  var newData = newImgData.data; 
+	  var br = LMT.settings.display.out[i].br * 255;
+	  var co = LMT.settings.display.out[i].co;
+	  
+	  for (var i = 0; i < data.length; i += 4) {
+      newData[i  ] = data[i  ] * co + br; //r
+      newData[i+1] = data[i+1] * co + br; //g
+      newData[i+2] = data[i+2] * co + br; //b
+      newData[i+3] = data[i+3];           //a
+	  }
+	  
+	  ctx.putImageData(newImgData, 0, 0);
+	},
+	
+	
+	/**
+	 *callback 
+	 *
+	 *redraws current shown image 
+	 */
+	updateImg: function(evt){
+	  LMT.ui.out.draw(LMT.ui.out.shownImage);
+	},
+	
 	
 	/**
 	 * callback, displays next slide 
 	 */
-	this.next = function(evt){
+	next: function(evt){
 	  var that = LMT.ui.out;
 	  var i = that.shownImage+1;
 	  if (i > that.slides.length-1) {
@@ -122,13 +210,13 @@ function Output() {
 		LMT.ui.out.showSlide(i);
 		$('input[name="slideNr"]')[i].checked = true;
 		$('input[name="slideNr"]').change();
-	};
+	},
 	
 	
 	/**
 	 * callback, displays prev slide 
 	 */
-	this.prev = function(){
+	prev: function(evt){
     var that = LMT.ui.out;
     var i = that.shownImage-1;
     if (i < 0) {
@@ -137,13 +225,13 @@ function Output() {
     LMT.ui.out.showSlide(i);
     $('input[name="slideNr"]')[i].checked = true;
     $('input[name="slideNr"]').change();
-	};
+	},
 
 
 	
-	this.show = function(evt, i){
+	show: function(evt, i){
 		LMT.ui.out.showSlide(i);
-	};
+	},
 	
 	/**
 	 *internal, does really show the image
@@ -152,47 +240,60 @@ function Output() {
 	 * 81 the old image, thats being showed, but replaced with a new one
 	 * 82 the new image that will be faded to
 	 */
-	this.showSlide = function(i){
+	showSlide: function(i){
+	  
+	  var that = LMT.ui.out;
 		//cancle current timeout of caption
-		if (this.captionRemoveTimer){
-			window.clearTimeout(this.captionRemoveTimer);
+		if (that.captionRemoveTimer){
+			window.clearTimeout(that.captionRemoveTimer);
 		}
+    
+    if (i == that.shownImage){
+      return;
+    }
 
-		if (this.shownImage > -1 && i != this.shownImage) {
-			var $curr = this.slides[this.shownImage];
-			$curr.css({zIndex: 81});
-			$curr.addClass('bg');
-			$curr.stop(true, true); //it this obj is still animated, cancle all animations and go immideatly to end state
+		if (that.shownImage > -1 && i != that.shownImage) {
+      var $all = $(".slide");
+			$all.stop(true, true); //it this obj is still animated, cancle all animations and go immideatly to end state
 		}
 		
-		var $new = this.slides[i];
+		var $new = that.slides[i];
 		$new.hide();            //hide the new element in foreground
 		$new.css({zIndex: 82}); //make it top
-		this.shownImage = i; 
+		that.shownImage = i; 
 		
 		$new.fadeIn(400, function(){ //and fade it in
-			var $elem = $('.slide.bg');
-			$elem.toggleClass('bg');
-			$elem.css({zIndex: 80});
-			//$elem.hide();
+		  // after finish, reset zlevels to normal
+      var $curr = that.slides[that.shownImage];
+      var $others = $(".slide").not($curr);
+      $others.css({zIndex: 80});
+      $curr.css({zIndex: 81});
 		});
 		
 		//show the caption 3 secs
 		$('.slide_caption').slideDown();
-		this.captionRemoveTimer = window.setTimeout(function(){
+		that.captionRemoveTimer = window.setTimeout(function(){
 			$('.slide_caption').slideUp();
 		}, 3000);
-	};
+		
+	  //update the color settings output dialog if shown
+    LMT.ui.html.ColorSettingsOutputDialog.refresh();
+		
+	},
 	
 	
-	this.showOverview = function(){
+	/**
+	 * show all output images side by side
+	 * not implemented 
+	 */
+	showOverview: function(){
 	  return false;
-	};
+	},
 	
 } 
 
 
-LMT.ui.output = Output;
+LMT.ui.out = out;
 
 
 /*})();*/
