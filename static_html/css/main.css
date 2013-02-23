@@ -270,6 +270,14 @@ html, body {
 }
 
 
+
+#cod_table {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+
+
 /*******************************************************
   single text elements styling
  *******************************************************/

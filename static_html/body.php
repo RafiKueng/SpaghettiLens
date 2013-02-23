@@ -178,6 +178,14 @@
             -->
             <span id="btnsetOutNrNav"></span>
             <span id="btnsetOutConfig">
+              <button id="btnOutGraphics"
+                data-event="ShowDialogOutputGraphics"
+                data-tooltip="display the graphicssettings for the output"
+                data-furtherinfo="http://www.google.com"
+                data-hotkey="t"
+                data-icon="icon-adjust">
+                Change brightness and contrast of output images
+              </button>
               <button id="btnOutGlassConfig">
                 Configure Glass (backend simulation program)
               </button>
@@ -281,6 +289,46 @@
         
       </div>
     </div>
+    
+    
+  <div id="color_out_dialog" class="dialog initHidden" title="Brightness / Contrast / Color Settings of Output">
+    
+    <div id="cod_table">
+      <div class="cd_row">
+        
+        <div class="cd_cell cd_cell_sliders">
+          <div class="cd_i_table">
+          
+            <div style="display: table-row;">
+              <div class="cd_cell cd_cell_icon">
+                <i class="icon-adjust"></i>
+              </div>
+              <div class="cd_cell cd_cell_slider">
+                <div id="cod_co" data-id="0" data-type="contrast" class="slider contrast"></div>
+              </div>
+              <div class="cd_cell cd_cell_value">
+                <p>0.00</p>
+              </div>
+            </div>
+            
+            <div style="display: table-row;">
+              <div class="cd_cell cd_cell_icon">
+                <i class="icon-lightbulb"></i>
+              </div>
+              <div class="cd_cell cd_cell_slider">
+                <div id="cod_br" data-id="0" data-type="brightness" class="slider brightness"></div>
+              </div>
+              <div class="cd_cell cd_cell_value">
+                <p>0.00</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>    
+    
+    
     
     <!--
     <div id="csettings_ch0" class="settings_channelcontainer">

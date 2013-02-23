@@ -36,6 +36,8 @@ var events = {
     LMT.ui.html.Toolbar.init();
     LMT.ui.html.DisplaySettingsDialog.init();
     LMT.ui.html.GlassSettingsDialog.init();
+    LMT.ui.html.ColorSettingsOutputDialog.init();
+    
     LMT.ui.html.Tooltip.init();
     LMT.ui.html.KeyboardListener.init();
     
@@ -93,7 +95,9 @@ var events = {
 
     $(document).on('ShowDialogColorSettings', LMT.ui.html.ColorSettingsDialog.show);
     $(document).on('ShowDialogDisplaySettings', LMT.ui.html.DisplaySettingsDialog.show);
-    $(document).on('ShowDialogGlassSettings', LMT.ui.html.GlassSettingsDialog.show); //not yet implemented
+    $(document).on('ShowDialogGlassSettings', LMT.ui.html.GlassSettingsDialog.show); 
+    $(document).on('ShowDialogOutputGraphics', LMT.ui.html.ColorSettingsOutputDialog.show);
+    $(document).on('RedrawCurrentOutput', LMT.ui.out.updateImg);
 
 
     $(document).on('SwitchMode', LMT.ui.svg.SwitchMode);

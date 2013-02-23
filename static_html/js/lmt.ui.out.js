@@ -64,6 +64,14 @@ out = {
     $("#btnOutGlassConfig").on('click', function(){$.event.trigger('ShowDialogGlassSettings');});
 
 
+    var $btn = $("#btnOutGraphics");
+    $btn.button({
+      text: false,
+      disabled: true,
+      icons: {primary: $btn.data("icon") },
+    });
+    $("#btnOutGraphics").on('click', function(){$.event.trigger($btn.data("event"));});
+
     $("#btnsetOutConfig").buttonset();
     
     
@@ -148,8 +156,11 @@ out = {
 		
 		that.$btns.buttonset();
 		
-		$("#btnsetOutNav > button").button({ disabled: false });
+		//reset the output color/contrast
+		LMT.settings.display.out = [{br:0, co:1},{br:0, co:1},{br:0, co:1}];
 		
+		$("#btnsetOutNav > button").button({ disabled: false });
+		$('#btnOutGraphics').button({disabled: false});
 	},
 	
 	
@@ -163,8 +174,8 @@ out = {
     var data = that.imgData[i];
 	  var newImgData = ctx.createImageData(that.img[i].width, that.img[i].height); // make deep copy to operate on
 	  var newData = newImgData.data; 
-	  var br = 0;
-	  var co = 1;
+	  var br = LMT.settings.display.out[i].br * 255;
+	  var co = LMT.settings.display.out[i].co;
 	  
 	  for (var i = 0; i < data.length; i += 4) {
       newData[i  ] = data[i  ] * co + br; //r
@@ -175,6 +186,17 @@ out = {
 	  
 	  ctx.putImageData(newImgData, 0, 0);
 	},
+	
+	
+	/**
+	 *callback 
+	 *
+	 *redraws current shown image 
+	 */
+	updateImg: function(evt){
+	  LMT.ui.out.draw(LMT.ui.out.shownImage);
+	},
+	
 	
 	/**
 	 * callback, displays next slide 
@@ -250,6 +272,10 @@ out = {
 		that.captionRemoveTimer = window.setTimeout(function(){
 			$('.slide_caption').slideUp();
 		}, 3000);
+		
+	  //update the color settings output dialog if shown
+    LMT.ui.html.ColorSettingsOutputDialog.refresh();
+		
 	},
 	
 	

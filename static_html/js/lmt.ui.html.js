@@ -361,6 +361,97 @@ html.ColorSettingsDialog = {
   
   
 }
+
+
+
+html.ColorSettingsOutputDialog = {
+  init: function(){ 
+  
+   
+    
+    // color picker dialog
+    $('#color_out_dialog').dialog({
+      autoOpen: false,
+      minWidth: 500,
+      open: function(){
+        LMT.ui.html.ColorSettingsOutputDialog.refresh();
+      }
+    });
+    
+    
+    //sliders
+    $('#color_out_dialog .slider').slider({
+      max: 1,
+      min: -1,
+      value: 0,
+      step: 0.01,
+      slide: function(evt, ui) {
+        var value = ui.value;
+        var type = $(this).data("type");
+        var i = LMT.ui.out.shownImage;
+        
+        if (type=="contrast"){
+          value = Math.pow(10, value); //change range from [-1...1] to [0.1 ... 10]
+          LMT.settings.display.out[i].co = value;
+        }
+        else {
+          LMT.settings.display.out[i].br = value;
+        }
+        
+        log.write("stopped sliding");
+        $(this).parent().siblings('.cd_cell_value').children().text(value.toFixed(2));
+        $.event.trigger('RedrawCurrentOutput');
+      },
+      stop: function(evt, ui) {
+        var value = ui.value;
+        var type = $(this).data("type");
+        var i = LMT.ui.out.shownImage;
+        
+        if (type=="contrast"){
+          value = Math.pow(10, value); //change range from [-1...1] to [0.1 ... 10]
+          LMT.settings.display.out[i].co = value;
+        }
+        else {
+          LMT.settings.display.out[i].br = value;
+        }
+        
+        log.write("stopped sliding");
+        $.event.trigger('RedrawCurrentOutput');
+      }
+      
+    });
+    
+    var e = $('.cd_cell_value > p');
+    e.filter(':even').text("1.00");
+    e.filter(':odd').text("0.00");
+    
+
+    $('#color_out_dialog').removeClass("initHidden");
+    
+  },
+  
+  show: function(){
+    $('#color_out_dialog').dialog("open");
+  },
+  
+  
+  /**
+   * sets the sliders to the current values 
+   */
+  refresh: function() {
+    var co = LMT.settings.display.out[LMT.ui.out.shownImage].co;
+    var co10 = Math.log(co) / Math.LN10;
+    var br = LMT.settings.display.out[LMT.ui.out.shownImage].br
+    $("#cod_br").slider( "option", "value", br )
+      .parent().siblings('.cd_cell_value').children().text(br.toFixed(2));
+    $("#cod_co").slider( "option", "value", co10 )
+      .parent().siblings('.cd_cell_value').children().text(co.toFixed(2));
+    
+  }
+  
+}
+
+
   	
 	
 	
