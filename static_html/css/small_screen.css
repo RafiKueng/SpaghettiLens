@@ -4,42 +4,64 @@ html, body {
   min-width: 560px;
 }
 
-#toolbar1 {
-  left: 0px;
-  right: 0px;
-  z-index: 15;
+body {
+  margin: 0px;
+  padding: 0px;
 }
 
-#toolbar2 {
-  left: 0px;
-  right: 0px;
-  z-index: 14;
+
+/*only have rounded edges in big screen*/
+.rounded_top {
+  border-top-left-radius: 0px; 
+  border-top-right-radius: 0px; 
+}
+
+.rounded_bottom {
+  border-bottom-left-radius: 0px; 
+  border-bottom-right-radius: 0px; 
+}
+
+#headtitle {
+  display: table-row;
+  height: 50px;
+  font-size: 1.5em;
+
+}
+
+#toolbarTop {
+  display: table-row;
+  height: 50px;
+  font-size: 1em;
+}
+
+
+#toolbarInp {
+  width:100%;
+}
+
+#toolbarOut {
+  display: none;
+  width:100%;
 }
 
 #inp {
-  right: 50px;
-  z-index: 15;
+  width: auto;
 }
 
-#out {
-  left: 50px;
-  z-index: 14;
-}
-
-#slider {
-  position:absolute;
-  display: block;
-  top: 60px;
-  bottom: 0px;
+#bigslider {
+  display: table-cell;
   width: 50px;
   background-color: white;
   font-size: 3em;
   color: #fff;
+  vertical-align: middle;
 }
 
-#slider.left {
-  left: 0px;
-  
+#bigslider i{
+  margin-left: 5px !important;
+}
+
+#bigslider.left {
   -webkit-transition: background 500ms ;
   -moz-transition: background 500ms ;
   -ms-transition: background 500ms ;
@@ -53,9 +75,7 @@ html, body {
   background: linear-gradient(left,  #333 0%,#000 100%);
 }
 
-#slider.right {
-  right: 0px;
-  
+#bigslider.right {
   -webkit-transition: background 500ms ;
   -moz-transition: background 500ms ;
   -ms-transition: background 500ms ;
@@ -69,6 +89,13 @@ html, body {
   background: linear-gradient(right,  #333 0%,#000 100%);
 }
 
+
+
+
+#out {
+  display: none;
+  width:auto;
+}
 
 #log {
   left: 0px;

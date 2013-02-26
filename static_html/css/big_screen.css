@@ -1,31 +1,58 @@
-@media screen and (min-width: 980px) {
-
-html, body {
-  min-width: 980px;
+body {
+  margin: 20px;
+  padding: 20px;
 }
 
-#toolbar1 {
-  left: 0px;
-  width: 50%;
+
+/*only have rounded edges in big screen*/
+.rounded_top {
+  border-top-left-radius: 20px; 
+  border-top-right-radius: 20px; 
 }
 
-#toolbar2{
-  right: 0px;
-  width: 50%;
+.rounded_bottom {
+  border-bottom-left-radius: 20px; 
+  border-bottom-right-radius: 20px; 
+}
+
+
+#headtitle {
+  display: table-cell;
+  width: auto;
+  font-size: 1em;
+}
+
+
+#toolbarTop {
+  display: table-cell;
+  width: 250px;
+  vertical-align: bottom;
+}
+
+
+#toolbarInp {
+  width:50%;
+}
+
+#toolbarOut {
+  width:50%;
 }
 
 #inp {
-  width: 50%;
+  width:50%;
+}
+
+#bigslider {
+  display: none;
 }
 
 #out {
-  width: 50%;
+  width:50%;
 }
+
 
 #log {
   left: 50px;
   right: 50px;
   bottom: -250px;
-}
-
 }

@@ -2,98 +2,126 @@
   basic page layout / arrangement styles
  *******************************************************/
 
-html, body {
+html {
   margin: 0px;
   padding: 0px;
   height: 100%;
   min-height: 600px;
-  background-color: black;
+  background-color: #fff;
 }
 
-#doc {
-  /*height: 100%;*/
+
+body {
   position: absolute;
-
-  top: 10px;
-  bottom: 10px;
-  left: 10px;
-  right: 10px;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  background-color: #ff0;
+  min-height: 600px;
 }
 
-#top {
+
+
+
+.layout.table {
   display: table;
-  height: 100px;
   width: 100%;
-  background-color: #808080;
-  border-top-left-radius: 20px; 
-  border-top-right-radius: 20px; 
+}
+.layout.table.fixed {
+  table-layout: fixed;
+}
+.layout.table.strech {
+  height: 100%;
 }
 
-#cont {
-  position: absolute;
-  top: 100px;
-  bottom: 50px;
-  width: 100%;
-  background-color: black;
+.layout.row {
+  display: table-row;
+  height: 1px;
+  width: 100%
 }
+.layout.row.strech {
+  height: auto;
+}
+
+.layout.cell {
+  display: table-cell;
+}
+.layout.cell.centered {
+  text-align: center;
+}
+
+
+
+
+#outer_table {
+  background-color: #aaa;
+}
+
+
+#head {
+  background-color: #f00;
+}
+
+
+#headtitle {
+  background-color: #f33;
+}
+
+#toolbarTop {
+  background-color: #fcc;
+}
+
+
+#toolbars {
+  background-color: green;
+  min-height: 50px;
+}
+
+#toolbarInp {
+  background-color: #3f3;
+}
+
+#toolbarOut {
+  background-color: #cfc;
+}
+
+
 
 #main {
-  height: 100%;
-  position: relative;
-  /*background-color: magenta;*/
-  min-height: 400px;
+  background-color: #00f;
 }
-
-/*
-#toolbar1 {
-  background-color: orange;
-}
-
-#toolbar2 {
-  background-color: red;
-}
-*/
 
 #inp {
-  position: absolute;
-  top: 60px;
-  left: 0px;
-  bottom: 0px;
-  background-color: black;
+  background-color: #55f;
   border-color: #333333;
   border-style:dashed;
   border-width:1px;
 }
+
+#bigslider {
+  background-color: #0ff;
+}
+
 
 #out {
-  position: absolute;
-  top: 60px;
-  right: 0px;
-  bottom: 0px;
-  /*background-color: blue;*/
-  background-color: black;
+  background-color: #aaf;
   border-color: #333333;
   border-style:dashed;
   border-width:1px;
 }
 
-#slider {
-  position: absolute;
-  display: none; /* will be displayed in small mode*/
-  z-index: 99;
+#help {
+  background-color: #ff0;
+
+  display: none;
+  height: 50px;
 }
 
 #footer {
-  position: absolute;
-  bottom: 0px;
+  /*background-color: #aa7;*/
   height: 50px;
-  width: 100%;
-  
-  background-color: #333333;
-  border-bottom-left-radius: 20px; 
-  border-bottom-right-radius: 20px; 
-
-  font-size: 75%;
+  font-size: 0.75em;
 }
 
 #log {
@@ -106,32 +134,43 @@ html, body {
   font-family: "Courier New", "Lucida Console";
 }
 
-#popup {
-  /* will only be displayed on mouse over events at that specific location*/
-  display: none; 
-  position: absolute;
-
-  z-index: 100;
-  max-width: 200px;
-
-  padding: 20px;
-  border: solid;
-	border-radius: 20px;
-	background: rgba(255, 255, 255, 0.8); /*slightly transparent*/
-}
-
-#popup.left {
-	border-top-left-radius: 0px;
-}
-
-#popup.right {
-	border-top-right-radius: 0px;
-}
 
 
 
-#svgroot {
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -140,12 +179,10 @@ html, body {
  */
 
 .slide {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  right: 0px;
-  text-align:center;
+  background-color:#FF00FF;
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .slide_img {
@@ -337,6 +374,7 @@ h1 {
 }
 
 .initHidden {
+  display: none;
   visibility:hidden;
 }
 
