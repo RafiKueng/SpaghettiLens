@@ -1,0 +1,38 @@
+@media screen and (max-width: 980px) {
+
+body {
+  margin: 0px;
+  padding: 0px;
+}
+
+#headtitle {
+  display: table-row;
+  height: 50px;
+}
+
+#headtoolbar {
+  display: table-row;
+  height: 50px;
+}
+
+
+#inp_toolbar {
+  width:100%;
+}
+
+#out_toolbar {
+  display: none;
+  width:100%;
+}
+
+#inp {
+}
+
+#slider {
+  width: 50px;
+}
+
+#out {
+  display: none;
+  width:100%;
+}

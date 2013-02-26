@@ -1,0 +1,115 @@
+html{
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+  min-height: 600px;
+  background-color: #fff;
+}
+
+
+body {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  background-color: #ff0;
+}
+
+#doc {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  background-color: #333;
+}
+
+#outer_table {
+  background-color: #aaa;
+}
+
+
+#head {
+  background-color: #f00;
+  font-size: 3em;
+}
+
+#headtitle {
+  background-color: #f33;
+}
+
+#headtoolbar {
+  background-color: #fcc;
+}
+
+#toolbars {
+  min-height: 50px;
+  background-color: green;
+}
+
+#inp_toolbar {
+  background-color: #3f3;
+}
+
+#out_toolbar {
+  background-color: #cfc;
+}
+
+
+
+#main {
+  background-color: #00f;
+}
+
+#inp {
+  background-color: #55f;
+}
+
+#slide {
+  background-color: #0ff;
+}
+
+
+#out {
+  background-color: #aaf;
+}
+
+#help {
+  display: none;
+  background-color: #ff0;
+  height: 50px;
+}
+
+#footer {
+  background-color: #ff7;
+  height: 50px;
+}
+
+.layout.table {
+  display: table;
+  width: 100%;
+}
+.layout.table.fixed {
+  table-layout: fixed;
+}
+.layout.table.strech {
+  height: 100%;
+}
+
+.layout.row {
+  display: table-row;
+  height: 1px;
+  width: 100%
+}
+
+.layout.row.strech {
+  height: auto;
+}
+
+.layout.cell {
+  display: table-cell;
+}
+.layout.cell.centered {
+  text-align: center;
+}

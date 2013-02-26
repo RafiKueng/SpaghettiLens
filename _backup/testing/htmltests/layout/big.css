@@ -1,0 +1,40 @@
+@media screen and (min-width: 980px) {
+
+body {
+  margin: 20px;
+  padding: 20px;
+}
+
+
+#headtitle {
+  display: table-cell;
+  width: auto;
+}
+
+
+#headtoolbar {
+  display: table-cell;
+  width: 1px;
+  vertical-align: bottom;
+}
+
+
+#inp_toolbar {
+  width:50%;
+}
+
+#out_toolbar {
+  width:50%;
+}
+
+#inp {
+  width:50%;
+}
+
+#slider {
+  display: none;
+}
+
+#out {
+  width:50%;
+}
