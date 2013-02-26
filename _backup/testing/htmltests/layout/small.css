@@ -8,11 +8,14 @@ body {
 #headtitle {
   display: table-row;
   height: 50px;
+  font-size: 1.5em;
+
 }
 
 #headtoolbar {
   display: table-row;
   height: 50px;
+  font-size: 1em;
 }
 
 
@@ -29,10 +32,12 @@ body {
 }
 
 #slider {
+  display: table-cell;
   width: 50px;
 }
 
 #out {
   display: none;
   width:100%;
+}
 }

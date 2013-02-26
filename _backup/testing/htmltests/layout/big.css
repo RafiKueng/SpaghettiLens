@@ -1,5 +1,3 @@
-@media screen and (min-width: 980px) {
-
 body {
   margin: 20px;
   padding: 20px;
@@ -9,6 +7,7 @@ body {
 #headtitle {
   display: table-cell;
   width: auto;
+  font-size: 3em;
 }
 
 
@@ -16,6 +15,8 @@ body {
   display: table-cell;
   width: 1px;
   vertical-align: bottom;
+  font-size: 3em;
+
 }
 
 
@@ -37,4 +38,5 @@ body {
 
 #out {
   width:50%;
+}
 }
