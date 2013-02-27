@@ -80,10 +80,12 @@ body {
 
 #toolbarInp {
   background-color: #3f3;
+  opacity: 1.0;
 }
 
 #toolbarOut {
   background-color: #cfc;
+  opacity: 1.0;
 }
 
 

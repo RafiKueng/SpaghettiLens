@@ -693,22 +693,57 @@ html.KeyboardListener = {
  */
 html.ToggleDisplay = function(evt){
   //alert("sliderklick");
-  LMT.ui.html.dispState = $("#slider").hasClass('left') ? 'left' : 'right';
-  $("#slider").toggleClass('left right');
-  $("#slider i").toggleClass('icon-double-angle-right icon-double-angle-left');
-  
+  LMT.ui.html.dispState = $("#bigslider").hasClass('left') ? 'left' : 'right';
+
   if (LMT.ui.html.dispState == 'left') {
-    $front = $("#toolbar2").add("#out");
-    $back = $("#toolbar1").add("#inp");
+    hide = [$("#out"), $("#toolbarOut")];
+    show = [$("#inp"), $("#toolbarInp")];
   }
   else {
-    $back = $("#toolbar2").add("#out");
-    $front = $("#toolbar1").add("#inp");
+    show = [$("#out"), $("#toolbarOut")];
+    hide = [$("#inp"), $("#toolbarInp")];
   }
-    
-  $back.hide().css({'z-index':'16'});
-  $front.css({'z-index':'15'});
-  $back.fadeIn(200);
+  
+  hide[0]
+  .css("opacity", 1)
+  .animate({opacity: 0}, {
+    duration: 100,
+    done: function(){
+      $(this).css("display", "none");
+      $("#bigslider").toggleClass('left right');  
+      $("#bigslider i").toggleClass('icon-double-angle-right icon-double-angle-left');
+      show[0]
+      .css("opacity", 0)
+      .animate({opacity: 1}, {duration: 300})
+      .css("display", "table-cell");
+    }
+  });
+
+  hide[1]
+  .css("opacity", 1)
+  .animate({opacity: 0}, {
+    duration: 100,
+    done: function(){
+      $(this).css("display", "none");
+      show[1]
+      .css("opacity", 0)
+      .animate({opacity: 1}, {duration: 300})
+      .css("display", "table-cell");
+    }
+  });
+  
+  
+  /* very nice sliding animation, but it doesn't work with content in divs...
+  show[0].animate({width: "100%"},{
+    duration: 400,
+  }).css("display", "table-cell");
+
+  hide[0].animate({width: "0%"},{
+    duration: 400,
+    done: function(){$(this).css("display", "none")}
+  }).css("display", "table-cell");
+  */
+  
 }
 
 
