@@ -32,14 +32,17 @@ body {
 
 #toolbarInp {
   width:50%;
+  left: 0px;
 }
 
 #toolbarOut {
   width:50%;
+  right: 0px;
 }
 
 #inp {
   width:50%;
+  left: 0px;
 }
 
 #bigslider {
@@ -48,6 +51,7 @@ body {
 
 #out {
   width:50%;
+  right: 0px;
 }
 
 

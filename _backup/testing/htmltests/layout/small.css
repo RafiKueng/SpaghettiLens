@@ -21,23 +21,34 @@ body {
 
 #inp_toolbar {
   width:100%;
+  z-index: 21;
 }
 
 #out_toolbar {
-  display: none;
   width:100%;
+  z-index: 20;
 }
 
 #inp {
+  left: 0px;
+  right: 50px;
+  z-index: 21;
+  width: auto;
 }
 
 #slider {
-  display: table-cell;
+  display: block;
   width: 50px;
+  z-index: 22;
 }
 
+#slider.left {left: 0px;}
+#slider.right {right: 0px;}
+
 #out {
-  display: none;
-  width:100%;
+  left: 50px;
+  right: 0px;
+  z-index: 20;
+  width: auto;
 }
 }

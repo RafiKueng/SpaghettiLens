@@ -47,11 +47,24 @@ body {
 .layout.cell {
   display: table-cell;
 }
-.layout.cell.centered {
+.layout.centered {
   text-align: center;
 }
 
 
+.layout.fillbox {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.layout.block {
+  display: block;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+}
 
 
 #outer_table {
@@ -75,17 +88,15 @@ body {
 
 #toolbars {
   background-color: green;
-  min-height: 50px;
+  min-height: 60px;
 }
 
 #toolbarInp {
   background-color: #3f3;
-  opacity: 1.0;
 }
 
 #toolbarOut {
   background-color: #cfc;
-  opacity: 1.0;
 }
 
 

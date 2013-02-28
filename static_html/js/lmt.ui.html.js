@@ -703,7 +703,26 @@ html.ToggleDisplay = function(evt){
     show = [$("#out"), $("#toolbarOut")];
     hide = [$("#inp"), $("#toolbarInp")];
   }
+  $hide = hide[0].add(hide[1]);
+  $show = show[0].add(show[1]);
   
+  $show.hide().css("zIndex", 21);
+  $hide.css("zIndex", 20);
+  
+  
+  var dur = 2000;
+  $show.fadeIn({duration: dur});
+  
+  $("#bigslider").fadeOut({
+    duration: dur/2,
+    done: function() {
+      $("#bigslider").toggleClass('left right');  
+      $("#bigslider i").toggleClass('icon-double-angle-right icon-double-angle-left');
+    }
+  });
+  $("#bigslider").fadeIn({duration: dur/2});
+  
+  /*
   hide[0]
   .css("opacity", 1)
   .animate({opacity: 0}, {
@@ -731,7 +750,7 @@ html.ToggleDisplay = function(evt){
       .css("display", "table-cell");
     }
   });
-  
+  **/
   
   /* very nice sliding animation, but it doesn't work with content in divs...
   show[0].animate({width: "100%"},{

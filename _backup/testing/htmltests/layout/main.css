@@ -41,7 +41,7 @@ body {
 .layout.cell {
   display: table-cell;
 }
-.layout.cell.centered {
+.layout.centered {
   text-align: center;
 }
 
@@ -55,6 +55,19 @@ body {
   border-bottom-right-radius: 20px; 
 }
 
+.layout.fillbox {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.layout.block {
+  display: block;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+}
 
 
 #outer_table {
@@ -116,7 +129,7 @@ body {
 }
 
 #footer {
-  /*background-color: #aa7;*/
+  background-color: #aa7;
   height: 50px;
 }
 

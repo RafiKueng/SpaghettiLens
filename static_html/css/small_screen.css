@@ -30,27 +30,32 @@ body {
 
 #toolbarTop {
   display: table-row;
-  height: 50px;
+  height: 60px;
   font-size: 1em;
 }
 
 
 #toolbarInp {
   width:100%;
+  z-index: 21;
 }
 
 #toolbarOut {
-  display: none;
   width:100%;
+  z-index: 20;
 }
 
 #inp {
+  left: 0px;
+  right: 50px;
+  z-index: 21;
   width: auto;
 }
 
 #bigslider {
-  display: table-cell;
+  display: block;
   width: 50px;
+  z-index: 22;
   background-color: white;
   font-size: 3em;
   color: #fff;
@@ -62,6 +67,8 @@ body {
 }
 
 #bigslider.left {
+  left: 0px;
+  
   -webkit-transition: background 500ms ;
   -moz-transition: background 500ms ;
   -ms-transition: background 500ms ;
@@ -76,6 +83,8 @@ body {
 }
 
 #bigslider.right {
+  right: 0px;
+  
   -webkit-transition: background 500ms ;
   -moz-transition: background 500ms ;
   -ms-transition: background 500ms ;
@@ -93,8 +102,10 @@ body {
 
 
 #out {
-  display: none;
-  width:auto;
+  left: 50px;
+  right: 0px;
+  z-index: 20;
+  width: auto;
 }
 
 #log {

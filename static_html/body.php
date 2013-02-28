@@ -63,11 +63,11 @@
 
 
   <div class="layout row">
-    <div id="toolbars" class="layout table fixed">
+    <div id="toolbars" class="layout fillbox">
       
       
       
-      <div id="toolbarInp" class="layout cell centered">
+      <div id="toolbarInp" class="layout block centered">
         <span id="toolbarGrp1" class="toolbar ui-widget-header ui-corner-all">
           <span id="btnsetXxdo" class="btnset">
             <button id="btnInUndo"
@@ -169,7 +169,7 @@
       
       
       
-      <div id="toolbarOut" class="layout cell centered">
+      <div id="toolbarOut" class="layout block centered">
         <span id="toolbarGrp2" class="toolbar ui-widget-header ui-corner-all">
           <span id="btnsetOutNrNav"></span>
           <span id="btnsetOutConfig">
@@ -200,18 +200,19 @@
 
 
   <div class="layout row strech">
-    <div id="main" class="layout table strech fixed">
+    <div class="layout fillbox">
+      
+      <div id="inp" class="layout block">
+      </div>
 
-        <div id="inp" class="layout cell">
-        </div>
-
-        <div id="bigslider" class="layout cell right" onclick="$.event.trigger('ToggleDisplay');">
+      <div id="bigslider" class="layout block right" onclick="$.event.trigger('ToggleDisplay');">
+        <div style="position:absolute; top: 50%; left: 50%; margin-top: -0.75em; margin-left: -0.125em;">
           <i class="icon-double-angle-left"></i>
         </div>
-
-        <div id="out" class="layout cell">
-          <div class="slide"></div>
-        </div>
+      </div>
+        
+      <div id="out" class="layout block">
+      </div>
 
     </div>
   </div>
