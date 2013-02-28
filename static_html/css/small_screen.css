@@ -62,9 +62,6 @@ body {
   vertical-align: middle;
 }
 
-#bigslider i{
-  margin-left: 5px !important;
-}
 
 #bigslider.left {
   left: 0px;

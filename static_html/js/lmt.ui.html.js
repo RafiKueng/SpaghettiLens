@@ -710,7 +710,8 @@ html.ToggleDisplay = function(evt){
   $hide.css("zIndex", 20);
   
   
-  var dur = 2000;
+  var dur = 200;
+  
   $show.fadeIn({duration: dur});
   
   $("#bigslider").fadeOut({
@@ -720,7 +721,12 @@ html.ToggleDisplay = function(evt){
       $("#bigslider i").toggleClass('icon-double-angle-right icon-double-angle-left');
     }
   });
-  $("#bigslider").fadeIn({duration: dur/2});
+  $("#bigslider").fadeIn({
+    duration: dur/2,
+    done: function(){
+      $("#bigslider").css('display', '');
+    }
+  });
   
   /*
   hide[0]

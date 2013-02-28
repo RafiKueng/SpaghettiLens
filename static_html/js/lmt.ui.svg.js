@@ -59,7 +59,8 @@ svg.initCanvas = function() {
 	//set attributes	
 	svg.root.setAttribute('id', 'svgroot');
 	svg.root.setAttribute('width', '100%');
-	svg.root.setAttribute('height', '100%');
+  svg.root.setAttribute('height', '100%');
+  svg.root.setAttribute('viewBox', '0 0 500 500');
 	svg.root.setAttribute('xmlns:xlink', svg.xlinkns);
 	svg.layer.bg.setAttribute('id', 'bg');
 
