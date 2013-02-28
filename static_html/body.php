@@ -200,7 +200,7 @@
 
 
   <div class="layout row strech">
-    <div class="layout fillbox">
+    <div id="main" class="layout fillbox">
       
       <div id="inp" class="layout block">
       </div>

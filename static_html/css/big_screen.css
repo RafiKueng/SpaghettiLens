@@ -1,6 +1,6 @@
 body {
-  margin: 20px;
-  padding: 20px;
+  margin: 0px;
+  padding: 5px;
 }
 
 
@@ -27,6 +27,7 @@ body {
   display: table-cell;
   width: 250px;
   vertical-align: bottom;
+  padding: 5px;
 }
 
 
