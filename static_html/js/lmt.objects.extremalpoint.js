@@ -414,6 +414,7 @@ ExtremalPoint.prototype.paint = function() {
     this.line.setAttribute("y1", this.y);
     this.line.setAttribute("x2", this.parent.x);
     this.line.setAttribute("y2", this.parent.y);
+    this.line.setAttribute("stroke-width", ExtremalPoint.strokeWidth_def / LMT.settings.display.zoompan.scale);
   }
 }
 
@@ -444,6 +445,7 @@ ExtremalPoint.prototype.toJSON = function(){
  ************************************************/
 
 ExtremalPoint.r_def = 10;
+ExtremalPoint.strokeWidth_def = 3;
 
 
 /*

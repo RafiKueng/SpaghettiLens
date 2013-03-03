@@ -128,6 +128,8 @@ Contour.prototype.createSVG = function() {
 
 Contour.prototype.updateSVG = function(pathstr) {
   this.path.setAttribute("d", pathstr);
+  this.path.setAttribute("stroke-width", Contour.strokeWidth_def / LMT.settings.display.zoompan.scale);
+  
 }
 
 Contour.prototype.deleteSVG = function() {
@@ -341,7 +343,7 @@ Contour.createFromJSONObj = function(obj) {
 		
 };
 
-
+Contour.strokeWidth_def = 3;
 
 
 

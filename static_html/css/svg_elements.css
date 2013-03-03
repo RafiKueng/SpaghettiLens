@@ -17,13 +17,13 @@
 
 .connectorline {
 	stroke: #ff00ff;
-	stroke-width:3;
+	/*stroke-width:3;*/
 }
 
 .contourpath {
 	stroke: #ff00ff;
 	fill: none;
-	stroke-width: 3;
+	/*stroke-width: 3;*/
 }
 
 
