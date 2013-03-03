@@ -48,7 +48,7 @@
           </button>
 
           <input id="btnMainHelp" type="checkbox"
-            data-event="ToggleHelp"
+            data-event="ToggleHelpBar"
             data-tooltip="Displays the mouseover help"
             data-furtherinfo="http://www.google.com"
             data-hotkey="H, F1"

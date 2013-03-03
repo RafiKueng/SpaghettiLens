@@ -63,12 +63,36 @@ svg.initCanvas = function() {
   svg.root.setAttribute('viewBox', '0 0 500 500');
 	svg.root.setAttribute('xmlns:xlink', svg.xlinkns);
 	svg.layer.bg.setAttribute('id', 'bg');
-
+  svg.layer.masses.setAttribute('id', 'masses');
+  svg.layer.models.setAttribute('id', 'models');
+  svg.layer.connectorlines.setAttribute('id', 'connectorlines');
+  svg.layer.contourlines.setAttribute('id', 'contourlines');
+  svg.layer.contourpoints.setAttribute('id', 'contourpoints');
+  svg.layer.extremalpoints.setAttribute('id', 'extremalpoints');
+  svg.layer.rulers.setAttribute('id', 'rulers');
+  
 	//set event listeners
 	svg.root.addEventListener('click', LMT.ui.svg.events.onClick);
 	svg.root.addEventListener('mousedown', LMT.ui.svg.events.onMouseDown);
 	svg.root.addEventListener('mouseup', LMT.ui.svg.events.onMouseUp);
 	svg.root.addEventListener('mouseout', LMT.ui.svg.events.onMouseOut);
+	
+  var activeLayers = ['masses', 'connectorlines', 'contourlines',
+    'contourpoints', 'extremalpoints', 'rulers', 'bg'];
+    
+	for (var i=0; i<activeLayers.length; ++i) {
+	  var l = activeLayers[i];
+	  var tmp = $(svg.layer[l]);
+	  tmp.mouseenter(function(evt){
+      $.event.trigger("MouseEnter", evt);
+    });
+	};
+	
+	/*
+	$(svg.root).mouseenter(function(evt){
+	  $.event.trigger("MouseEnter", evt);
+  });
+	*/
 	
 	if (svg.root.addEventListener) {
 		// IE9, Chrome, Safari, Opera

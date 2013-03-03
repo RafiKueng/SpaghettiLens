@@ -772,6 +772,88 @@ html.ToggleDisplay = function(evt){
 }
 
 
+html.HelpBar = {
+  
+  isShown: function(){
+    //get state of button
+    var isIt = $("#btnMainHelp")[0].checked;
+    return isIt;
+  },
+  
+  init: function() {
+    
+  },
+  
+  toggle: function(){
+    var that = LMT.ui.html.HelpBar;
+    if (that.isShown()){
+      $("#help").show();
+    }
+    else {
+      $("#help").hide();
+    }
+  },
+  
+  show: function(title, body) {
+    var t = $("<div class='help title'></div>").html(title);
+    var b = $("<ul class='help list'></ul>");
+    for (var i=0;i<body.length;++i){
+      b.append($("<li></li>").html(body[i]));
+    }
+    $("#help").empty().append(t).append(b);
+  },
+  
+  MouseEnter: function(a, evt) {
+    var tmp = evt;
+    var ctid = evt.currentTarget.id;
+    var jsTarget = evt.target.jsObj || null;
+    
+    var activeLayers = ['masses', 'connectorlines', 'contourlines',
+      'contourpoints', 'extremalpoints', 'rulers', 'bg'];
+
+
+    if (ctid=="extremalpoints"){
+      
+      var t = "";
+      t += jsTarget.isExpanded ? "Expanded" : "Unexpanded";
+      t += " Extremalpoint (of type: " + jsTarget.type + ") of the arrival time surface.";
+      var b=["Click to " + (jsTarget.isExpanded ? "collapse" : "expand")];
+      b.push("Drag to move");
+      b.push("to remove, use the Undo function");
+      
+      html.HelpBar.show(t, b);
+    }
+    
+    else if (ctid == "bg") {
+      var t = "Modelling Area";
+      var b = [];
+      if (LMT.settings.mode=="image"){b.push("Click to mark an Image");}
+      else if (LMT.settings.mode=="ruler"){b.push("Click to place a ruler");}
+      else if (LMT.settings.mode=="mass"){b.push("Click to place an exernal mass");}
+      b.push("(change what to place in the toolbar)");
+      b.push("Drag to move");
+      b.push("Mousewheel to zoom in/out, mousewheel press to reset");
+      html.HelpBar.show(t, b);
+    }
+    
+    else if (ctid == "contourpoints") {
+      var t = "Contor Point (only visual aid, doesn't influence the model)";
+      var b = [];
+      b.push("Drag to move");
+      b.push("Click to doublicate");
+      b.push("Move close to next / previous to delete");
+      html.HelpBar.show(t,b);
+    }
+
+    else {
+      html.HelpBar.show("unknown element",[]);
+    } 
+    
+  }
+}
+
+
+
 LMT.ui.html = html;
 
 /*})();*/
