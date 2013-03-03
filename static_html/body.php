@@ -1,14 +1,15 @@
 <!-- START body.php -->
 
 <body>
+  
+<div id="outer_table" class="layout table strech rounded_top rounded_bottom">
 
-  <div id="doc">
-
-    <div id="top">
-      <div style="display:table-cell; height: 100%">
+  <div class="layout row">
+    <div id="head" class="layout table rounded_top">
+      <div id="headtitle" class="layout cell">
         <h1>Lens Modelling Tool</h1>
       </div>
-      <div id="toolbarTop" style="display:table-cell; width: auto; text-align: right;vertical-align: bottom; padding: 10px; ">
+      <div id="toolbarTop" class="layout cell centered">
         <span id="toolbarGrpTop" class="toolbar ui-widget-header ui-corner-all">
           <span id="btngrpMainNav" class="btnset">
             <button id="btnMainActionPrev"
@@ -57,345 +58,355 @@
         </span>
       </div>
     </div>
+  </div>  
 
-    <div id="cont">
-      <div id="main">
-        <div id="toolbar1" class="toolbarContainer">
-          <span id="toolbarGrp1" class="toolbar ui-widget-header ui-corner-all">
-            <span id="btnsetXxdo" class="btnset">
-              <button id="btnInUndo"
-                data-event="Undo"
-                data-tooltip="reverts the last action"
-                data-furtherinfo="http://www.google.com"
-                data-hotkey="Ctrl+Z; Q"
-                data-icon="icon-undo">
-                Undo
-              </button>
-              <button id="btnInRedo"
-                data-event="Redo"
-                data-tooltip="reapplies the last undone action"
-                data-furtherinfo="http://www.google.com"
-                data-hotkey="Ctrl+Y; W"
-                data-icon="icon-repeat">
-                Redo
-              </button>
-            </span>
-            
-            <span id="btngrpSettings" class="btnset">
-              <button id="btnInSettingsColor"
-                data-event="ShowDialogColorSettings"
-                data-tooltip="change the color mapping"
-                data-furtherinfo="http://www.google.com"
-                data-hotkey="C"
-                data-icon="icon-adjust">
-                Show Color Settings
-              </button>
-              <button id="btnInSettingsLines"
-                data-event="ShowDialogDisplaySettings"
-                data-tooltip="enables / disables some heling lines"
-                data-furtherinfo="http://www.google.com"
-                data-hotkey="C"
-                data-icon="icon-eye-open">
-                Show Display Settings
-              </button>
-            </span>
-            
-            <span id="btngrpMode" class="btnset">
-              <input type="radio" id="btnInModeMass" name="mode"
-                data-event="SwitchMode" data-value="mass"
-                data-tooltip="places additional point masses"
-                data-furtherinfo="http://www.google.com"
-                data-hotkey="C"
-                data-icon="icon-star" />
-              <label for="btnInModeMass">Place Point Masses</label>
 
-              <input type="radio" id="btnInModeImage" name="mode"
-                data-event="SwitchMode" data-value="image"
-                data-tooltip="places additional images"
-                data-furtherinfo="http://www.google.com"
-                data-hotkey="C"
-                data-icon="icon-screenshot"
-                checked="checked"/>
-              <label for="btnInModeImage">Mark Images</label>
 
-              <input type="radio" id="btnInModeRuler" name="mode"
-                data-event="SwitchMode" data-value="ruler"
-                data-tooltip="places a helping ruler to estimate distances"
-                data-furtherinfo="http://www.google.com"
-                data-hotkey="C"
-                data-icon="icon-resize-horizontal" />
-              <label for="btnInModeRuler">Add Ruler to esimate Distances</label>
-            </span>
-            
-            <span id="btngrpActions" class="btnset">
-              <!--
-              <button id="btnInActionSave"
-                data-event="SaveModel"
-                data-tooltip="Save the Model"
-                data-furtherinfo="http://www.google.com"
-                data-hotkey="C"
-                data-icon="icon-save">
-                Save the model locally
-              </button>
-              -->
-              <!--
-              <button id="btnInActionUpload"
-                data-event="UploadModel"
-                data-tooltip="Save the final model on the server"
-                data-furtherinfo="http://www.google.com"
-                data-hotkey="C"
-                data-icon="icon-cloud-upload">
-                Save the final model on the server
-              </button>
-              -->
-              <button id="btnInActionSimulateModel"
-                data-event="SimulateModel"
-                data-tooltip="update the simulated results"
-                data-furtherinfo="http://www.google.com"
-                data-hotkey="C"
-                data-icon="icon-cogs">
-                Simulate the Model and Refresh the Output Images
-              </button>
-            </span>
+  <div class="layout row">
+    <div id="toolbars" class="layout fillbox">
+      
+      
+      
+      <div id="toolbarInp" class="layout block centered">
+        <span id="toolbarGrp1" class="toolbar ui-widget-header ui-corner-all">
+          <span id="btnsetXxdo" class="btnset">
+            <button id="btnInUndo"
+              data-event="Undo"
+              data-tooltip="reverts the last action"
+              data-furtherinfo="http://www.google.com"
+              data-hotkey="Ctrl+Z; Q"
+              data-icon="icon-undo">
+              Undo
+            </button>
+            <button id="btnInRedo"
+              data-event="Redo"
+              data-tooltip="reapplies the last undone action"
+              data-furtherinfo="http://www.google.com"
+              data-hotkey="Ctrl+Y; W"
+              data-icon="icon-repeat">
+              Redo
+            </button>
           </span>
-        </div>
+          
+          <span id="btngrpSettings" class="btnset">
+            <button id="btnInSettingsColor"
+              data-event="ShowDialogColorSettings"
+              data-tooltip="change the color mapping"
+              data-furtherinfo="http://www.google.com"
+              data-hotkey="C"
+              data-icon="icon-adjust">
+              Show Color Settings
+            </button>
+            <button id="btnInSettingsLines"
+              data-event="ShowDialogDisplaySettings"
+              data-tooltip="enables / disables some heling lines"
+              data-furtherinfo="http://www.google.com"
+              data-hotkey="C"
+              data-icon="icon-eye-open">
+              Show Display Settings
+            </button>
+          </span>
+          
+          <span id="btngrpMode" class="btnset">
+            <input type="radio" id="btnInModeMass" name="mode"
+              data-event="SwitchMode" data-value="mass"
+              data-tooltip="places additional point masses"
+              data-furtherinfo="http://www.google.com"
+              data-hotkey="C"
+              data-icon="icon-star" />
+            <label for="btnInModeMass">Place Point Masses</label>
 
+            <input type="radio" id="btnInModeImage" name="mode"
+              data-event="SwitchMode" data-value="image"
+              data-tooltip="places additional images"
+              data-furtherinfo="http://www.google.com"
+              data-hotkey="C"
+              data-icon="icon-screenshot"
+              checked="checked"/>
+            <label for="btnInModeImage">Mark Images</label>
 
-        <div id="toolbar2" class="toolbarContainer">
-          <span id="toolbarGrp2" class="toolbar ui-widget-header ui-corner-all">
+            <input type="radio" id="btnInModeRuler" name="mode"
+              data-event="SwitchMode" data-value="ruler"
+              data-tooltip="places a helping ruler to estimate distances"
+              data-furtherinfo="http://www.google.com"
+              data-hotkey="C"
+              data-icon="icon-resize-horizontal" />
+            <label for="btnInModeRuler">Add Ruler to esimate Distances</label>
+          </span>
+          
+          <span id="btngrpActions" class="btnset">
             <!--
-            <span id="btnsetOutNav">
-              <button id="btnOutPrev">
-                Previous
-              </button>
-              <button id="btnOutNext">
-                Next
-              </button>
-            </span>
-            <button id="btnOutOverview">
-              Overview
+            <button id="btnInActionSave"
+              data-event="SaveModel"
+              data-tooltip="Save the Model"
+              data-furtherinfo="http://www.google.com"
+              data-hotkey="C"
+              data-icon="icon-save">
+              Save the model locally
             </button>
             -->
-            <span id="btnsetOutNrNav"></span>
-            <span id="btnsetOutConfig">
-              <button id="btnOutGraphics"
-                data-event="ShowDialogOutputGraphics"
-                data-tooltip="display the graphicssettings for the output"
-                data-furtherinfo="http://www.google.com"
-                data-hotkey="t"
-                data-icon="icon-adjust">
-                Change brightness and contrast of output images
-              </button>
-              <button id="btnOutGlassConfig">
-                Configure Glass (backend simulation program)
-              </button>
-            </span>
+            <!--
+            <button id="btnInActionUpload"
+              data-event="UploadModel"
+              data-tooltip="Save the final model on the server"
+              data-furtherinfo="http://www.google.com"
+              data-hotkey="C"
+              data-icon="icon-cloud-upload">
+              Save the final model on the server
+            </button>
+            -->
+            <button id="btnInActionSimulateModel"
+              data-event="SimulateModel"
+              data-tooltip="update the simulated results"
+              data-furtherinfo="http://www.google.com"
+              data-hotkey="C"
+              data-icon="icon-cogs">
+              Simulate the Model and Refresh the Output Images
+            </button>
           </span>
-        </div>
-
-
-
-        <div id="inp"></div>
-
-
-
-        <div id="out"></div>
-
-
-        <div id="slider" class="right" onclick="$.event.trigger('ToggleDisplay');">
-          <div style="position:absolute; top: 50%; left: 50%; margin-top: -0.75em; margin-left: -0.25em;">
-          <i class="icon-double-angle-left icon-4x"></i>
-          </div>
-          <!--
-            <button id="btnSliderChange">Change View</button>
-          -->
-        </div>
-
+        </span>
       </div>
-    </div>
+      
+      
+      
+      <div id="toolbarOut" class="layout block centered">
+        <span id="toolbarGrp2" class="toolbar ui-widget-header ui-corner-all">
+          <span id="btnsetOutNrNav"></span>
+          <span id="btnsetOutConfig">
+            <button id="btnOutGraphics"
+              data-event="ShowDialogOutputGraphics"
+              data-tooltip="display the graphicssettings for the output"
+              data-furtherinfo="http://www.google.com"
+              data-hotkey="t"
+              data-icon="icon-adjust">
+              Change brightness and contrast of output images
+            </button>
+            <button id="btnOutGlassConfig">
+              Configure Glass (backend simulation program)
+            </button>
+          </span>
+        </span>
+      </div>
 
-    <footer id="footer">
-      footer
-    </footer>
 
-    <div id="log" onclick="togglelog();">
-      <p id="logtitle">
-        DEBUG INFORMATION / LOG:
-      </p>
-      <p id="logcont">
-        blabla
-        <br />
-        blabla
-        <br />
-        blabla
-        <br />
-        blabla
-        <br />
-        blabla
-      </p>
+
+
     </div>
-    
-    
   </div>
 
-  <div id="popup" class="initHidden">
-    <span id="text"></span>
-    <br/>
-    <span id="link"></span>
-    <br/>
-    <span id="hotkey"></span>
-  </div>
 
-  <div id="color_dialog" class="dialog initHidden" title="Brightness / Contrast / Color Settings">
-    
-    <div id="cd_table">
-      <div class="cd_row">
-        <div class='cd_cell cd_cell_name '>
-          <p>Ch1</p>
+
+
+
+
+  <div class="layout row strech">
+    <div id="main" class="layout fillbox">
+      
+      <div id="inp" class="layout block">
+      </div>
+
+      <div id="bigslider" class="layout block right" onclick="$.event.trigger('ToggleDisplay');">
+        <div style="position:absolute; top: 50%; left: 50%; margin-top: -0.75em; margin-left: -0.125em;">
+          <i class="icon-double-angle-left"></i>
         </div>
+      </div>
         
-        <div class="cd_cell cd_cell_sliders">
-          <div class="cd_i_table">
+      <div id="out" class="layout block">
+      </div>
+
+    </div>
+  </div>
+
+
+
+  <div id="help" class="layout row">
+    help
+  </div>
+
+  <div id="footer" class="layout row">
+    foot
+  </div>
+</div>
+
+
+<div id="log" onclick="togglelog();">
+  <p id="logtitle">
+    DEBUG INFORMATION / LOG:
+  </p>
+  <p id="logcont">
+    blabla
+    <br />
+    blabla
+    <br />
+    blabla
+    <br />
+    blabla
+    <br />
+    blabla
+  </p>
+</div>
+
+
+
+
+<div id="popup" class="initHidden">
+  <span id="text"></span>
+  <br/>
+  <span id="link"></span>
+  <br/>
+  <span id="hotkey"></span>
+</div>
+
+<div id="color_dialog" class="dialog initHidden" title="Brightness / Contrast / Color Settings">
+  
+  <div id="cd_table">
+    <div class="cd_row">
+      <div class='cd_cell cd_cell_name '>
+        <p>Ch1</p>
+      </div>
+      
+      <div class="cd_cell cd_cell_sliders">
+        <div class="cd_i_table">
+        
+          <div style="display: table-row;">
+            <div class="cd_cell cd_cell_icon">
+              <i class="icon-adjust"></i>
+            </div>
+            <div class="cd_cell cd_cell_slider">
+              <div id="csettings_ch0_contrast" data-id="0" data-type="contrast" class="slider contrast"></div>
+            </div>
+            <div class="cd_cell cd_cell_value">
+              <p>0.00</p>
+            </div>
+          </div>
           
-            <div style="display: table-row;">
-              <div class="cd_cell cd_cell_icon">
-                <i class="icon-adjust"></i>
-              </div>
-              <div class="cd_cell cd_cell_slider">
-                <div id="csettings_ch0_contrast" data-id="0" data-type="contrast" class="slider contrast"></div>
-              </div>
-              <div class="cd_cell cd_cell_value">
-                <p>0.00</p>
-              </div>
+          <div style="display: table-row;">
+            <div class="cd_cell cd_cell_icon">
+              <i class="icon-lightbulb"></i>
             </div>
-            
-            <div style="display: table-row;">
-              <div class="cd_cell cd_cell_icon">
-                <i class="icon-lightbulb"></i>
-              </div>
-              <div class="cd_cell cd_cell_slider">
-                <div id="csettings_ch0_brightness" data-id="0" data-type="brightness" class="slider brightness"></div>
-              </div>
-              <div class="cd_cell cd_cell_value">
-                <p>0.00</p>
-              </div>
+            <div class="cd_cell cd_cell_slider">
+              <div id="csettings_ch0_brightness" data-id="0" data-type="brightness" class="slider brightness"></div>
+            </div>
+            <div class="cd_cell cd_cell_value">
+              <p>0.00</p>
             </div>
           </div>
         </div>
-        
-        <div class="cd_cell cd_cell_cp">
-          <input id="csettings_ch0_color" data-id="0" value="ff0000" class="mycp"></input>
-        </div>
-        
       </div>
-    </div>
-    
-    
-  <div id="color_out_dialog" class="dialog initHidden" title="Brightness / Contrast / Color Settings of Output">
-    
-    <div id="cod_table">
-      <div class="cd_row">
-        
-        <div class="cd_cell cd_cell_sliders">
-          <div class="cd_i_table">
-          
-            <div style="display: table-row;">
-              <div class="cd_cell cd_cell_icon">
-                <i class="icon-adjust"></i>
-              </div>
-              <div class="cd_cell cd_cell_slider">
-                <div id="cod_co" data-id="0" data-type="contrast" class="slider contrast"></div>
-              </div>
-              <div class="cd_cell cd_cell_value">
-                <p>0.00</p>
-              </div>
-            </div>
-            
-            <div style="display: table-row;">
-              <div class="cd_cell cd_cell_icon">
-                <i class="icon-lightbulb"></i>
-              </div>
-              <div class="cd_cell cd_cell_slider">
-                <div id="cod_br" data-id="0" data-type="brightness" class="slider brightness"></div>
-              </div>
-              <div class="cd_cell cd_cell_value">
-                <p>0.00</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
+      
+      <div class="cd_cell cd_cell_cp">
+        <input id="csettings_ch0_color" data-id="0" value="ff0000" class="mycp"></input>
       </div>
-    </div>    
-    
-    
-    
-    <!--
-    <div id="csettings_ch0" class="settings_channelcontainer">
-      <div style="
-      float: left;
-      width: 300px;
-      height: 100%;">
-        <div id="csettings_ch0_contrast" data-id="0" data-type="contrast" class="slider contrast"></div>
-        <div id="csettings_ch0_brightness" data-id="0" data-type="brightness" class="slider brightness"></div>
-      </div>
-      <div style="
-      width: 100px;
-      height: 100%;
-      overflow: hidden;">
-        <input id="csettings_ch0_color" data-id="0" class="mycp" value="ff0000">
-        </input>
-      </div>
-    </div>
-    -->
-  </div>
-
-  <div id="display_dialog" class="dialog initHidden" title="Display Settings">
-    <div id="dsettings">
-      <input type="checkbox" id="conn_l" />
-      <label for="conn_l">ConnectingLines</label>
-      <input type="checkbox" id="cont_p" />
-      <label for="cont_p">ContourPoints</label>
-      <input type="checkbox" id="cont_l" />
-      <label for="cont_l">ContourLine</label>
+      
     </div>
   </div>
   
-
-  <div id="glass_dialog" class="dialog" title="Glass Configuration">
-    <div>
-      <p style="display: inline">Redshifts: </p><p id='gset_redshift_out' style="display: inline"></p>
-      <div style="display: block; width: 300px" id="gset_redshift_slide" class="slider"></div>
-    </div>
-    <div>
-      <p style="display: inline">PixelRadius: </p><p id='gset_pixrad_out' style="display: inline"></p>
-      <div style="display: block; width: 300px" id="gset_pixrad_slide" class="slider"></div>
-    </div>
-    <div>
-      <p style="display: inline">nModels: </p><p id='gset_nmodels_out' style="display: inline"></p>
-      <div style="display: block; width: 300px" id="gset_nmodels_slide" class="slider"></div>
-    </div>
-    <div>
-      <p style="display: inline">is the model symmetrical? </p>
-      <input type="checkbox" id="gset_issymm" /><label for="gset_issymm">true</label>
-    </div>
-  </div>
   
-  <div id="select_model_dialog" class="dialog" title="Select Lenses to Work on..">
-    <p>Select a catalog to filter lenses list:</p>
-    <select id="selmod_cat" data-placeholder="Choose a Catalogue" style="width:500px;" class="chzn-select-deselect" tabindex="7">
-      <option value=""></option>
-    </select>
-    <p>Select particular Lenses:<br>(none selected: all; type to search)</p>
-    <!--
-    <select id="selmod_lensid" data-placeholder="ID" multiple style="width:70px;" class="chzn-select-deselect" tabindex="7">
-      <option value=""></option>
-    </select>
-    -->
-    <select id="selmod_lens" data-placeholder="Name (Catalogue)" multiple style="width:500px;" class="chzn-select-deselect" tabindex="7">
-      <option value=""></option>
-    </select>
+<div id="color_out_dialog" class="dialog initHidden" title="Brightness / Contrast / Color Settings of Output">
+  
+  <div id="cod_table">
+    <div class="cd_row">
+      
+      <div class="cd_cell cd_cell_sliders">
+        <div class="cd_i_table">
+        
+          <div style="display: table-row;">
+            <div class="cd_cell cd_cell_icon">
+              <i class="icon-adjust"></i>
+            </div>
+            <div class="cd_cell cd_cell_slider">
+              <div id="cod_co" data-id="0" data-type="contrast" class="slider contrast"></div>
+            </div>
+            <div class="cd_cell cd_cell_value">
+              <p>0.00</p>
+            </div>
+          </div>
+          
+          <div style="display: table-row;">
+            <div class="cd_cell cd_cell_icon">
+              <i class="icon-lightbulb"></i>
+            </div>
+            <div class="cd_cell cd_cell_slider">
+              <div id="cod_br" data-id="0" data-type="brightness" class="slider brightness"></div>
+            </div>
+            <div class="cd_cell cd_cell_value">
+              <p>0.00</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>    
+  
+  
+  
+  <!--
+  <div id="csettings_ch0" class="settings_channelcontainer">
+    <div style="
+    float: left;
+    width: 300px;
+    height: 100%;">
+      <div id="csettings_ch0_contrast" data-id="0" data-type="contrast" class="slider contrast"></div>
+      <div id="csettings_ch0_brightness" data-id="0" data-type="brightness" class="slider brightness"></div>
+    </div>
+    <div style="
+    width: 100px;
+    height: 100%;
+    overflow: hidden;">
+      <input id="csettings_ch0_color" data-id="0" class="mycp" value="ff0000">
+      </input>
+    </div>
   </div>
+  -->
+</div>
+
+<div id="display_dialog" class="dialog initHidden" title="Display Settings">
+  <div id="dsettings">
+    <input type="checkbox" id="conn_l" />
+    <label for="conn_l">ConnectingLines</label>
+    <input type="checkbox" id="cont_p" />
+    <label for="cont_p">ContourPoints</label>
+    <input type="checkbox" id="cont_l" />
+    <label for="cont_l">ContourLine</label>
+  </div>
+</div>
+
+
+<div id="glass_dialog" class="dialog" title="Glass Configuration">
+  <div>
+    <p style="display: inline">Redshifts: </p><p id='gset_redshift_out' style="display: inline"></p>
+    <div style="display: block; width: 300px" id="gset_redshift_slide" class="slider"></div>
+  </div>
+  <div>
+    <p style="display: inline">PixelRadius: </p><p id='gset_pixrad_out' style="display: inline"></p>
+    <div style="display: block; width: 300px" id="gset_pixrad_slide" class="slider"></div>
+  </div>
+  <div>
+    <p style="display: inline">nModels: </p><p id='gset_nmodels_out' style="display: inline"></p>
+    <div style="display: block; width: 300px" id="gset_nmodels_slide" class="slider"></div>
+  </div>
+  <div>
+    <p style="display: inline">is the model symmetrical? </p>
+    <input type="checkbox" id="gset_issymm" /><label for="gset_issymm">true</label>
+  </div>
+</div>
+
+<div id="select_model_dialog" class="dialog" title="Select Lenses to Work on..">
+  <p>Select a catalog to filter lenses list:</p>
+  <select id="selmod_cat" data-placeholder="Choose a Catalogue" style="width:500px;" class="chzn-select-deselect" tabindex="7">
+    <option value=""></option>
+  </select>
+  <p>Select particular Lenses:<br>(none selected: all; type to search)</p>
+  <!--
+  <select id="selmod_lensid" data-placeholder="ID" multiple style="width:70px;" class="chzn-select-deselect" tabindex="7">
+    <option value=""></option>
+  </select>
+  -->
+  <select id="selmod_lens" data-placeholder="Name (Catalogue)" multiple style="width:500px;" class="chzn-select-deselect" tabindex="7">
+    <option value=""></option>
+  </select>
+</div>
 
 </body>
 
