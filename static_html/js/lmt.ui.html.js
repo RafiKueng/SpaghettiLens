@@ -859,6 +859,26 @@ html.HelpBar = {
       html.HelpBar.show(t,b);
     }
     
+    else if (ctid == "masses"){
+      var t = "External Point Mass";
+      var b = [];
+      b.push("Drag the middle point to move");
+      b.push("Drag the point on the line to change the amount of mass");
+      b.push("Click on middle point to remove");
+      html.HelpBar.show(t,b);
+    }
+    
+    else if (ctid == "rulers"){
+      var t = "Ruler / Distance Estimation";
+      var b = [];
+      b.push("Drag the middle point to move");
+      b.push("Drag the point on the line expand the circle");
+      b.push("Click on middle point to remove");
+      html.HelpBar.show(t,b);
+    }
+
+    
+    
     else if ((ctid && ctid.substr(0,3)=="btn") || (cid && cid.substr(0,3) == "btn")) {
       var $t = control ? $(control) : $(evt.currentTarget);
       html.HelpBar.show($t.data("tooltip"), $t.data("tooltiplist"), $t.data("hotkey"), $t.data("furtherinfo"));

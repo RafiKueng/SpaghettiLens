@@ -138,11 +138,11 @@ ExtMass.prototype.remove = function() {
  * depending on the target 
  */
 ExtMass.prototype.move = function(coord, target) {
-	if (target.classList[0] == "ext_mass_mid") {
+	if (target.classList.contains("mid")) {
 		this.x = coord.x;
 		this.y = coord.y;
 	}	
-	else if (target.classList[0] == "ext_mass_handle") {
+	else if (target.classList.contains("handle")) {
 		var dx = -this.x + coord.x;
 		var dy = -this.y + coord.y;
 		this.r = LMT.utils.toPolarR(dx,dy);
