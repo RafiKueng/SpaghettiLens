@@ -52,18 +52,19 @@ Ruler.prototype.createSVG = function() {
 
   this.mid = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   this.mid.setAttribute("id", "ruler_mid_" + this.idnr);
-  this.mid.setAttribute("class", "ruler_mid");
+  this.mid.setAttribute("class", "ruler mid");
   this.mid.setAttribute("r", Ruler.r_def.mid / LMT.settings.display.zoompan.scale);
   this.mid.jsObj = this;
 
   this.circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   this.circle.setAttribute("id", "ruler_circ_" + this.idnr);
-  this.circle.setAttribute("class", "ruler_circ");
+  this.circle.setAttribute("class", "ruler circ");
   this.circle.setAttribute("r", this.r);
+  this.circle.jsObj = this;
 
   this.handle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   this.handle.setAttribute("id", "ruler_hand_" + this.idnr);
-  this.handle.setAttribute("class", "ruler_handle");
+  this.handle.setAttribute("class", "ruler handle");
   this.handle.setAttribute("r", Ruler.r_def.handle / LMT.settings.display.zoompan.scale);
   this.handle.jsObj = this;
 

@@ -411,6 +411,8 @@ ExtremalPoint.prototype.paint = function() {
       this.line = document.createElementNS("http://www.w3.org/2000/svg", "line");
       this.line.setAttribute("class", "connectorline");
       
+      this.line.jsObj = this;
+      
       LMT.ui.svg.layer.connectorlines.appendChild(this.line);
     }
 

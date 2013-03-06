@@ -27,31 +27,31 @@
 }
 
 
-.ruler_mid {
+.ruler.mid {
 	r: 7;
 	fill: white;
 }
 
-.ruler_circ {
+.ruler.circ {
 	fill: none;
 	stroke: white;
 }
 
-.ruler_handle {
+.ruler.handle {
 	fill: #ffaaaa;
 }
 
 
-.ext_mass_mid {
+.ext_mass.mid {
 	fill: gray;
 }
 
-.ext_mass_circ {
+.ext_mass.circ {
 	fill: none;
 	stroke: gray;
 }
 
-.ext_mass_handle {
+.ext_mass.handle {
 	fill: #00a;
 }
 

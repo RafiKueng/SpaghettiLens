@@ -256,16 +256,17 @@ svg.events = {
 			if (svg.events.newState) {
 				LMT.settings.display.zoompan = svg.events.newState;
 			}
-			svg.events.state = 'none';
 		}
 		if (svg.events.someElementWasDragged) {
 			$.event.trigger("SaveModelState");
-      svg.events.state = 'none';
+
 		  evt.stopPropagation();
 		  evt.preventDefault();
 		}
 		svg.events.someElementWasDragged = false;
 		svg.root.removeEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
+
+    svg.events.state = 'none';
 	},
 	
 	
@@ -402,28 +403,53 @@ svg.events = {
           var children = [tjs.child1, tjs.child2]; 
           for (var i = 0; i<2;++i){
             var child = children[i];
-            $act = $act.add($(child.contour.path));
-            var cps = child.contour.cpoints;
-            for (var j in cps) {
-              $act = $act.add($(cps[j].circle));
-            }
+            $act = $act.add(child.contour.get$Elements());
           }
         }
       }
+      else if (tjs.contour) {
+        $act = $act.add(tjs.contour.get$Elements());
+      }
       $act.removeClassSVG("inactive");
-      
-      
-      
+
+
     }
     else if (ctid == "contourpoints") {
+      var t = evt.target;
+      var tjs = evt.target.jsObj;
+      var $c = evt.target.jsObj.parent.get$Elements();
+      $c = $c.add(tjs.extpnt.circle);
+      $c = $c.add(tjs.extpnt.parent.circle);
+      
+      $all.addClassSVG("inactive");
+      $c.removeClassSVG("inactive"); 
+      
+
     }
     else if (ctid == "contourlines") {
+      var t = evt.target;
+      var tjs = evt.target.jsObj;
+      var $c = tjs.get$Elements();
+      
+      $all.addClassSVG("inactive");
+      $c.removeClassSVG("inactive"); 
     }
+    
     else if (ctid == "connectorlines") {
+      var t = evt.target;
+      var tjs = evt.target.jsObj;
+      var $act = $(t).add(tjs.circle).add(tjs.parent.circle);      
+      
+      $all.addClassSVG("inactive");
+      $act.removeClassSVG("inactive"); 
     }
-    else if (ctid == "masses") {
-    }
-    else if (ctid == "rulers") {
+    else if (ctid == "masses" || ctid == "rulers") {
+      var t = evt.target;
+      var tjs = evt.target.jsObj;
+      var $act = $(tjs.mid).add(tjs.handle).add(tjs.circle);
+      
+      $all.addClassSVG("inactive");
+      $act.removeClassSVG("inactive"); 
     }
     else if (ctid == "bg") {
       $all.removeClassSVG("inactive");
