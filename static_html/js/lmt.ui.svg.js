@@ -77,6 +77,7 @@ svg.initCanvas = function() {
 	svg.root.addEventListener('mouseup', LMT.ui.svg.events.onMouseUp);
 	svg.root.addEventListener('mouseout', LMT.ui.svg.events.onMouseOut);
 	
+	//event listeneners for help / active element hilight
   var activeLayers = ['masses', 'connectorlines', 'contourlines',
     'contourpoints', 'extremalpoints', 'rulers', 'bg'];
     
@@ -87,6 +88,7 @@ svg.initCanvas = function() {
       $.event.trigger("MouseEnter", evt);
     });
 	};
+	
 	
 	/*
 	$(svg.root).mouseenter(function(evt){
@@ -121,6 +123,9 @@ svg.initCanvas = function() {
 	svg.root.appendChild(svg.layer.zoompan);
 	
 	parent.appendChild(svg.root);
+	
+	//update the visability of the layers
+	$.event.trigger("ChangedDisplaySettings");
 }
 
 
@@ -186,6 +191,8 @@ svg.events = {
 			|| dragTargetStr=="rule") {
 			svg.events.dragTarget = evt.target;
 			svg.events.state = 'drag';
+
+
 		}
 		else {
 			svg.events.state = 'pan';
@@ -249,9 +256,11 @@ svg.events = {
 			if (svg.events.newState) {
 				LMT.settings.display.zoompan = svg.events.newState;
 			}
+			svg.events.state = 'none';
 		}
 		if (svg.events.someElementWasDragged) {
 			$.event.trigger("SaveModelState");
+      svg.events.state = 'none';
 		  evt.stopPropagation();
 		  evt.preventDefault();
 		}
@@ -276,6 +285,7 @@ svg.events = {
       $.event.trigger('ZoomPanReset');
       if (evt.stopPropagation) {evt.stopPropagation();}
       if (evt.preventDefault) {evt.preventDefault();}
+      
 			return;
 		}
 		
@@ -346,6 +356,7 @@ svg.events = {
 		if (evt.stopPropagation) {evt.stopPropagation();}
 		if (evt.preventDefault) {evt.preventDefault();}
 		
+
 	},
 
 	
@@ -358,7 +369,76 @@ svg.events = {
 			svg.events.onMouseUp(evt);
 		}
 		*/
-	}
+	},
+	
+	
+	/**
+	 * if an element is hoovered, make the correspongin active 
+	 */
+  hoverIn: function(a, evt) {
+    //alert("hoverin");
+    
+    //dont change anything on drag  mode
+    if (svg.events.state != 'none') {return;}
+    
+    var ctid = evt.currentTarget.id;
+    var $all = $(".extremalpoint")
+      .add(".contourpoint")
+      .add(".connectorline")
+      .add(".contourpath")
+      .add(".ruler")
+      .add(".ext_mass");
+
+    
+    if (ctid=="extremalpoints"){
+      var t = evt.target;
+      var tjs = evt.target.jsObj;
+      
+      $all.addClassSVG("inactive");
+
+      var $act = $(t);
+      if (tjs.type == "sad") {
+        if (tjs.child1) {
+          var children = [tjs.child1, tjs.child2]; 
+          for (var i = 0; i<2;++i){
+            var child = children[i];
+            $act = $act.add($(child.contour.path));
+            var cps = child.contour.cpoints;
+            for (var j in cps) {
+              $act = $act.add($(cps[j].circle));
+            }
+          }
+        }
+      }
+      $act.removeClassSVG("inactive");
+      
+      
+      
+    }
+    else if (ctid == "contourpoints") {
+    }
+    else if (ctid == "contourlines") {
+    }
+    else if (ctid == "connectorlines") {
+    }
+    else if (ctid == "masses") {
+    }
+    else if (ctid == "rulers") {
+    }
+    else if (ctid == "bg") {
+      $all.removeClassSVG("inactive");
+    }
+    else {  
+    }
+
+  },
+  
+  /*
+  hoverOut: function(evt) {
+    alert("hoverout");
+  },
+  */
+	
 }
 	
 /**
@@ -559,6 +639,26 @@ svg.generateColorMatrix = function(ch) {
 		" 1"  + " 0"  + " 0"  + " 0 " + a34 ;
 		
 	return str;
+}
+
+
+
+svg.updateDisp = function() {
+  var set = [ LMT.settings.display.paintConnectingLines,
+              LMT.settings.display.paintContourPoints,
+              LMT.settings.display.paintContours ];
+  var layer = [ svg.layer.connectorlines,
+                svg.layer.contourpoints,
+                svg.layer.contourlines];
+                
+  for (var i=0;i<3;i++){
+    if (set[i]) {
+      layer[i].classList.remove("invisible");
+    }
+    else {
+      layer[i].classList.add("invisible");
+    }
+  }
 }
 
 

@@ -477,18 +477,15 @@ html.DisplaySettingsDialog = {
   	
   	$('#conn_l').click(function(evt){
   		LMT.settings.display.paintConnectingLines = this.checked;
-  		log.write('toggle 1' + this.checked);
-  		$.event.trigger('RepaintModel');
+  		$.event.trigger('ChangedDisplaySettings');
   	});
   	$('#cont_p').click(function(evt){
   		LMT.settings.display.paintContourPoints = this.checked;
-  		log.write('toggle 2');
-  		$.event.trigger('RepaintModel');
+      $.event.trigger('ChangedDisplaySettings');
   	})
   	$('#cont_l').click(function(){
   		LMT.settings.display.paintContours = this.checked;
-  		log.write('toggle 3');
-  		$.event.trigger('RepaintModel');
+      $.event.trigger('ChangedDisplaySettings');
   	});
   	
   	$("#display_dialog").removeClass("initHidden");
@@ -781,7 +778,11 @@ html.HelpBar = {
   },
   
   init: function() {
-    
+    var $t = $("#toolbarGrp1 button")
+    .add("#toolbarGrp1 label")
+    .add("#toolbarTop button")
+    .add("#toolbarTop label");
+    $t.hover(function(evt){$.event.trigger('MouseEnter',evt);}, function(){});
   },
   
   toggle: function(){
@@ -794,23 +795,36 @@ html.HelpBar = {
     }
   },
   
-  show: function(title, body) {
-    var t = $("<div class='help title'></div>").html(title);
-    var b = $("<ul class='help list'></ul>");
-    for (var i=0;i<body.length;++i){
-      b.append($("<li></li>").html(body[i]));
+  show: function(title, body, hotkey, link) {
+    var $p = $("<div class='help container'></div>");
+    var txt = title
+      + (hotkey ? " (Hotkey: <i>"+hotkey+"</i>)" : "")
+      + (link ? " <a href='" + link + "'>further info</a>" : "");
+    var t = $("<div class='help title' style='display: table-cell;'></div>").html(txt);
+    if (body) {
+      var b = $("<ul class='help list'></ul>");
+      for (var i=0;i<body.length;++i){
+        b.append($("<li></li>").html(body[i]));
+      }
     }
-    $("#help").empty().append(t).append(b);
+    else {
+      var b = null;
+    }
+    $p.append(t).append(b);
+    $("#help").empty().append($p);
   },
   
   MouseEnter: function(a, evt) {
     var tmp = evt;
     var ctid = evt.currentTarget.id;
     var jsTarget = evt.target.jsObj || null;
+    var control = evt.currentTarget.control || null; //for input / labels, get the real element
+    var cid = control ? control.id : null;
     
+    /*
     var activeLayers = ['masses', 'connectorlines', 'contourlines',
       'contourpoints', 'extremalpoints', 'rulers', 'bg'];
-
+    */
 
     if (ctid=="extremalpoints"){
       
@@ -843,6 +857,11 @@ html.HelpBar = {
       b.push("Click to doublicate");
       b.push("Move close to next / previous to delete");
       html.HelpBar.show(t,b);
+    }
+    
+    else if ((ctid && ctid.substr(0,3)=="btn") || (cid && cid.substr(0,3) == "btn")) {
+      var $t = control ? $(control) : $(evt.currentTarget);
+      html.HelpBar.show($t.data("tooltip"), $t.data("tooltiplist"), $t.data("hotkey"), $t.data("furtherinfo"));
     }
 
     else {

@@ -260,13 +260,14 @@ Contour.prototype.paint = function() {
 
 	this.updateSVG(pathstr);
 
-	
+	/*
 	if (LMT.settings.display.paintContours){
-		this.path.setAttribute("class", "contourpath");
+		this.path.classList.remove("invisible");
 	}
 	else {
-		this.path.setAttribute("class", "invisible");
+    this.path.classList.add("invisible");
 	}
+	*/
 }
 
 

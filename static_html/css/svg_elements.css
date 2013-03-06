@@ -1,13 +1,13 @@
 /* SVG elements */
-.extremalpoint_min {
+.extremalpoint.min {
 	fill: green;
 }
 
-.extremalpoint_max {
+.extremalpoint.max {
 	fill: blue;
 }
 
-.extremalpoint_sad {
+.extremalpoint.sad {
 	fill: #ffff00;
 }
 
@@ -55,6 +55,10 @@
 	fill: #00a;
 }
 
+/* use this class for elements that are not active */
+.inactive {
+  opacity: 0.5;
+}
 
 /* use this class for elements that are not displayed */
 .invisible {

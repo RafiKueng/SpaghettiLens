@@ -129,6 +129,12 @@ body {
   color: #fff;
 }
 
+#help .container {
+  display: table-cell;
+  vertical-align: middle;
+  padding-left: 20px;
+}
+
 #help .title {
   font-weight: bold;
 }
@@ -137,6 +143,8 @@ body {
   margin:0px;
   padding-left:20px;
 }
+
+
 
 #footer {
   /*background-color: #aa7;*/

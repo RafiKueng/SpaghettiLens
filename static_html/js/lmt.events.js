@@ -65,6 +65,7 @@ var events = {
     $(document).on('ToggleDisplay', LMT.ui.html.ToggleDisplay);
     $(document).on('ToggleHelpBar', LMT.ui.html.HelpBar.toggle);
     $(document).on('MouseEnter', LMT.ui.html.HelpBar.MouseEnter);
+    $(document).on('MouseEnter', LMT.ui.svg.events.hoverIn);
         
     // get the inital data, available lenses and catalogues, if no identifier provided in get string
     $(document).on('GetInitData', LMT.com.getInitData);
@@ -85,6 +86,8 @@ var events = {
     // the background images / channels color settings were changed
     $(document).on('ChangedModelData', LMT.ui.svg.bg.updateColor);
     
+    //display settings were changed
+    $(document).on('ChangedDisplaySettings', LMT.ui.svg.updateDisp);
 
     $(document).on('Undo', LMT.objects.ActionStack.Undo);
     $(document).on('Redo', LMT.objects.ActionStack.Redo);

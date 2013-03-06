@@ -107,14 +107,20 @@ ContourPoint.prototype.update = function() {
  */
 ContourPoint.prototype.paint = function() {
 	
-	if (!this.circle) {
-		this.createSVG();
-	}
-	this.updateSVG();
-	
-	this.circle.setAttribute("class",
-		LMT.settings.display.paintContourPoints ? "contourpoint" : "invisible" );
- }
+  if (!this.circle) {
+  	this.createSVG();
+  }
+  this.updateSVG();
+  
+  /*
+  if (LMT.settings.display.paintContourPoints) {
+    this.circle.classList.remove("invisible");
+  }
+  else {
+    this.circle.classList.add("invisible");
+  }
+  */
+}
 
 
 /**

@@ -40,11 +40,11 @@
           
           <button id="btnMainLogin"
             data-event="LoginClicked"
-            data-tooltip="loggs in"
+            data-tooltip="log in / create user account"
             data-furtherinfo="http://www.google.com"
             data-hotkey="Ctrl+Z; Q"
             data-icon="icon-signin">
-            Log In
+            Log in / Create user account
           </button>
 
           <input id="btnMainHelp" type="checkbox"
@@ -91,19 +91,19 @@
           <span id="btngrpSettings" class="btnset">
             <button id="btnInSettingsColor"
               data-event="ShowDialogColorSettings"
-              data-tooltip="change the color mapping"
+              data-tooltip="Change the brightness / contrast and colormapping of the background image"
               data-furtherinfo="http://www.google.com"
               data-hotkey="C"
               data-icon="icon-adjust">
-              Show Color Settings
+              background image settings
             </button>
             <button id="btnInSettingsLines"
               data-event="ShowDialogDisplaySettings"
-              data-tooltip="enables / disables some heling lines"
+              data-tooltip="Change the appeareance of the model"
               data-furtherinfo="http://www.google.com"
               data-hotkey="C"
               data-icon="icon-eye-open">
-              Show Display Settings
+              display settings
             </button>
           </span>
           
@@ -118,7 +118,7 @@
 
             <input type="radio" id="btnInModeImage" name="mode"
               data-event="SwitchMode" data-value="image"
-              data-tooltip="places additional images"
+              data-tooltip="mark images as min / max / sad"
               data-furtherinfo="http://www.google.com"
               data-hotkey="C"
               data-icon="icon-screenshot"

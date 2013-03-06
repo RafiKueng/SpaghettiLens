@@ -74,12 +74,12 @@ $.fn.addClassSVG = function(classname) {
 		this.classList.add(classname)});
 }
 
-LMT.utils.removeClassSVG = function($sel, classname) {
+$.fn.removeClassSVG = function(classname) {
 	return this.each(function() {
 		this.classList.remove(classname)});
 }
 
-LMT.utils.toggleClassSVG = function($sel, classname) {
+$.fn.toggleClassSVG = function(classname) {
 	return this.each(function() {
 		this.classList.toggle(classname)});
 }
