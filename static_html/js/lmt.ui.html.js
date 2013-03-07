@@ -508,11 +508,11 @@ html.GlassSettingsDialog = {
         
         // assign correct values to sliders
         $("#gset_redshift_slide").slider("values",
-          [LMT.model.Paramteres.z_lens|| 0.5 ,
-          LMT.model.Paramteres.z_src || 1]);
-        $("#gset_pixrad_slide").slider("value", LMT.model.Paramteres.pixrad || 5);
-        $("#gset_nmodels_slide").slider("value", LMT.model.Paramteres.n_models || 200);
-        $("#gset_issymm").prop("checked", LMT.model.Paramteres.isSym || false).change();
+          [LMT.model.Parameters.z_lens|| 0.5 ,
+          LMT.model.Parameters.z_src || 1]);
+        $("#gset_pixrad_slide").slider("value", LMT.model.Parameters.pixrad || 5);
+        $("#gset_nmodels_slide").slider("value", LMT.model.Parameters.n_models || 200);
+        $("#gset_issymm").prop("checked", LMT.model.Parameters.isSym || false).change();
       }
     });
     
@@ -527,8 +527,8 @@ html.GlassSettingsDialog = {
         $("#gset_redshift_out").html("(Lens: " + ui.values[0] + " / Source: " + ui.values[1] + ")");
       },
       stop: function(evt, ui){
-        LMT.model.Paramteres.z_lens = ui.values[0];
-        LMT.model.Paramteres.z_src = ui.values[1];
+        LMT.model.Parameters.z_lens = ui.values[0];
+        LMT.model.Parameters.z_src = ui.values[1];
         
       }
     });
@@ -544,7 +544,7 @@ html.GlassSettingsDialog = {
         $("#gset_pixrad_out").html("("+ui.value+")");
       },
       stop: function(evt, ui){
-        LMT.model.Paramteres.pixrad = ui.value;
+        LMT.model.Parameters.pixrad = ui.value;
       }
     });
 
@@ -559,7 +559,7 @@ html.GlassSettingsDialog = {
         $("#gset_nmodels_out").html("("+ui.value+")");
       },
       stop: function(evt, ui){
-        LMT.model.Paramteres.n_models = ui.value;
+        LMT.model.Parameters.n_models = ui.value;
       }
     });
     
@@ -569,7 +569,7 @@ html.GlassSettingsDialog = {
         var $btn = $(this);
         var state = !($btn.attr("checked")? true : false); //get old state, invert it to have new state
         $btn.attr("checked", state);
-        LMT.model.Paramteres.isSym = state;
+        LMT.model.Parameters.isSym = state;
         log.write(state);
         $btn.button( "option", "label", state ? "Yes" : "No" );
       });
