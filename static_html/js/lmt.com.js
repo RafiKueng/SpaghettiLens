@@ -68,6 +68,8 @@ com.getModelData = function(evt, model_ids, catalog, action) {
     LMT.modelData.nextAvail = obj[1].next_avail;
     LMT.modelData.prevAvail = obj[1].prev_avail;
     
+    LMT.model.Paramteres.z_src = LMT.modelData.z_src || 1;
+    LMT.model.Paramteres.z_lens = LMT.modelData.z_lens || 0.5;
     
     LMT.modelData.ch = [];
     

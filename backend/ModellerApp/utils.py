@@ -113,7 +113,7 @@ class EvalAndSaveJSON:
     print "converted json str"
     print self.jsonObj
     
-    gs = self.jsonObj["GlassSettings"]
+    gs = self.jsonObj["Parameters"]
     
 
     # make sure to check the passed parameters and to cast it to expected types, to prevent script injection
