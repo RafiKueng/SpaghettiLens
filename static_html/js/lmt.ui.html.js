@@ -504,7 +504,16 @@ html.GlassSettingsDialog = {
     $("#glass_dialog").dialog({
       autoOpen: false,
       minWidth: 400,
-      open: function(){}
+      open: function(){
+        
+        // assign correct values to sliders
+        $("#gset_redshift_slide").slider("values",
+          [LMT.model.Parameters.z_lens|| 0.5 ,
+          LMT.model.Parameters.z_src || 1]);
+        $("#gset_pixrad_slide").slider("value", LMT.model.Parameters.pixrad || 5);
+        $("#gset_nmodels_slide").slider("value", LMT.model.Parameters.n_models || 200);
+        $("#gset_issymm").prop("checked", LMT.model.Parameters.isSym || false).change();
+      }
     });
     
     
@@ -513,13 +522,16 @@ html.GlassSettingsDialog = {
       min: 0,
       max: 2,
       step: 0.01,
-      values: [0.5, 1],
+      values: [0.5, 1], //default value will be set on open of diaalog..
+      change: function(evt, ui){
+        $("#gset_redshift_out").html("(Lens: " + ui.values[0] + " / Source: " + ui.values[1] + ")");
+      },
       slide: function(evt, ui){
         $("#gset_redshift_out").html("(Lens: " + ui.values[0] + " / Source: " + ui.values[1] + ")");
       },
       stop: function(evt, ui){
-        LMT.model.GlassSettings.z_lens = ui.values[0];
-        LMT.model.GlassSettings.z_src = ui.values[1];
+        LMT.model.Parameters.z_lens = ui.values[0];
+        LMT.model.Parameters.z_src = ui.values[1];
         
       }
     });
@@ -530,12 +542,15 @@ html.GlassSettingsDialog = {
       min: 3,
       max: 8,
       step: 1,
-      value: 5,
+      value: 5, //default value will be set on open of diaalog..
       slide: function(evt, ui){
         $("#gset_pixrad_out").html("("+ui.value+")");
       },
+      change: function(evt, ui){
+        $("#gset_pixrad_out").html("("+ui.value+")");
+      },
       stop: function(evt, ui){
-        LMT.model.GlassSettings.pixrad = ui.value;
+        LMT.model.Parameters.pixrad = ui.value;
       }
     });
 
@@ -545,12 +560,15 @@ html.GlassSettingsDialog = {
       min: 50,
       max: 2000,
       step: 50,
-      value: 200,
+      value: 200, //default value will be set on open of diaalog..
       slide: function(evt, ui){
         $("#gset_nmodels_out").html("("+ui.value+")");
       },
+      change: function(evt, ui){
+        $("#gset_nmodels_out").html("("+ui.value+")");
+      },
       stop: function(evt, ui){
-        LMT.model.GlassSettings.n_models = ui.value;
+        LMT.model.Parameters.n_models = ui.value;
       }
     });
     
@@ -560,7 +578,7 @@ html.GlassSettingsDialog = {
         var $btn = $(this);
         var state = !($btn.attr("checked")? true : false); //get old state, invert it to have new state
         $btn.attr("checked", state);
-        LMT.model.GlassSettings.isSym = state;
+        LMT.model.Parameters.isSym = state;
         log.write(state);
         $btn.button( "option", "label", state ? "Yes" : "No" );
       });

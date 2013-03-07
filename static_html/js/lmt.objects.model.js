@@ -24,7 +24,7 @@ function Model() {
 
   this.MinMmaxSwitchAngle = Math.PI / 3.; //limit angle between two children, when the children will switch to different type (min/min to min/max; max/max to min/max)
   
-  this.GlassSettings = {}; //overriding default settings of glass
+  this.Parameters = {}; //overriding default settings of glass paramteres
   
   //color and channel settings
   /*
@@ -269,7 +269,7 @@ Model.getModelFormJSONString = function(str) {
 				  return r;
 			}
       switch (key) {
-        case "GlassSettings":
+        case "Parameters":
           return val;
         default: // prevent injection to client side of unexpected code 
           alert("Invalid object in json string..");
