@@ -781,8 +781,11 @@ html.HelpBar = {
     var $t = $("#toolbarGrp1 button")
     .add("#toolbarGrp1 label")
     .add("#toolbarTop button")
-    .add("#toolbarTop label");
-    $t.hover(function(evt){$.event.trigger('MouseEnter',evt);}, function(){});
+    .add("#toolbarTop label")
+    .add("#toolbarGrp2 button")
+    .add("#toolbarGrp2 label");
+    $t.hover( function(evt){$.event.trigger('MouseEnter',evt);},
+              function(evt){$.event.trigger('MouseLeave',evt);});
   },
   
   toggle: function(){
@@ -796,10 +799,9 @@ html.HelpBar = {
   },
   
   show: function(title, body, hotkey, link) {
-    var $p = $("<div class='help container'></div>");
     var txt = title
-      + (hotkey ? " (Hotkey: <i>"+hotkey+"</i>)" : "")
-      + (link ? " <a href='" + link + "'>further info</a>" : "");
+      + (hotkey ? " (Hotkey: <i>"+hotkey+"</i>)" : "");
+      //+ (link ? " <a href='" + link + "'>further info</a>" : "");
     var t = $("<div class='help title' style='display: table-cell;'></div>").html(txt);
     if (body) {
       var b = $("<ul class='help list'></ul>");
@@ -810,11 +812,18 @@ html.HelpBar = {
     else {
       var b = null;
     }
-    $p.append(t).append(b);
-    $("#help").empty().append($p);
+    $("#helpcont").empty().append(t).append(b);
+  },
+  
+  MouseLeave: function(){
+    $("#helpcont").empty();
   },
   
   MouseEnter: function(a, evt) {
+    
+    //prevent flickering if fast moving stuff
+    if (svg.events.state != 'none') {return;}
+    
     var tmp = evt;
     var ctid = evt.currentTarget.id;
     var jsTarget = evt.target.jsObj || null;
@@ -829,11 +838,18 @@ html.HelpBar = {
     if (ctid=="extremalpoints"){
       
       var t = "";
-      t += jsTarget.isExpanded ? "Expanded" : "Unexpanded";
-      t += " Extremalpoint (of type: " + jsTarget.type + ") of the arrival time surface.";
-      var b=["Click to " + (jsTarget.isExpanded ? "collapse" : "expand")];
+      if      (jsTarget.type=="sad") {t += "Saddlepoint";}
+      else if (jsTarget.type=="min") {t += "Minima";}
+      else if (jsTarget.type=="max") {t += "Maxima";}
+      t += jsTarget.isExpanded ? " (expanded)" : " (unexpanded)";
+      t += " of the arrival time surface.";
+      var b=[];
       b.push("Drag to move");
-      b.push("to remove, use the Undo function");
+      b.push("Click to " + (
+        jsTarget.isExpanded ?
+          "collapse (remove children)": "expand (convert to saddlepoint)"));
+      b.push("to remove, " + (
+        jsTarget.isRoot ? "use the Undo function" : "collapse the parent saddlepoint"));
       
       html.HelpBar.show(t, b);
     }
@@ -844,8 +860,8 @@ html.HelpBar = {
       if (LMT.settings.mode=="image"){b.push("Click to mark an Image");}
       else if (LMT.settings.mode=="ruler"){b.push("Click to place a ruler");}
       else if (LMT.settings.mode=="mass"){b.push("Click to place an exernal mass");}
-      b.push("(change what to place in the toolbar)");
-      b.push("Drag to move");
+      b.push("(change what to do in the toolbar)");
+      b.push("Drag to move the canvas");
       b.push("Mousewheel to zoom in/out, mousewheel press to reset");
       html.HelpBar.show(t, b);
     }
@@ -856,6 +872,21 @@ html.HelpBar = {
       b.push("Drag to move");
       b.push("Click to doublicate");
       b.push("Move close to next / previous to delete");
+      html.HelpBar.show(t,b);
+    }
+
+    else if (ctid == "contourlines") {
+      var t = "Contor / Isoline for arrival time";
+      var b = [];
+      b.push("Use points to move");
+      b.push("Disable display in toolbar, display settings");
+      html.HelpBar.show(t,b);
+    }
+
+    else if (ctid == "connectorlines") {
+      var t = "Connection";
+      var b = [];
+      b.push("Visual aid to show parent / child");
       html.HelpBar.show(t,b);
     }
     

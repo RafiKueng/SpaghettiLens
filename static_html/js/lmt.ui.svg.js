@@ -87,6 +87,9 @@ svg.initCanvas = function() {
 	  tmp.mouseenter(function(evt){
       $.event.trigger("MouseEnter", evt);
     });
+	  tmp.mouseleave(function(evt){
+      $.event.trigger("MouseLeave", evt);
+    });
 	};
 	
 	

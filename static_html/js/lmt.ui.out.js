@@ -55,11 +55,11 @@ out = {
 		$("#btnsetOutNav").buttonset();
 		$("#btnsetOutNav > button").button({ disabled: true });
 		
-		
-    $("#btnOutGlassConfig").button({
+		var $btn = $("#btnOutGlassConfig");
+    $btn.button({
       text: false,
       disabled: false,
-      icons: {primary: "icon-tasks" },
+      icons: {primary: $btn.data("icon") },
     });
     $("#btnOutGlassConfig").on('click', function(){$.event.trigger('ShowDialogGlassSettings');});
 
@@ -109,7 +109,7 @@ out = {
         // this = imageObj
         var that = LMT.ui.out; 
         
-        var $div = $('<div class="slide"></div>');
+        var $div = $('<div id="slide'+ i + '" class="slide"></div>');
         $div.hide();
         var canvas = document.createElement('canvas');
         canvas.width = this.width;
@@ -153,6 +153,10 @@ out = {
 			});
 			
 		});
+		
+		$("#toolbarGrp2 label").add(".slide")
+		  .hover( function(evt){$.event.trigger('MouseEnter',evt);},
+              function(evt){$.event.trigger('MouseLeave',evt);});
 		
 		that.$btns.buttonset();
 		

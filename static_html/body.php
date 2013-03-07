@@ -181,8 +181,13 @@
               data-icon="icon-adjust">
               Change brightness and contrast of output images
             </button>
-            <button id="btnOutGlassConfig">
-              Configure Glass (backend simulation program)
+            <button id="btnOutGlassConfig"
+              data-event=""
+              data-tooltip="Configure simulation properties"
+              data-furtherinfo="http://www.google.com"
+              data-hotkey="g"
+              data-icon="icon-tasks">
+              Configure simulation properties
             </button>
           </span>
         </span>
@@ -220,7 +225,7 @@
 
 
   <div id="help" class="layout row">
-    help
+    <div id='helpcont' class='help container'></div>
   </div>
 
   <div id="footer" class="layout row">

@@ -65,6 +65,7 @@ var events = {
     $(document).on('ToggleDisplay', LMT.ui.html.ToggleDisplay);
     $(document).on('ToggleHelpBar', LMT.ui.html.HelpBar.toggle);
     $(document).on('MouseEnter', LMT.ui.html.HelpBar.MouseEnter);
+    $(document).on('MouseLeave', LMT.ui.html.HelpBar.MouseLeave);
     $(document).on('MouseEnter', LMT.ui.svg.events.hoverIn);
         
     // get the inital data, available lenses and catalogues, if no identifier provided in get string
