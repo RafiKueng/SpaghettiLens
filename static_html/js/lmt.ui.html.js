@@ -523,6 +523,9 @@ html.GlassSettingsDialog = {
       max: 2,
       step: 0.01,
       values: [0.5, 1], //default value will be set on open of diaalog..
+      change: function(evt, ui){
+        $("#gset_redshift_out").html("(Lens: " + ui.values[0] + " / Source: " + ui.values[1] + ")");
+      },
       slide: function(evt, ui){
         $("#gset_redshift_out").html("(Lens: " + ui.values[0] + " / Source: " + ui.values[1] + ")");
       },
@@ -543,6 +546,9 @@ html.GlassSettingsDialog = {
       slide: function(evt, ui){
         $("#gset_pixrad_out").html("("+ui.value+")");
       },
+      change: function(evt, ui){
+        $("#gset_pixrad_out").html("("+ui.value+")");
+      },
       stop: function(evt, ui){
         LMT.model.Parameters.pixrad = ui.value;
       }
@@ -556,6 +562,9 @@ html.GlassSettingsDialog = {
       step: 50,
       value: 200, //default value will be set on open of diaalog..
       slide: function(evt, ui){
+        $("#gset_nmodels_out").html("("+ui.value+")");
+      },
+      change: function(evt, ui){
         $("#gset_nmodels_out").html("("+ui.value+")");
       },
       stop: function(evt, ui){
