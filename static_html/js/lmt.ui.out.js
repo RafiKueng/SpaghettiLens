@@ -97,6 +97,25 @@ out = {
 		that.$out.empty(); //remove previous results
 		that.$btns.empty(); //remove the number navigation buttons from previous results
 		
+		var tooltips = [
+		  "arrival time contour map",
+		  "Mass distribution",
+		  "Synthetic image"
+	  ];
+	  
+    var hotkeys = [
+      "1",
+      "2",
+      "3"
+    ];
+    
+    var tooltiplists = [
+      "description 1",
+      "description 2",
+      "description 3"
+    ];
+	  
+		
 		$.each(urls, function(i, val) {
 		  /*
 			var $div = $('<div class="slide"><img class="slide_img" src="'+ val.url +'" /></div>');
@@ -142,7 +161,14 @@ out = {
 			});
 			$nr.appendTo(that.$btns);
 			*/
-			var $nr = $('<input type="radio" id="radio'+i+'" name="slideNr" /><label for="radio'+i+'">'+i+'</label>');
+			var $nr = $('<input ' + 
+			  'type="radio" ' +
+			  'id="btnSlideRadio'+i+'" ' +
+        'data-tooltip="'+ tooltips[i] +'" ' +
+        'data-hotkey="'+ hotkeys[i] +'" ' +
+        'data-tooltiplist="'+ tooltiplists +'" ' +
+			  'name="slideNr" />'+
+			  '<label for="btnSlideRadio'+i+'">'+i+'</label>');
 			$nr.appendTo(that.$btns);
 			$nr.on('click', {id:i}, function(evt){
 				$.event.trigger('DisplayOutputSlide', [evt.data.id]);

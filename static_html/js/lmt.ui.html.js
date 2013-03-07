@@ -820,11 +820,22 @@ html.HelpBar = {
     var txt = title
       + (hotkey ? " (Hotkey: <i>"+hotkey+"</i>)" : "");
       //+ (link ? " <a href='" + link + "'>further info</a>" : "");
-    var t = $("<div class='help title' style='display: table-cell;'></div>").html(txt);
-    if (body) {
-      var b = $("<ul class='help list'></ul>");
-      for (var i=0;i<body.length;++i){
-        b.append($("<li></li>").html(body[i]));
+    var t = $("<div class='help title'></div>").html(txt);
+    
+    //parse string to array
+    if (body && typeof(body)=="string") {
+      body = body.split("|");
+    }
+
+    if (body && typeof(body)=="object") {
+      if (body.length==1){
+        var t = $("<div class='help body'></div>").html(body[0]);
+      }
+      else {
+        var b = $("<ul class='help list'></ul>");
+        for (var i=0;i<body.length;++i){
+          b.append($("<li></li>").html(body[i]));
+        }
       }
     }
     else {
