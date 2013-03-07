@@ -38,6 +38,8 @@ var events = {
     LMT.ui.html.GlassSettingsDialog.init();
     LMT.ui.html.ColorSettingsOutputDialog.init();
     
+    LMT.ui.html.HelpBar.init();
+    
     LMT.ui.html.Tooltip.init();
     LMT.ui.html.KeyboardListener.init();
     
@@ -61,7 +63,11 @@ var events = {
     var fnc = function(){return false;}
     
     $(document).on('ToggleDisplay', LMT.ui.html.ToggleDisplay);
-    
+    $(document).on('ToggleHelpBar', LMT.ui.html.HelpBar.toggle);
+    $(document).on('MouseEnter', LMT.ui.html.HelpBar.MouseEnter);
+    $(document).on('MouseLeave', LMT.ui.html.HelpBar.MouseLeave);
+    $(document).on('MouseEnter', LMT.ui.svg.events.hoverIn);
+        
     // get the inital data, available lenses and catalogues, if no identifier provided in get string
     $(document).on('GetInitData', LMT.com.getInitData);
     $(document).on('GotInitData', LMT.ui.html.SelectModelDialog.onInitData);
@@ -81,6 +87,8 @@ var events = {
     // the background images / channels color settings were changed
     $(document).on('ChangedModelData', LMT.ui.svg.bg.updateColor);
     
+    //display settings were changed
+    $(document).on('ChangedDisplaySettings', LMT.ui.svg.updateDisp);
 
     $(document).on('Undo', LMT.objects.ActionStack.Undo);
     $(document).on('Redo', LMT.objects.ActionStack.Redo);

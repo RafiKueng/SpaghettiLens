@@ -375,6 +375,7 @@ ExtremalPoint.prototype.paint = function() {
   if (!this.circle) {
     this.circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     this.circle.setAttribute("id", "point" + this.idnr);
+    this.circle.setAttribute("class", "extremalpoint");
     
     this.layer.appendChild(this.circle);
     //this.circle.pnt = this;
@@ -384,7 +385,10 @@ ExtremalPoint.prototype.paint = function() {
   this.circle.setAttribute("cx", this.x);
   this.circle.setAttribute("cy", this.y);
   this.circle.setAttribute("r", ExtremalPoint.r_def / LMT.settings.display.zoompan.scale);
-	this.circle.setAttribute("class", "extremalpoint_" + this.type);
+	this.circle.classList.remove("min");
+	this.circle.classList.remove("max");
+	this.circle.classList.remove("sad");
+	this.circle.classList.add(this.type);
 	
 
 	//recursion: paint children
@@ -405,17 +409,20 @@ ExtremalPoint.prototype.paint = function() {
   if (!this.isRoot) {
     if (!this.line) {
       this.line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      this.line.setAttribute("class", "connectorline");
+      
+      this.line.jsObj = this;
       
       LMT.ui.svg.layer.connectorlines.appendChild(this.line);
     }
-    var classstr = LMT.settings.display.paintConnectingLines ? "connectorline" : "connectorline invisible";
-    this.line.setAttribute("class", classstr);
+
     this.line.setAttribute("x1", this.x);
     this.line.setAttribute("y1", this.y);
     this.line.setAttribute("x2", this.parent.x);
     this.line.setAttribute("y2", this.parent.y);
     this.line.setAttribute("stroke-width", ExtremalPoint.strokeWidth_def / LMT.settings.display.zoompan.scale);
   }
+  
 }
 
 

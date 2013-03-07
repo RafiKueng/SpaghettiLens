@@ -120,6 +120,7 @@ Contour.prototype.createSVG = function() {
   this.path.setAttribute("id", "cpath" + this.idnr);
   this.path.setAttribute("class", "contourpath");
   this.path.setAttribute("d", "M0,0");
+  this.path.jsObj = this;
   //this.path.setAttribute("style", "stroke: blue; fill: none; stroke-width: 1");
 
 	LMT.ui.svg.layer.contourlines.appendChild(this.path);
@@ -260,13 +261,14 @@ Contour.prototype.paint = function() {
 
 	this.updateSVG(pathstr);
 
-	
+	/*
 	if (LMT.settings.display.paintContours){
-		this.path.setAttribute("class", "contourpath");
+		this.path.classList.remove("invisible");
 	}
 	else {
-		this.path.setAttribute("class", "invisible");
+    this.path.classList.add("invisible");
 	}
+	*/
 }
 
 
@@ -280,6 +282,19 @@ Contour.prototype.remove = function() {
 		elem.remove();
 	}
 	this.deleteSVG();
+}
+
+
+/**
+ * returns a jquery object containing all the svg elements that this contour is made of 
+ */
+Contour.prototype.get$Elements = function(){
+  $elems = $(this.path);
+  for (var i in this.cpoints){
+    var cp = this.cpoints[i];
+    $elems = $elems.add(cp.circle);
+  }
+  return $elems;
 }
 
 

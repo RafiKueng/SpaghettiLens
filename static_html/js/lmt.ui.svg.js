@@ -63,12 +63,41 @@ svg.initCanvas = function() {
   svg.root.setAttribute('viewBox', '0 0 500 500');
 	svg.root.setAttribute('xmlns:xlink', svg.xlinkns);
 	svg.layer.bg.setAttribute('id', 'bg');
-
+  svg.layer.masses.setAttribute('id', 'masses');
+  svg.layer.models.setAttribute('id', 'models');
+  svg.layer.connectorlines.setAttribute('id', 'connectorlines');
+  svg.layer.contourlines.setAttribute('id', 'contourlines');
+  svg.layer.contourpoints.setAttribute('id', 'contourpoints');
+  svg.layer.extremalpoints.setAttribute('id', 'extremalpoints');
+  svg.layer.rulers.setAttribute('id', 'rulers');
+  
 	//set event listeners
 	svg.root.addEventListener('click', LMT.ui.svg.events.onClick);
 	svg.root.addEventListener('mousedown', LMT.ui.svg.events.onMouseDown);
 	svg.root.addEventListener('mouseup', LMT.ui.svg.events.onMouseUp);
 	svg.root.addEventListener('mouseout', LMT.ui.svg.events.onMouseOut);
+	
+	//event listeneners for help / active element hilight
+  var activeLayers = ['masses', 'connectorlines', 'contourlines',
+    'contourpoints', 'extremalpoints', 'rulers', 'bg'];
+    
+	for (var i=0; i<activeLayers.length; ++i) {
+	  var l = activeLayers[i];
+	  var tmp = $(svg.layer[l]);
+	  tmp.mouseenter(function(evt){
+      $.event.trigger("MouseEnter", evt);
+    });
+	  tmp.mouseleave(function(evt){
+      $.event.trigger("MouseLeave", evt);
+    });
+	};
+	
+	
+	/*
+	$(svg.root).mouseenter(function(evt){
+	  $.event.trigger("MouseEnter", evt);
+  });
+	*/
 	
 	if (svg.root.addEventListener) {
 		// IE9, Chrome, Safari, Opera
@@ -97,6 +126,9 @@ svg.initCanvas = function() {
 	svg.root.appendChild(svg.layer.zoompan);
 	
 	parent.appendChild(svg.root);
+	
+	//update the visability of the layers
+	$.event.trigger("ChangedDisplaySettings");
 }
 
 
@@ -162,6 +194,8 @@ svg.events = {
 			|| dragTargetStr=="rule") {
 			svg.events.dragTarget = evt.target;
 			svg.events.state = 'drag';
+
+
 		}
 		else {
 			svg.events.state = 'pan';
@@ -228,11 +262,14 @@ svg.events = {
 		}
 		if (svg.events.someElementWasDragged) {
 			$.event.trigger("SaveModelState");
+
 		  evt.stopPropagation();
 		  evt.preventDefault();
 		}
 		svg.events.someElementWasDragged = false;
 		svg.root.removeEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
+
+    svg.events.state = 'none';
 	},
 	
 	
@@ -252,6 +289,7 @@ svg.events = {
       $.event.trigger('ZoomPanReset');
       if (evt.stopPropagation) {evt.stopPropagation();}
       if (evt.preventDefault) {evt.preventDefault();}
+      
 			return;
 		}
 		
@@ -322,6 +360,7 @@ svg.events = {
 		if (evt.stopPropagation) {evt.stopPropagation();}
 		if (evt.preventDefault) {evt.preventDefault();}
 		
+
 	},
 
 	
@@ -334,7 +373,101 @@ svg.events = {
 			svg.events.onMouseUp(evt);
 		}
 		*/
-	}
+	},
+	
+	
+	/**
+	 * if an element is hoovered, make the correspongin active 
+	 */
+  hoverIn: function(a, evt) {
+    //alert("hoverin");
+    
+    //dont change anything on drag  mode
+    if (svg.events.state != 'none') {return;}
+    
+    var ctid = evt.currentTarget.id;
+    var $all = $(".extremalpoint")
+      .add(".contourpoint")
+      .add(".connectorline")
+      .add(".contourpath")
+      .add(".ruler")
+      .add(".ext_mass");
+
+    
+    if (ctid=="extremalpoints"){
+      var t = evt.target;
+      var tjs = evt.target.jsObj;
+      
+      $all.addClassSVG("inactive");
+
+      var $act = $(t);
+      if (tjs.type == "sad") {
+        if (tjs.child1) {
+          var children = [tjs.child1, tjs.child2]; 
+          for (var i = 0; i<2;++i){
+            var child = children[i];
+            $act = $act.add(child.contour.get$Elements());
+          }
+        }
+      }
+      else if (tjs.contour) {
+        $act = $act.add(tjs.contour.get$Elements());
+      }
+      $act.removeClassSVG("inactive");
+
+
+    }
+    else if (ctid == "contourpoints") {
+      var t = evt.target;
+      var tjs = evt.target.jsObj;
+      var $c = evt.target.jsObj.parent.get$Elements();
+      $c = $c.add(tjs.extpnt.circle);
+      $c = $c.add(tjs.extpnt.parent.circle);
+      
+      $all.addClassSVG("inactive");
+      $c.removeClassSVG("inactive"); 
+      
+
+    }
+    else if (ctid == "contourlines") {
+      var t = evt.target;
+      var tjs = evt.target.jsObj;
+      var $c = tjs.get$Elements();
+      
+      $all.addClassSVG("inactive");
+      $c.removeClassSVG("inactive"); 
+    }
+    
+    else if (ctid == "connectorlines") {
+      var t = evt.target;
+      var tjs = evt.target.jsObj;
+      var $act = $(t).add(tjs.circle).add(tjs.parent.circle);      
+      
+      $all.addClassSVG("inactive");
+      $act.removeClassSVG("inactive"); 
+    }
+    else if (ctid == "masses" || ctid == "rulers") {
+      var t = evt.target;
+      var tjs = evt.target.jsObj;
+      var $act = $(tjs.mid).add(tjs.handle).add(tjs.circle);
+      
+      $all.addClassSVG("inactive");
+      $act.removeClassSVG("inactive"); 
+    }
+    else if (ctid == "bg") {
+      $all.removeClassSVG("inactive");
+    }
+    else {  
+    }
+
+  },
+  
+  /*
+  hoverOut: function(evt) {
+    alert("hoverout");
+  },
+  */
+	
 }
 	
 /**
@@ -535,6 +668,26 @@ svg.generateColorMatrix = function(ch) {
 		" 1"  + " 0"  + " 0"  + " 0 " + a34 ;
 		
 	return str;
+}
+
+
+
+svg.updateDisp = function() {
+  var set = [ LMT.settings.display.paintConnectingLines,
+              LMT.settings.display.paintContourPoints,
+              LMT.settings.display.paintContours ];
+  var layer = [ svg.layer.connectorlines,
+                svg.layer.contourpoints,
+                svg.layer.contourlines];
+                
+  for (var i=0;i<3;i++){
+    if (set[i]) {
+      layer[i].classList.remove("invisible");
+    }
+    else {
+      layer[i].classList.add("invisible");
+    }
+  }
 }
 
 

@@ -477,18 +477,15 @@ html.DisplaySettingsDialog = {
   	
   	$('#conn_l').click(function(evt){
   		LMT.settings.display.paintConnectingLines = this.checked;
-  		log.write('toggle 1' + this.checked);
-  		$.event.trigger('RepaintModel');
+  		$.event.trigger('ChangedDisplaySettings');
   	});
   	$('#cont_p').click(function(evt){
   		LMT.settings.display.paintContourPoints = this.checked;
-  		log.write('toggle 2');
-  		$.event.trigger('RepaintModel');
+      $.event.trigger('ChangedDisplaySettings');
   	})
   	$('#cont_l').click(function(){
   		LMT.settings.display.paintContours = this.checked;
-  		log.write('toggle 3');
-  		$.event.trigger('RepaintModel');
+      $.event.trigger('ChangedDisplaySettings');
   	});
   	
   	$("#display_dialog").removeClass("initHidden");
@@ -770,6 +767,161 @@ html.ToggleDisplay = function(evt){
   */
   
 }
+
+
+html.HelpBar = {
+  
+  isShown: function(){
+    //get state of button
+    var isIt = $("#btnMainHelp")[0].checked;
+    return isIt;
+  },
+  
+  init: function() {
+    var $t = $("#toolbarGrp1 button")
+    .add("#toolbarGrp1 label")
+    .add("#toolbarTop button")
+    .add("#toolbarTop label")
+    .add("#toolbarGrp2 button")
+    .add("#toolbarGrp2 label");
+    $t.hover( function(evt){$.event.trigger('MouseEnter',evt);},
+              function(evt){$.event.trigger('MouseLeave',evt);});
+  },
+  
+  toggle: function(){
+    var that = LMT.ui.html.HelpBar;
+    if (that.isShown()){
+      $("#help").show();
+    }
+    else {
+      $("#help").hide();
+    }
+  },
+  
+  show: function(title, body, hotkey, link) {
+    var txt = title
+      + (hotkey ? " (Hotkey: <i>"+hotkey+"</i>)" : "");
+      //+ (link ? " <a href='" + link + "'>further info</a>" : "");
+    var t = $("<div class='help title' style='display: table-cell;'></div>").html(txt);
+    if (body) {
+      var b = $("<ul class='help list'></ul>");
+      for (var i=0;i<body.length;++i){
+        b.append($("<li></li>").html(body[i]));
+      }
+    }
+    else {
+      var b = null;
+    }
+    $("#helpcont").empty().append(t).append(b);
+  },
+  
+  MouseLeave: function(){
+    $("#helpcont").empty();
+  },
+  
+  MouseEnter: function(a, evt) {
+    
+    //prevent flickering if fast moving stuff
+    if (svg.events.state != 'none') {return;}
+    
+    var tmp = evt;
+    var ctid = evt.currentTarget.id;
+    var jsTarget = evt.target.jsObj || null;
+    var control = evt.currentTarget.control || null; //for input / labels, get the real element
+    var cid = control ? control.id : null;
+    
+    /*
+    var activeLayers = ['masses', 'connectorlines', 'contourlines',
+      'contourpoints', 'extremalpoints', 'rulers', 'bg'];
+    */
+
+    if (ctid=="extremalpoints"){
+      
+      var t = "";
+      if      (jsTarget.type=="sad") {t += "Saddlepoint";}
+      else if (jsTarget.type=="min") {t += "Minima";}
+      else if (jsTarget.type=="max") {t += "Maxima";}
+      t += jsTarget.isExpanded ? " (expanded)" : " (unexpanded)";
+      t += " of the arrival time surface.";
+      var b=[];
+      b.push("Drag to move");
+      b.push("Click to " + (
+        jsTarget.isExpanded ?
+          "collapse (remove children)": "expand (convert to saddlepoint)"));
+      b.push("to remove, " + (
+        jsTarget.isRoot ? "use the Undo function" : "collapse the parent saddlepoint"));
+      
+      html.HelpBar.show(t, b);
+    }
+    
+    else if (ctid == "bg") {
+      var t = "Modelling Area";
+      var b = [];
+      if (LMT.settings.mode=="image"){b.push("Click to mark an Image");}
+      else if (LMT.settings.mode=="ruler"){b.push("Click to place a ruler");}
+      else if (LMT.settings.mode=="mass"){b.push("Click to place an exernal mass");}
+      b.push("(change what to do in the toolbar)");
+      b.push("Drag to move the canvas");
+      b.push("Mousewheel to zoom in/out, mousewheel press to reset");
+      html.HelpBar.show(t, b);
+    }
+    
+    else if (ctid == "contourpoints") {
+      var t = "Contor Point (only visual aid, doesn't influence the model)";
+      var b = [];
+      b.push("Drag to move");
+      b.push("Click to doublicate");
+      b.push("Move close to next / previous to delete");
+      html.HelpBar.show(t,b);
+    }
+
+    else if (ctid == "contourlines") {
+      var t = "Contor / Isoline for arrival time";
+      var b = [];
+      b.push("Use points to move");
+      b.push("Disable display in toolbar, display settings");
+      html.HelpBar.show(t,b);
+    }
+
+    else if (ctid == "connectorlines") {
+      var t = "Connection";
+      var b = [];
+      b.push("Visual aid to show parent / child");
+      html.HelpBar.show(t,b);
+    }
+    
+    else if (ctid == "masses"){
+      var t = "External Point Mass";
+      var b = [];
+      b.push("Drag the middle point to move");
+      b.push("Drag the point on the line to change the amount of mass");
+      b.push("Click on middle point to remove");
+      html.HelpBar.show(t,b);
+    }
+    
+    else if (ctid == "rulers"){
+      var t = "Ruler / Distance Estimation";
+      var b = [];
+      b.push("Drag the middle point to move");
+      b.push("Drag the point on the line expand the circle");
+      b.push("Click on middle point to remove");
+      html.HelpBar.show(t,b);
+    }
+
+    
+    
+    else if ((ctid && ctid.substr(0,3)=="btn") || (cid && cid.substr(0,3) == "btn")) {
+      var $t = control ? $(control) : $(evt.currentTarget);
+      html.HelpBar.show($t.data("tooltip"), $t.data("tooltiplist"), $t.data("hotkey"), $t.data("furtherinfo"));
+    }
+
+    else {
+      html.HelpBar.show("unknown element",[]);
+    } 
+    
+  }
+}
+
 
 
 LMT.ui.html = html;
