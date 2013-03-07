@@ -166,7 +166,7 @@ out = {
 			  'id="btnSlideRadio'+i+'" ' +
         'data-tooltip="'+ tooltips[i] +'" ' +
         'data-hotkey="'+ hotkeys[i] +'" ' +
-        'data-tooltiplist="'+ tooltiplists +'" ' +
+        'data-tooltiplist="'+ tooltiplists[i] +'" ' +
 			  'name="slideNr" />'+
 			  '<label for="btnSlideRadio'+i+'">'+i+'</label>');
 			$nr.appendTo(that.$btns);

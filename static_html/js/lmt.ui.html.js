@@ -829,7 +829,7 @@ html.HelpBar = {
 
     if (body && typeof(body)=="object") {
       if (body.length==1){
-        var t = $("<div class='help body'></div>").html(body[0]);
+        var b = $("<div class='help body'></div>").html(body[0]);
       }
       else {
         var b = $("<ul class='help list'></ul>");
