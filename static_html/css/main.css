@@ -136,7 +136,14 @@ body {
 }
 
 #help .title {
+  display: table-cell;
   font-weight: bold;
+}
+
+#help .body {
+  display: table-cell;
+  margin:0px;
+  padding-left:20px;
 }
 
 #help .list {
@@ -207,8 +214,8 @@ body {
  */
 
 .slide {
-  background-color:#FF00FF;
   display: block;
+  position: absolute;
   width: 100%;
   height: 100%;
 }
