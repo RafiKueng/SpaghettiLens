@@ -22,29 +22,34 @@ html.SelectModelDialog = {
     
     $('#select_model_dialog').dialog({
       autoOpen: false,
-      minWidth: 500,
-      minHeight: 500,
+      minWidth: 550,
+      minHeight: 700,
       modal: true,
       open: function(){},
-      buttons: [{
+      buttons: [
+      {
+        text: "Login and continue previous session",
+        click: function(){
+          alert("not yet implemented, please use the selection again");
+        }
+      },
+      {
         text: "Ok",
         click: function(evt){
-          tmp1 = $("#selmod_cat").val();
-          tmp2 = $("#selmod_lens").val();
-          if (tmp1=="" && tmp2==""){
-            alert("please choose some lens");
+          //tmp1 = $("#selmod_cat").val();
+          //tmp2 = $("#selmod_lens").val();
+          tmp3 = $("#selmod_lens").val();
+          if (tmp3==""){
+            //todo in this case, load all ids
+            alert("please choose at least one lens");
             return;
           }
           else {
-            modelid = parseInt(tmp2);
-            $.event.trigger("GetModelData", model_id = modelid);
+            //modelid = parseInt(tmp2);
+            for(var i=0; i<tmp3.length;i++) {tmp3[i] = +tmp3[i];} //parse to int
+            $.event.trigger("GetModelData", [models = tmp3, catalog=+$("#selmod_cat").val(), action='init']);
             $('#select_model_dialog').dialog("close");
           }
-        }},
-        {
-        text: "GetRandomModel",
-        click: function(){
-          
         }}
       ]
         
@@ -55,26 +60,30 @@ html.SelectModelDialog = {
     $("#selmod_cat").chosen().change(function(){
       if ($("#selmod_cat").val() != "0" ){
         $("#selmod_lens").val('0').trigger("liszt:updated");
-        $("#selmod_lensid").val('0').trigger("liszt:updated");
+        //$("#selmod_lensid").val('0').trigger("liszt:updated");
+        LMT.ui.html.SelectModelDialog.updateLensList();
       }
     });
     
     $("#selmod_lens").chosen({allow_single_deselect:true});
     $("#selmod_lens").chosen().change(function(){
       if ($("#selmod_lens").val() != "0" ){
-        $("#selmod_cat").val('0').trigger("liszt:updated");
-        $("#selmod_lensid").val($("#selmod_lens").val()).trigger("liszt:updated");
+        //$("#selmod_cat").val('0').trigger("liszt:updated");
+        //$("#selmod_lensid").val($("#selmod_lens").val()).trigger("liszt:updated");
       }
     });
     
+    /*
     $("#selmod_lensid").chosen({allow_single_deselect:true});
     $("#selmod_lensid").chosen().change(function(){
       if ($("#selmod_lensid").val() != "0" ){
         $("#selmod_cat").val('0').trigger("liszt:updated");
         $("#selmod_lens").val($("#selmod_lensid").val()).trigger("liszt:updated");
       }
+      
     });
-    
+    */
+
     //LMT.com.getInitData(); //this will trigger an update
   },
   
@@ -85,7 +94,11 @@ html.SelectModelDialog = {
   },
   
   onInitData: function(evt, jsonObj) {
-    $parent = $("#selmod_cat")
+    LMT.ui.html.SelectModelDialog.availObj = jsonObj; 
+    
+    $parent = $("#selmod_cat");
+
+    $parent.append($('<option value="-1">NONE (all lenses NOT in a catalog)</option>'));
     var cat = {};
     for (var i=0; i<jsonObj.catalogues.length; i++){
       var id = jsonObj.catalogues[i].id;
@@ -95,19 +108,48 @@ html.SelectModelDialog = {
       $parent.append(elem);
     }
     $parent.trigger("liszt:updated");
+    
+    LMT.ui.html.SelectModelDialog.catalogs = cat; 
+    
+    LMT.ui.html.SelectModelDialog.updateLensList();
 
+    /*
     $parent1 = $("#selmod_lens")
-    $parent2 = $("#selmod_lensid")
+    //$parent2 = $("#selmod_lensid")
     for (var i=0; i<jsonObj.lenses.length; i++){
       var lens = jsonObj.lenses[i];
-      var lenscat = cat[lens.catalog] ? ' (catalogue: '+ cat[lens.catalog].name + ")": ""
+      var lenscat = cat[lens.catalog] ? ' (catalog: '+ cat[lens.catalog].name + ")": ""
       var elem1 = $('<option value="' + lens.id + '">' + lens.name +  lenscat + '</option>');
       $parent1.append(elem1);
-      var elem2 = $('<option value="' + lens.id + '">' + lens.id + '</option>');
-      $parent2.append(elem2);
+      //var elem2 = $('<option value="' + lens.id + '">' + lens.id + '</option>');
+      //$parent2.append(elem2);
     }
     $parent1.trigger("liszt:updated");
-    $parent2.trigger("liszt:updated");
+    //$parent2.trigger("liszt:updated");
+    */
+  },
+  
+  updateLensList: function() {
+    availObj = LMT.ui.html.SelectModelDialog.availObj;
+    cat = LMT.ui.html.SelectModelDialog.catalogs;
+    $parent = $("#selmod_lens")
+    
+    $parent.empty();
+    $parent.append($('<option value=""></option>'));
+
+    catId = +$("#selmod_cat").val(); //+ casts string to int
+
+    for (var i=0; i<availObj.lenses.length; i++){
+      var lens = availObj.lenses[i];
+      if (lens.catalog == catId || catId == 0 || //only add if the lenses catalog is selected or no calatog selected
+        (catId==-1 && lens.catalog==null) ){ // or the NONE option is selected and this lens doesnt have a cat 
+        var lenscat = cat[lens.catalog] ? ' (cat: '+ cat[lens.catalog].name + ")": ""
+        var elem1 = $('<option value="' + lens.id + '">id:' + lens.id + ' ' + lens.name +  lenscat + '</option>');
+        $parent.append(elem1);
+      }
+    }
+
+    $parent.trigger("liszt:updated");
   }
   
 }
@@ -115,13 +157,16 @@ html.SelectModelDialog = {
 
 
 
-
+/**
+ * initalises the toolpars on the top and the one on the input / left side
+ */
 html.Toolbar = {
   init: function() {
   
   	$("#toolbarGrp1 button")
   	 .add("#toolbarGrp1 input")
-  	 .add("#top button")
+  	 .add("#toolbarTop button")
+  	 .add("#toolbarTop input")
   	 .each(function(){
   		
   		var $this = $(this);
@@ -136,8 +181,20 @@ html.Toolbar = {
   		})
   		.on('click', {name:eventName, value: value} , LMT.ui.html.Toolbar.fire);
   	});
-  
-  	$("#toolbarGrp1 > .btnset").buttonset();
+  	
+  	
+  	//init top buttons correctly
+    $('#btnMainActionPrev').on('click', function() {$.event.trigger('GetModelData', [null,null,'prev']);})
+    $('#btnMainActionNext').on('click', function() {$.event.trigger('GetModelData', [null,null,'next']);})
+    $("#toolbarGrpTop button").button("disable");
+    $('#btnMainHelp').button("enable");
+    $('#btnMainHelp').prop('checked', true);
+    $('#btnMainHelp').change(); 	
+  	
+    // make buttongroups
+    $("#toolbarGrp1 > .btnset").buttonset();
+    $("#toolbarGrpTop > .btnset").buttonset();
+  	
 
     //set buttons to correct state 
     
@@ -147,6 +204,7 @@ html.Toolbar = {
     
     //un/re do buttons:
     $('#btnInUndo').add('#btnInRedo').button("disable");
+    
     
   },
   
@@ -163,6 +221,14 @@ html.Toolbar = {
   },
   
   /**
+   * updates the top toolbar buttons 
+   */
+  updateTop: function(evt) {
+    $('#btnMainActionPrev').button(LMT.modelData.prevAvail ? "enable" : "disable");
+    $('#btnMainActionNext').button(LMT.modelData.nextAvail ? "enable" : "disable");
+  },
+  
+  /**
    * fires an event when a toolbar button is pressed 
    */
   fire: function(evt){
@@ -176,32 +242,37 @@ html.ColorSettingsDialog = {
   init: function(){	
 	
   		// multiply the color settings tools for n channels
-  	var $parent = $('#color_dialog');
-  	var $elem = $("#csettings_ch0");
+  	var $parent = $('#cd_table');
+  	var $elem = $("#cd_table > .cd_row");
   	var ch = LMT.modelData.ch;
   	
   	for (var i = 1; i<ch.length; i++){
   		$clone = $elem.clone(true, true);
-  		$clone.find('*').data('id', i);
+  		var e = $clone.find('*');
+  		e.data('id', i);
+  		e.first().children().text("Ch"+(i+1));
   		$clone.appendTo($parent);
   	}
   	
   	
   	// color picker dialog
-  	$('#color_dialog').dialog({
-  		autoOpen: false,
+    $('#color_dialog').dialog({
+  	 	autoOpen: false,
   		minWidth: 500,
   		open: function(){
   			 $('.mycp').each(function(i, val){
-  			   	var str = (1 << 24) | (ch[i].r*255 << 16) | (ch[i].g*255 << 8) | ch[i].b*255;
-  			 		$(this).val('#' + str.toString(16).substr(1)).focus();
-  			 		
-  			 		// hack that should update the field so they get their color from beginning
-  			 		var press = jQuery.Event("keyup");
-  					press.ctrlKey = false;
-  					press.which = 13;
-  					$(this).trigger(press);
+  			   //get color in hex notation   
+           var str = (1 << 24) | (ch[i].r*255 << 16) | (ch[i].g*255 << 8) | ch[i].b*255;
+           $(this).val('#' + str.toString(16).substr(1)).focus();
+           
+           // hack that should update the field so they get their color from beginning
+           /*
+           var press = jQuery.Event("keyup");
+           press.ctrlKey = false;
+           press.which = 13;
+           $(this).trigger(press);*/
   			 });
+  			 
   		}
   	});
   	
@@ -212,6 +283,15 @@ html.ColorSettingsDialog = {
   		min: -1,
   		value: 0,
   		step: 0.05,
+  		slide: function(evt, ui) {
+  		  //only update labels
+        var value = ui.value;
+        var type = $(this).data("type");
+        if (type=="contrast"){
+          value = Math.pow(10, value); //change range from [-1...1] to [0.1 ... 10]
+        }
+        $(this).parent().siblings('.cd_cell_value').children().text(value.toFixed(2));
+  		},
   		stop: function(evt, ui) {
   			var value = ui.value;
   			var type = $(this).data("type");
@@ -227,6 +307,16 @@ html.ColorSettingsDialog = {
   		}
   		
   	});
+  	
+  	var e = $('.cd_cell_value > p');
+  	e.filter(':even').text("1.00");
+    e.filter(':odd').text("0.00");
+  	
+	  // if color image, hide color settings
+	  if (LMT.modelData.img_type == "CO"){
+	    $(".cd_cell_cp").add(".cd_cell_name").hide();
+	  }
+	
 	
   	$('.mycp').colorpicker({
   		parts: ['header',
@@ -260,7 +350,7 @@ html.ColorSettingsDialog = {
   		},
   	});
   	
-  	$parent.removeClass("initHidden");
+  	$parent.parent().removeClass("initHidden");
   	
   },
   
@@ -271,6 +361,97 @@ html.ColorSettingsDialog = {
   
   
 }
+
+
+
+html.ColorSettingsOutputDialog = {
+  init: function(){ 
+  
+   
+    
+    // color picker dialog
+    $('#color_out_dialog').dialog({
+      autoOpen: false,
+      minWidth: 500,
+      open: function(){
+        LMT.ui.html.ColorSettingsOutputDialog.refresh();
+      }
+    });
+    
+    
+    //sliders
+    $('#color_out_dialog .slider').slider({
+      max: 1,
+      min: -1,
+      value: 0,
+      step: 0.01,
+      slide: function(evt, ui) {
+        var value = ui.value;
+        var type = $(this).data("type");
+        var i = LMT.ui.out.shownImage;
+        
+        if (type=="contrast"){
+          value = Math.pow(10, value); //change range from [-1...1] to [0.1 ... 10]
+          LMT.settings.display.out[i].co = value;
+        }
+        else {
+          LMT.settings.display.out[i].br = value;
+        }
+        
+        log.write("stopped sliding");
+        $(this).parent().siblings('.cd_cell_value').children().text(value.toFixed(2));
+        $.event.trigger('RedrawCurrentOutput');
+      },
+      stop: function(evt, ui) {
+        var value = ui.value;
+        var type = $(this).data("type");
+        var i = LMT.ui.out.shownImage;
+        
+        if (type=="contrast"){
+          value = Math.pow(10, value); //change range from [-1...1] to [0.1 ... 10]
+          LMT.settings.display.out[i].co = value;
+        }
+        else {
+          LMT.settings.display.out[i].br = value;
+        }
+        
+        log.write("stopped sliding");
+        $.event.trigger('RedrawCurrentOutput');
+      }
+      
+    });
+    
+    var e = $('.cd_cell_value > p');
+    e.filter(':even').text("1.00");
+    e.filter(':odd').text("0.00");
+    
+
+    $('#color_out_dialog').removeClass("initHidden");
+    
+  },
+  
+  show: function(){
+    $('#color_out_dialog').dialog("open");
+  },
+  
+  
+  /**
+   * sets the sliders to the current values 
+   */
+  refresh: function() {
+    var co = LMT.settings.display.out[LMT.ui.out.shownImage].co;
+    var co10 = Math.log(co) / Math.LN10;
+    var br = LMT.settings.display.out[LMT.ui.out.shownImage].br
+    $("#cod_br").slider( "option", "value", br )
+      .parent().siblings('.cd_cell_value').children().text(br.toFixed(2));
+    $("#cod_co").slider( "option", "value", co10 )
+      .parent().siblings('.cd_cell_value').children().text(co.toFixed(2));
+    
+  }
+  
+}
+
+
   	
 	
 	
@@ -296,18 +477,15 @@ html.DisplaySettingsDialog = {
   	
   	$('#conn_l').click(function(evt){
   		LMT.settings.display.paintConnectingLines = this.checked;
-  		log.write('toggle 1' + this.checked);
-  		$.event.trigger('RepaintModel');
+  		$.event.trigger('ChangedDisplaySettings');
   	});
   	$('#cont_p').click(function(evt){
   		LMT.settings.display.paintContourPoints = this.checked;
-  		log.write('toggle 2');
-  		$.event.trigger('RepaintModel');
+      $.event.trigger('ChangedDisplaySettings');
   	})
   	$('#cont_l').click(function(){
   		LMT.settings.display.paintContours = this.checked;
-  		log.write('toggle 3');
-  		$.event.trigger('RepaintModel');
+      $.event.trigger('ChangedDisplaySettings');
   	});
   	
   	$("#display_dialog").removeClass("initHidden");
@@ -326,7 +504,16 @@ html.GlassSettingsDialog = {
     $("#glass_dialog").dialog({
       autoOpen: false,
       minWidth: 400,
-      open: function(){}
+      open: function(){
+        
+        // assign correct values to sliders
+        $("#gset_redshift_slide").slider("values",
+          [LMT.model.Parameters.z_lens|| 0.5 ,
+          LMT.model.Parameters.z_src || 1]);
+        $("#gset_pixrad_slide").slider("value", LMT.model.Parameters.pixrad || 5);
+        $("#gset_nmodels_slide").slider("value", LMT.model.Parameters.n_models || 200);
+        $("#gset_issymm").prop("checked", LMT.model.Parameters.isSym || false).change();
+      }
     });
     
     
@@ -335,13 +522,16 @@ html.GlassSettingsDialog = {
       min: 0,
       max: 2,
       step: 0.01,
-      values: [0.5, 1],
+      values: [0.5, 1], //default value will be set on open of diaalog..
+      change: function(evt, ui){
+        $("#gset_redshift_out").html("(Lens: " + ui.values[0] + " / Source: " + ui.values[1] + ")");
+      },
       slide: function(evt, ui){
         $("#gset_redshift_out").html("(Lens: " + ui.values[0] + " / Source: " + ui.values[1] + ")");
       },
       stop: function(evt, ui){
-        LMT.model.GlassSettings.z_lens = ui.values[0];
-        LMT.model.GlassSettings.z_src = ui.values[1];
+        LMT.model.Parameters.z_lens = ui.values[0];
+        LMT.model.Parameters.z_src = ui.values[1];
         
       }
     });
@@ -352,12 +542,15 @@ html.GlassSettingsDialog = {
       min: 3,
       max: 8,
       step: 1,
-      value: 5,
+      value: 5, //default value will be set on open of diaalog..
       slide: function(evt, ui){
         $("#gset_pixrad_out").html("("+ui.value+")");
       },
+      change: function(evt, ui){
+        $("#gset_pixrad_out").html("("+ui.value+")");
+      },
       stop: function(evt, ui){
-        LMT.model.GlassSettings.pixrad = ui.value;
+        LMT.model.Parameters.pixrad = ui.value;
       }
     });
 
@@ -367,12 +560,15 @@ html.GlassSettingsDialog = {
       min: 50,
       max: 2000,
       step: 50,
-      value: 200,
+      value: 200, //default value will be set on open of diaalog..
       slide: function(evt, ui){
         $("#gset_nmodels_out").html("("+ui.value+")");
       },
+      change: function(evt, ui){
+        $("#gset_nmodels_out").html("("+ui.value+")");
+      },
       stop: function(evt, ui){
-        LMT.model.GlassSettings.n_models = ui.value;
+        LMT.model.Parameters.n_models = ui.value;
       }
     });
     
@@ -382,7 +578,7 @@ html.GlassSettingsDialog = {
         var $btn = $(this);
         var state = !($btn.attr("checked")? true : false); //get old state, invert it to have new state
         $btn.attr("checked", state);
-        LMT.model.GlassSettings.isSym = state;
+        LMT.model.Parameters.isSym = state;
         log.write(state);
         $btn.button( "option", "label", state ? "Yes" : "No" );
       });
@@ -512,23 +708,249 @@ html.KeyboardListener = {
  */
 html.ToggleDisplay = function(evt){
   //alert("sliderklick");
-  LMT.ui.html.dispState = $("#slider").hasClass('left') ? 'left' : 'right';
-  $("#slider").toggleClass('left right');
-  $("#slider i").toggleClass('icon-double-angle-right icon-double-angle-left');
-  
+  LMT.ui.html.dispState = $("#bigslider").hasClass('left') ? 'left' : 'right';
+
   if (LMT.ui.html.dispState == 'left') {
-    $front = $("#toolbar2").add("#out");
-    $back = $("#toolbar1").add("#inp");
+    hide = [$("#out"), $("#toolbarOut")];
+    show = [$("#inp"), $("#toolbarInp")];
   }
   else {
-    $back = $("#toolbar2").add("#out");
-    $front = $("#toolbar1").add("#inp");
+    show = [$("#out"), $("#toolbarOut")];
+    hide = [$("#inp"), $("#toolbarInp")];
   }
-    
-  $back.hide().css({'z-index':'16'});
-  $front.css({'z-index':'15'});
-  $back.fadeIn(200);
+  $hide = hide[0].add(hide[1]);
+  $show = show[0].add(show[1]);
+  
+  $show.hide().css("zIndex", 21);
+  $hide.css("zIndex", 20);
+  
+  
+  var dur = 200;
+  
+  $show.fadeIn({duration: dur});
+  
+  $("#bigslider").fadeOut({
+    duration: dur/2,
+    done: function() {
+      $("#bigslider").toggleClass('left right');  
+      $("#bigslider i").toggleClass('icon-double-angle-right icon-double-angle-left');
+    }
+  });
+  $("#bigslider").fadeIn({
+    duration: dur/2,
+    done: function(){
+      $("#bigslider").css('display', '');
+    }
+  });
+  
+  /*
+  hide[0]
+  .css("opacity", 1)
+  .animate({opacity: 0}, {
+    duration: 100,
+    done: function(){
+      $(this).css("display", "none");
+      $("#bigslider").toggleClass('left right');  
+      $("#bigslider i").toggleClass('icon-double-angle-right icon-double-angle-left');
+      show[0]
+      .css("opacity", 0)
+      .animate({opacity: 1}, {duration: 300})
+      .css("display", "table-cell");
+    }
+  });
+
+  hide[1]
+  .css("opacity", 1)
+  .animate({opacity: 0}, {
+    duration: 100,
+    done: function(){
+      $(this).css("display", "none");
+      show[1]
+      .css("opacity", 0)
+      .animate({opacity: 1}, {duration: 300})
+      .css("display", "table-cell");
+    }
+  });
+  **/
+  
+  /* very nice sliding animation, but it doesn't work with content in divs...
+  show[0].animate({width: "100%"},{
+    duration: 400,
+  }).css("display", "table-cell");
+
+  hide[0].animate({width: "0%"},{
+    duration: 400,
+    done: function(){$(this).css("display", "none")}
+  }).css("display", "table-cell");
+  */
+  
 }
+
+
+html.HelpBar = {
+  
+  isShown: function(){
+    //get state of button
+    var isIt = $("#btnMainHelp")[0].checked;
+    return isIt;
+  },
+  
+  init: function() {
+    var $t = $("#toolbarGrp1 button")
+    .add("#toolbarGrp1 label")
+    .add("#toolbarTop button")
+    .add("#toolbarTop label")
+    .add("#toolbarGrp2 button")
+    .add("#toolbarGrp2 label");
+    $t.hover( function(evt){$.event.trigger('MouseEnter',evt);},
+              function(evt){$.event.trigger('MouseLeave',evt);});
+  },
+  
+  toggle: function(){
+    var that = LMT.ui.html.HelpBar;
+    if (that.isShown()){
+      $("#help").show();
+    }
+    else {
+      $("#help").hide();
+    }
+  },
+  
+  show: function(title, body, hotkey, link) {
+    var txt = title
+      + (hotkey ? " (Hotkey: <i>"+hotkey+"</i>)" : "");
+      //+ (link ? " <a href='" + link + "'>further info</a>" : "");
+    var t = $("<div class='help title'></div>").html(txt);
+    
+    //parse string to array
+    if (body && typeof(body)=="string") {
+      body = body.split("|");
+    }
+
+    if (body && typeof(body)=="object") {
+      if (body.length==1){
+        var b = $("<div class='help body'></div>").html(body[0]);
+      }
+      else {
+        var b = $("<ul class='help list'></ul>");
+        for (var i=0;i<body.length;++i){
+          b.append($("<li></li>").html(body[i]));
+        }
+      }
+    }
+    else {
+      var b = null;
+    }
+    $("#helpcont").empty().append(t).append(b);
+  },
+  
+  MouseLeave: function(){
+    $("#helpcont").empty();
+  },
+  
+  MouseEnter: function(a, evt) {
+    
+    //prevent flickering if fast moving stuff
+    if (svg.events.state != 'none') {return;}
+    
+    var tmp = evt;
+    var ctid = evt.currentTarget.id;
+    var jsTarget = evt.target.jsObj || null;
+    var control = evt.currentTarget.control || null; //for input / labels, get the real element
+    var cid = control ? control.id : null;
+    
+    /*
+    var activeLayers = ['masses', 'connectorlines', 'contourlines',
+      'contourpoints', 'extremalpoints', 'rulers', 'bg'];
+    */
+
+    if (ctid=="extremalpoints"){
+      
+      var t = "";
+      if      (jsTarget.type=="sad") {t += "Saddlepoint";}
+      else if (jsTarget.type=="min") {t += "Minima";}
+      else if (jsTarget.type=="max") {t += "Maxima";}
+      t += jsTarget.isExpanded ? " (expanded)" : " (unexpanded)";
+      t += " of the arrival time surface.";
+      var b=[];
+      b.push("Drag to move");
+      b.push("Click to " + (
+        jsTarget.isExpanded ?
+          "collapse (remove children)": "expand (convert to saddlepoint)"));
+      b.push("to remove, " + (
+        jsTarget.isRoot ? "use the Undo function" : "collapse the parent saddlepoint"));
+      
+      html.HelpBar.show(t, b);
+    }
+    
+    else if (ctid == "bg") {
+      var t = "Modelling Area";
+      var b = [];
+      if (LMT.settings.mode=="image"){b.push("Click to mark an Image");}
+      else if (LMT.settings.mode=="ruler"){b.push("Click to place a ruler");}
+      else if (LMT.settings.mode=="mass"){b.push("Click to place an exernal mass");}
+      b.push("(change what to do in the toolbar)");
+      b.push("Drag to move the canvas");
+      b.push("Mousewheel to zoom in/out, mousewheel press to reset");
+      html.HelpBar.show(t, b);
+    }
+    
+    else if (ctid == "contourpoints") {
+      var t = "Contor Point (only visual aid, doesn't influence the model)";
+      var b = [];
+      b.push("Drag to move");
+      b.push("Click to doublicate");
+      b.push("Move close to next / previous to delete");
+      html.HelpBar.show(t,b);
+    }
+
+    else if (ctid == "contourlines") {
+      var t = "Contor / Isoline for arrival time";
+      var b = [];
+      b.push("Use points to move");
+      b.push("Disable display in toolbar, display settings");
+      html.HelpBar.show(t,b);
+    }
+
+    else if (ctid == "connectorlines") {
+      var t = "Connection";
+      var b = [];
+      b.push("Visual aid to show parent / child");
+      html.HelpBar.show(t,b);
+    }
+    
+    else if (ctid == "masses"){
+      var t = "External Point Mass";
+      var b = [];
+      b.push("Drag the middle point to move");
+      b.push("Drag the point on the line to change the amount of mass");
+      b.push("Click on middle point to remove");
+      html.HelpBar.show(t,b);
+    }
+    
+    else if (ctid == "rulers"){
+      var t = "Ruler / Distance Estimation";
+      var b = [];
+      b.push("Drag the middle point to move");
+      b.push("Drag the point on the line expand the circle");
+      b.push("Click on middle point to remove");
+      html.HelpBar.show(t,b);
+    }
+
+    
+    
+    else if ((ctid && ctid.substr(0,3)=="btn") || (cid && cid.substr(0,3) == "btn")) {
+      var $t = control ? $(control) : $(evt.currentTarget);
+      html.HelpBar.show($t.data("tooltip"), $t.data("tooltiplist"), $t.data("hotkey"), $t.data("furtherinfo"));
+    }
+
+    else {
+      html.HelpBar.show("unknown element",[]);
+    } 
+    
+  }
+}
+
 
 
 LMT.ui.html = html;

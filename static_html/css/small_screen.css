@@ -4,40 +4,66 @@ html, body {
   min-width: 560px;
 }
 
-#toolbar1 {
-  left: 0px;
-  right: 0px;
-  z-index: 15;
+body {
+  margin: 0px;
+  padding: 0px;
 }
 
-#toolbar2 {
-  left: 0px;
-  right: 0px;
-  z-index: 14;
+
+/*only have rounded edges in big screen*/
+.rounded_top {
+  border-top-left-radius: 0px; 
+  border-top-right-radius: 0px; 
+}
+
+.rounded_bottom {
+  border-bottom-left-radius: 0px; 
+  border-bottom-right-radius: 0px; 
+}
+
+#headtitle {
+  display: table-row;
+  height: 50px;
+  font-size: 0.9em;
+
+}
+
+#toolbarTop {
+  display: table-row;
+  height: 60px;
+  font-size: 1em;
+}
+
+
+#toolbarInp {
+  width:100%;
+  z-index: 21;
+}
+
+#toolbarOut {
+  width:100%;
+  z-index: 20;
 }
 
 #inp {
+  left: 0px;
   right: 50px;
-  z-index: 15;
+  z-index: 21;
+  width: auto;
 }
 
-#out {
-  left: 50px;
-  z-index: 14;
-}
-
-#slider {
-  position:absolute;
+#bigslider {
   display: block;
-  top: 60px;
-  bottom: 0px;
   width: 50px;
+  z-index: 22;
   background-color: white;
   font-size: 3em;
   color: #fff;
+  vertical-align: middle;
 }
 
-#slider.left {
+
+#bigslider.left {
   left: 0px;
   
   -webkit-transition: background 500ms ;
@@ -53,7 +79,7 @@ html, body {
   background: linear-gradient(left,  #333 0%,#000 100%);
 }
 
-#slider.right {
+#bigslider.right {
   right: 0px;
   
   -webkit-transition: background 500ms ;
@@ -69,6 +95,15 @@ html, body {
   background: linear-gradient(right,  #333 0%,#000 100%);
 }
 
+
+
+
+#out {
+  left: 50px;
+  right: 0px;
+  z-index: 20;
+  width: auto;
+}
 
 #log {
   left: 0px;

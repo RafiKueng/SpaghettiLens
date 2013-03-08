@@ -143,6 +143,9 @@ pip install scipy
 
 (of just enable external packages for virualenv (delete the no-global...txt file under lib/python..))
 
+## init database
+manage.py syncdb
+
 
 ##################
 starting everything up

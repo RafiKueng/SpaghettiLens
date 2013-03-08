@@ -20,28 +20,26 @@ var events = {
 
     initGetVars()
 
+    
     // first init some objects in the namespace
-    
-    LMT.ui.out = new LMT.ui.output(); //TODO change this not to be an object
-    LMT.ui.out.init();    
-    
     LMT.model = new LMT.objects.Model();
     LMT.model.init();
     
     LMT.actionstack = new LMT.objects.ActionStack();    
     
-    
     // then assign handlers
-    
     LMT.events.assignHandlers();
     
-    
     // then initalise the rest
-    
+    LMT.ui.out.init();    
     LMT.ui.html.SelectModelDialog.init();
     LMT.ui.html.Toolbar.init();
     LMT.ui.html.DisplaySettingsDialog.init();
     LMT.ui.html.GlassSettingsDialog.init();
+    LMT.ui.html.ColorSettingsOutputDialog.init();
+    
+    LMT.ui.html.HelpBar.init();
+    
     LMT.ui.html.Tooltip.init();
     LMT.ui.html.KeyboardListener.init();
     
@@ -56,8 +54,6 @@ var events = {
       //LMT.ui.html.SelectModelDialog.show();
     }
     
-    //LMT.com.getModelData(id);
-    
   },
   
   
@@ -67,7 +63,11 @@ var events = {
     var fnc = function(){return false;}
     
     $(document).on('ToggleDisplay', LMT.ui.html.ToggleDisplay);
-    
+    $(document).on('ToggleHelpBar', LMT.ui.html.HelpBar.toggle);
+    $(document).on('MouseEnter', LMT.ui.html.HelpBar.MouseEnter);
+    $(document).on('MouseLeave', LMT.ui.html.HelpBar.MouseLeave);
+    $(document).on('MouseEnter', LMT.ui.svg.events.hoverIn);
+        
     // get the inital data, available lenses and catalogues, if no identifier provided in get string
     $(document).on('GetInitData', LMT.com.getInitData);
     $(document).on('GotInitData', LMT.ui.html.SelectModelDialog.onInitData);
@@ -77,6 +77,7 @@ var events = {
     $(document).on('ShowSelectModelDataDialog', LMT.ui.html.SelectModelDialog.show);    
     // the server sent the starting data for the model, like urls to the background image(s) and default color binding
     $(document).on('ReceivedModelData', LMT.ui.html.ColorSettingsDialog.init);
+    $(document).on('ReceivedModelData', LMT.ui.html.Toolbar.updateTop);
     $(document).on('ReceivedModelData', LMT.ui.svg.bg.init);
     $(document).on('ReceivedModelData', LMT.events.AppReadyHandler);
     
@@ -86,6 +87,8 @@ var events = {
     // the background images / channels color settings were changed
     $(document).on('ChangedModelData', LMT.ui.svg.bg.updateColor);
     
+    //display settings were changed
+    $(document).on('ChangedDisplaySettings', LMT.ui.svg.updateDisp);
 
     $(document).on('Undo', LMT.objects.ActionStack.Undo);
     $(document).on('Redo', LMT.objects.ActionStack.Redo);
@@ -100,7 +103,9 @@ var events = {
 
     $(document).on('ShowDialogColorSettings', LMT.ui.html.ColorSettingsDialog.show);
     $(document).on('ShowDialogDisplaySettings', LMT.ui.html.DisplaySettingsDialog.show);
-    $(document).on('ShowDialogGlassSettings', LMT.ui.html.GlassSettingsDialog.show); //not yet implemented
+    $(document).on('ShowDialogGlassSettings', LMT.ui.html.GlassSettingsDialog.show); 
+    $(document).on('ShowDialogOutputGraphics', LMT.ui.html.ColorSettingsOutputDialog.show);
+    $(document).on('RedrawCurrentOutput', LMT.ui.out.updateImg);
 
 
     $(document).on('SwitchMode', LMT.ui.svg.SwitchMode);

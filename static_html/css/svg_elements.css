@@ -1,13 +1,13 @@
 /* SVG elements */
-.extremalpoint_min {
+.extremalpoint.min {
 	fill: green;
 }
 
-.extremalpoint_max {
+.extremalpoint.max {
 	fill: blue;
 }
 
-.extremalpoint_sad {
+.extremalpoint.sad {
 	fill: #ffff00;
 }
 
@@ -17,44 +17,48 @@
 
 .connectorline {
 	stroke: #ff00ff;
-	stroke-width:3;
+	/*stroke-width:3;*/
 }
 
 .contourpath {
 	stroke: #ff00ff;
 	fill: none;
-	stroke-width: 3;
+	/*stroke-width: 3;*/
 }
 
 
-.ruler_mid {
+.ruler.mid {
 	r: 7;
 	fill: white;
 }
 
-.ruler_circ {
+.ruler.circ {
 	fill: none;
 	stroke: white;
 }
 
-.ruler_handle {
+.ruler.handle {
 	fill: #ffaaaa;
 }
 
 
-.ext_mass_mid {
+.ext_mass.mid {
 	fill: gray;
 }
 
-.ext_mass_circ {
+.ext_mass.circ {
 	fill: none;
 	stroke: gray;
 }
 
-.ext_mass_handle {
+.ext_mass.handle {
 	fill: #00a;
 }
 
+/* use this class for elements that are not active */
+.inactive {
+  opacity: 0.3;
+}
 
 /* use this class for elements that are not displayed */
 .invisible {

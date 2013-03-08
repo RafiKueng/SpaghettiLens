@@ -60,18 +60,19 @@ ExtMass.prototype.createSVG = function() {
 
   this.mid = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   this.mid.setAttribute("id", "ext_mass_mid_" + this.idnr);
-  this.mid.setAttribute("class", "ext_mass_mid");
+  this.mid.setAttribute("class", "ext_mass mid");
   this.mid.setAttribute("r", 7);
   this.mid.jsObj = this;
 
   this.circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   this.circle.setAttribute("id", "ext_mass_circ_" + this.idnr);
-  this.circle.setAttribute("class", "ext_mass_circ");
+  this.circle.setAttribute("class", "ext_mass circ");
   this.circle.setAttribute("r", this.r);
+  this.circle.jsObj = this;
 
   this.handle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   this.handle.setAttribute("id", "ext_mass_hand_" + this.idnr);
-  this.handle.setAttribute("class", "ext_mass_handle");
+  this.handle.setAttribute("class", "ext_mass handle");
   this.handle.setAttribute("r", 5);
   this.handle.jsObj = this;
 
@@ -137,11 +138,11 @@ ExtMass.prototype.remove = function() {
  * depending on the target 
  */
 ExtMass.prototype.move = function(coord, target) {
-	if (target.classList[0] == "ext_mass_mid") {
+	if (target.classList.contains("mid")) {
 		this.x = coord.x;
 		this.y = coord.y;
 	}	
-	else if (target.classList[0] == "ext_mass_handle") {
+	else if (target.classList.contains("handle")) {
 		var dx = -this.x + coord.x;
 		var dy = -this.y + coord.y;
 		this.r = LMT.utils.toPolarR(dx,dy);
