@@ -1,10 +1,26 @@
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
-}
+from fabric.operations import sudo, prompt
+
+me = "mysql"
+type="database"
+
+vars = {'host': 'localhost',
+        'port': '1234',
+        "user": ''}
+
+def install():
+  sudo('sudo apt-get install mysql')
+  
+  
+def setup():
+  pass
+  
+def getInfo():
+  print "Getting data for database setup:"
+  for var, val in vars.items():
+    vars[var] = prompt(var, key=type+var, default=val)
+    
+  return vars
+
+def getDjangoConfig():
+  str = "blabla"
+  return str

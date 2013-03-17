@@ -1,13 +1,8 @@
 
 # import the corresponding modules
 
-from ..modules.database.sqlite import *
-from lmt.settings.modules.django.dev import *
-from lmt.settings.modules.static.xamp import *
-from lmt.settings.modules.worker.dummy import *
+from ..modules.database import sqlite as database 
+from ..modules.django import dev as djangoserver
+from ..modules.static import xamp as staticserver
+from ..modules.worker import dummy as worker
 
-
-# set some role specific settings
-
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG

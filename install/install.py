@@ -1,47 +1,8 @@
-#!/usr/bin/env python
-import os
-import sys
-
-import config
+from __future__ import with_statement
+from fabric.api import local, settings, abort, run, cd
+from fabric.contrib.console import confirm
 
 
-#relative to install dir
-dirs = {
-  'frontend': 'static_html',
-  'backend': 'backend',
-  'glass': 'glass',
-  'db': 'database',
-  'tmp': 'tmp_media',
-  'docs': 'docs',
-  'env': 'python_env'
-}
+from roles import developpment_local as role
 
-#exceptions
-class InstallDirNotEmpty(Exception):
-  pass
-
-
-
-
-def createFolders():
-  dir = config.installdir
-  
-  if os.path.exists(dir):
-    raise InstallDirNotEmpty("only install in empty dirs, no upgrades")
-
-  os.makedirs(dir)
-  
-
-def createVirtualEnv():
-  pass
-
-
-def installPyPackages():
-  pass
-
-  
-
-
-if __name__ == "__main__":
-  print config.var
-  pass
+role.database.install()
