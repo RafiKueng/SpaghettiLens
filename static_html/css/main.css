@@ -41,7 +41,7 @@ body {
   width: 100%
 }
 .layout.row.strech {
-  height: auto;
+  height: 100%;
 }
 
 .layout.cell {
