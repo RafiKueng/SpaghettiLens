@@ -1,26 +1,25 @@
-from fabric.operations import sudo, prompt
+from fabric.api import env
 
-me = "mysql"
-type="database"
+  
 
-vars = {'host': 'localhost',
-        'port': '1234',
-        "user": ''}
+def about():
+  return "production level mysql database server"
 
-def install():
-  sudo('sudo apt-get install mysql')
-  
-  
-def setup():
-  pass
-  
-def getInfo():
-  print "Getting data for database setup:"
-  for var, val in vars.items():
-    vars[var] = prompt(var, key=type+var, default=val)
-    
+
+def neededVars():
+  vars = (("DATABASE_HOST", "mqsql host", "localhost"),
+          ("DATABASE_PORT", "port", "1234"),
+          ("DATABASE_USER", "db username", "nothing"),
+          ("DATABASE_NAME", "db name", "lmt"))
   return vars
 
-def getDjangoConfig():
-  str = "blabla"
-  return str
+
+
+
+def getPackagesToInstall():
+  return ('mysql-server',)
+
+
+
+
+

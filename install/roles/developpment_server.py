@@ -1,9 +1,18 @@
+SUPPORTED_OSES = ("deb")
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+from fabric.api import env
 
-print "-----------"
-print globals()
-print "-----------"
+def osSupported():
+  return env.TARGET_OS in SUPPORTED_OSES
 
-print 
+if env.TARGET_OS in SUPPORTED_OSES:
+  # import the corresponding modules
+  from ..modules.basic import basic as basic
+  from ..modules.database import sqlite as database
+  from ..modules.django import dev as djangoserver
+  from ..modules.static import python as staticserver
+  from ..modules.worker import celery as worker
+
+
+def about():
+  return "Setup a remote developpment environment (everything is set up, but dev versions of the servers are used)"
