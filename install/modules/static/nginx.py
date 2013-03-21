@@ -1,5 +1,10 @@
 import os, StringIO
+from install.utils import path
+
+from fabric.api import env
 from fabric.operations import put
+from fabric.utils import puts
+
 
 def about():
   return "fast production nginx http static file server"
@@ -13,66 +18,87 @@ def neededVars():
     ("HTML_DIR", "directory of static html files (sub of root dir)", "/static_html"),
     ("DJANGO_STATIC", "directory of static django files (sub of root dir)", "/backend/static"),
     ("MEDIA_FILES", "direcory of generrated images", "/tmp_media"),
-    ("URL_DJANGO_SERVER", "(internal?) url for redirects to django server", "localhost:8000"),
+    ("URL_DJANGO_SERVER", "(internal?) url for redirects to django server, WITH port", "http://localhost:8000"),
+    ("RESULTPATH", "(virtual) path where the client gets the results from", "/results")
   )
 
 
 
-def beforePackageInstall():
-  return (
+def beforeInstallCmds():
+  def fnc():
     # add rabbitmq to sources
-    ("echo deb http://www.rabbitmq.com/debian/ testing main >> /etc/apt/sources.list"),
-    ("wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc"),
-    ("apt-key add rabbitmq-signing-key-public.asc"),
-    ("rm rabbitmq-signing-key-public.asc"),
-    ("apt-get update"),
-  )
+    puts("echo deb http://www.rabbitmq.com/debian/ testing main >> /etc/apt/sources.list")
+    puts("wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc")
+    puts("apt-key add rabbitmq-signing-key-public.asc")
+    puts("rm rabbitmq-signing-key-public.asc")
+    puts("apt-get update")
+    
+  return (fnc,)
 
 
 def getPackagesToInstall():
   return ('nginx',)
 
+
 def setup():
-  put(StringIO(_generateConfigFile() %
-               ("")),
-      "/etc/nginx/sites-available/name")
-  puts("ln -s /etc/nginx/sites-available/name /etc/nginx/sites-enabled")
+  filename = _generateConfigFile()
+  puts("--- nginx temp config file: " + filename)
   
+  puts('put(filename, "/etc/nginx/sites-available/lmt.conf")') #local
+  puts("ln -s /etc/nginx/sites-available/lmt.conf /etc/nginx/sites-enabled") #remote
+  puts("/etc/init.d/nginx reload") #remote
+  
+  puts("os.remove(filename)") #local
 
 
+def test():
+  # enable the default site and check if it answers
+  puts("ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled")
+  puts("/etc/init.d/nginx restart")
+  puts("wget %(PUBLIC_URL)s:%(PUBLIC_PORT)")
+  puts("check if index.html exists and has the right contens")
+  puts("del index.html")
+  puts("rm /etc/nginx/sites-enabled/default")
+  puts("/etc/init.d/nginx restart")
 
 
   
 def _generateConfigFile():
+  env["PATH_FULL_HTML"] = path(env.ROOT_DIR, env.HTML_DIR)
+  env["PATH_FULL_DJANGOSTATIC"] = path(env.ROOT_DIR, env.DJANGO_STATIC)
+  
+  tempfilestr = path(env.TEMP, "nginx.conf")
+  tempfile = open(tempfilestr, 'wb')
+  
   cfg = """
 server {
-  listen   8080; ## listen for ipv4; this line is default and implied
-  listen   [::]:8080 default ipv6only=on; ## listen for ipv6
+  listen %(PUBLIC_PORT)s; ## listen for ipv4; this line is default and implied
+  listen   [::]:%(PUBLIC_PORT)s default ipv6only=on; ## listen for ipv6
 
-  root /srv/lmt;
+  root %(ROOT_DIR)s;
   index index.php index.html index.htm;
 
   # Make site accessible from http://localhost/
-  server_name _; #rk-dev.no-ip.org *.rk-dev.no-ip.org localhost;
+  server_name _;
 
-  location /favicon.ico { alias /srv/lmt/static_html/favicon.ico; }
+  location /favicon.ico { alias %(PATH_FULL_HTML)s/favicon.ico; }
 
   # ressource folders for the static content
-  location /js { autoindex on; alias /srv/lmt/static_html/js/; }
-  location /css { alias /srv/lmt/static_html/css/; }
-  location /img { alias /srv/lmt/static_html/img/; }
-  location /font { alias /srv/lmt/static_html/font/; }
-  location /i18n { alias /srv/lmt/static_html/i18n/; }
+  location /js { autoindex on; alias %(PATH_FULL_HTML)s/js/; }
+  location /css { alias %(PATH_FULL_HTML)s/css/; }
+  location /img { alias %(PATH_FULL_HTML)s/img/; }
+  location /font { alias %(PATH_FULL_HTML)s/font/; }
+  location /i18n { alias %(PATH_FULL_HTML)s/i18n/; }
 
   # django static files
-  location /static_django {
+  location %(DJANGO_STATIC)s {
     autoindex on;
-    alias /srv/lmt/backend/static/;
+    alias %(PATH_FULL_DJANGOSTATIC)s/;
   }
   
   #check if this mediafile already exists, then serve it directly, otherwise let django create it
-  location ~ ^/result/(?<id>\d+)/(?<file>.+\..+)$ {
-    try_files /tmp_media/$id/$file @tmpmedia;
+  location ~ ^%(RESULTPATH)s/(?<id>\d+)/(?<file>.+\..+)$ {
+    try_files %(MEDIA_FILES)s/$id/$file @tmpmedia;
   }
 
   location @tmpmedia {
@@ -83,7 +109,7 @@ server {
     proxy_set_header X-Scheme $scheme;
     proxy_connect_timeout 10;
     proxy_read_timeout 10;
-    proxy_pass http://localhost:8001;
+    proxy_pass %(URL_DJANGO_SERVER)s;
   }
   
 
@@ -96,8 +122,11 @@ server {
     proxy_set_header X-Scheme $scheme;
     proxy_connect_timeout 10;
     proxy_read_timeout 10;
-    proxy_pass http://localhost:8001/;
+    proxy_pass %(URL_DJANGO_SERVER)s;
   }
 }
-"""
-  return cfg
+""" % env
+
+  tempfile.write(cfg)
+  tempfile.close()
+  return tempfilestr

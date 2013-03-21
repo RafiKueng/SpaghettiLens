@@ -75,7 +75,7 @@ def install():
         #print var[0], var[1], var[2]
         try:
           # do we arleady know this parameter?
-          tmp=config[var[0]]
+          puts("--- " + var[0] + " already set to: " + config[var[0]])
         except KeyError:
           config[var[0]] = prompt("--- "+var[0] + " ("+var[1]+")", key=var[0], default=var[2])
     except AttributeError:
@@ -86,44 +86,45 @@ def install():
   
   puts("\nInstalling the packages:")
   
-  install_cmds_pre = ()
-  install_pkgs = ()
-  install_cmd_between = ()
-  install_pips = ()
-  install_cmds_after = ()
+  install_cmds_pre = []
+  install_pkgs = []
+  install_cmd_between = []
+  install_pips = []
+  install_cmds_after = []
+  
   for i, (name, mod) in enumerate(modules):
     puts("* "+name)
     try:
-      install_cmds_pre += mod.beforeInstallCmds()
+      install_cmds_pre += [mod.beforeInstallCmds]
     except AttributeError:
       puts("--- no pre packages to install here")
     
     try:
-      install_pkgs += mod.getPackagesToInstall()
+      install_pkgs += [mod.installPackages]
     except AttributeError:
       puts("--- no packages to install here")
     
     try:
-      install_cmd_between += mod.betweenInstallCmds()
+      install_cmd_between += [mod.betweenInstallCmds]
     except AttributeError:
       puts("--- no between package install commands here")
     
     try:
-      install_pips += mod.getPipPackagesToInstall()
+      install_pips += [mod.installPipPackages]
     except AttributeError:
       puts("--- no pip packages install to install here")
     
     try:
-      install_cmds_after += mod.postInstallCmds()
+      install_cmds_after += [mod.postInstallCmds]
     except AttributeError:
       puts("--- no post pip install commands here")
       
-  puts("= preparing packages")
+  puts("\n= preparing packages")
   for cmd in install_cmds_pre:
-    #TODO: execute command
-    puts(cmd)
+    puts("________")
+    cmd()
   
-  puts("= installing binary packages")
+  puts("\n= installing binary packages")
   if len(install_pkgs) > 0:
     #TODO: execute command
     #puts('apt-get install ' + ' '.join(pkgs))
@@ -131,19 +132,19 @@ def install():
     
   puts("= between pkgs and pip install commands")
   for cmd in install_cmd_between:
-    #TODO: execute command
-    puts(cmd)
+    puts("________")
+    cmd()
     
-  puts("= installing pip packages")
+  puts("\n= installing pip packages")
   if len(install_pips) > 0:
     #TODO: execute command
     #puts('apt-get install ' + ' '.join(pkgs))
     puts("pip install "+" ".join(install_pips))
 
-  puts("= after pip install commands")
+  puts("\n= after pip install commands")
   for cmd in install_cmds_after:
-    #TODO: execute command
-    puts(cmd)  
+    puts("________")
+    cmd()  
 
   puts("Done, all packages installed\n")
 
@@ -154,7 +155,7 @@ def install():
     try:
       mod.testInstall()
     except AttributeError:
-      puts("--- no need to install anything")
+      puts("--- no need to test anything")
   puts("Done, everything tested\n")
   
   
@@ -164,6 +165,7 @@ def install():
     try:
       mod.setup()
     except AttributeError:
+      #raise
       puts("--- no need to setup anything")
   puts("Done, everything setup\n")
 

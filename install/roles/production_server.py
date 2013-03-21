@@ -15,3 +15,9 @@ if env.TARGET_OS in SUPPORTED_OSES:
 
 def about():
   return "production setup, uses production level servers, minifies code ect..."
+
+
+def neededVars():
+  return (
+    ("INSTALL_DIR", "where to install the server (absolute path)", "/srv/lmt"),
+  )

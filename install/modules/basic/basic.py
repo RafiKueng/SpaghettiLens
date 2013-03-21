@@ -2,7 +2,9 @@ import os, socket
 
 from fabric.api import env
 from fabric.utils import puts
+import tempfile
 
+env["TEMP"] = tempfile.gettempdir()
 
 
 def about():
@@ -15,10 +17,19 @@ def neededVars():
     ("REPRO_DIR", "the location of the reprositry, for future updates", os.getcwd()),
   )
 
-  
+
+def getPackagesToInstall():
+  return ("python-setuptools","python-dev","build-essential")
+
 
 def betweenInstallCmds():
-  return ("virtualenv py_env","source py_env/bin/activate")
+  def fnc():
+    puts("easy_install -U virtualenv ")
+    puts("virtualenv py_env")
+    puts("source py_env/bin/activate")
+    
+  return (fnc,)
+    
 
 
 def getPipPackagesToInstall():
