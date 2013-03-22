@@ -1,8 +1,14 @@
+from __future__ import with_statement
+
 import os, socket
 
 from fabric.api import env
 from fabric.utils import puts
 import tempfile
+
+from install import * 
+from install.utils import _r, _s
+
 
 env["TEMP"] = tempfile.gettempdir()
 
@@ -12,30 +18,36 @@ def about():
 
 
 def neededVars():
+  cwd = env.cwd + "/src/lmt/" if len(env.cwd)>2 else "~/src/lmt" 
   return (
     ("NAME", "a unique name across all your machine to identiy this install", socket.gethostname()),
-    ("REPRO_DIR", "the location of the reprositry, for future updates", os.getcwd()),
+    ("REPRO_DIR", "the location of the REMOTE reprositry, for future updates (full path, ssh user needs rights)", cwd),
   )
 
 
-def getPackagesToInstall():
-  return ("python-setuptools","python-dev","build-essential")
+def installPackages():
+  package_install(["python-setuptools","python-dev","build-essential","python-pip", "git"])
 
 
 def betweenInstallCmds():
-  def fnc():
-    puts("easy_install -U virtualenv ")
-    puts("virtualenv py_env")
-    puts("source py_env/bin/activate")
-    
-  return (fnc,)
+  _s("easy_install -U virtualenv ")
     
 
 
-def getPipPackagesToInstall():
-  return ("django","django-lazysignup")
+def installPipPackages():
+  pip_install(["django","django-lazysignup"])
 
+
+def postInstallCmds():
   
+  _r("mkdir -p " + conf['REPRO_DIR'])
+  with _cd(conf['REPRO_DIR']):
+    _r("git clone -b master https://github.com/RafiKueng/LensTools.git .")
+  with _cd(conf['REPRO_DIR']):
+    _s("cp backend %(INSTALL_DIR)s/backend")
+  
+
+
 
 from fabric.api import env
 

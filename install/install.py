@@ -4,6 +4,10 @@ from fabric.api import local, settings, abort, run, cd, env, sudo
 from fabric.utils import puts
 from fabric.operations import prompt
 from fabric.contrib.console import confirm
+from package import *
+from virtualenv import *
+from utils import _r, _s, _cd
+
 
 from importlib import import_module
 import pkgutil
@@ -11,7 +15,8 @@ import pkgutil
 import roles as roles_mod
 
 def install():
-  config = {}
+  env.conf = {}
+  config = env.conf 
 
   puts("\nSelect target os")
   config['TARGET_OS'] = prompt("[deb]ian/ubuntu, [win]dows, [osx]; default:", key="TARGET_OS", default="deb")
@@ -49,6 +54,8 @@ def install():
   else:
     module = import_module("install.roles."+env.ROLE)
     
+  select_config()
+    
   mod = module.__dict__["basic"]
   iCmd = mod.getInstallCommand()
     
@@ -83,6 +90,8 @@ def install():
       pass      
   puts("Done, got all information\n")
   
+  save_config()
+  
   
   puts("\nInstalling the packages:")
   
@@ -96,28 +105,35 @@ def install():
     puts("* "+name)
     try:
       install_cmds_pre += [mod.beforeInstallCmds]
+      puts("--- pre packages cmds")
     except AttributeError:
-      puts("--- no pre packages to install here")
+      pass
     
     try:
       install_pkgs += [mod.installPackages]
+      puts("--- packages to install")
     except AttributeError:
-      puts("--- no packages to install here")
+      pass
     
     try:
       install_cmd_between += [mod.betweenInstallCmds]
+      puts("--- between install cmds")
     except AttributeError:
-      puts("--- no between package install commands here")
+      pass
     
     try:
       install_pips += [mod.installPipPackages]
+      puts("--- pip packages")
     except AttributeError:
-      puts("--- no pip packages install to install here")
+      pass
     
     try:
       install_cmds_after += [mod.postInstallCmds]
+      puts("--- post pip cmds")
     except AttributeError:
-      puts("--- no post pip install commands here")
+      pass
+
+
       
   puts("\n= preparing packages")
   for cmd in install_cmds_pre:
@@ -125,10 +141,11 @@ def install():
     cmd()
   
   puts("\n= installing binary packages")
-  if len(install_pkgs) > 0:
-    #TODO: execute command
-    #puts('apt-get install ' + ' '.join(pkgs))
-    puts(iCmd(install_pkgs))
+  _s("apt-get update")
+  for cmd in install_pkgs:
+    puts("________")
+    cmd()
+  package_install_start()
     
   puts("= between pkgs and pip install commands")
   for cmd in install_cmd_between:
@@ -136,10 +153,10 @@ def install():
     cmd()
     
   puts("\n= installing pip packages")
-  if len(install_pips) > 0:
-    #TODO: execute command
-    #puts('apt-get install ' + ' '.join(pkgs))
-    puts("pip install "+" ".join(install_pips))
+  for cmd in install_pips:
+    puts("________")
+    cmd()
+  pip_install_start()
 
   puts("\n= after pip install commands")
   for cmd in install_cmds_after:
@@ -147,6 +164,7 @@ def install():
     cmd()  
 
   puts("Done, all packages installed\n")
+
 
 
   puts("\nTesting the installs:")
@@ -158,6 +176,7 @@ def install():
       puts("--- no need to test anything")
   puts("Done, everything tested\n")
   
+
   
   puts("\nSetup the software:")
   for i, (name, mod) in enumerate(modules):
@@ -182,4 +201,13 @@ def install():
   
   print config
   
-  
+
+
+
+
+
+def save_config():
+  pass
+
+def select_config():
+  pass

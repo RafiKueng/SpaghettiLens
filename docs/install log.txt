@@ -134,6 +134,14 @@ source python_env/bin/activate
 cd glass
 make
 
+apt'get install
+swig
+glpk
+
+
+
+
+
 pip install numpy
 apt-get install libfreetype6 libfreetype6-dev libpng12-dev 
 pip install matplotlib

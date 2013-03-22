@@ -4,6 +4,48 @@ import fabric.api
 from fabric.api import *
 from contextlib import contextmanager as _contextmanager
 
+from virtualenv import virtenv
+
+FAB_DEBUG = False
+
+if FAB_DEBUG:
+  # rerout run comands for debugging
+  _r = lambda *s: puts("RUN  | " + " ".join(s))
+  _s = lambda *s: puts("SUDO | " + " ".join(s))
+  _w = lambda *s: puts("WWW  | " + " ".join(s))
+  _p = lambda *s, **ss: puts("PUT  | " + " ".join(s))
+  _l = lambda  s: puts("LOCPY| " + s)
+  _L = lambda  s: puts("LOC  | " + s)
+  
+  def _fe(*s):
+    puts("FILE EXISTS? | " + " ".join(s))
+    return False
+  
+  @_contextmanager
+  def _v(dir="./"):
+    puts("VENV / " + dir)
+    yield
+    puts("     \---")
+    
+  @_contextmanager
+  def _cd(dir="./"):
+    puts("CD   / " + dir)
+    yield
+    puts("     \---")
+
+else:
+  _r = fabric.api.run
+  _s = fabric.api.sudo
+  def _w(s): fabric.api.sudo(s, user=fabric.api.env.conf['SYS_USER'])
+  _p = fabric.api.put
+  def _l(s): exec s
+  _L = fabric.api.local
+  _v = virtenv
+  
+  _fe = fabric.contrib.files.exists
+  _cd = fabric.context_managers.cd
+
+
 
 def path(*args):
   path = os.path.join(*args)
@@ -15,16 +57,6 @@ def psw_gen(size=8, chars=string.ascii_uppercase + string.digits):
 
 
 
-env.directory = '/path/to/virtualenvs/project'
-env.activate = 'source /path/to/virtualenvs/project/bin/activate'
-
-@_contextmanager
-def virtenv():
-  """runs a command inside the virtual env"""
-  # http://stackoverflow.com/questions/1180411/activate-a-virtualenv-via-fabric-as-deploy-user
-  with cd(env.directory):
-    with prefix(env.activate):
-      yield
       
 
 def isLocal():

@@ -1,32 +1,44 @@
-import fabric.api
-from fabric.api import env
-from install.utils import *
+#supports only linux, ubuntu and debian
 
-  
+import fabric.api
+from fabric.colors import *
+
+from install.utils import _r, _s, _p
+from install import *
+from pickle import FALSE
+
+from fabric.api import env
+conf = env.conf
+
+#################################################################################  
 
 def about():
   return "production level mysql database server"
 
 
 def neededVars():
-  vars = (("DATABASE_HOST", "mqsql host", "localhost"),
-          ("DATABASE_PORT", "port", "1234"),
+  return (("DATABASE_HOST", "mysql host", "localhost"),
+          ("DATABASE_PORT", "port", "3306"),
           ("DATABASE_ROOT_PSW", "mysql root password (existing or new one)", psw_gen()),
           ("DATABASE_NAME", "db name", "lmt"),
           ("DATABASE_USER", "db user name", "dbuser"),
           ("DATABASE_PSW", "db user password", psw_gen()))
-  return vars
 
 
-
+#################################################################################  
 
 
 def installPackages():
-  mysql_install()
+  if conf['DATABASE_HOST']=='localhost':
+    mysql_install()
+  else:
+    fabric.api.warn(yellow('make sure mysql is running on databse server'))
 
 
 def installPipPackages():
-  return ('MySQL-python')
+  #pip_install('MySQL-python')
+  pass
+
 
 def postInstallCmds():
   mysql_create_user('root',
@@ -39,10 +51,7 @@ def postInstallCmds():
                   conf['DATABASE_NAME'])
 
 
-
-#create db user
-"""run('mysqladmin -u %(DATABASE_USER)s -p%(DATAPASE_PSW)s create %(DATABASE_NAME)s' % (user, password, dbname))"""
-
+#################################################################################  
 
 
 
@@ -51,15 +60,18 @@ def postInstallCmds():
 
 def _mysql_is_installed():
   with fabric.api.settings(fabric.api.hide('stderr'), warn_only=True):
-    output = fabric.api.run('mysql --version')
-  return output.succeeded
+    output = _r('mysql --version')
+  try:
+    return output.succeeded
+  except AttributeError:
+    return False
 
 
 
 def mysql_install():
   """ Installs MySQL """
   if _mysql_is_installed():
-    fabric.api.warn(fabric.colors.yellow('MySQL is already installed.'))
+    fabric.api.warn(yellow('MySQL is already installed.'))
     return
  
   # Ensure mysql won't ask for a password on installation
@@ -80,15 +92,15 @@ def mysql_install():
     "mysql-server-%s mysql-server/root_password_again password %s" % (version,passwd),
   ]
  
-  fabric.api.sudo("echo '%s' | debconf-set-selections" % "\n".join(debconf_defaults))
+  _s("echo '%s' | debconf-set-selections" % "\n".join(debconf_defaults))
  
-  fabric.api.warn(fabric.colors.yellow('The password for mysql "root" user will be set to "%s"' % passwd))
+  fabric.api.warn(yellow('The password for mysql "root" user will be set to "%s"' % passwd))
  
   common_packages = [
     'mysql-server-%s' % version,
   ]
 
-  package_install(common_packages, "--no-install-recommends")
+  package_install(common_packages)
   
   
   
@@ -112,14 +124,14 @@ def mysql_execute(sql, user='', password=''):
   Executes passed sql command using mysql shell.
   """
   with fabric.api.settings(warn_only=True):
-    return fabric.api.run("echo '%s' | mysql -u%s -p%s" % (sql, user, password))
+    return _r("echo '%s' | mysql -u%s -p%s" % (sql, user, password))
  
 def mysql_create_db(user='',password='',database=''):
   """
   Creates an empty mysql database.
   """
   if not _mysql_is_installed():
-    fabric.api.warn(fabric.colors.yellow('MySQL must be installed.'))
+    fabric.api.warn(yellow('MySQL must be installed.'))
     return
  
   if not user:

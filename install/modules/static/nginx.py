@@ -1,9 +1,15 @@
 import os, StringIO
-from install.utils import path
+from install.utils import _r, _s, _p, _l, _fe
+import install.utils as utils
 
-from fabric.api import env
-from fabric.operations import put
-from fabric.utils import puts
+from install.package import package_install
+
+from fabric.api import *
+from fabric.colors import *
+
+conf = env.conf
+
+#################################################################################  
 
 
 def about():
@@ -14,52 +20,63 @@ def neededVars():
   return (
     ("PUBLIC_URL", "url to reach the server from the internet", "http://localhost"),
     ("PUBLIC_PORT", "port to the internet for the webserver", "80"),
-    ("ROOT_DIR", "root directory of install", os.getcwd()),
-    ("HTML_DIR", "directory of static html files (sub of root dir)", "/static_html"),
-    ("DJANGO_STATIC", "directory of static django files (sub of root dir)", "/backend/static"),
-    ("MEDIA_FILES", "direcory of generrated images", "/tmp_media"),
+    ("INSTALL_DIR", "root directory of install", os.getcwd()),
+    ("HTML_DIR", "directory of static html files (relative to install)", "/static_html"),
+    ("DJANGO_STATIC", "directory of static django files (relative)", "/backend/static"),
+    ("MEDIA_FILES", "direcory of generrated images (relative)", "/tmp_media"),
     ("URL_DJANGO_SERVER", "(internal?) url for redirects to django server, WITH port", "http://localhost:8000"),
     ("RESULTPATH", "(virtual) path where the client gets the results from", "/results")
   )
 
 
+#################################################################################  
+
 
 def beforeInstallCmds():
-  def fnc():
-    # add rabbitmq to sources
-    puts("echo deb http://www.rabbitmq.com/debian/ testing main >> /etc/apt/sources.list")
-    puts("wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc")
-    puts("apt-key add rabbitmq-signing-key-public.asc")
-    puts("rm rabbitmq-signing-key-public.asc")
-    puts("apt-get update")
-    
-  return (fnc,)
+  pass
+
+  
 
 
-def getPackagesToInstall():
-  return ('nginx',)
+def installPackages():
+  package_install('nginx')
+
 
 
 def setup():
   filename = _generateConfigFile()
   puts("--- nginx temp config file: " + filename)
   
-  puts('put(filename, "/etc/nginx/sites-available/lmt.conf")') #local
-  puts("ln -s /etc/nginx/sites-available/lmt.conf /etc/nginx/sites-enabled") #remote
-  puts("/etc/init.d/nginx reload") #remote
+  _p(filename, "/etc/nginx/sites-available/lmt.conf", use_sudo=True)  #local
+  _s("ln -f -s /etc/nginx/sites-available/lmt.conf /etc/nginx/sites-enabled") #remote
+  _s("/etc/init.d/nginx reload") #remote
   
-  puts("os.remove(filename)") #local
+  _l("os.remove(filename)") #local
 
 
-def test():
+
+
+
+
+
+def testInstall():
   # enable the default site and check if it answers
-  puts("ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled")
-  puts("/etc/init.d/nginx restart")
-  puts("wget %(PUBLIC_URL)s:%(PUBLIC_PORT)")
-  puts("check if index.html exists and has the right contens")
-  puts("del index.html")
-  puts("rm /etc/nginx/sites-enabled/default")
-  puts("/etc/init.d/nginx restart")
+  _s("ln -s -f /etc/nginx/sites-available/default /etc/nginx/sites-enabled")
+  _s("/etc/init.d/nginx restart")
+  _r("wget %(PUBLIC_URL)s:%(PUBLIC_PORT)s" % conf)
+  test = _fe("index.html")
+  with settings(warn_only=True):
+    resp = _r("grep 'Welcome to nginx' index.html")
+    test = test and resp.return_code
+  if not test: warn(yellow('nginx is not running properly'))
+  _r("rm index.html")
+  _s("rm /etc/nginx/sites-enabled/default")
+  _s("/etc/init.d/nginx restart")
+
+
+
+
+#################################################################################  
 
 
   
@@ -67,7 +84,8 @@ def _generateConfigFile():
   env["PATH_FULL_HTML"] = path(env.ROOT_DIR, env.HTML_DIR)
   env["PATH_FULL_DJANGOSTATIC"] = path(env.ROOT_DIR, env.DJANGO_STATIC)
   
-  tempfilestr = path(env.TEMP, "nginx.conf")
+  
+  tempfilestr = utils.path(env.TEMP, "nginx.conf")
   tempfile = open(tempfilestr, 'wb')
   
   cfg = """
