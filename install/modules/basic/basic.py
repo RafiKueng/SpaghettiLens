@@ -18,11 +18,7 @@ def about():
 
 
 def neededVars():
-  cwd = env.cwd + "/src/lmt/" if len(env.cwd)>2 else "~/src/lmt" 
-  return (
-    ("NAME", "a unique name across all your machine to identiy this install", socket.gethostname()),
-    ("REPRO_DIR", "the location of the REMOTE reprositry, for future updates (full path, ssh user needs rights)", cwd),
-  )
+  return ("NAME", "REPRO_DIR")
 
 
 def installPackages():
@@ -39,12 +35,7 @@ def installPipPackages():
 
 
 def postInstallCmds():
-  
-  _r("mkdir -p " + conf['REPRO_DIR'])
-  with _cd(conf['REPRO_DIR']):
-    _r("git clone -b master https://github.com/RafiKueng/LensTools.git .")
-  with _cd(conf['REPRO_DIR']):
-    _s("cp backend %(INSTALL_DIR)s/backend")
+  pass
   
 
 

@@ -1,10 +1,11 @@
 from __future__ import with_statement
 
-from fabric.api import env, warn, settings
+from fabric.api import env, warn, settings, get, put
 from fabric.colors import *
 
 from install.utils import _r, _s, _p, _l, _L, _fe, _cd, _w
 import install.utils as utils
+from StringIO import StringIO
 
 
 SUPPORTED_OSES = ("deb")
@@ -61,4 +62,49 @@ def betweenInstallCmds():
   
   
 def postInstallCmds():
-  pass
+  
+  _w("mkdir -p " + conf['REPRO_DIR'])
+  with _cd(conf['REPRO_DIR']):
+    _r("git clone -b master https://github.com/RafiKueng/LensTools.git .")
+
+    
+#################################################################################  
+
+
+
+def setup():
+  
+  # BACKEND
+  
+  with _cd(conf['REPRO_DIR']):
+    _s("cp backend %(INSTALL_DIR)s/backend" % conf)
+    
+
+
+
+
+
+#################################################################################  
+
+def _create_machine_config():
+  inp = StringIO.StringIO()
+  get(conf['INSTALL_DIR']+'/backend/settings/machine.template.py', inp)
+  txt = inp.read()
+  txt = txt % conf
+  outp = StringIO.StringIO()
+  outp.write(txt)
+  put(outp, conf['INSTALL_DIR']+'/backend/settings/machine.py')
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
