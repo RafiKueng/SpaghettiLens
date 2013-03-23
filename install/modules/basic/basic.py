@@ -18,7 +18,20 @@ def about():
 
 
 def neededVars():
-  return ("NAME", "REPRO_DIR")
+  return (
+    ("NAME",
+     "a unique name across all your machine to identiy this install",
+     socket.gethostname()),
+    ("REPRO_DIR",
+     "the location of the REMOTE reprositry, for future updates (full path, ssh user needs rights)",
+     env.cwd + "/src/lmt/" if len(env.cwd)>2 else "~/src/lmt"),
+    ("TIMEZONE",
+     "the name of the timezone the server is in",
+     "Europe/Zurich"),
+    ("SECRET_KEY",
+     "Secret key for django app",
+     psw_gen(size=32))
+    )
 
 
 def installPackages():

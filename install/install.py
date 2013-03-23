@@ -14,6 +14,15 @@ import pkgutil
 
 import roles as roles_mod
 
+
+
+SKIP_PREPARE = True
+SKIP_PKGS = True
+SKIP_BETW = True
+SKIP_PIP = True
+SKIP_POST = True
+
+
 def install():
   env.conf = {}
   config = env.conf 
@@ -46,6 +55,7 @@ def install():
       raise KeyError("please choose a number from the list")
     
   config['ROLE'] = prompt("Choose number", key="ROLE", default=0, validate=valchoice)
+  print roles
   
   
   if env.ROLE =="_own_modules":
@@ -134,34 +144,38 @@ def install():
       pass
 
 
-      
-  puts("\n= preparing packages")
-  for cmd in install_cmds_pre:
-    puts("________")
-    cmd()
-  
-  puts("\n= installing binary packages")
-  _s("apt-get update")
-  for cmd in install_pkgs:
-    puts("________")
-    cmd()
-  package_install_start()
-    
-  puts("= between pkgs and pip install commands")
-  for cmd in install_cmd_between:
-    puts("________")
-    cmd()
-    
-  puts("\n= installing pip packages")
-  for cmd in install_pips:
-    puts("________")
-    cmd()
-  pip_install_start()
+  if not SKIP_PREPARE:  
+    puts("\n= preparing packages")
+    for cmd in install_cmds_pre:
+      puts("________")
+      cmd()
 
-  puts("\n= after pip install commands")
-  for cmd in install_cmds_after:
-    puts("________")
-    cmd()  
+  if not SKIP_PKGS:  
+    puts("\n= installing binary packages")
+    _s("apt-get update")
+    for cmd in install_pkgs:
+      puts("________")
+      cmd()
+    package_install_start()
+    
+  if not SKIP_BETW:
+    puts("= between pkgs and pip install commands")
+    for cmd in install_cmd_between:
+      puts("________")
+      cmd()
+    
+  if not SKIP_PIP:
+    puts("\n= installing pip packages")
+    for cmd in install_pips:
+      puts("________")
+      cmd()
+    pip_install_start()
+
+  if not SKIP_POST:
+    puts("\n= after pip install commands")
+    for cmd in install_cmds_after:
+      puts("________")
+      cmd()  
 
   puts("Done, all packages installed\n")
 
@@ -183,7 +197,8 @@ def install():
     puts("* "+name)
     try:
       mod.setup()
-    except AttributeError:
+    except AttributeError as e:
+      puts(str(e))
       #raise
       puts("--- no need to setup anything")
   puts("Done, everything setup\n")

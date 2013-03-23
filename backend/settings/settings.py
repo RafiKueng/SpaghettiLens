@@ -16,25 +16,32 @@ from secrets import *
 from machine import *
 
 
-if ROLE == "DEV_LOCAL":
+
+if ROLE == "developpment_local":
   MODULE_DATABASE = "sqlite"
   MODULE_DJANGO = "dev"
   MODULE_STATIC = "xamp"
   MODULE_WORKER = "dummy"
   
-elif ROLE == "DEV_SERVER":
+elif ROLE == "developpment_server":
   MODULE_DATABASE = "sqlite"
   MODULE_DJANGO = "dev"
   MODULE_STATIC = "nginx"
   MODULE_WORKER = "celery"
   
-elif ROLE == "PRODUCTION":
+elif ROLE == "production_server":
   MODULE_DATABASE = "mysql"
   MODULE_DJANGO = "gunicorn"
   MODULE_STATIC = "nginx"
   MODULE_WORKER = "celery"
 
-elif ROLE == "APP":
+elif ROLE == "production_worker":
+  MODULE_DATABASE = "mysql"
+  MODULE_DJANGO = "gunicorn"
+  MODULE_STATIC = "nginx"
+  MODULE_WORKER = "celery"
+  
+elif ROLE == "standalone_app":
   MODULE_DATABASE = "sqlite"
   MODULE_DJANGO = "cherrypi"
   MODULE_STATIC = "python"

@@ -23,6 +23,7 @@ def neededVars():
     ("INSTALL_DIR", "root directory of install", os.getcwd()),
     ("HTML_DIR", "directory of static html files (relative to install)", "/static_html"),
     ("DJANGO_STATIC", "directory of static django files (relative)", "/backend/static"),
+    ("DJANGO_STATIC_URL", "virtual static django files url, url prefix for static fiels (relative)", "/static_django/"),
     ("MEDIA_FILES", "direcory of generrated images (relative)", "/tmp_media"),
     ("URL_DJANGO_SERVER", "(internal?) url for redirects to django server, WITH port", "http://localhost:8000"),
     ("RESULTPATH", "(virtual) path where the client gets the results from", "/results")
@@ -40,20 +41,6 @@ def beforeInstallCmds():
 
 def installPackages():
   package_install('nginx')
-
-
-
-def setup():
-  filename = _generateConfigFile()
-  puts("--- nginx temp config file: " + filename)
-  
-  _p(filename, "/etc/nginx/sites-available/lmt.conf", use_sudo=True)  #local
-  _s("ln -f -s /etc/nginx/sites-available/lmt.conf /etc/nginx/sites-enabled") #remote
-  _s("/etc/init.d/nginx reload") #remote
-  
-  _l("os.remove(filename)") #local
-
-
 
 
 
@@ -76,75 +63,103 @@ def testInstall():
 
 
 
+def setup():
+  file = _generateConfigFile()
+  puts("--- nginx temp config file: ")
+  print file.getvalue()
+  
+  _p(file, "/etc/nginx/sites-available/lmt.conf", use_sudo=True)  #local
+  _s("ln -f -s /etc/nginx/sites-available/lmt.conf /etc/nginx/sites-enabled") #remote
+  _s("/etc/init.d/nginx reload") #remote
+  
+
+
+  # copy html files
+  _s("cp -f -R %(REPRO_DIR)s/static_html %(INSTALL_DIR)s%(HTML_DIR)s" % conf)
+  file = _generateHTMLSettings()
+  _p(file, "%(INSTALL_DIR)s%(HTML_DIR)s/js/lmt.settings.js" % conf, use_sudo=True)  #local
+  _s("chown -R %(SYS_USER)s:%(SYS_GROUP)s %(INSTALL_DIR)s/*" % conf)
+  _s("chmod -R 644 %(INSTALL_DIR)s%(HTML_DIR)s/*" % conf)  
+
+
+
+
+
+
+
+
 #################################################################################  
 
 
   
 def _generateConfigFile():
-  env["PATH_FULL_HTML"] = path(env.ROOT_DIR, env.HTML_DIR)
-  env["PATH_FULL_DJANGOSTATIC"] = path(env.ROOT_DIR, env.DJANGO_STATIC)
-  
-  
-  tempfilestr = utils.path(env.TEMP, "nginx.conf")
-  tempfile = open(tempfilestr, 'wb')
+  print "in _gen"
+  env["PATH_FULL_HTML"] = env.INSTALL_DIR + env.HTML_DIR
+  env["PATH_FULL_DJANGOSTATIC"] = env.INSTALL_DIR + env.DJANGO_STATIC
   
   cfg = """
 server {
   listen %(PUBLIC_PORT)s; ## listen for ipv4; this line is default and implied
   listen   [::]:%(PUBLIC_PORT)s default ipv6only=on; ## listen for ipv6
 
-  root %(ROOT_DIR)s;
+  root %(PATH_FULL_HTML)s;
   index index.php index.html index.htm;
 
   # Make site accessible from http://localhost/
   server_name _;
 
-  location /favicon.ico { alias %(PATH_FULL_HTML)s/favicon.ico; }
+  #proxy settings
+  proxy_pass_header Server;
+  proxy_set_header Host $http_host;
+  proxy_redirect off;
+  proxy_set_header X-Real-IP $remote_addr;
+  proxy_set_header X-Scheme $scheme;
+  proxy_connect_timeout 10;
+  proxy_read_timeout 10;
 
-  # ressource folders for the static content
-  location /js { autoindex on; alias %(PATH_FULL_HTML)s/js/; }
-  location /css { alias %(PATH_FULL_HTML)s/css/; }
-  location /img { alias %(PATH_FULL_HTML)s/img/; }
-  location /font { alias %(PATH_FULL_HTML)s/font/; }
-  location /i18n { alias %(PATH_FULL_HTML)s/i18n/; }
 
   # django static files
-  location %(DJANGO_STATIC)s {
+  location %(DJANGO_STATIC_URL)s {
     autoindex on;
     alias %(PATH_FULL_DJANGOSTATIC)s/;
   }
   
+  location ^~ /admin/ {proxy_pass %(URL_DJANGO_SERVER)s;}
+  location ^~ /get_initdata/ {proxy_pass %(URL_DJANGO_SERVER)s;}
+  location ^~ /get_modeldata/ {proxy_pass %(URL_DJANGO_SERVER)s;}
+  location ^~ /save_model/ {proxy_pass %(URL_DJANGO_SERVER)s;}
+  location ^~ /load_model/ {proxy_pass %(URL_DJANGO_SERVER)s;}
+
   #check if this mediafile already exists, then serve it directly, otherwise let django create it
   location ~ ^%(RESULTPATH)s/(?<id>\d+)/(?<file>.+\..+)$ {
     try_files %(MEDIA_FILES)s/$id/$file @tmpmedia;
   }
 
   location @tmpmedia {
-    proxy_pass_header Server;
-    proxy_set_header Host $http_host;
-    proxy_redirect off;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Scheme $scheme;
-    proxy_connect_timeout 10;
-    proxy_read_timeout 10;
-    proxy_pass %(URL_DJANGO_SERVER)s;
-  }
-  
-
-  # all the dynamic rest goes to gunicorn server - django
-  location / {
-    proxy_pass_header Server;
-    proxy_set_header Host $http_host;
-    proxy_redirect off;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Scheme $scheme;
-    proxy_connect_timeout 10;
-    proxy_read_timeout 10;
     proxy_pass %(URL_DJANGO_SERVER)s;
   }
 }
 """ % env
+  
+  return StringIO.StringIO(cfg)
 
-  tempfile.write(cfg)
-  tempfile.close()
-  return tempfilestr
+
+
+
+
+def _generateHTMLSettings():
+  #create the js/lmt.settings.js file
+  set = '''
+  LMT.com.serverUrl = "";
+  '''
+  
+  return StringIO.StringIO(set)
+
+
+
+
+
+
+
+
+

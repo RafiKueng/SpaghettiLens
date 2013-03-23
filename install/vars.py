@@ -1,4 +1,5 @@
 from fabric.api import env
+from utils import psw_gen
 
 
 class Elem(object):
@@ -47,16 +48,6 @@ class ConfigDict(object):
    
   def __repr__(self):
     return repr(self.__dict__)
-
-
-c=ConfigDict()
-
-c["NAME"] = (
-  "a unique name across all your machine to identiy this install",
-  socket.gethostname())
-c["REPRO_DIR"] = (
-  "the location of the REMOTE reprositry, for future updates (full path, ssh user needs rights)",
-    env.cwd + "/src/lmt/" if len(env.cwd)>2 else "~/src/lmt")
 
 
 

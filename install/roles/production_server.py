@@ -6,6 +6,7 @@ from fabric.colors import *
 from install.utils import _r, _s, _p, _l, _L, _fe, _cd, _w
 import install.utils as utils
 from StringIO import StringIO
+from fabric.utils import puts
 
 
 SUPPORTED_OSES = ("deb")
@@ -63,9 +64,13 @@ def betweenInstallCmds():
   
 def postInstallCmds():
   
-  _w("mkdir -p " + conf['REPRO_DIR'])
+  _s("mkdir -p " + conf['REPRO_DIR'])
   with _cd(conf['REPRO_DIR']):
-    _r("git clone -b master https://github.com/RafiKueng/LensTools.git .")
+    if _fe('.git'):
+      _s("git checkout master")
+      _s("git pull origin master")
+    else:
+      _s("git clone -b master https://github.com/RafiKueng/LensTools.git .")
 
     
 #################################################################################  
@@ -76,8 +81,15 @@ def setup():
   
   # BACKEND
   
-  with _cd(conf['REPRO_DIR']):
-    _s("cp backend %(INSTALL_DIR)s/backend" % conf)
+  _s("cp -fr %(REPRO_DIR)s/backend %(INSTALL_DIR)s/backend" % conf)
+    
+  _create_django_settings()
+  _s("chown -R %(SYS_USER)s:%(SYS_GROUP)s %(INSTALL_DIR)s/*" % conf)
+  _s("chmod -R 777 *" % conf)
+  
+  # STATIC HTML STUFF
+  #with _cd(conf['REPRO_DIR']):
+  #  _s("cp -f -R backend %(INSTALL_DIR)s/backend" % conf)
     
 
 
@@ -86,20 +98,20 @@ def setup():
 
 #################################################################################  
 
-def _create_machine_config():
-  inp = StringIO.StringIO()
-  get(conf['INSTALL_DIR']+'/backend/settings/machine.template.py', inp)
-  txt = inp.read()
-  txt = txt % conf
-  outp = StringIO.StringIO()
-  outp.write(txt)
-  put(outp, conf['INSTALL_DIR']+'/backend/settings/machine.py')
+def _create_django_settings():
+
+  inp = StringIO()
+  with settings(user=conf['SYS_USER'], password=conf['SYS_PSW']):
+    get(conf['INSTALL_DIR']+'/backend/settings/machine.template.py', inp)
+  outp = StringIO(inp.getvalue() % conf)
+  put(outp, conf['INSTALL_DIR']+'/backend/settings/machine.py', use_sudo=True)
   
-  
-  
-  
-  
-  
+  inp = StringIO()
+  with settings(user=conf['SYS_USER'], password=conf['SYS_PSW']):
+    get(conf['INSTALL_DIR']+'/backend/settings/secrets.template.py', inp)
+  outp = StringIO(inp.getvalue() % conf)
+  put(outp, conf['INSTALL_DIR']+'/backend/settings/secrets.py', use_sudo=True)
+    
   
   
   
