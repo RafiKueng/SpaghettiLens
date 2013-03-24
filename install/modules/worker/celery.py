@@ -21,7 +21,7 @@ def neededVars():
     ("BROKER_HOST", "host of broker service", "localhost"),
     ("BROKER_PORT", "port of broker service", "5672"),
     ("BROKER_USER", "username for broker service", "lmt"),
-    ("BROKER_PSW", "password for broker service", psw_gen()),
+    ("BROKER_PSW", "password for broker service", "lmt-broker-pw"),#psw_gen()),
     ("BROKER_VHOST", "virtualhost for broker service", "lmt_vh"),
     ("WORKER_DIR", "directory of worker install (GLASS)", "/worker"),
     ("INSTALL_DIR", "//should be set with the role","")

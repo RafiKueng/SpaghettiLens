@@ -19,10 +19,11 @@ def about():
 def neededVars():
   return (("DATABASE_HOST", "mysql host", "localhost"),
           ("DATABASE_PORT", "port", "3306"),
-          ("DATABASE_ROOT_PSW", "mysql root password (existing or new one)", psw_gen()),
+          ("DATABASE_ROOT_PSW", "mysql root password (existing or new one)", "demosqlroot"),#psw_gen()),
           ("DATABASE_NAME", "db name", "lmt"),
-          ("DATABASE_USER", "db user name", "dbuser"),
-          ("DATABASE_PSW", "db user password", psw_gen()))
+          ("DATABASE_USER", "db user name", "lmt"),
+          ("DATABASE_PSW", "db user password", "lmt-sql-pw")#psw_gen())
+         )
 
 
 #################################################################################  
