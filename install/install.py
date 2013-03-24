@@ -20,7 +20,7 @@ SKIP_PREPARE = True
 SKIP_PKGS = True
 SKIP_BETW = True
 SKIP_PIP = True
-SKIP_POST = True
+SKIP_POST = False
 
 
 def install():

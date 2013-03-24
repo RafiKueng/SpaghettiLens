@@ -35,7 +35,8 @@ def neededVars():
     ("VIRTENV_DIR", "where to install virtualenv (relative)", "/py_env"),
     ("SYS_USER", "the username the whole stuff will be running on (will be created)", "lmt"),
     ("SYS_PSW", "the password for SYS_USER (if user exists the pw IWLL BE CHANGED)", 'pw' ),#utils.psw_gen()),
-    ("SYS_GROUP", "the group of the sys_user", "www-lmt")
+    ("SYS_GROUP", "the group of the sys_user", "www-lmt"),
+    ("LOG_DIR", "Directory for all log files (relative)", "/logs")
   )
 
 
@@ -71,6 +72,13 @@ def postInstallCmds():
       _s("git pull origin master")
     else:
       _s("git clone -b master https://github.com/RafiKueng/LensTools.git .")
+  
+  #log files go here
+  _s("mkdir -p %(INSTALL_DIR)s%(LOG_DIR)s" % conf)
+  _s("chown -R %(SYS_USER)s:%(SYS_GROUP)s %(INSTALL_DIR)s%(LOG_DIR)s" % conf)
+  _s("chmod -R 744 %(INSTALL_DIR)s%(LOG_DIR)s" % conf)  
+
+    
 
     
 #################################################################################  

@@ -25,7 +25,8 @@ def neededVars():
     ("DJANGO_STATIC", "directory of static django files (relative)", "/backend/static"),
     ("DJANGO_STATIC_URL", "virtual static django files url, url prefix for static fiels (relative)", "/static_django/"),
     ("MEDIA_FILES", "direcory of generrated images (relative)", "/tmp_media"),
-    ("URL_DJANGO_SERVER", "(internal?) url for redirects to django server, WITH port", "http://localhost:8000"),
+    ("DJANGO_SERVER_HOST", "(internal?) url for redirects to django server", "http://localhost"),
+    ("DJANGO_SERVER_PORT", "(internal?) port to django server", "8000"),
     ("RESULTPATH", "(virtual) path where the client gets the results from", "/results")
   )
 
@@ -96,6 +97,8 @@ def _generateConfigFile():
   print "in _gen"
   env["PATH_FULL_HTML"] = env.INSTALL_DIR + env.HTML_DIR
   env["PATH_FULL_DJANGOSTATIC"] = env.INSTALL_DIR + env.DJANGO_STATIC
+  env["URL_DJANGO_SERVER"] = env.DJANGO_SERVER_HOST + ':' + env.DJANGO_SERVER_PORT
+  
   
   cfg = """
 server {
@@ -117,6 +120,8 @@ server {
   proxy_connect_timeout 10;
   proxy_read_timeout 10;
 
+  access_log %(INSTALL_DIR)s%(LOG_DIR)s/nginx_access.log;
+  error_log %(INSTALL_DIR)s%(LOG_DIR)s/nginx_error.log;
 
   # django static files
   location %(DJANGO_STATIC_URL)s {
