@@ -25,8 +25,8 @@ def neededVars():
     ("DJANGO_STATIC", "directory of static django files (relative)", "/backend/static"),
     ("DJANGO_STATIC_URL", "virtual static django files url, url prefix for static fiels (relative)", "/static_django/"),
     ("MEDIA_FILES", "direcory of generrated images (relative)", "/tmp_media"),
-    ("DJANGO_SERVER_HOST", "(internal?) url for redirects to django server", "http://localhost"),
-    ("DJANGO_SERVER_PORT", "(internal?) port to django server", "8000"),
+    ("DJANGO_SERVER_HOST", "url / ip to the django webserver", "http://localhost"),
+    ("DJANGO_SERVER_PORT", "port to django server", "8000"),
     ("RESULTPATH", "(virtual) path where the client gets the results from", "/results")
   )
 
@@ -80,7 +80,7 @@ def setup():
   file = _generateHTMLSettings()
   _p(file, "%(INSTALL_DIR)s%(HTML_DIR)s/js/lmt.settings.js" % conf, use_sudo=True)  #local
   _s("chown -R %(SYS_USER)s:%(SYS_GROUP)s %(INSTALL_DIR)s/*" % conf)
-  _s("chmod -R 644 %(INSTALL_DIR)s%(HTML_DIR)s/*" % conf)  
+  _s("chmod -R 774 %(INSTALL_DIR)s%(HTML_DIR)s/*" % conf)  
 
   # merge php
   with _cd("%(INSTALL_DIR)s%(HTML_DIR)s"%conf):

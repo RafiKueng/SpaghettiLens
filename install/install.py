@@ -204,6 +204,14 @@ def install():
   puts("Done, everything setup\n")
 
 
+  puts("\nFINISHING / CLOEANUNG UP:")
+  for i, (name, mod) in enumerate(modules):
+    puts("* "+name)
+    try:
+      mod.finish()
+    except AttributeError:
+      puts("--- no need to clean up anything")
+
   puts("\nTest the final setup:")
   for i, (name, mod) in enumerate(modules):
     puts("* "+name)

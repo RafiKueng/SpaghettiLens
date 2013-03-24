@@ -71,10 +71,11 @@ def postInstallCmds():
   _s("mkdir -p " + conf['REPRO_DIR'])
   with _cd(conf['REPRO_DIR']):
     if _fe('.git'):
-      _s("git checkout master")
+      _s("git reset --hard HEAD" % conf)
+      _s("git checkout %(GIT_BRANCH)s" % conf)
       _s("git pull origin %(GIT_BRANCH)s" % conf)
     else:
-      _s("git clone -b %(GIT_BRANCH)s https://github.com/RafiKueng/LensTools.git .")
+      _s("git clone -b %(GIT_BRANCH)s https://github.com/RafiKueng/LensTools.git ." % conf)
   
   #log files go here
   _s("mkdir -p %(INSTALL_DIR)s%(LOG_DIR)s" % conf)
@@ -104,6 +105,15 @@ def setup():
     
 
 
+
+
+def finish():
+
+  #set rights
+  _s("find %(INSTALL_DIR)s -type d -print0 | xargs -0 chmod 755" % conf) 
+  _s("find %(INSTALL_DIR)s -type f -print0 | xargs -0 chmod 644" % conf)
+  _s("find %(INSTALL_DIR)s/run -type f -print0 | xargs -0 chmod 744" % conf)
+  _s("find %(INSTALL_DIR)s%(VIRTENV_DIR)s -type f -print0 | xargs -0 chmod 744" % conf)
 
 
 

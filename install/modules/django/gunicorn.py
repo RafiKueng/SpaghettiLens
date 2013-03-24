@@ -14,8 +14,8 @@ def about():
 
 def neededVars():
   return (
-    ("DJANGO_SERVER_LISTEN_IP", "(internal?) url for redirects to django server", "0.0.0.0"),
-    ("DJANGO_SERVER_PORT", "(internal?) port to django server", "8000"),
+    ("DJANGO_SERVER_LISTEN_IP", "bind django webserver to ip", "0.0.0.0"),
+    ("DJANGO_SERVER_PORT", "bind django webserver to port", "8000"),
   )
 
 def installPackages():
@@ -32,8 +32,9 @@ def installPipPackages():
 
 
 def setup():
+  _s("mkdir -p %(INSTALL_DIR)s/run" % conf)
   file = _gen_start_script()
-  _p(file, "%(INSTALL_DIR)s/backend/start_gunicorn.sh" % conf, use_sudo=True)  #local
+  _p(file, "%(INSTALL_DIR)s/run/start_gunicorn.sh" % conf, use_sudo=True)  #local
   _s("chown -R %(SYS_USER)s:%(SYS_GROUP)s %(INSTALL_DIR)s/*" % conf)
   _s("chmod -R 744 %(INSTALL_DIR)s/backend/start_gunicorn.sh" % conf)
   
@@ -70,7 +71,7 @@ start on runlevel [2345]
 stop on runlevel [06]
 respawn
 respawn limit 10 5
-exec %(INSTALL_DIR)s/backend/start_gunicorn.sh
+exec %(INSTALL_DIR)s/run/start_gunicorn.sh
 ''' % conf
   return StringIO.StringIO(ups)
 
