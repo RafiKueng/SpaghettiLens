@@ -29,6 +29,7 @@ def neededVars():
 #################################################################################  
 
 
+
 def installPackages():
   if conf['DATABASE_HOST']=='localhost':
     mysql_install()
@@ -37,8 +38,7 @@ def installPackages():
 
 
 def installPipPackages():
-  #pip_install('MySQL-python')
-  pass
+  pip_install('MySQL-python')
 
 
 def postInstallCmds():
@@ -47,8 +47,8 @@ def postInstallCmds():
                     conf['DATABASE_USER'],
                     conf['DATABASE_PSW'])
   
-  mysql_create_db(conf['DATABASE_USER'],
-                  conf['DATABASE_PSW'],
+  mysql_create_db("root",
+                  conf['DATABASE_ROOT_PSW'],
                   conf['DATABASE_NAME'])
 
 
@@ -103,6 +103,8 @@ def mysql_install():
 
   package_install(common_packages)
   
+  #install prerequ for mysql-python
+  _s("apt-get build-dep python-mysqldb")
   
   
   
@@ -157,6 +159,6 @@ def mysql_create_user(user='',password='',new_user='',new_password=''):
   if not new_password:
     new_password = fabric.api.prompt('Please enter new password for %s:' % new_user)
  
-    mysql_execute("""GRANT ALL privileges ON *.* TO "%s" IDENTIFIED BY "%s";FLUSH PRIVILEGES;""" % (new_user, new_password), user, password)
+  mysql_execute("""GRANT ALL privileges ON *.* TO "%s"@'localhost' IDENTIFIED BY "%s";FLUSH PRIVILEGES;""" % (new_user, new_password), user, password)
   
   

@@ -36,7 +36,9 @@ def neededVars():
     ("SYS_USER", "the username the whole stuff will be running on (will be created)", "lmt"),
     ("SYS_PSW", "the password for SYS_USER (if user exists the pw IWLL BE CHANGED)", 'pw' ),#utils.psw_gen()),
     ("SYS_GROUP", "the group of the sys_user", "www-lmt"),
-    ("LOG_DIR", "Directory for all log files (relative)", "/logs")
+    ("LOG_DIR", "Directory for all log files (relative)", "/logs"),
+    ("GIT_BRANCH", "which branch to use (take master)", "deploy")
+    
   )
 
 
@@ -60,8 +62,9 @@ def betweenInstallCmds():
   _s("chmod u+rwx %(INSTALL_DIR)s" % conf)
   
   with _cd(conf['INSTALL_DIR']):
-    _w("virtualenv --distribute --system-site-packages .%(VIRTENV_DIR)s" % conf)
-  
+    if not _fe(conf['INSTALL_DIR']+conf['VIRTENV_DIR']):
+      _w("virtualenv --distribute --system-site-packages .%(VIRTENV_DIR)s" % conf)
+    pass
   
 def postInstallCmds():
   
@@ -69,9 +72,9 @@ def postInstallCmds():
   with _cd(conf['REPRO_DIR']):
     if _fe('.git'):
       _s("git checkout master")
-      _s("git pull origin master")
+      _s("git pull origin %(GIT_BRANCH)s" % conf)
     else:
-      _s("git clone -b master https://github.com/RafiKueng/LensTools.git .")
+      _s("git clone -b %(GIT_BRANCH)s https://github.com/RafiKueng/LensTools.git .")
   
   #log files go here
   _s("mkdir -p %(INSTALL_DIR)s%(LOG_DIR)s" % conf)
@@ -89,7 +92,7 @@ def setup():
   
   # BACKEND
   
-  _s("cp -fr %(REPRO_DIR)s/backend %(INSTALL_DIR)s/backend" % conf)
+  _s("cp -f -r %(REPRO_DIR)s/backend %(INSTALL_DIR)s/" % conf)
     
   _create_django_settings()
   _s("chown -R %(SYS_USER)s:%(SYS_GROUP)s %(INSTALL_DIR)s/*" % conf)

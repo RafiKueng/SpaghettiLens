@@ -1,6 +1,7 @@
 from fabric.api import env
 import StringIO
 
+from install import *
 from install.utils import _r, _s, _p, _l, _fe
 
 
@@ -18,12 +19,12 @@ def neededVars():
   )
 
 def installPackages():
-  return ('libevent-dev',)
+  package_install(('libevent-dev',))
 
 
 
 def installPipPackages():
-  return ('greenlet','gevent','gunicorn')
+  pip_install(('greenlet','gevent','gunicorn'))
 
 
 
@@ -39,7 +40,7 @@ def setup():
   
   file = _gen_upstart_conf()
   _p(file, "/etc/init/guni-lmt.conf" % conf, use_sudo=True)  #local
-  _s("ln -s /lib/init/upstart-job /etc/init.d/guni-lmt")
+  _s("ln -s -f /lib/init/upstart-job /etc/init.d/guni-lmt")
   _s("initctl reload-configuration")
   
   

@@ -1,5 +1,5 @@
 import os, StringIO
-from install.utils import _r, _s, _p, _l, _fe
+from install.utils import _r, _s, _p, _l, _fe, _cd
 import install.utils as utils
 
 from install.package import package_install
@@ -82,8 +82,13 @@ def setup():
   _s("chown -R %(SYS_USER)s:%(SYS_GROUP)s %(INSTALL_DIR)s/*" % conf)
   _s("chmod -R 644 %(INSTALL_DIR)s%(HTML_DIR)s/*" % conf)  
 
-
-
+  # merge php
+  with _cd("%(INSTALL_DIR)s%(HTML_DIR)s"%conf):
+    _s("echo '<!DOCTYPE html>' > lmt.html")
+    _s("echo '<html lang='en'>' >> lmt.html")
+    _s("cat head.html >> lmt.html")
+    _s("cat body.php >> lmt.html")
+    _s("echo '</html>' >> lmt.html")
 
 
 
