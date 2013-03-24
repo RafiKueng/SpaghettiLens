@@ -3,10 +3,8 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 from django.utils import simplejson as sjson
-from django.conf import settings
-#import simplejson as sjson
+from django.conf import settings as s
 
-from celery.result import AsyncResult
 
 #from django.utils import date
 #from datetime import datetime
@@ -14,13 +12,20 @@ from celery.result import AsyncResult
 from lmt import tasks
 from datetime import datetime
 
-#import simplejson as json
-
 from ModellerApp.models import BasicLensData, ModellingResult, Catalog
 from ModellerApp.utils import EvalAndSaveJSON
 from django.contrib.auth.models import User
 
 from lmt.tasks import calculateModel
+if s.MODULE_WORKER == "celery":
+  from celery.result import AsyncResult
+elif s.MODULE_WORKER == "multiprocessing":
+  raise s.TODO("mp modules missing")
+  from lmt.tasks import bla as AsyncResult
+elif s.MODULE_WORKER == "dummy":
+  from lmt.tasks import DummyAsyncResult as AsyncResult
+
+
 
 
 import os
@@ -122,7 +127,7 @@ def getModelData(request):
     print "session has: ", str(request.session.__dict__)
 
 
-    if not settings.DEBUG:
+    if not s.DEBUG:
       if not request.session.test_cookie_worked():
         response = HttpResponseNotFound("Cookies not enabled, please enable", content_type="text/plain")
         response['Access-Control-Allow-Origin'] = "*"
@@ -328,7 +333,7 @@ def getSimulationJSON(request, result_id):
   result_id = int(result_id)
   print "in getSimulationJSON"
   
-  def returnDataIfReady():
+  def returnDataIfReady(result_id):
     return sjson.dumps({"status":"READY",
                          "cached": True,
                          "result_id": "%06i" % result_id,
@@ -370,7 +375,7 @@ def getSimulationJSON(request, result_id):
       res.last_accessed = datetime.now()
       res.save()
       
-      data = returnDataIfReady()
+      data = returnDataIfReady(result_id)
 
     elif task.state == "FAILURE":
       data = sjson.dumps({"status":"FAILURE", "result_id": "%06i" % result_id})
@@ -380,10 +385,11 @@ def getSimulationJSON(request, result_id):
     
   else:
     print "starting new task"
-    print result_id
-    print type(result_id)
+    # print result_id
+    # print type(result_id)
     task = calculateModel.delay(result_id)
     res.is_rendered = False
+    # print task.task_id, type(task.task_id)
     res.task_id = task.task_id
     res.rendered_last = datetime.now();
     res.save()
