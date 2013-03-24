@@ -32,6 +32,8 @@ BROKER_PORT = %(BROKER_PORT)s
 BROKER_VHOST = '%(BROKER_VHOST)s'
 
 
+WORKER_DIR_FULL = '%(INSTALL_DIR)s%(WORKER_DIR)s'
+
 
 # import premade role
 ROLE = "%(ROLE)s"
