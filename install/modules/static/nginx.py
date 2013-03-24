@@ -27,7 +27,7 @@ def neededVars():
     ("MEDIA_FILES", "direcory of generrated images (relative)", "/tmp_media"),
     ("DJANGO_SERVER_HOST", "url / ip to the django webserver", "http://localhost"),
     ("DJANGO_SERVER_PORT", "port to django server", "8000"),
-    ("RESULTPATH", "(virtual) path where the client gets the results from", "/results")
+    ("RESULTPATH", "(virtual) path where the client gets the results from", "/result")
   )
 
 
