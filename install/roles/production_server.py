@@ -114,6 +114,7 @@ def finish():
   _s("find %(INSTALL_DIR)s -type f -print0 | xargs -0 chmod 644" % conf)
   _s("find %(INSTALL_DIR)s/run -type f -print0 | xargs -0 chmod 744" % conf)
   _s("find %(INSTALL_DIR)s%(VIRTENV_DIR)s -type f -print0 | xargs -0 chmod 744" % conf)
+  _s("chmod u+x %(INSTALL_DIR)s%(WORKER_DIR)s/run_glass")
 
 
 

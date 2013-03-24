@@ -139,10 +139,11 @@ server {
   location ^~ /get_modeldata/ {proxy_pass %(URL_DJANGO_SERVER)s;}
   location ^~ /save_model/ {proxy_pass %(URL_DJANGO_SERVER)s;}
   location ^~ /load_model/ {proxy_pass %(URL_DJANGO_SERVER)s;}
+  location %(RESULTPATH)s/ {proxy_pass http://localhost:8000;}
 
   #check if this mediafile already exists, then serve it directly, otherwise let django create it
   location ~ ^%(RESULTPATH)s/(?<id>\d+)/(?<file>.+\..+)$ {
-    try_files %(MEDIA_FILES)s/$id/$file @tmpmedia;
+    try_files /..%(MEDIA_FILES)s/$id/$file @tmpmedia;
   }
 
   location @tmpmedia {

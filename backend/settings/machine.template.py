@@ -22,7 +22,8 @@ STATIC_ROOT = '%(INSTALL_DIR)s/%(DJANGO_STATIC)s'
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = '%(PUBLIC_URL)s:%(PUBLIC_PORT)s%(DJANGO_STATIC_URL)s'
+#STATIC_URL = '%(PUBLIC_URL)s:%(PUBLIC_PORT)s%(DJANGO_STATIC_URL)s'
+STATIC_URL = '%(DJANGO_STATIC_URL)s'
 
 
 # Celery Broker Configuration
