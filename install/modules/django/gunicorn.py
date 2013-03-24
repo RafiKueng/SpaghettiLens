@@ -34,9 +34,9 @@ def installPipPackages():
 def setup():
   _s("mkdir -p %(INSTALL_DIR)s/run" % conf)
   file = _gen_start_script()
-  _p(file, "%(INSTALL_DIR)s/run/start_gunicorn.sh" % conf, use_sudo=True)  #local
+  _p(file, "%(INSTALL_DIR)s/run/start_guni.sh" % conf, use_sudo=True)  #local
   _s("chown -R %(SYS_USER)s:%(SYS_GROUP)s %(INSTALL_DIR)s/*" % conf)
-  _s("chmod -R 744 %(INSTALL_DIR)s/backend/start_gunicorn.sh" % conf)
+  _s("chmod 744 %(INSTALL_DIR)s/run/start_guni.sh" % conf)
   
   
   file = _gen_upstart_conf()

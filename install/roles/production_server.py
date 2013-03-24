@@ -3,7 +3,7 @@ from __future__ import with_statement
 from fabric.api import env, warn, settings, get, put
 from fabric.colors import *
 
-from install.utils import _r, _s, _p, _l, _L, _fe, _cd, _w
+from install.utils import _r, _s, _p, _l, _L, _fe, _cd, _w, _v
 import install.utils as utils
 from StringIO import StringIO
 from fabric.utils import puts
@@ -109,14 +109,24 @@ def setup():
 
 def finish():
 
+  with _v(conf['INSTALL_DIR']+'/backend'):
+    _w("python manage.py collectstatic --noinput")
+    _w("python manage.py syncdb")
+
   #set rights
   _s("find %(INSTALL_DIR)s -type d -print0 | xargs -0 chmod 755" % conf) 
   _s("find %(INSTALL_DIR)s -type f -print0 | xargs -0 chmod 644" % conf)
   _s("find %(INSTALL_DIR)s/run -type f -print0 | xargs -0 chmod 744" % conf)
   _s("find %(INSTALL_DIR)s%(VIRTENV_DIR)s -type f -print0 | xargs -0 chmod 744" % conf)
-  _s("chmod u+x %(INSTALL_DIR)s%(WORKER_DIR)s/run_glass")
+
+  _s("chmod u+x %(INSTALL_DIR)s%(WORKER_DIR)s/run_glass" % conf)
+  _s("chmod 744 %(INSTALL_DIR)s/run/start_guni.sh" % conf)
 
 
+
+def start():
+  _s("service rabbitmq-server start")
+  
 
 #################################################################################  
 
