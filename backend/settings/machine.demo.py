@@ -32,5 +32,7 @@ BROKER_VHOST = 'lmt_vhost'
 
 
 
+WORKER_DIR_FULL = '../glass'
+
 # import premade role
 ROLE = "DEV_LOCAL"

@@ -218,17 +218,23 @@ html.Toolbar = {
     // un / redo buttons whether there is something to be undone / redone
     $('#btnInUndo').button(LMT.actionstack.undoSize>0 ? "enable" : "disable");
     $('#btnInRedo').button(LMT.actionstack.redoSize>0 ? "enable" : "disable");
-    
-    LMT.settings.renderedEqualsModel = false;
   },
   
   /**
    * updates the top toolbar buttons 
    */
   updateTop: function(evt) {
+    
     if (evt.type=="ReceivedSimulation") {
+      //that means we sent our model to th server and checked it, we can save this as final result
       LMT.settings.renderedEqualsModel = true;
     }
+    else if (evt.type=="ActionStackUpdated") {
+      // means that something changed on the model.. user need to check the output before saving 
+      LMT.settings.renderedEqualsModel = false;
+    }
+    else {LMT.settings.renderedEqualsModel = false;} //this shouldn't happend
+    
     $('#btnMainActionPrev').button(LMT.modelData.prevAvail ? "enable" : "disable");
     $('#btnMainActionNext').button(LMT.modelData.nextAvail ? "enable" : "disable");
     $('#btnMainFinish').button(LMT.settings.renderedEqualsModel ? "enable" : "disable");
