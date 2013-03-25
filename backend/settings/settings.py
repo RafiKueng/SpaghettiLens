@@ -1,5 +1,5 @@
 #default setting
-ROLE = "DEV_LOCAL"
+ROLE = "developpment_local"
 
 # a helper class
 class TODO(Exception):
