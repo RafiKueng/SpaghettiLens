@@ -115,6 +115,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'lazysignup', 
     'ModellerApp',
+    'south',
 )
 
 # A sample logging configuration. The only tangible logging

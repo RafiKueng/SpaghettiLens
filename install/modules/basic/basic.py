@@ -44,7 +44,7 @@ def betweenInstallCmds():
 
 
 def installPipPackages():
-  pip_install(["django","django-lazysignup"])
+  pip_install(["django","django-lazysignup", "south"])
 
 
 def postInstallCmds():
