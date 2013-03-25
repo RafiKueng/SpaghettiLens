@@ -112,7 +112,7 @@ var events = {
     $(document).on('ModeSwitched', LMT.ui.html.Toolbar.update);
 
     
-    $(document).on('SaveModel', fnc);
+    $(document).on('SaveModel', LMT.com.UploadModel);  // upload model with is filan tag
     $(document).on('UploadModel', LMT.com.UploadModel);
     $(document).on('SimulateModel', LMT.events.SimulateModel);
     $(document).one('UpdateRepaintModel', LMT.events.UpdateRepaintModel); //can only be called once, once finished with the update, it reassigns itself
@@ -120,6 +120,7 @@ var events = {
 
     $(document).on('GetSimulation', LMT.com.GetSimulation);
     $(document).on('ReceivedSimulation', LMT.ui.out.load);
+    $(document).on('ReceivedSimulation', LMT.ui.html.Toolbar.updateTop);
     
     $(document).on('DisplayOutputSlide', LMT.ui.out.show); //needs a id
     $(document).on('DisplayOutputSlideNext', LMT.ui.out.next);

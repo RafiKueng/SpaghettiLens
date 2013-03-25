@@ -163,7 +163,7 @@ com.getModelData = function(evt, model_ids, catalog, action) {
  * post returns json 
  * {status: "OK" or "BAD..."
  */
-com.UploadModel = function() {
+com.UploadModel = function(evt) {
 
   var success = function(jsonResp, statusTxt, XHRRespObj) {
     log.write("success1: <br/>result_id:" + jsonResp.result_id);
@@ -192,7 +192,7 @@ com.UploadModel = function() {
   var data = {
         modelid: LMT.modelData.id,
         string: LMT.model.getStateAsString(),
-        isFinal: false, //isFinal
+        isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
     };
   
   LMT.simulationData.resultId = -1;

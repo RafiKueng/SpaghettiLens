@@ -312,7 +312,7 @@ def saveModel(request):
     obj = EvalAndSaveJSON(user_obj = u, # request.user,
                           data_obj= m,
                           jsonStr = st,
-                          is_final= False)
+                          is_final= isf)
     print "after eval and save"
     #r.save()
     data = sjson.dumps({"status":"OK", "result_id": "%06i" % obj.result_id})
@@ -358,7 +358,7 @@ def getSimulationJSON(request, result_id):
     #deliver images
     # check imgExists: because a clean up prog could have deleted the files in the mean time and forgot to set the right flags in the db.. evil prog...
 
-    data = returnDataIfReady()
+    data = returnDataIfReady(result_id)
 
     res.last_accessed = datetime.now()
     res.save()
