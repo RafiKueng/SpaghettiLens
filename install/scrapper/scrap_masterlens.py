@@ -4,13 +4,17 @@ from bs4 import BeautifulSoup
 import requests as rq
 import re
 
-from ModellerApp.models import BasicLensData, Catalog
+try:
+  from ModellerApp.models import BasicLensData, Catalog
+except:
+  DEBUG=True
+  print "running in debug mode: nothing will be added to database"
 
-
-cat1 = Catalog(
-  name = "Masterlens",
-  description = "Masterlens Database")
-cat1.save()
+if not DEBUG:
+  cat1 = Catalog(
+    name = "Masterlens",
+    description = "Masterlens Database")
+  cat1.save()
 
 s = rq.Session()
 r1 = s.get("http://admin.masterlens.org/member.php")
@@ -43,24 +47,26 @@ for i, row in enumerate(trows):
   name = c1[1].a.text
   
   try:
-    z_lens = re.search("^\d+.\d*", c1[6].text).group()
+    z_lens = float(re.search("^\d+.\d*", c1[6].text).group())
   except:
     z_lens = ''
   try:
-    z_src = re.search("^\d+.\d*", c1[7].text).group()
+    z_src = float(re.search("^\d+.\d*", c1[7].text).group())
   except:
     z_src = ''
     
   print "#%03i: id:%03i %s, %s, (zl: %s; zs: %s) @ %s" % (i, id, name, yr, z_lens, z_src, url)
 
-  if url:
+  if not DEBUG and url:
     bld1 = BasicLensData(
       name = name,
       catalog = cat1,
       catalog_img_id = id,
-      z_lens = z_lens,
-      z_source = z_src,
       img_type = "CO",
       channel1_imgurl = url
     )
+    if z_lens:
+      bld1.z_lens = z_lens
+    if z_src:
+      bld1.z_src = z_src
     bld1.save()
