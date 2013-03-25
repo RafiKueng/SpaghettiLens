@@ -94,7 +94,7 @@ var events = {
     $(document).on('Redo', LMT.objects.ActionStack.Redo);
     $(document).on('SaveModelState', LMT.objects.ActionStack.SaveModelState); //something happend that one can undo
     $(document).on('ActionStackUpdated', LMT.ui.html.Toolbar.update); //lets the buttons know that they need to update themselves
-
+    $(document).on('ActionStackUpdated', LMT.ui.html.Toolbar.updateTop); //lets the buttons know that they need to update themselves
 
     $(document).on('Zoom', LMT.ui.svg.bg.zoom); // expects 1 arg: +1: zoom in, -1 zoom out;
     $(document).on('Pan', LMT.ui.svg.bg.updateZoomPan);
