@@ -5,7 +5,7 @@ from fabric.operations import put
 from fabric.utils import puts
 
 from install import *
-from install.utils import psw_gen, _r, _s, _cd, _w, _v, _fe
+from install.utils import psw_gen, _r, _s, _cd, _w, _v, _fe, _p
 import StringIO
 from socket import socket
 
@@ -28,9 +28,13 @@ def neededVars():
     ("BROKER_PSW", "password for broker service", "lmt-broker-pw"),#psw_gen()),
     ("BROKER_VHOST", "virtualhost for broker service", "lmt_vh"),
     ("WORKER_DIR", "directory of worker install (GLASS)", "/worker"),
-    ("INSTALL_DIR", "//should be set with the role","")
+    ("INSTALL_DIR", "//should be set with the role",""),
+    ("CELERY_NODENAME", "name this node","worker"),
+    ("CELERY_N_THREADS", "n threads to spawn (concurrency)","3"),
+    ("CELERY_TASK_TIMELIMIT", "tasks get canceled after X secs","600"),
+    ("CELERY_USER", "user to run cerleyd","lmt"),
+    ("CELERY_GROUP", "group for celeryd user","www-lmt"),
   )
-
 
 #################################################################################  
 
@@ -92,22 +96,29 @@ def setup():
     _s("rabbitmqctl add_vhost %(BROKER_VHOST)s" % conf)
     _s('rabbitmqctl set_permissions -p %(BROKER_VHOST)s %(BROKER_USER)s ".*" ".*" ".*"' % conf)
  
+  # celery deamon
+  
+  file = _gen_default_config()
+  _p(file, "/etc/default/celeryd", use_sudo=True)
+  
+  file = _gen_init_d_script()
+  _p(file, "/etc/init.d/celeryd", use_sudo=True)
+  _s("chmod 777 /etc/init.d/celeryd")
+  _s("mkdir -p /var/run/celery/")
+  _s("chown lmt:www-lmt /var/run/celery/")
+  
  
 #################################################################################  
 
 
 
 
+## see here for instructions:
+## http://docs.celeryproject.org/en/latest/tutorials/daemonizing.html#daemonizing
+
 
 def _gen_default_config():
   ''' generates the default configuration file in /etc/default/celeryd '''
-
-  conf['CELERY_NODENAME'] = "machine_name"
-  conf['CELERY_N_THREADS'] = '3'
-  conf['CELERY_TASK_TIMELIMIT'] = '600'
-  conf['CELERY_USER'] = 'lmt'
-  conf['CELERY_GROUP'] = 'www-lmt'
-  
 
   cfg = '''#
 # Name of nodes to start, here we have a single node
@@ -132,20 +143,22 @@ CELERYCTL="$ENV_PYTHON $CELERYD_CHDIR/manage.py celeryctl"
 
 # Extra arguments to celeryd
 CELERYD_OPTS="--time-limit=%(CELERY_TASK_TIMELIMIT)s --concurrency=%(CELERY_N_THREADS)s"
+''' % conf
 
-# %n will be replaced with the nodename.
-CELERYD_LOG_FILE="/var/log/celery/%n.log"
-CELERYD_PID_FILE="/var/run/celery/%n.pid"
+  cfg += '\n# %n will be replaced with the nodename.\n'
+  cfg += 'CELERYD_LOG_FILE="' + conf['INSTALL_DIR'] + conf['LOG_DIR'] + '/celery_%n.log"\n'
+  cfg += 'CELERYD_PID_FILE="/var/run/celery/%n.pid"\n'
 
+  cfg += '''
 # Workers should run as an unprivileged user.
 CELERYD_USER="%(CELERY_USER)s"
 CELERYD_GROUP="%(CELERY_GROUP)s"
 
 # Name of the projects settings module.
 export DJANGO_SETTINGS_MODULE="settings.settings"  
-'''
+''' % conf
 
-  return StringIO.StringIO(cfg % conf)
+  return StringIO.StringIO(cfg)
   
   
   

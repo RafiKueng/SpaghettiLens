@@ -16,10 +16,10 @@ import roles as roles_mod
 
 
 
-SKIP_PREPARE = False
-SKIP_PKGS = False
-SKIP_BETW = False
-SKIP_PIP = False
+SKIP_PREPARE = True
+SKIP_PKGS = True
+SKIP_BETW = True
+SKIP_PIP = True
 SKIP_POST = False
 
 
