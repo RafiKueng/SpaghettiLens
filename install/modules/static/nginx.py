@@ -69,9 +69,9 @@ def setup():
   puts("--- nginx temp config file: ")
   print file.getvalue()
   
-  _p(file, "/etc/nginx/sites-available/lmt.conf", use_sudo=True)  #local
-  _s("ln -f -s /etc/nginx/sites-available/lmt.conf /etc/nginx/sites-enabled") #remote
-  _s("/etc/init.d/nginx reload") #remote
+  _p(file, "/etc/nginx/sites-available/lmt.conf", use_sudo=True)  
+  _s("ln -f -s /etc/nginx/sites-available/lmt.conf /etc/nginx/sites-enabled")
+  _s("/etc/init.d/nginx reload") 
   
 
 

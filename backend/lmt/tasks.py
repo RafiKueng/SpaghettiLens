@@ -1,6 +1,7 @@
 import time
 import os
 import subprocess
+import socket
 
 from django.conf import settings as s
 
@@ -10,18 +11,31 @@ if s.MODULE_WORKER == "celery":
   #from djcelery import celery
   from celery import task
 
-  @task()
-  def calculateModel(result_id):
-    print "we're in a task now, calculating a result"
-    print '../tmp_media/'+str(result_id)+'/cfg.gls'
-    print os.path.exists('../tmp_media/%06i/cfg.gls' % result_id)
-  
-    #retval = subprocess.call(['../glass/run_glass_dummy.py', '../tmp_media/'+str(result_id)+'/cfg.gls'])
-    retval = subprocess.call(['%s/run_glass' % s.WORKER_DIR_FULL, '../tmp_media/%06i/cfg.gls' % result_id])
+  if s.ROLE == "production_worker":
+    @task()
+    def calculateModel(result_id):
+      print "we're in a task now, calculating a result"
+      myname = socket.gethostname()
+
+      retval = subprocess.call(['../run_worker_glass', '%06i' % result_id])
+      
+      #time.sleep(x);
+      print "glass has finished with retval: " + str(retval)
+      return
     
-    #time.sleep(x);
-    print "glass has finished with retval: " + str(retval)
-    return
+  else: 
+    @task()
+    def calculateModel(result_id):
+      print "we're in a task now, calculating a result"
+      print '../tmp_media/'+str(result_id)+'/cfg.gls'
+      print os.path.exists('../tmp_media/%06i/cfg.gls' % result_id)
+    
+      #retval = subprocess.call(['../glass/run_glass_dummy.py', '../tmp_media/'+str(result_id)+'/cfg.gls'])
+      retval = subprocess.call(['%s/run_glass' % s.WORKER_DIR_FULL, '../tmp_media/%06i/cfg.gls' % result_id])
+      
+      #time.sleep(x);
+      print "glass has finished with retval: " + str(retval)
+      return
 
 
 
