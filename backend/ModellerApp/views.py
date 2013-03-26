@@ -227,7 +227,7 @@ def getModelData(request):
         work = session["workingOn"]
 
         done.append(work)
-        nextElem, work, todo = _getNextFromList(todolist)
+        nextElem, work, todo = _getNextFromList(todo)
 
         session["lensesTodo"] = todo
         session["lensesDone"] = done
@@ -270,7 +270,7 @@ def getModelData(request):
         n = {'todo': nTodo,
              'done': nDone,
              'nr': nLenses,
-             'next_avail': nTodo<=0,
+             'next_avail': nTodo>0,
              'prev_avail': nDone >0}
         data1 = serializers.serialize("json", [nextElem])
         data2 = sjson.dumps(n)
