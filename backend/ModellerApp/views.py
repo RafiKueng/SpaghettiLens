@@ -159,7 +159,8 @@ def getModelData(request):
 
         elif "catalog" in POST:
           print "got catalog"
-          m = BasicLensData.objects.filter(catalog__pk__exact=4)
+          cid = int(POST.get('catalog', "0"))
+          m = BasicLensData.objects.filter(catalog__pk__exact=cid)
           vals = m.values('id')
           list = [x['id'] for x in vals]
                  
