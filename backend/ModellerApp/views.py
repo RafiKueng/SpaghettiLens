@@ -209,7 +209,7 @@ def getModelData(request):
         session["lensesDone"] = done
         session["workingOn"] = work
         
-        nextId = work.id
+        nextId = work['id']
         try:
           nextElem = BasicLensData.objects.get(id=nextId)
         except BasicLensData.DoesNotExist:
@@ -233,7 +233,7 @@ def getModelData(request):
         session["lensesDone"] = done
         session["workingOn"] = work
 
-        nextId = work.id
+        nextId = work['id']
   
         
       
