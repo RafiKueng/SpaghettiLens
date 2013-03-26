@@ -4,14 +4,12 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 from django.utils import simplejson as sjson
+from django.utils.timezone import now
 from django.conf import settings as s
 
 
-#from django.utils import date
-#from datetime import datetime
 
 from lmt import tasks
-from datetime import datetime
 import random
 
 from ModellerApp.models import BasicLensData, ModellingResult, Catalog
@@ -264,6 +262,9 @@ def getModelData(request):
         #     'next_avail': workingOn < len(list)-1,
         #     'prev_avail': workingOn > 0}
         
+        nextElem.requested_last = now()
+        nextElem.save()
+        
         nDone = len(session["lensesDone"])
         nTodo = len(session["lensesTodo"])
         nLenses = nDone + nTodo
@@ -355,12 +356,67 @@ def saveModel(request):
                           is_final= isf)
     print "after eval and save"
     #r.save()
+    
     data = sjson.dumps({"status":"OK", "result_id": "%06i" % obj.result_id})
     response = HttpResponse(data, content_type="application/json")
       
     response['Access-Control-Allow-Origin'] = "*"
     print "sending response"
     return response
+
+
+@csrf_exempt
+def saveModelFinal():
+  print "in savemodelfinal"
+  if request.method == "POST":
+    r = request.POST
+    #print "Got Data: ", int(r['modelid']), r['string'], r['isFinal'] in ["True", "true"]
+    #print r.__dict__
+    
+    try:
+      mid = int(r['modelid'])
+      rid = r['resultid']
+      isf = r['isFinal'] in ["True", "true"]
+
+    except KeyError:
+      print "KeyError in save model final"
+      data = sjson.dumps({"status":"BAD_JSON_DATA","desc":"the saveModel view couldn't access expected attributes in POST information"})
+      response = HttpResponseNotFound(data, content_type="application/json")
+      response['Access-Control-Allow-Origin'] = "*"
+      return response
+
+    if not isf:
+      print "is not final in save model final"
+      data = sjson.dumps({"status":"BAD_PARMS","desc":"the saveModelFinal view called with no final result"})
+      response = HttpResponseNotFound(data, content_type="application/json")
+      response['Access-Control-Allow-Origin'] = "*"
+      return response
+
+    try:
+      m = BasicLensData.objects.get(id=mid)
+      r = ModellingResult.objects.get(id=rid)
+    except:
+      print "keyerror in save model final"
+      data = sjson.dumps({"status":"BAD_KEYS","desc":"blabla"})
+      response = HttpResponseNotFound(data, content_type="application/json")
+      response['Access-Control-Allow-Origin'] = "*"
+      return response      
+    
+    m.n_res = m.n_res + 1
+    r.is_final_result = True
+    m.save()
+    r.save()
+
+    data = sjson.dumps({"status":"OK", "result_id": "%06i" % rid})
+    response = HttpResponse(data, content_type="application/json")
+      
+    response['Access-Control-Allow-Origin'] = "*"
+    print "sending response"
+    return response
+
+
+
+
 
 
 
@@ -400,7 +456,7 @@ def getSimulationJSON(request, result_id):
 
     data = returnDataIfReady(result_id)
 
-    res.last_accessed = datetime.now()
+    res.last_accessed = now()
     res.save()
 
   elif not isinstance(res.task_id, type(None)) and len(res.task_id) > 2:
@@ -412,7 +468,7 @@ def getSimulationJSON(request, result_id):
     if task.state == "SUCCESS":
       res.task_id = "";
       res.is_rendered = True;
-      res.last_accessed = datetime.now()
+      res.last_accessed = now()
       res.save()
       
       data = returnDataIfReady(result_id)
@@ -431,7 +487,7 @@ def getSimulationJSON(request, result_id):
     res.is_rendered = False
     # print task.task_id, type(task.task_id)
     res.task_id = task.task_id
-    res.rendered_last = datetime.now();
+    res.rendered_last = now();
     res.save()
     #start the new task, retrun status information
     data = sjson.dumps({"status":"STARTED", "result_id": "%06i" % result_id})
