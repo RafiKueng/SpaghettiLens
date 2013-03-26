@@ -1,0 +1,109 @@
+sudo apt-get upgrade
+ifconfig
+sudo su
+sudo reboot
+ifconfig
+sudo reboot
+mkdir src
+cd src
+git clone https://github.com/RafiKueng/LensTools.git lmt
+sudo apt-get install git
+git clone https://github.com/RafiKueng/LensTools.git lmt
+cd lmt
+ls
+git status
+git pull origin deploy
+git checkout deploy
+git status
+ls
+cd backend
+cd ..
+mkdir bin
+ls
+mkdir bin/lmt
+cp -R src/lmt/backend bin/lmt/backend
+cd bin
+cd lmt
+ls
+cd backend
+cd ..
+apt-get install virtualenv
+sudo apt-get install virtualenv
+sudo apt-get install python-setuptools
+easy_install -U virtualenv
+
+
+https://pypi.python.org/pypi/virtualenv
+
+$ curl -O https://pypi.python.org/packages/source/v/virtualenv/virtualenv-X.X.tar.gz
+$ tar xvfz virtualenv-X.X.tar.gz
+$ cd virtualenv-X.X
+$ python virtualenv.py myVE
+
+!! replace the xx with number!!
+
+
+
+
+sudo easy_install -U virtualenv
+apt-get install numpy scipy matplotlib
+sudo apt-get install numpy scipy matplotlib
+sudo apt-get install python-numpy python-scipy python-matplotlib
+virtualenv --distribute --system-site-packages py_env
+source py_env/bin/activate
+pip install django django-celery
+ls
+cd backend
+ls
+python manage.py celery worker --loglevel=info
+cd settings
+ls
+scp rafik@10.0.0.10:/srv/lmt/backend/settings/secrets.py .
+ls
+scp rafik@10.0.0.10:/srv/lmt/backend/settings/machine.py .
+ls
+cd ..
+python manage.py celery worker --loglevel=info
+celery worker
+python manage.py celery worker --loglevel=info
+pip install django-celery
+pip install MySQL-python
+apt-get install debconf-utils
+sudo apt-get install debconf-utils
+pip install MySQL-python
+apt-get build-dep python-mysqldb
+sudo apt-get build-dep python-mysqldb
+pip install MySQL-python
+nano ~/.bash_history
+
+
+
+
+
+svn checkout https://svn.physik.uzh.ch/repos/itp/glass worker
+cd worker
+make
+apt-get install python-numpy python-scipy python-matplotlib swig glpk texlive-latex-extra dvipng
+sudo apt-get install python-numpy python-scipy python-matplotlib swig glpk texlive-latex-extra dvipng
+make
+source ../py_env/bin/activate
+python setup.py build
+make
+echo backend : Agg > matplotlibrc
+
+
+
+uni pc:
+enable site packages fuer numpy ect...
+
+in virtenv:
+
+make
+python setup.py build
+make
+python setup.py build
+
+echo backend : Agg > matplotlibrc
+
+
+

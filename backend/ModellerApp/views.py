@@ -1,26 +1,31 @@
 # Create your views here.
+from django.db.models import Avg, Max, Min, Count
 from django.http import HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 from django.utils import simplejson as sjson
-from django.conf import settings
-#import simplejson as sjson
+from django.utils.timezone import now
+from django.conf import settings as s
 
-from celery.result import AsyncResult
 
-#from django.utils import date
-#from datetime import datetime
 
 from lmt import tasks
-from datetime import datetime
-
-#import simplejson as json
+import random
 
 from ModellerApp.models import BasicLensData, ModellingResult, Catalog
 from ModellerApp.utils import EvalAndSaveJSON
 from django.contrib.auth.models import User
 
 from lmt.tasks import calculateModel
+if s.MODULE_WORKER == "celery":
+  from celery.result import AsyncResult
+elif s.MODULE_WORKER == "multiprocessing":
+  raise s.TODO("mp modules missing")
+  from lmt.tasks import bla as AsyncResult
+elif s.MODULE_WORKER == "dummy":
+  from lmt.tasks import DummyAsyncResult as AsyncResult
+
+
 
 
 import os
@@ -113,6 +118,8 @@ def getModelData(request):
   '''returns a model from a request url /get_modeldata/
   expects post with model ids and / or catalogue ids to work on for this session
   '''
+
+  
   print "in new getModelData"
 #  print 'testcookie:', request.session.test_cookie_worked()
   
@@ -122,7 +129,7 @@ def getModelData(request):
     print "session has: ", str(request.session.__dict__)
 
 
-    if not settings.DEBUG:
+    if not s.DEBUG:
       if not request.session.test_cookie_worked():
         response = HttpResponseNotFound("Cookies not enabled, please enable", content_type="text/plain")
         response['Access-Control-Allow-Origin'] = "*"
@@ -149,31 +156,36 @@ def getModelData(request):
 
           list = [int(x) for x in POST.getlist('models[]', [])]
           
-          print "list", list
 
-          session["lensesTodo"] = list
-          session["isLensDone"] = [False] * len(list)
-          workingOn = 0
-          session["workingOnTodoListNr"] = workingOn
-          session["isInit"] = True
-          
-          nextId = session["lensesTodo"][workingOn]
-
-
+        elif "catalog" in POST:
+          print "got catalog"
+          cid = int(POST.get('catalog', "0"))
+          m = BasicLensData.objects.filter(catalog__pk__exact=cid)
+          vals = m.values('id')
+          list = [x['id'] for x in vals]
+                 
         else:
           print "error, no models supplied"
           response = HttpResponseNotFound("wrong post format, model[] expected", content_type="text/plain")
           response['Access-Control-Allow-Origin'] = "*"
           return response
-                  
-        if "catalog" in POST:
-          # do something with it, but it's not important
-          print "got catalog, don't care"
-          
-          #m = BasicLensData.objects.filter(catalog_id__exact=POST['catalog'])
-        else:
-          pass
 
+        print "list", list
+
+        todolist = [{'id':x, 'isDone':False, 'stateId':None} for x in list]
+        nextElem, listElem, todolist = _getNextFromList(todolist)
+        
+        session["lensesTodo"] = todolist
+        session["workingOn"] = listElem
+        session["lensesDone"] = []
+        
+
+        session["isInit"] = True
+        
+        nextId = listElem['id']
+        
+
+ 
 
       elif action == "cont" and session.get("isInit", False):
         print "continue previous session"
@@ -185,19 +197,42 @@ def getModelData(request):
       elif action == "prev" and session.get("isInit", False):
         print "get prev"
         
-        list = session["lensesTodo"]
-        session["workingOnTodoListNr"] -= 1
-        workingOn = session["workingOnTodoListNr"]
-        nextId = session["lensesTodo"][workingOn]
+        todo = session["lensesTodo"]
+        done = session["lensesDone"]
+        work = session["workingOn"]
+        
+        todo.append(work)
+        work = done.pop()
+        
+        session["lensesTodo"] = todo
+        session["lensesDone"] = done
+        session["workingOn"] = work
+        
+        nextId = work['id']
+        try:
+          nextElem = BasicLensData.objects.get(id=nextId)
+        except BasicLensData.DoesNotExist:
+          response =  HttpResponseNotFound("for some reason you have an ivalid model in your list", content_type="text/plain")
+          response['Access-Control-Allow-Origin'] = "*"
+          return response        
+
 
       
       elif action == "next" and session.get("isInit", False):
         print "get next"
 
-        list = session["lensesTodo"]
-        session["workingOnTodoListNr"] += 1
-        workingOn = session["workingOnTodoListNr"]
-        nextId = session["lensesTodo"][workingOn]
+        todo = session["lensesTodo"]
+        done = session["lensesDone"]
+        work = session["workingOn"]
+
+        done.append(work)
+        nextElem, work, todo = _getNextFromList(todo)
+
+        session["lensesTodo"] = todo
+        session["lensesDone"] = done
+        session["workingOn"] = work
+
+        nextId = work['id']
   
         
       
@@ -218,16 +253,28 @@ def getModelData(request):
       print "nextId", nextId
       
       try:
-        m = BasicLensData.objects.get(id=nextId)
-        nDone = sum(session["isLensDone"])
-        nLenses = len(list)
-        nTodo = nLenses - nDone
-        n = {'todo': nTodo,
+        #m = BasicLensData.objects.get(id=nextId)
+        #nDone = sum(session["isLensDone"])
+        #nLenses = len(list)
+        #nTodo = nLenses - nDone
+        #n = {'todo': nTodo,
+        #     'done': nDone,
+        #     'nr': nLenses,
+        #     'next_avail': workingOn < len(list)-1,
+        #     'prev_avail': workingOn > 0}
+        
+        nextElem.requested_last = now()
+        nextElem.save()
+        
+        nDone = len(session["lensesDone"])
+        nTodo = len(session["lensesTodo"])
+        nLenses = nDone + nTodo
+        n = {'todo': nTodo+1, # and the current
              'done': nDone,
              'nr': nLenses,
-             'next_avail': workingOn < len(list)-1,
-             'prev_avail': workingOn > 0}
-        data1 = serializers.serialize("json", [m])
+             'next_avail': nTodo>0,
+             'prev_avail': nDone >0}
+        data1 = serializers.serialize("json", [nextElem])
         data2 = sjson.dumps(n)
         #print "data1", data1
         print "data2", data2
@@ -307,15 +354,72 @@ def saveModel(request):
     obj = EvalAndSaveJSON(user_obj = u, # request.user,
                           data_obj= m,
                           jsonStr = st,
-                          is_final= False)
+                          is_final= isf)
     print "after eval and save"
     #r.save()
+    
     data = sjson.dumps({"status":"OK", "result_id": "%06i" % obj.result_id})
     response = HttpResponse(data, content_type="application/json")
       
     response['Access-Control-Allow-Origin'] = "*"
     print "sending response"
     return response
+
+
+@csrf_exempt
+def saveModelFinal(request):
+  print "in savemodelfinal"
+  if request.method == "POST":
+    r = request.POST
+    #print "Got Data: ", int(r['modelid']), r['string'], r['isFinal'] in ["True", "true"]
+    #print r.__dict__
+    
+    try:
+      mid = int(r['modelid'])
+      rid = int(r['resultid'])
+      isf = r['isFinal'] in ["True", "true"]
+
+    except KeyError:
+      print "KeyError in save model final"
+      data = sjson.dumps({"status":"BAD_JSON_DATA","desc":"the saveModel view couldn't access expected attributes in POST information"})
+      response = HttpResponseNotFound(data, content_type="application/json")
+      response['Access-Control-Allow-Origin'] = "*"
+      return response
+
+    if not isf:
+      print "is not final in save model final"
+      data = sjson.dumps({"status":"BAD_PARMS","desc":"the saveModelFinal view called with no final result"})
+      response = HttpResponseNotFound(data, content_type="application/json")
+      response['Access-Control-Allow-Origin'] = "*"
+      return response
+
+    try:
+      m = BasicLensData.objects.get(id=mid)
+      r = ModellingResult.objects.get(id=rid)
+    except:
+      print "keyerror in save model final"
+      data = sjson.dumps({"status":"BAD_KEYS","desc":"blabla"})
+      response = HttpResponseNotFound(data, content_type="application/json")
+      response['Access-Control-Allow-Origin'] = "*"
+      return response      
+    
+    if m.n_res: m.n_res = m.n_res + 1
+    else: m.n_res = 1
+    
+    r.is_final_result = True
+    m.save()
+    r.save()
+
+    data = sjson.dumps({"status":"OK", "result_id": "%06i" % rid})
+    response = HttpResponse(data, content_type="application/json")
+      
+    response['Access-Control-Allow-Origin'] = "*"
+    print "sending response"
+    return response
+
+
+
+
 
 
 
@@ -328,7 +432,7 @@ def getSimulationJSON(request, result_id):
   result_id = int(result_id)
   print "in getSimulationJSON"
   
-  def returnDataIfReady():
+  def returnDataIfReady(result_id):
     return sjson.dumps({"status":"READY",
                          "cached": True,
                          "result_id": "%06i" % result_id,
@@ -353,9 +457,9 @@ def getSimulationJSON(request, result_id):
     #deliver images
     # check imgExists: because a clean up prog could have deleted the files in the mean time and forgot to set the right flags in the db.. evil prog...
 
-    data = returnDataIfReady()
+    data = returnDataIfReady(result_id)
 
-    res.last_accessed = datetime.now()
+    res.last_accessed = now()
     res.save()
 
   elif not isinstance(res.task_id, type(None)) and len(res.task_id) > 2:
@@ -367,10 +471,10 @@ def getSimulationJSON(request, result_id):
     if task.state == "SUCCESS":
       res.task_id = "";
       res.is_rendered = True;
-      res.last_accessed = datetime.now()
+      res.last_accessed = now()
       res.save()
       
-      data = returnDataIfReady()
+      data = returnDataIfReady(result_id)
 
     elif task.state == "FAILURE":
       data = sjson.dumps({"status":"FAILURE", "result_id": "%06i" % result_id})
@@ -380,12 +484,13 @@ def getSimulationJSON(request, result_id):
     
   else:
     print "starting new task"
-    print result_id
-    print type(result_id)
+    # print result_id
+    # print type(result_id)
     task = calculateModel.delay(result_id)
     res.is_rendered = False
+    # print task.task_id, type(task.task_id)
     res.task_id = task.task_id
-    res.rendered_last = datetime.now();
+    res.rendered_last = now();
     res.save()
     #start the new task, retrun status information
     data = sjson.dumps({"status":"STARTED", "result_id": "%06i" % result_id})
@@ -427,3 +532,39 @@ def getSimulationFiles(request, result_id, filename):
 @csrf_exempt
 def getData(request):
   pass
+
+
+
+
+
+
+############### helper ##########################
+
+
+def _getNextFromList(list):
+  ''' returns the next element to work on '''
+  purelist = [x['id'] for x in list]
+  
+  #print "in getnext"
+  #print list
+  #print purelist
+  
+  n = BasicLensData.objects.filter(id__in=purelist) # select all in list
+  #m = n.annotate(n_res=Count('modellingresult')) # sum up the results, save in n_res
+  #m = n.order_by('n_res')
+  min = n.aggregate(Min('n_res')) # get the min of n_res
+  a = n.filter(n_res=min['n_res__min']) # get those with minimal results
+  b = a.order_by('requested_last')[0] # order those by the date of last access, get the last
+  #c = random.choice(b)
+  
+  id = b.id
+  listpos = purelist.index(id)
+  listElem = list.pop(listpos)
+  
+  #print min
+  #print 'a'
+  #for x in a: print a
+  #print "b", b.id, b
+  
+  
+  return b, listElem , list

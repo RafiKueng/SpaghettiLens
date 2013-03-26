@@ -1,4 +1,14 @@
 
+
+
+
+
+// this file WILL BE OVERWRITTEN if you do an automatic prod server isntall
+
+
+
+
+
 // debug flag
 debug = true;
 

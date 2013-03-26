@@ -72,11 +72,11 @@ body {
   -o-transition: background 500ms ;
   transition: background 500ms ;
   background: #333333;
-  background: -moz-linear-gradient(left,  #000 0%, #333 100%);
-  background: -webkit-linear-gradient(left,  #333 0%,#000 100%);
-  background: -o-linear-gradient(left,  #333 0%,#000 100%);
-  background: -ms-linear-gradient(left,  #333 0%,#000 100%);
-  background: linear-gradient(left,  #333 0%,#000 100%);
+  background: -moz-linear-gradient(right,  #000 0%, #333 100%);
+  background: -webkit-linear-gradient(right,  #000 0%,#333 100%);
+  background: -o-linear-gradient(right,  #000 0%,#333 100%);
+  background: -ms-linear-gradient(right,  #000 0%,#333 100%);
+  background: linear-gradient(right,  #000 0%,#333 100%);
 }
 
 #bigslider.right {
@@ -88,15 +88,21 @@ body {
   -o-transition: background 500ms ;
   transition: background 500ms ;
   background: #333333;
-  background: -moz-linear-gradient(right,  #000 0%, #333 100%);
-  background: -webkit-linear-gradient(right,  #333 0%,#000 100%);
-  background: -o-linear-gradient(right,  #333 0%,#000 100%);
-  background: -ms-linear-gradient(right,  #333 0%,#000 100%);
-  background: linear-gradient(right,  #333 0%,#000 100%);
+  background: -moz-linear-gradient(left,  #000 0%, #333 100%);
+  background: -webkit-linear-gradient(left,  #000 0%,#333 100%);
+  background: -o-linear-gradient(left,  #000 0%,#333 100%);
+  background: -ms-linear-gradient(left,  #000 0%,#333 100%);
+  background: linear-gradient(left,  #000 0%,#333 100%);
+
 }
 
+#help {
+  z-index: 30;
+}
 
-
+#footer {
+  z-index: 30;
+}
 
 #out {
   left: 50px;

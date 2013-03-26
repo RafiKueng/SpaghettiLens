@@ -94,7 +94,7 @@ var events = {
     $(document).on('Redo', LMT.objects.ActionStack.Redo);
     $(document).on('SaveModelState', LMT.objects.ActionStack.SaveModelState); //something happend that one can undo
     $(document).on('ActionStackUpdated', LMT.ui.html.Toolbar.update); //lets the buttons know that they need to update themselves
-
+    $(document).on('ActionStackUpdated', LMT.ui.html.Toolbar.updateTop); //lets the buttons know that they need to update themselves
 
     $(document).on('Zoom', LMT.ui.svg.bg.zoom); // expects 1 arg: +1: zoom in, -1 zoom out;
     $(document).on('Pan', LMT.ui.svg.bg.updateZoomPan);
@@ -112,7 +112,7 @@ var events = {
     $(document).on('ModeSwitched', LMT.ui.html.Toolbar.update);
 
     
-    $(document).on('SaveModel', fnc);
+    $(document).on('SaveModel', LMT.com.SaveModel);  // upload model with is final tag
     $(document).on('UploadModel', LMT.com.UploadModel);
     $(document).on('SimulateModel', LMT.events.SimulateModel);
     $(document).one('UpdateRepaintModel', LMT.events.UpdateRepaintModel); //can only be called once, once finished with the update, it reassigns itself
@@ -120,6 +120,7 @@ var events = {
 
     $(document).on('GetSimulation', LMT.com.GetSimulation);
     $(document).on('ReceivedSimulation', LMT.ui.out.load);
+    $(document).on('ReceivedSimulation', LMT.ui.html.Toolbar.updateTop);
     
     $(document).on('DisplayOutputSlide', LMT.ui.out.show); //needs a id
     $(document).on('DisplayOutputSlideNext', LMT.ui.out.next);

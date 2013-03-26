@@ -36,17 +36,18 @@ html.SelectModelDialog = {
       {
         text: "Ok",
         click: function(evt){
-          //tmp1 = $("#selmod_cat").val();
+          tmp1 = $("#selmod_cat").val();
           //tmp2 = $("#selmod_lens").val();
           tmp3 = $("#selmod_lens").val();
-          if (tmp3==""){
-            //todo in this case, load all ids
-            alert("please choose at least one lens");
+          if (!tmp1 && !tmp3){ // if both null
+            alert("please choose at least one lens or a catalog");
             return;
           }
           else {
-            //modelid = parseInt(tmp2);
-            for(var i=0; i<tmp3.length;i++) {tmp3[i] = +tmp3[i];} //parse to int
+            if (tmp3) {
+              for(var i=0; i<tmp3.length;i++) {tmp3[i] = +tmp3[i];} //parse to int
+            }
+            else {tmp3='';}
             $.event.trigger("GetModelData", [models = tmp3, catalog=+$("#selmod_cat").val(), action='init']);
             $('#select_model_dialog').dialog("close");
           }
@@ -224,8 +225,20 @@ html.Toolbar = {
    * updates the top toolbar buttons 
    */
   updateTop: function(evt) {
+    
+    if (evt.type=="ReceivedSimulation") {
+      //that means we sent our model to th server and checked it, we can save this as final result
+      LMT.settings.renderedEqualsModel = true;
+    }
+    else if (evt.type=="ActionStackUpdated") {
+      // means that something changed on the model.. user need to check the output before saving 
+      LMT.settings.renderedEqualsModel = false;
+    }
+    else {LMT.settings.renderedEqualsModel = false;} //this shouldn't happend
+    
     $('#btnMainActionPrev').button(LMT.modelData.prevAvail ? "enable" : "disable");
     $('#btnMainActionNext').button(LMT.modelData.nextAvail ? "enable" : "disable");
+    $('#btnMainFinish').button(LMT.settings.renderedEqualsModel ? "enable" : "disable");
   },
   
   /**

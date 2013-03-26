@@ -10,6 +10,7 @@ var com = {
   getCataloguesUrl: "/get_initdata",
   getModelDataUrl: "/get_modeldata",
   saveDataUrl: "/save_model/",
+  saveDataFinalUrl: "/save_model_final/",
   resultUrl: "/result/",
   refreshCounter: 0,
 };
@@ -163,7 +164,7 @@ com.getModelData = function(evt, model_ids, catalog, action) {
  * post returns json 
  * {status: "OK" or "BAD..."
  */
-com.UploadModel = function() {
+com.UploadModel = function(evt) {
 
   var success = function(jsonResp, statusTxt, XHRRespObj) {
     log.write("success1: <br/>result_id:" + jsonResp.result_id);
@@ -192,7 +193,7 @@ com.UploadModel = function() {
   var data = {
         modelid: LMT.modelData.id,
         string: LMT.model.getStateAsString(),
-        isFinal: false, //isFinal
+        isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
     };
   
   LMT.simulationData.resultId = -1;
@@ -209,6 +210,69 @@ com.UploadModel = function() {
   });
 
 }
+
+
+
+
+/**
+ * event handler 
+ * save the resulting model string in the database as FINAL RESULT
+ * - model name
+ * - model string: the serialized model data (json)
+ * - isFinal: true
+ * 
+ * post returns json 
+ * {status: "OK" or "BAD..."
+ */
+com.SaveModel = function(evt) {
+
+  var success = function(jsonResp, statusTxt, XHRRespObj) {
+    log.write("success1: <br/>result_id:" + jsonResp.result_id);
+    LMT.simulationData.resultId = jsonResp.result_id;
+    //LMT.simulationData.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
+    //$.event.trigger("UploadModelComplete")
+    alert("Model saved! \n(result_id: "+jsonResp.result_id+")");
+  };
+  
+  var fail = function(a, b, c) {
+    log.write("fail: <br/>" + a + "<br/>" + b + "<br/>" + c + "<hr>" + a.responseText);
+    var win=window.open('about:blank');
+    with(win.document)
+    {
+      open();
+      write(a.responseText);
+      close();
+    }
+  };
+
+
+  if (LMT.model.Sources.length==0){
+    alert("Please create a model first before uploading");
+    return false;
+  }
+  
+  var data = {
+        modelid: LMT.modelData.id,
+        resultid: LMT.simulationData.resultId,
+        isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
+    };
+  
+  //LMT.simulationData.resultId = -1;
+  //LMT.simulationData.resultModelHash = data.string.hashCode();
+  
+  $.ajax(LMT.com.serverUrl + LMT.com.saveDataFinalUrl, {
+      type:"POST",
+      contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
+      data: data, 
+      dataType:"json", //data type expected from server
+      success:success,
+      error: fail
+      //mimeType: "text/plain"
+  });
+
+}
+
+
 
 
 
