@@ -100,6 +100,13 @@ def install():
       pass      
   puts("Done, got all information\n")
   
+  print 'config dump '
+  
+  for key, value in config.iteritems():
+    print key,'=', value
+  print '\n'
+  
+  tmp = prompt("enter to continue")
   save_config()
   
   

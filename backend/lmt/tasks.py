@@ -26,10 +26,10 @@ if s.MODULE_WORKER == "celery":
   else: 
     @task()
     def calculateModel(result_id):
-      print "we're in a task now, calculating a result"
-      print '../tmp_media/'+str(result_id)+'/cfg.gls'
-      print os.path.exists('../tmp_media/%06i/cfg.gls' % result_id)
-    
+      #print "we're in a task now, calculating a result"
+      #print '../tmp_media/'+str(result_id)+'/cfg.gls'
+      #print os.path.exists('../tmp_media/%06i/cfg.gls' % result_id)
+      os.chdir(s.WORKER_DIR_FULL)
       #retval = subprocess.call(['../glass/run_glass_dummy.py', '../tmp_media/'+str(result_id)+'/cfg.gls'])
       retval = subprocess.call(['%s/run_glass' % s.WORKER_DIR_FULL, '../tmp_media/%06i/cfg.gls' % result_id])
       

@@ -19,7 +19,7 @@ def neededVars():
   )
 
 def installPackages():
-  package_install(('libevent-dev',))
+  package_install(('libevent-dev','supervisor'))
 
 
 
@@ -39,13 +39,22 @@ def setup():
   _s("chmod 744 %(INSTALL_DIR)s/run/start_guni.sh" % conf)
   
   
-  file = _gen_upstart_conf()
-  _p(file, "/etc/init/guni-lmt.conf" % conf, use_sudo=True)  #local
-  _s("ln -s -f /lib/init/upstart-job /etc/init.d/guni-lmt")
-  _s("initctl reload-configuration")
+  #file = _gen_upstart_conf()
+  #_p(file, "/etc/init/guni-lmt.conf" % conf, use_sudo=True)  #local
+  #_s("ln -s -f /lib/init/upstart-job /etc/init.d/guni-lmt")
+  #_s("initctl reload-configuration")
   
   
-  
+  file = _gen_supervisor_script()
+  _p(file, "/etc/supervisor/conf.d/guni", use_sudo=True)
+
+  _s("supervisorctl reload")
+
+
+
+
+
+
 def _gen_start_script():
   scr = '''#!/bin/bash
 set -e
@@ -151,6 +160,23 @@ exit 0
 
 
 
+
+def _gen_supervisor_script():
+  
+  scr = '''[program: gunicorn_lmt]
+directory = %(INSTALL_DIR)s/backend/
+user = %(SYS_USER)s
+command = %(INSTALL_DIR)s/run/start_guni.sh
+stdout_logfile = %(INSTALL_DIR)s%(LOG_DIR)s/guni-out.log
+stderr_logfile = %(INSTALL_DIR)s%(LOG_DIR)s/guni-err.log
+''' % conf
+  
+  return StringIO.StringIO(scr)
+  
+  
+  
+  
+  
 
 
 

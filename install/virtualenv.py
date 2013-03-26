@@ -47,4 +47,5 @@ def pip_install_start():
   list = fabric.api.env['PIP']
   
   with utils._v():
-    utils._s('pip install -i http://f.pypi.python.org/simple %s'%(' '.join(list)))
+    #utils._s('pip install -i http://f.pypi.python.org/simple %s'%(' '.join(list)))
+    utils._s('pip install %s'%(' '.join(list)))

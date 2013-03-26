@@ -64,6 +64,7 @@ def installPackages():
   
   # glass build
   pkgs += ("subversion",)
+  
 
   package_install(pkgs)
 
@@ -79,6 +80,7 @@ def postInstallCmds():
     if not _fe(conf['INSTALL_DIR']+conf['WORKER_DIR']+"/run_glass"):
       _w("svn checkout https://svn.physik.uzh.ch/repos/itp/glass ."+conf['WORKER_DIR'])
       _w("echo backend : Agg > matplotlibrc")
+      _w("echo 'backend : Agg' > %(INSTALL_DIR)s%(WORKER_DIR)s/matplotlibrc")
     with _v('.'+conf['WORKER_DIR']):
       _s("make")
       _s("python setup.py build")
@@ -100,6 +102,7 @@ def setup():
   
   file = _gen_default_config()
   _p(file, "/etc/default/celeryd", use_sudo=True)
+  
   
   file = _gen_init_d_script()
   _p(file, "/etc/init.d/celeryd", use_sudo=True)
@@ -398,14 +401,6 @@ esac
 exit 0'''
   
   return StringIO.StringIO(scr)
-  
-  
-  
-  
-  
-  
-  
-  
   
   
   
