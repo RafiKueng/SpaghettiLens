@@ -11,6 +11,10 @@ class BasicLensData(models.Model):
   catalog = models.ForeignKey('Catalog', blank=True, null=True, on_delete=models.SET_NULL)
   catalog_img_id = models.IntegerField(blank=True, null=True) # does it have an id in this set? store it here for reference
   
+  # adiminstative fields
+  n_res = models.IntegerField(blank=True, null=True) # how many finished results were uploaded?
+  requested_last = models.DateTimeField(blank=True, null=True) #when was it last requested to work on?
+  
   # if these are already known, enter them here
   z_lens = models.FloatField(blank=True, null=True)
   z_source = models.FloatField(blank=True, null=True)
@@ -68,7 +72,7 @@ class BasicLensData(models.Model):
   modellers = models.ManyToManyField(User, through='ModellingSession')
     
   def __unicode__(self):
-    return ''.join(['LensData [ id: ', `self.pk`,
+    return ''.join(['LensData [ id: ', "%04i" % self.pk,
                     ' | name: '      , self.name,
                     ' | catalog: '   , self.catalog.name if self.catalog else "-----",
                     ' | type: '      , self.img_type, ' ]'])
@@ -80,9 +84,11 @@ class Catalog(models.Model):
   description = models.CharField(max_length=300, blank=True) # further description
 
   def __unicode__(self):
-    return ''.join(['Catalog [ id: ', `self.pk`,
-                    ' | name: '      , self.name,
-                    ' | descr: '   , self.description if self.description else "-----", ' ]'])
+    return ''.join([
+      'Catalog [ id: %02i | name: %s | descr: %s ]' % (
+         self.pk,
+         self.name,
+         self.description if self.description else "-----" )])
   
 class ModellingResult(models.Model):
   #id = models.AutoField(primary_key=True)

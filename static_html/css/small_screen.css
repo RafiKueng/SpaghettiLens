@@ -96,8 +96,13 @@ body {
 
 }
 
+#help {
+  z-index: 30;
+}
 
-
+#footer {
+  z-index: 30;
+}
 
 #out {
   left: 50px;

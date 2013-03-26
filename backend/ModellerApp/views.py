@@ -1,4 +1,5 @@
 # Create your views here.
+from django.db.models import Avg, Max, Min, Count
 from django.http import HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
@@ -11,6 +12,7 @@ from django.conf import settings as s
 
 from lmt import tasks
 from datetime import datetime
+import random
 
 from ModellerApp.models import BasicLensData, ModellingResult, Catalog
 from ModellerApp.utils import EvalAndSaveJSON
@@ -118,6 +120,8 @@ def getModelData(request):
   '''returns a model from a request url /get_modeldata/
   expects post with model ids and / or catalogue ids to work on for this session
   '''
+
+  
   print "in new getModelData"
 #  print 'testcookie:', request.session.test_cookie_worked()
   
@@ -154,31 +158,35 @@ def getModelData(request):
 
           list = [int(x) for x in POST.getlist('models[]', [])]
           
-          print "list", list
 
-          session["lensesTodo"] = list
-          session["isLensDone"] = [False] * len(list)
-          workingOn = 0
-          session["workingOnTodoListNr"] = workingOn
-          session["isInit"] = True
-          
-          nextId = session["lensesTodo"][workingOn]
-
-
+        elif "catalog" in POST:
+          print "got catalog"
+          m = BasicLensData.objects.filter(catalog__pk__exact=4)
+          vals = m.values('id')
+          list = [x['id'] for x in vals]
+                 
         else:
           print "error, no models supplied"
           response = HttpResponseNotFound("wrong post format, model[] expected", content_type="text/plain")
           response['Access-Control-Allow-Origin'] = "*"
           return response
-                  
-        if "catalog" in POST:
-          # do something with it, but it's not important
-          print "got catalog, don't care"
-          
-          #m = BasicLensData.objects.filter(catalog_id__exact=POST['catalog'])
-        else:
-          pass
 
+        print "list", list
+
+        todolist = [{'id':x, 'isDone':False, 'stateId':None} for x in list]
+        nextElem, listElem, todolist = _getNextFromList(todolist)
+        
+        session["lensesTodo"] = todolist
+        session["workingOn"] = listElem
+        session["lensesDone"] = []
+        
+
+        session["isInit"] = True
+        
+        nextId = listElem['id']
+        
+
+ 
 
       elif action == "cont" and session.get("isInit", False):
         print "continue previous session"
@@ -190,19 +198,42 @@ def getModelData(request):
       elif action == "prev" and session.get("isInit", False):
         print "get prev"
         
-        list = session["lensesTodo"]
-        session["workingOnTodoListNr"] -= 1
-        workingOn = session["workingOnTodoListNr"]
-        nextId = session["lensesTodo"][workingOn]
+        todo = session["lensesTodo"]
+        done = session["lensesDone"]
+        work = session["workingOn"]
+        
+        todo.append(work)
+        work = done.pop()
+        
+        session["lensesTodo"] = todo
+        session["lensesDone"] = done
+        session["workingOn"] = work
+        
+        nextId = work.id
+        try:
+          nextElem = BasicLensData.objects.get(id=nextId)
+        except BasicLensData.DoesNotExist:
+          response =  HttpResponseNotFound("for some reason you have an ivalid model in your list", content_type="text/plain")
+          response['Access-Control-Allow-Origin'] = "*"
+          return response        
+
 
       
       elif action == "next" and session.get("isInit", False):
         print "get next"
 
-        list = session["lensesTodo"]
-        session["workingOnTodoListNr"] += 1
-        workingOn = session["workingOnTodoListNr"]
-        nextId = session["lensesTodo"][workingOn]
+        todo = session["lensesTodo"]
+        done = session["lensesDone"]
+        work = session["workingOn"]
+
+        done.append(work)
+        nextElem, work, todo = _getNextFromList(todolist)
+
+        session["lensesTodo"] = todo
+        session["lensesDone"] = done
+        session["workingOn"] = work
+
+        nextId = work.id
   
         
       
@@ -223,16 +254,25 @@ def getModelData(request):
       print "nextId", nextId
       
       try:
-        m = BasicLensData.objects.get(id=nextId)
-        nDone = sum(session["isLensDone"])
-        nLenses = len(list)
-        nTodo = nLenses - nDone
+        #m = BasicLensData.objects.get(id=nextId)
+        #nDone = sum(session["isLensDone"])
+        #nLenses = len(list)
+        #nTodo = nLenses - nDone
+        #n = {'todo': nTodo,
+        #     'done': nDone,
+        #     'nr': nLenses,
+        #     'next_avail': workingOn < len(list)-1,
+        #     'prev_avail': workingOn > 0}
+        
+        nDone = len(session["lensesDone"])
+        nTodo = len(session["lensesTodo"])+1
+        nLenses = nDone + nTodo
         n = {'todo': nTodo,
              'done': nDone,
              'nr': nLenses,
-             'next_avail': workingOn < len(list)-1,
-             'prev_avail': workingOn > 0}
-        data1 = serializers.serialize("json", [m])
+             'next_avail': nTodo<=0,
+             'prev_avail': nDone >0}
+        data1 = serializers.serialize("json", [nextElem])
         data2 = sjson.dumps(n)
         #print "data1", data1
         print "data2", data2
@@ -433,3 +473,28 @@ def getSimulationFiles(request, result_id, filename):
 @csrf_exempt
 def getData(request):
   pass
+
+
+
+
+
+
+############### helper ##########################
+
+
+def _getNextFromList(list):
+  ''' returns the next element to work on '''
+  purelist = [x['id'] for x in list]
+  
+  n = BasicLensData.objects.filter(id__in=purelist) # select all in list
+  #m = n.annotate(n_res=Count('modellingresult')) # sum up the results, save in n_res
+  #m = n.order_by('n_res')
+  min = n.aggregate(Min('n_res')) # get the min of n_res
+  a = n.filter(n_res=min['n_res__min']) # get those with minimal results
+  b = a.order_by('requested_last')[0] # order those by the date of last access, get the last
+  #c = random.choice(b)
+  
+  id = b.id
+  listpos = purelist.index(id)
+  listElem = list.pop(listpos)
+  return b, listElem , list
