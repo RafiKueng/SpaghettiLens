@@ -265,9 +265,9 @@ def getModelData(request):
         #     'prev_avail': workingOn > 0}
         
         nDone = len(session["lensesDone"])
-        nTodo = len(session["lensesTodo"])+1
+        nTodo = len(session["lensesTodo"])
         nLenses = nDone + nTodo
-        n = {'todo': nTodo,
+        n = {'todo': nTodo+1, # and the current
              'done': nDone,
              'nr': nLenses,
              'next_avail': nTodo>0,
