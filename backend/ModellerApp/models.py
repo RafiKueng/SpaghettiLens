@@ -12,7 +12,7 @@ class BasicLensData(models.Model):
   catalog_img_id = models.IntegerField(blank=True, null=True) # does it have an id in this set? store it here for reference
   
   # adiminstative fields
-  n_res = models.IntegerField(blank=True, null=True) # how many finished results were uploaded?
+  n_res = models.IntegerField(blank=False, null=True, default=0) # how many finished results were uploaded?
   requested_last = models.DateTimeField(blank=True, null=True) #when was it last requested to work on?
   
   # if these are already known, enter them here

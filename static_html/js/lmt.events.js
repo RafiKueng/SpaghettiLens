@@ -112,7 +112,7 @@ var events = {
     $(document).on('ModeSwitched', LMT.ui.html.Toolbar.update);
 
     
-    $(document).on('SaveModel', LMT.com.SaveModel);  // upload model with is filan tag
+    $(document).on('SaveModel', LMT.com.SaveModel);  // upload model with is final tag
     $(document).on('UploadModel', LMT.com.UploadModel);
     $(document).on('SimulateModel', LMT.events.SimulateModel);
     $(document).one('UpdateRepaintModel', LMT.events.UpdateRepaintModel); //can only be called once, once finished with the update, it reassigns itself

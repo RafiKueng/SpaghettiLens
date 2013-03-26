@@ -21,7 +21,7 @@
               Goto Previous Model
             </button>
             <button id="btnMainFinish"
-              data-event="UploadModel"
+              data-event="SaveModel"
               data-tooltip="Save the final model on the server"
               data-furtherinfo="http://www.google.com"
               data-hotkey="s"

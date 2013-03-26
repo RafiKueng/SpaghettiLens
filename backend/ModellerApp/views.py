@@ -366,7 +366,7 @@ def saveModel(request):
 
 
 @csrf_exempt
-def saveModelFinal():
+def saveModelFinal(request):
   print "in savemodelfinal"
   if request.method == "POST":
     r = request.POST
@@ -375,7 +375,7 @@ def saveModelFinal():
     
     try:
       mid = int(r['modelid'])
-      rid = r['resultid']
+      rid = int(r['resultid'])
       isf = r['isFinal'] in ["True", "true"]
 
     except KeyError:
@@ -402,7 +402,9 @@ def saveModelFinal():
       response['Access-Control-Allow-Origin'] = "*"
       return response      
     
-    m.n_res = m.n_res + 1
+    if m.n_res: m.n_res = m.n_res + 1
+    else: m.n_res = 1
+    
     r.is_final_result = True
     m.save()
     r.save()
@@ -542,6 +544,10 @@ def _getNextFromList(list):
   ''' returns the next element to work on '''
   purelist = [x['id'] for x in list]
   
+  #print "in getnext"
+  #print list
+  #print purelist
+  
   n = BasicLensData.objects.filter(id__in=purelist) # select all in list
   #m = n.annotate(n_res=Count('modellingresult')) # sum up the results, save in n_res
   #m = n.order_by('n_res')
@@ -553,4 +559,11 @@ def _getNextFromList(list):
   id = b.id
   listpos = purelist.index(id)
   listElem = list.pop(listpos)
+  
+  #print min
+  #print 'a'
+  #for x in a: print a
+  #print "b", b.id, b
+  
+  
   return b, listElem , list

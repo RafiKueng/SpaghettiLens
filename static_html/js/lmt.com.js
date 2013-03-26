@@ -10,7 +10,7 @@ var com = {
   getCataloguesUrl: "/get_initdata",
   getModelDataUrl: "/get_modeldata",
   saveDataUrl: "/save_model/",
-  saveDataFinalUrl: "/save_model_final/"
+  saveDataFinalUrl: "/save_model_final/",
   resultUrl: "/result/",
   refreshCounter: 0,
 };
