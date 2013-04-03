@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram>
+<source><![CDATA[client:Actor[p] "User"
+ui:Browser[p] "Browser/UI"
+static:Server[p] "NgineX"
+backend:Thread[a] "urls.py"
+view:Views[a] "views.py"
+tasks:Tasks "tasks.py"
+worker:Worker[a] "WorkerNode"
+db0:Database "LensData-db"
+dbR:Database "Result-db"
+db1:Database "castles"
+db2:Database "masterlens"
+
+client:ui.loadPage()
+ui:static.GET(get_initdata)
+static:backend[be0].GET(get_initdata)
+backend:data=view[v0].getInitData()
+view:db0.Catalog.objects.values("id", "name", "descr")
+view:db0.BasicLensData.objects.values("id", "name", "catalog")&
+view:db1.BasicLensData.objects.values("id", "name", "catalog")&
+view:db2.BasicLensData.objects.values("id", "name", "catalog")&
+backend[be0]:ui.data
+backend[be0]:stop
+ui:client.showLensSelectionDialog()
+
+client:ui.selectLens(id, catid)
+ui:static.POST(get_modeldata, id[], cat_id)
+static:backend.POST(get_modeldata, id[], cat_id)
+backend:data=view.getModelData(id[], cat_id)
+view:json(LensdataObject)=view._getNextFromList()
+view:LensDataObject=db0.BasiclensData.objects.filter()
+backend:ui.data
+backend:stop
+
+ui:db1.GET(url_to_img)
+db1:ui.img
+db1:stop
+ui:db1.GET(url_to_img)
+db1:ui.img
+db1:stop
+ui:client.displayModellingUI()
+
+client:ui.identifyImages()
+ui:client.enableModelButton()
+
+client:ui.model
+ui:static.POST(save_model)
+
+ui:static.GET(result/<model_id>.json)
+static:backend.GET(result/model_id)
+backend:status=view.getSimulationJSON(request, result_id)
+view:status=dbR.checkStatus()
+view:tasks.delay(task)
+tasks:>worker[w].delay(task)
+worker[w]:dbR.setStatus(started)&
+backend:ui.status=started, but not ready; retry
+backend:stop
+
+[c:loop while status == retry OR 5 minutes passed]
+  ui:static.GET(result/<model_id>.json)
+  static:backend.GET(result/model_id)
+  backend:status=view.getSimulationJSON(request, result_id)
+  view:status=dbR.checkStatus()
+  backend:ui.status: started, not ready; retry
+  backend:stop
+[/c]
+
+worker[w]:dbR.setStatus(finished)&
+worker[w]:stop
+
+ui:static.GET(result/<model_id>.json)
+static:backend.GET(result/model_id)
+backend:status=view.getSimulationJSON(request, result_id)
+view:status=dbR.checkStatus()
+backend:ui.status: finished: url to results
+backend:stop
+
+ui:static.GET(result/<model_id>/imgX.png)
+static:ui.imgX.png
+
+ui:client.displayModellingResults
+
+client:ui.finlasave
+ui:static.POST(save_model_final/)
+
+]]></source>
+<configuration>
+<property name="activationBarBorderThickness" value="1"/>
+<property name="actorWidth" value="25"/>
+<property name="arrowColor" value="-14803256"/>
+<property name="arrowSize" value="6"/>
+<property name="arrowThickness" value="1"/>
+<property name="colorizeThreads" value="true"/>
+<property name="destructorWidth" value="30"/>
+<property name="explicitReturns" value="false"/>
+<property family="Dialog" name="font" size="12" style="0"/>
+<property name="fragmentBorderThickness" value="2"/>
+<property name="fragmentEdgeColor" value="-16751616"/>
+<property name="fragmentLabelBgColor" value="-36"/>
+<property name="fragmentMargin" value="8"/>
+<property name="fragmentPadding" value="10"/>
+<property name="fragmentTextPadding" value="3"/>
+<property name="glue" value="10"/>
+<property name="headHeight" value="35"/>
+<property name="headLabelPadding" value="5"/>
+<property name="headWidth" value="100"/>
+<property name="initialSpace" value="10"/>
+<property name="labeledBoxBgColor" value="-76"/>
+<property name="leftMargin" value="5"/>
+<property name="lifelineThickness" value="1"/>
+<property name="lineWrap" value="false"/>
+<property name="lowerMargin" value="5"/>
+<property name="mainLifelineWidth" value="8"/>
+<property name="messageLabelSpace" value="3"/>
+<property name="messagePadding" value="6"/>
+<property name="noteBgColor" value="-76"/>
+<property name="noteBorderThickness" value="1"/>
+<property name="noteMargin" value="6"/>
+<property name="notePadding" value="6"/>
+<property name="opaqueMessageText" value="false"/>
+<property name="returnArrowVisible" value="true"/>
+<property name="rightMargin" value="5"/>
+<property name="selfMessageHorizontalSpace" value="15"/>
+<property name="separatorBottomMargin" value="8"/>
+<property name="separatorTopMargin" value="15"/>
+<property name="shouldShadowParticipants" value="true"/>
+<property name="slackMode" value="false"/>
+<property name="spaceBeforeActivation" value="2"/>
+<property name="spaceBeforeAnswerToSelf" value="10"/>
+<property name="spaceBeforeConstruction" value="6"/>
+<property name="spaceBeforeSelfMessage" value="7"/>
+<property name="subLifelineWidth" value="6"/>
+<property name="tc0" value="-1118482"/>
+<property name="tc1" value="-256"/>
+<property name="tc2" value="-65536"/>
+<property name="tc3" value="-16776961"/>
+<property name="tc4" value="-16711936"/>
+<property name="tc5" value="-4144960"/>
+<property name="tc6" value="-65281"/>
+<property name="tc7" value="-14336"/>
+<property name="tc8" value="-20561"/>
+<property name="tc9" value="-12566464"/>
+<property name="threadNumbersVisible" value="false"/>
+<property name="threaded" value="true"/>
+<property name="upperMargin" value="5"/>
+<property name="verticallySplit" value="true"/>
+</configuration>
+</diagram>
