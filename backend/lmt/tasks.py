@@ -15,7 +15,7 @@ if s.MODULE_WORKER == "celery":
     @task()
     def calculateModel(result_id):
       print "we're in a task now, calculating a result"
-      myname = socket.gethostname()
+      #myname = socket.gethostname()
 
       retval = subprocess.call(['../run_worker_glass', '%06i' % result_id])
       

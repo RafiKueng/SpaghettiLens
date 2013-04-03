@@ -80,7 +80,7 @@ def postInstallCmds():
     if not _fe(conf['INSTALL_DIR']+conf['WORKER_DIR']+"/run_glass"):
       _w("svn checkout https://svn.physik.uzh.ch/repos/itp/glass ."+conf['WORKER_DIR'])
       _w("echo backend : Agg > matplotlibrc")
-      _w("echo 'backend : Agg' > %(INSTALL_DIR)s%(WORKER_DIR)s/matplotlibrc")
+      _w("echo 'backend : Agg' > %(INSTALL_DIR)s%(WORKER_DIR)s/matplotlibrc" % conf)
     with _v('.'+conf['WORKER_DIR']):
       _s("make")
       _s("python setup.py build")
