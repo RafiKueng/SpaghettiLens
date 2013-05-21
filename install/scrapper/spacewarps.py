@@ -12,12 +12,12 @@ except:
 
 if not DEBUG:
   try:
-	cat1 = Catalog.objects.get(name="SpaceWarps")
+  cat1 = Catalog.objects.get(name="SpaceWarps")
   except:
-	cat1 = Catalog(
-      name = "SpaceWarps",
-	  description = "selected SpaceWarps Lenses")
-    cat1.save()
+  cat1 = Catalog(
+    name = "SpaceWarps",
+    description = "selected SpaceWarps Lenses")
+  cat1.save()
 
 s = rq.Session()
 imgid = raw_input("img id: ")
@@ -30,10 +30,10 @@ metaid = json['metadata']['id']
 print "img id: %s | metaid: %s @ %s" % (imgid, metaid, url)
 if not DEBUG and url:
   bld1 = BasicLensData(
-	name = imgid,
-	catalog = cat1,
-	catalog_img_id = metaid,
-	img_type = "CO",
-	channel1_imgurl = url
+    name = imgid,
+    catalog = cat1,
+    catalog_img_id = metaid,
+    img_type = "CO",
+    channel1_imgurl = url
   )
   bld1.save()
