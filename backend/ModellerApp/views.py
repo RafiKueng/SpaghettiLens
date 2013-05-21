@@ -536,48 +536,43 @@ def getData(request, result_id):
   
   try:
     res = ModellingResult.objects.get(id=result_id)
+    if res.is_rendered: #and imgExists: #nginx will catch this case for images, but not for the json objects..
+      #deliver images
+      # check imgExists: because a clean up prog could have deleted the files in the mean time and forgot to set the right flags in the db.. evil prog...
+  
+      res.last_accessed = now()
+      res.save()
+      
+      html = '''
+  <html>
+  <head></head>
+  <body>
+  <h1>Result Nr %(rid)i for %(obj_name)s</h1>
+  <p>%(rid_str)s<br />
+  %(obj_str)s</p>
+  <h2>Contour Plot:</h2>
+  <img src="/result/%(rid)06i/img1.png" alt="Grafik">
+  <h2>Mass Distribution Plot:</h2>
+  <img src="/result/%(rid)06i/img2.png" alt="Grafik">
+  <h2>Arrival Time Plot:</h2>
+  <img src="/result/%(rid)06i/img3.png" alt="Grafik">
+  <h2>Model JSON:</h2>
+  <p>%(mstr)s</p>
+  </body>
+  </html>''' % {'rid': result_id,
+                'mstr': res.json_str,
+                'rid_str': res.__unicode__(),
+                'obj_name': res.basic_data_obj.name,
+                'obj_str': res.basic_data_obj.__unicode__()
+                } 
+  
+    else:
+      raise
   except:
-    raise
-  
-  imgExists = os.path.exists("../tmp_media/%06i/img1.png" % result_id)
-  
-  if res.is_rendered: #and imgExists: #nginx will catch this case for images, but not for the json objects..
-    #deliver images
-    # check imgExists: because a clean up prog could have deleted the files in the mean time and forgot to set the right flags in the db.. evil prog...
-
-    res.last_accessed = now()
-    res.save()
-    
-    html = '''
-<html>
-<head></head>
-<body>
-<h1>Result Nr %(rid)i for %(obj_name)s</h1>
-<p>%(rid_str)s</p>
-<h2>Contour Plot:</h2>
-<img src="/result/%(rid)06i/img1.png" alt="Grafik">
-<h2>Mass Distribution Plot:</h2>
-<img src="/result/%(rid)06i/img2.png" alt="Grafik">
-<h2>Arrival Time Plot:</h2>
-<img src="/result/%(rid)06i/img3.png" alt="Grafik">
-<h2>Model JSON:</h2>
-<p>%(mstr)s</p>
-</body>
-</html>''' % {'rid': result_id,
-              'mstr': res.json_str,
-              'rid_str': res.__unicode__(),
-              'obj_name': res.basic_data_obj.name
-              } 
-
-  else:
-    print "some error"
-    # print result_id
-    # print type(result_id)
+    print "some error in getting result data overview"
     html = "<html><head></head><body>no data available</body></html>"
   
   
-
-
   response = HttpResponse(html)
   
   response['Access-Control-Allow-Origin'] = "*"
