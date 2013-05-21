@@ -530,9 +530,56 @@ def getSimulationFiles(request, result_id, filename):
 
 
 @csrf_exempt
-def getData(request):
-  pass
+def getData(request, result_id):
+  result_id = int(result_id)
+  print "in getData"
+  
+  try:
+    res = ModellingResult.objects.get(id=result_id)
+  except:
+    raise
+  
+  imgExists = os.path.exists("../tmp_media/%06i/img1.png" % result_id)
+  
+  if res.is_rendered: #and imgExists: #nginx will catch this case for images, but not for the json objects..
+    #deliver images
+    # check imgExists: because a clean up prog could have deleted the files in the mean time and forgot to set the right flags in the db.. evil prog...
 
+    res.last_accessed = now()
+    res.save()
+    
+    html = '''
+<html>
+<head></head>
+<body>
+<h1>result for %(rid)i</h1>
+<h2>model string:</h2>
+<p>%(mstr)s</p>
+<h2>Contour Plot:</h2>
+<img src="/result/%(rid)06i/img1.png" alt="Grafik">
+<h2>Mass Distribution Plot:</h2>
+<img src="/result/%(rid)06i/img2.png" alt="Grafik">
+<h2>Arrival Time Plot:</h2>
+<img src="/result/%(rid)06i/img3.png" alt="Grafik">
+</body>
+</html>''' % {'rid': result_id,
+              'mstr': res.json_str
+              } 
+
+  else:
+    print "some error"
+    # print result_id
+    # print type(result_id)
+    html = "<html><head></head><body>no data available</body></html>"
+  
+  
+
+
+  response = HttpResponse(html)
+  
+  response['Access-Control-Allow-Origin'] = "*"
+  print "sending response"
+  return response
 
 
 
