@@ -551,7 +551,7 @@ def getData(request, result_id):
   <p>%(rid_str)s<br />
   %(obj_str)s</p>
   <h2>Lens Image:</h2>
-  <img src="obj_url" alt="LensURL">
+  <img src="%(obj_url)s" alt="LensURL">
   <h2>Contour Plot:</h2>
   <img src="/result/%(rid)06i/img1.png" alt="ContPlot">
   <h2>Mass Distribution Plot:</h2>
