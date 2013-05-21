@@ -211,7 +211,7 @@ def install():
   puts("Done, everything setup\n")
 
 
-  puts("\nFINISHING / CLOEANUNG UP:")
+  puts("\nFINISHING / CLEANUNG UP:")
   for i, (name, mod) in enumerate(modules):
     puts("* "+name)
     try:
