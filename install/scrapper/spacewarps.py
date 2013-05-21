@@ -32,7 +32,7 @@ if not DEBUG and url:
   bld1 = BasicLensData(
     name = imgid,
     catalog = cat1,
-    catalog_img_id = metaid,
+    #catalog_img_id = metaid,
     img_type = "CO",
     channel1_imgurl = url
   )
