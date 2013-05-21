@@ -12,12 +12,12 @@ except:
 
 if not DEBUG:
   try:
-  cat1 = Catalog.objects.get(name="SpaceWarps")
+    cat1 = Catalog.objects.get(name="SpaceWarps")
   except:
-  cat1 = Catalog(
-    name = "SpaceWarps",
-    description = "selected SpaceWarps Lenses")
-  cat1.save()
+    cat1 = Catalog(
+      name = "SpaceWarps",
+      description = "selected SpaceWarps Lenses")
+    cat1.save()
 
 s = rq.Session()
 imgid = raw_input("img id: ")
