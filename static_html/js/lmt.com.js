@@ -344,7 +344,7 @@ com.GetSimulation = function(){
 com.getDatasourcesList = function(evt) {
   
   var success = function(jsonObj, b, c){
-    $.event.trigger("RcvDatasourcesList", jsonObj);
+    $.event.trigger("RcvDatasourcesList", [jsonObj]);
   }
   
   var fail = function(a, b, c){
