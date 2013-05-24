@@ -15,6 +15,60 @@ html.fire = function(evt){
 
 
 
+html.SelectDatasourceDialog = {
+  init: function(){
+    $('#select_datasource_dialog').dialog({
+      autoOpen: false,
+      minWidth: 550,
+      minHeight: 700,
+      modal: true,
+      open: function(){},
+      buttons: [
+      {
+        text: "Ok",
+        click: function(evt){
+          tmp1 = $("#sel_datasource").val();
+          if (!tmp1){ // if both null
+            alert("please choose at least one lens or a catalog");
+            return;
+          }
+          else {
+            $.event.trigger("GetDatasourceDialog", [id = tmp3]);
+            $('#select_datasource_dialog').dialog("close");
+          }
+        }}
+      ]
+        
+    });
+
+    $("#sel_datasource").chosen({allow_single_deselect:true});
+    
+  },
+  
+  //event handler
+  show: function(evt){
+    $.event.trigger("GetDatasourcesList");
+    $('#select_datasource_dialog').dialog("open");
+  },
+  
+  // gets triggered if we received the list of all available datasources
+  onRcvDatasourcesList: function(evt, jsonDatasourcesList){
+
+    $selectObj = $("#sel_datasource");
+
+    for (var i=0; i<jsonDatasourcesList.length; i++){
+      var x = jsonDatasourcesList[i];
+      var elem = $('<option value="' + i + '">'
+        + x.desc + ' (' + x.name + ')</option>');
+      $selectObj.append(elem);
+    }
+    $selectObj.trigger("liszt:updated");
+  }
+}
+
+
+
+
 
 html.SelectModelDialog = {
   

@@ -413,6 +413,19 @@
   </select>
 </div>
 
+
+
+
+
+<div id="select_datasource_dialog" class="dialog" title="Select Datasource">
+  <p>Select Datasource:</p>
+  <select id="sel_datasource" data-placeholder="Choose a datasource" style="width:500px;" class="chzn-select-deselect" tabindex="7">
+    <option value=""></option>
+  </select>
+</div>
+
+
+
 </body>
 
 <!-- END body.php -->

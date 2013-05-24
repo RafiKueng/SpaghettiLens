@@ -341,5 +341,30 @@ com.GetSimulation = function(){
 
 
 
+com.getDatasourcesList = function(evt) {
+  
+  var success = function(jsonObj, b, c){
+    $.event.trigger("RcvDatasourcesList", jsonObj);
+  }
+  
+  var fail = function(a, b, c){
+    tmp=0;
+  }  
+  
+  var data = {action: 'getSrcList'};
+  
+  $.ajax(LMT.com.serverUrl + LMT.com.getCataloguesUrl + "/", {
+      type:"GET",
+      success: success,
+      error: fail,
+      data: data,
+      dataType:"json", //data type expected from server
+  });
+  
+}
+
+
+
+
 
 LMT.com = com;
