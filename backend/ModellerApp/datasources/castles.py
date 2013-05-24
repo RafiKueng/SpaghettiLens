@@ -4,7 +4,7 @@ def getName():
   
 
   
-def getSelectionDialog():
+def getDialogHTML():
   return """
 <script>
 (function(){

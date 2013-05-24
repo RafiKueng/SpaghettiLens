@@ -630,6 +630,16 @@ def api(request):
       
       if post['action'] == 'getSrcList':
         resp = _getSrcList()
+      elif post['action'] == 'selectSource':
+        resp = _selectSource(post['id'])
+      elif post['action'] == 'getBla':
+        resp = _getBla()
+      elif post['action'] == 'getBla':
+        resp = _getBla()
+      elif post['action'] == 'getBla':
+        resp = _getBla()
+      elif post['action'] == 'getBla':
+        resp = _getBla()
       elif post['action'] == 'getBla':
         resp = _getBla()
       else:
@@ -667,6 +677,9 @@ def _getSrcList():
   return HttpResponse(data, content_type="application/json")
 
 
+def _selectSource(id):
+  sourceModule = datasources.members[id]
+  return HttpResponse(sourceModule.getDialogHTML())
 
 
 
