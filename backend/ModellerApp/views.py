@@ -26,8 +26,7 @@ elif s.MODULE_WORKER == "dummy":
   from lmt.tasks import DummyAsyncResult as AsyncResult
 
 
-print "initcode"
-
+import datasources
 
 
 import os
@@ -664,6 +663,7 @@ def api(request):
 
 
 def _getSrcList():
+  pint datasources.__dict__
   data = sjson.dumps([{'name':'bla1', }, {'name': 'bla2'}])
   return HttpResponse(data, content_type="application/json")
 
