@@ -28,7 +28,6 @@ elif s.MODULE_WORKER == "dummy":
 
 import datasources
 
-
 import os
 
 
@@ -663,8 +662,8 @@ def api(request):
 
 
 def _getSrcList():
-  print datasources.__dict__
-  data = sjson.dumps([{'name':'bla1', }, {'name': 'bla2'}])
+  m = [{'name': _[0], 'desc': _[1]} for _ in datasources.members]
+  data = sjson.dumps(m)
   return HttpResponse(data, content_type="application/json")
 
 
