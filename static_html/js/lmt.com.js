@@ -353,8 +353,8 @@ com.getDatasourcesList = function(evt) {
   
   var data = {action: 'getSrcList'};
   
-  $.ajax(LMT.com.serverUrl + LMT.com.getCataloguesUrl + "/", {
-      type:"GET",
+  $.ajax(LMT.com.serverUrl + "/api", {
+      type:"POST",
       success: success,
       error: fail,
       data: data,

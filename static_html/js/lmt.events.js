@@ -45,6 +45,10 @@ var events = {
     
     LMT.ui.svg.initCanvas();
 
+
+    LMT.ui.html.SelectDatasourceDialog.init();
+
+
     $.event.trigger("ShowSelectDatasourceDialog");
 
     /*
