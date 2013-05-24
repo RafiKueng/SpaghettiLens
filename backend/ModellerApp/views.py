@@ -635,8 +635,8 @@ def api(request):
       else:
         resp = HttpResponseNotFound("no valid post request parameters")
       
-      response['Access-Control-Allow-Origin'] = "*"      
-      return response
+      resp['Access-Control-Allow-Origin'] = "*"      
+      return resp
         
       
       
