@@ -74,6 +74,8 @@ var events = {
     $(document).on('GetDatasourcesList', LMT.com.getDatasourcesList);
     $(document).on('RcvDatasourcesList', LMT.ui.html.SelectDatasourceDialog.onRcvDatasourcesList);
     
+    $(document).on('GetDatasourceDialog', LMT.com.getDatasourceDialog);
+    
     
     $(document).on('ToggleDisplay', LMT.ui.html.ToggleDisplay);
     $(document).on('ToggleHelpBar', LMT.ui.html.HelpBar.toggle);

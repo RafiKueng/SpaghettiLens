@@ -27,13 +27,13 @@ html.SelectDatasourceDialog = {
       {
         text: "Ok",
         click: function(evt){
-          tmp1 = $("#sel_datasource").val();
-          if (!tmp1){ // if both null
-            alert("please choose at least one lens or a catalog");
+          val = $("#sel_datasource").val();
+          if (!val){ // if both null
+            alert("Please choose one datasource to continue");
             return;
           }
           else {
-            $.event.trigger("GetDatasourceDialog", [id = tmp3]);
+            $.event.trigger("GetDatasourceDialog", [id = val]);
             $('#select_datasource_dialog').dialog("close");
           }
         }}
@@ -65,6 +65,16 @@ html.SelectDatasourceDialog = {
     $selectObj.trigger("liszt:updated");
   }
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
