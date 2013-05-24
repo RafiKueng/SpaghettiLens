@@ -631,7 +631,7 @@ def api(request):
       if post['action'] == 'getSrcList':
         resp = _getSrcList()
       elif post['action'] == 'selectSource':
-        resp = _selectSource(post['id'])
+        resp = _selectSource(int(post['id']))
       elif post['action'] == 'getBla':
         resp = _getBla()
       elif post['action'] == 'getBla':
@@ -650,7 +650,7 @@ def api(request):
         
       
       
-    except BasicLensData.DoesNotExist:
+    except:
       response = HttpResponseNotFound("no post request", content_type="text/plain")
     
     response['Access-Control-Allow-Origin'] = "*"      
