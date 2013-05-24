@@ -1,6 +1,6 @@
 
 def getName():
-  return "SpaceWarps Images
+  return "SpaceWarps Images"
   
 def getDialogHTML():
   return """
