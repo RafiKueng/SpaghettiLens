@@ -364,6 +364,30 @@ com.getDatasourcesList = function(evt) {
 }
 
 
+com.getDatasourceDialog = function(evt, id) {
+  
+  var success = function(jsonObj, b, c){
+    $.event.trigger("RcvDatasourceDialog", [jsonObj]);
+  }
+  
+  var fail = function(a, b, c){
+    tmp=0;
+  }  
+  
+  var data = {
+    action: 'selectSource',
+    id: id,
+  };
+  
+  $.ajax(LMT.com.serverUrl + "/api", {
+      type:"POST",
+      success: success,
+      error: fail,
+      data: data,
+      dataType:"json", //data type expected from server
+  });
+  
+}
 
 
 

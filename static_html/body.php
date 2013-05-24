@@ -425,6 +425,9 @@
 </div>
 
 
+<div id="generic_datasource_dialog" class="dialog" title="INSERT TITLE">
+</div>
+
 
 </body>
 

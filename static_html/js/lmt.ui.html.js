@@ -68,6 +68,44 @@ html.SelectDatasourceDialog = {
 
 
 
+// generic lens selecetion dialog, this will be modified by an ajax request
+html.GenericDatasourceDialog = {
+  init: function(evt, jsonDialogData){
+    
+    var dd = jsonDialogData;
+
+    //add the html, construct the dialog    
+    $('#generic_datasource_dialog').append(dd.html);
+    
+    //execute the javascript
+    eval(dd.js);
+    
+    $('#generic_datasource_dialog').dialog({
+      title: dd.title,
+      autoOpen: false,
+      minWidth: 550,
+      minHeight: 700,
+      modal: true,
+      open: function(){},
+      buttons: [
+      { text: "Ok",
+        click: function(evt){
+          $.event.trigger("LensesSelected");
+        }
+      }
+      ]
+        
+    });
+  },
+  
+  //event handler
+  show: function(evt){
+    $('#generic_datasource_dialog').dialog("open");
+  },
+  
+}
+
+
 
 
 

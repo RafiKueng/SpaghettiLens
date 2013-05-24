@@ -681,7 +681,7 @@ def _getSrcList():
 
 def _selectSource(id):
   sourceModule = datasources.members[id][2]
-  return HttpResponse(sourceModule.getDialogHTML())
+  return HttpResponse(sjson.dumps(sourceModule.getDialog()), content_type="application/json")
 
 
 
