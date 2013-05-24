@@ -620,7 +620,7 @@ def _getNextFromList(list):
 
 
 
-
+@csrf_exempt
 def api(request):
   if request.method in ["POST"]:
     
