@@ -626,6 +626,8 @@ def api(request):
     
     try:
       post = request.POST
+      print post
+      
       if post['action'] == 'getSrcList':
         resp = _getSrcList()
       elif post['action'] == 'getBla':
