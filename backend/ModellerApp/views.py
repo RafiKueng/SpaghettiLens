@@ -663,7 +663,7 @@ def api(request):
 
 
 def _getSrcList():
-  pint datasources.__dict__
+  print datasources.__dict__
   data = sjson.dumps([{'name':'bla1', }, {'name': 'bla2'}])
   return HttpResponse(data, content_type="application/json")
 
