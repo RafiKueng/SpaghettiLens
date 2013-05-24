@@ -658,3 +658,18 @@ def api(request):
   else:
     return HttpResponseNotFound("internal server error.. can't access teh models and catalogues", content_type="text/plain")
     
+
+
+
+def _getSrcList():
+  data = sjson.dumps({"srcs":['scr1','scr2']})
+  return HttpResponse(data, content_type="application/json")
+
+
+
+
+
+
+
+
+
