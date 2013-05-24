@@ -616,3 +616,43 @@ def _getNextFromList(list):
   
   
   return b, listElem , list
+
+
+
+
+
+def api(request):
+  if request.method in ["POST"]:
+    
+    try:
+      post = request.POST
+      if post['action'] == 'getSrcList':
+        resp = _getSrcList()
+      elif post['action'] == 'getBla':
+        resp = _getBla()
+      else:
+        resp = HttpResponseNotFound("no valid post request parameters")
+      
+      response['Access-Control-Allow-Origin'] = "*"      
+      return response
+        
+      
+      
+    except BasicLensData.DoesNotExist:
+      response = HttpResponseNotFound("no post request", content_type="text/plain")
+    
+    response['Access-Control-Allow-Origin'] = "*"      
+    return response
+  
+  elif request.method == "OPTIONS":
+    #print "in options"  
+    response = HttpResponse("")
+    response['Access-Control-Allow-Origin'] = "*"
+    response['Access-Control-Allow-Methods'] = "GET, POST, OPTIONS"
+    response['Access-Control-Allow-Headers'] = "x-requested-with, x-requested-by"
+    response['Access-Control-Max-Age'] = "180"
+    return response
+  
+  else:
+    return HttpResponseNotFound("internal server error.. can't access teh models and catalogues", content_type="text/plain")
+    
