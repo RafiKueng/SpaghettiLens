@@ -650,10 +650,10 @@ def api(request):
         
       
       
-    except e:
+    except:
       
       response = HttpResponseNotFound("no post request", content_type="text/plain")
-      raise e
+      raise
     
     response['Access-Control-Allow-Origin'] = "*"      
     return response
