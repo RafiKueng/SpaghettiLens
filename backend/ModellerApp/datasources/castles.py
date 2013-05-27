@@ -1,4 +1,11 @@
 
+'''
+on init, check if files arleady in database, otherwise scrape em
+from the homepage.
+one request then just queries the database
+'''
+
+
 def getName():
   return "Castles Image Catalog"
   

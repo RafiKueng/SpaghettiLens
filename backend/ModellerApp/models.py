@@ -3,6 +3,45 @@ from django.contrib.auth.models import User
 from djcelery.models import TaskMeta
 
 # Create your models here.
+
+class LensData(models.Model):
+  id = models.AutoField(primary_key=True)
+  name = models.CharField(max_length=200)
+  
+  datasource = models.CharField(max_length=200)
+  datasource_id = models.CharField(max_length=200)
+  
+  img_data = models.CharField(max_length=4096)
+  add_data = models.CharField(max_length=4096)
+
+  n_res = models.IntegerField(blank=False, null=True, default=0) # how many finished results were uploaded?
+  created = models.DateTimeField(auto_now_add=True) #when was it added
+  created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)# by who was it added
+  last_accessed = models.DateTimeField(blank=True, null=True) #when was it last accessed
+
+  def __unicode__(self):
+    return "LensdataN [id: %04i |name: %s | %s: %s]" % (
+      self.id,
+      self.name,
+      self.datasource,
+      self.datasource_id
+    )
+
+
+class Collection(models.Model):
+  name =  models.CharField(max_length=32) #identifier
+  description = models.CharField(max_length=300, blank=True) # further description
+  
+  lenses =  models.ManyToManyField(LensData)
+
+  def __unicode__(self):
+    return ''.join([
+      'Catalog [ id: %02i | name: %s | descr: %s ]' % (
+         self.pk,
+         self.name,
+         self.description if self.description else "-----" )])
+
+
 class BasicLensData(models.Model):
   id = models.AutoField(primary_key=True)
   name = models.CharField(max_length=200)

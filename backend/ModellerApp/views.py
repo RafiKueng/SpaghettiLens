@@ -631,9 +631,9 @@ def api(request):
       if post['action'] == 'getSrcList':
         resp = _getSrcList()
       elif post['action'] == 'selectSource':
-        resp = _selectSource(int(post['id']))
-      elif post['action'] == 'getBla':
-        resp = _getBla()
+        resp = _selectSource(request, int(post['id']))
+      elif post['action'] == 'datasourceApi':
+        resp = _datasourceApi(request)
       elif post['action'] == 'getBla':
         resp = _getBla()
       elif post['action'] == 'getBla':
@@ -679,11 +679,18 @@ def _getSrcList():
   return HttpResponse(data, content_type="application/json")
 
 
-def _selectSource(id):
+def _selectSource(request, id):
   sourceModule = datasources.members[id][2]
+  request.session['datasource_id'] = id
   return HttpResponse(sjson.dumps(sourceModule.getDialog()), content_type="application/json")
 
-
+def _datasourceApi(request):
+  try:
+    id = request.session['datasource_id']
+  except: # TODO: remove except: this cause is only here for local dev.. (no sessions)
+    id = 2
+  sourceModule = datasources.members[int(id)][2]
+  return HttpResponse(sjson.dumps(sourceModule.api(request.POST)), content_type="application/json")
 
 
 

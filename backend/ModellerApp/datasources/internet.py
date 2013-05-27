@@ -4,8 +4,9 @@ def getName():
   
 def getDialog():
   html = """
-<!-- enter dialog html code here -->
 <p>Select any image URL</p>
+<label for="url">URL</label>
+<input type="text" name="url" id="url" class="text ui-widget-content ui-corner-all" />
 """
 
   js = """

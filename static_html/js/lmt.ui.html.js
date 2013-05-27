@@ -88,7 +88,8 @@ html.GenericDatasourceDialog = {
       modal: true,
       open: function(){},
       buttons: [
-      { text: "Ok",
+      { id: "btn_gdd_ok",
+        text: "Ok",
         click: function(evt){
           $.event.trigger("LensesSelected");
         }
@@ -96,6 +97,7 @@ html.GenericDatasourceDialog = {
       ]
         
     });
+    LMT.ui.html.GenericDatasourceDialog.show()
   },
   
   //event handler
@@ -791,7 +793,7 @@ html.Tooltip = {
 
 html.KeyboardListener = {
   init: function(){
-    $('body').on('keypress', LMT.ui.html.KeyboardListener.keyEvent);
+    //$('body').on('keypress', LMT.ui.html.KeyboardListener.keyEvent);
   },
   
   keyEvent: function(evt){
