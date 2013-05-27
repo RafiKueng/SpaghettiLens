@@ -59,7 +59,7 @@ html.SelectDatasourceDialog = {
     for (var i=0; i<jsonDatasourcesList.length; i++){
       var x = jsonDatasourcesList[i];
       var elem = $('<option value="' + i + '">'
-        + x.desc + ' (' + x.name + ')</option>');
+        + x.id + ' (' + x.desc + ')</option>');
       $selectObj.append(elem);
     }
     $selectObj.trigger("liszt:updated");

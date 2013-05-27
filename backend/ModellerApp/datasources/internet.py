@@ -1,6 +1,10 @@
+__id = "masterlens"
 
-def getName():
-  return "Some internetfile"
+def getID():
+  return __id
+  
+def getDesc():
+  return "Masterlens Database"
   
 def getDialog():
   html = """

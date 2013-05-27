@@ -6,8 +6,13 @@ one request then just queries the database
 '''
 
 
-def getName():
-  return "Castles Image Catalog"
+__id = "masterlens"
+
+def getID():
+  return __id
+  
+def getDesc():
+  return "Masterlens Database"
   
 
   

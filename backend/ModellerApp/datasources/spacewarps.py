@@ -1,6 +1,10 @@
+__id = "masterlens"
 
-def getName():
-  return "SpaceWarps Images"
+def getID():
+  return __id
+  
+def getDesc():
+  return "Masterlens Database"
   
 def getDialogHTML():
   return """

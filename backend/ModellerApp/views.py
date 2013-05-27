@@ -674,7 +674,7 @@ def api(request):
 
 
 def _getSrcList():
-  m = [{'name': _[0], 'desc': _[1]} for _ in datasources.members]
+  m = [{'name': _[0], 'desc': _[1], 'mod': _[2]} for _ in datasources.members]
   data = sjson.dumps(m)
   return HttpResponse(data, content_type="application/json")
 
