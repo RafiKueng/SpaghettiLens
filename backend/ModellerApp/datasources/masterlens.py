@@ -35,17 +35,19 @@ def getDialog():
 
   title = "Masterlens Database Access"
 
-  return {'js':js, 'html':html, 'title': title}
+  return {'id':__id, 'html':html, 'title': title}
   
   
 def api(post):
   
   x=post['do']
+  #print 'post: ', post
   
   if x=='login':
     return _login(post['user'], post['psw']);
   elif x=='createObj':
-    return _createObj(post['user'], post['psw'], post['data']);
+    #print 'in api, create. post-data:', post.getlist('data[]')
+    return _createObj(post['user'], post['psw'], post.getlist('data[]'));
   else:
     print 'error in datasource masterlens'
     return {}
@@ -115,19 +117,22 @@ def _createObj(user, psw, iddata):
 
   data = {'member':'Login', 'password': psw, 'username':user}
   rq2 = s.post("http://admin.masterlens.org/member.php", data = data)
+  
+  gIDs = []
 
-
+  print 'iddata', iddata
   for idnr in iddata:
     print data, idnr
   
     # check if obj already exists in db
     qs = LensData.objects.filter(
-      datasource_id__eq=idnr
+      datasource_id=idnr
     ).filter(
-      datasource__eq='masterlens'
+      datasource='masterlens'
     )
     if qs.count()==1:
-      pass;
+      print "object already in db:", qs[0].pk
+      gID = qs[0].pk
 
     #if not, fetch new data
     else:
@@ -151,7 +156,11 @@ def _createObj(user, psw, iddata):
       s12 = s11.body.table.tbody.find('img')
       url = s12.attrs['src']
       if url[-11:]=='waiting.png':
-        url = None
+        fimg = s.get("http://admin.masterlens.org/graphic.php?lensID=%i&type=1&" % int(idnr))
+        s11 = BeautifulSoup(fimg.text, "html5lib")
+        s12 = s11.body.table.tbody.find('img')
+        url = s12.attrs['src']
+        url = 'http://admin.masterlens.org' + url[1:]
       else:
         url = 'http://admin.masterlens.org' + url[1:]
       try:
@@ -162,6 +171,11 @@ def _createObj(user, psw, iddata):
         z_src = float(re.search("^\d+.\d*", vals['z_Source(s)']).group())
       except:
         z_src = ''
+      try:
+        lens_grade = vals['Lens Grade']
+      except:
+        lens_grade = ''
+        
       name = vals['System Name']
       
       print idnr, name, z_lens, z_src, url
@@ -170,16 +184,19 @@ def _createObj(user, psw, iddata):
         name=name,
         
         datasource = 'masterlens',
-        datasource_id = 'idnr',
+        datasource_id = idnr,
         
         img_data = sjson.dumps({'url':url}),
         add_data = sjson.dumps({
           'z_lens': z_lens,
           'z_src': z_src,
-          'lens_grade': vals['Lens Grade'] 
+          'lens_grade': lens_grade 
         })
       )
       ld.save()
+      gID = ld.pk
+    gIDs.append(gID)
+
     
   s.close()
-
+  return gIDs

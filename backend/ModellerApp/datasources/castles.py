@@ -6,7 +6,7 @@ one request then just queries the database
 '''
 
 
-__id = "masterlens"
+__id = "castles"
 
 def getID():
   return __id

@@ -12,7 +12,7 @@ from django.conf import settings as s
 from lmt import tasks
 import random
 
-from ModellerApp.models import BasicLensData, ModellingResult, Catalog
+from ModellerApp.models import LensData, BasicLensData, ModellingResult, Catalog
 from ModellerApp.utils import EvalAndSaveJSON
 from django.contrib.auth.models import User
 
@@ -210,8 +210,8 @@ def getModelData(request):
         
         nextId = work['id']
         try:
-          nextElem = BasicLensData.objects.get(id=nextId)
-        except BasicLensData.DoesNotExist:
+          nextElem = LensData.objects.get(id=nextId)
+        except LensData.DoesNotExist:
           response =  HttpResponseNotFound("for some reason you have an ivalid model in your list", content_type="text/plain")
           response['Access-Control-Allow-Origin'] = "*"
           return response        
@@ -597,12 +597,12 @@ def _getNextFromList(list):
   #print list
   #print purelist
   
-  n = BasicLensData.objects.filter(id__in=purelist) # select all in list
+  n = LensData.objects.filter(id__in=purelist) # select all in list
   #m = n.annotate(n_res=Count('modellingresult')) # sum up the results, save in n_res
   #m = n.order_by('n_res')
   min = n.aggregate(Min('n_res')) # get the min of n_res
   a = n.filter(n_res=min['n_res__min']) # get those with minimal results
-  b = a.order_by('requested_last')[0] # order those by the date of last access, get the last
+  b = a.order_by('last_accessed')[0] # order those by the date of last access, get the last
   #c = random.choice(b)
   
   id = b.id
@@ -674,13 +674,13 @@ def api(request):
 
 
 def _getSrcList():
-  m = [{'name': _[0], 'desc': _[1], 'mod': _[2]} for _ in datasources.members]
+  m = [{'id': _[0], 'desc': _[1], 'mod': _[2]} for _ in datasources.members]
   data = sjson.dumps(m)
   return HttpResponse(data, content_type="application/json")
 
 
 def _selectSource(request, id):
-  sourceModule = datasources.members[id][2]
+  sourceModule = datasources.members[id][3]
   request.session['datasource_id'] = id
   return HttpResponse(sjson.dumps(sourceModule.getDialog()), content_type="application/json")
 
@@ -689,7 +689,7 @@ def _datasourceApi(request):
     id = request.session['datasource_id']
   except: # TODO: remove except: this cause is only here for local dev.. (no sessions)
     id = 2
-  sourceModule = datasources.members[int(id)][2]
+  sourceModule = datasources.members[int(id)][3]
   return HttpResponse(sjson.dumps(sourceModule.api(request.POST)), content_type="application/json")
 
 

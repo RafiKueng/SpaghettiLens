@@ -1,4 +1,4 @@
-__id = "masterlens"
+__id = "inet"
 
 def getID():
   return __id

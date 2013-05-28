@@ -13,7 +13,7 @@ LMT.datasources.masterlens.init = function(){
     //get the lens ids
     var ids = new Array();
     $('.dtab_row_selected').each(function(i){
-      ids.push(int($(this).children()[1].innerHTML));
+      ids.push(parseInt($(this).children()[1].innerHTML));
     });
     
     //start the creation of the database objects
@@ -33,8 +33,9 @@ LMT.datasources.masterlens.init = function(){
     
   });
 
-  LMT.datasource.createSuccess = function(evt) {
-    alert("createSuccess");
+  LMT.datasource.createSuccess = function(modelIDs) {
+    $.event.trigger("GetModelData", [models = modelIDs, catalog='', action='init']);
+    $('#generic_datasource_dialog').dialog("close");
   }
 
   LMT.datasource.createFail = function(evt) {
@@ -65,8 +66,6 @@ LMT.datasources.masterlens.init = function(){
     //$('#btn_gdd_ok').button('enable');
   });
   
-  
-  LMT.datasource = {};
   
   LMT.datasource.login = function(user, psw) {
     $('#ml_loginfield').append('<p>Please wait...</p>');

@@ -8,13 +8,44 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding model 'LensData'
+        db.create_table('ModellerApp_lensdata', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
+            ('datasource', self.gf('django.db.models.fields.CharField')(max_length=200)),
+            ('datasource_id', self.gf('django.db.models.fields.CharField')(max_length=200)),
+            ('img_data', self.gf('django.db.models.fields.CharField')(max_length=4096)),
+            ('add_data', self.gf('django.db.models.fields.CharField')(max_length=4096)),
+            ('n_res', self.gf('django.db.models.fields.IntegerField')(default=0, null=True)),
+            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('created_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True, on_delete=models.SET_NULL, blank=True)),
+            ('last_accessed', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+        ))
+        db.send_create_signal('ModellerApp', ['LensData'])
+
+        # Adding model 'Collection'
+        db.create_table('ModellerApp_collection', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=32)),
+            ('description', self.gf('django.db.models.fields.CharField')(max_length=300, blank=True)),
+        ))
+        db.send_create_signal('ModellerApp', ['Collection'])
+
+        # Adding M2M table for field lenses on 'Collection'
+        db.create_table('ModellerApp_collection_lenses', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('collection', models.ForeignKey(orm['ModellerApp.collection'], null=False)),
+            ('lensdata', models.ForeignKey(orm['ModellerApp.lensdata'], null=False))
+        ))
+        db.create_unique('ModellerApp_collection_lenses', ['collection_id', 'lensdata_id'])
+
         # Adding model 'BasicLensData'
         db.create_table('ModellerApp_basiclensdata', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('catalog', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['ModellerApp.Catalog'], null=True, on_delete=models.SET_NULL, blank=True)),
             ('catalog_img_id', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('n_res', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
+            ('n_res', self.gf('django.db.models.fields.IntegerField')(default=0, null=True)),
             ('requested_last', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
             ('z_lens', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('z_source', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
@@ -89,6 +120,15 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
+        # Deleting model 'LensData'
+        db.delete_table('ModellerApp_lensdata')
+
+        # Deleting model 'Collection'
+        db.delete_table('ModellerApp_collection')
+
+        # Removing M2M table for field lenses on 'Collection'
+        db.delete_table('ModellerApp_collection_lenses')
+
         # Deleting model 'BasicLensData'
         db.delete_table('ModellerApp_basiclensdata')
 
@@ -125,7 +165,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'img_type': ('django.db.models.fields.CharField', [], {'max_length': '2'}),
             'modellers': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'through': "orm['ModellerApp.ModellingSession']", 'symmetrical': 'False'}),
-            'n_res': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'n_res': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'requested_last': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'z_lens': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -136,6 +176,26 @@ class Migration(SchemaMigration):
             'description': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '32'})
+        },
+        'ModellerApp.collection': {
+            'Meta': {'object_name': 'Collection'},
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'lenses': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['ModellerApp.LensData']", 'symmetrical': 'False'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '32'})
+        },
+        'ModellerApp.lensdata': {
+            'Meta': {'object_name': 'LensData'},
+            'add_data': ('django.db.models.fields.CharField', [], {'max_length': '4096'}),
+            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'on_delete': 'models.SET_NULL', 'blank': 'True'}),
+            'datasource': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
+            'datasource_id': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'img_data': ('django.db.models.fields.CharField', [], {'max_length': '4096'}),
+            'last_accessed': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'n_res': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '200'})
         },
         'ModellerApp.modellingresult': {
             'Meta': {'object_name': 'ModellingResult'},

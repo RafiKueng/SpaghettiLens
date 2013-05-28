@@ -28,7 +28,7 @@ html.SelectDatasourceDialog = {
         text: "Ok",
         click: function(evt){
           val = $("#sel_datasource").val();
-          if (!val){ // if both null
+          if (!val){
             alert("Please choose one datasource to continue");
             return;
           }
@@ -78,7 +78,7 @@ html.GenericDatasourceDialog = {
     $('#generic_datasource_dialog').append(dd.html);
     
     //execute the javascript
-    eval(dd.js);
+    LMT.datasources[dd.id].init();
     
     $('#generic_datasource_dialog').dialog({
       title: dd.title,
