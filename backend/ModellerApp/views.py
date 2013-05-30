@@ -330,6 +330,7 @@ def saveModel(request):
       mid = int(r['modelid'])
       st = r['string']
       isf = r['isFinal'] in ["True", "true"]
+      user = r['username']
 
       
     except KeyError:
@@ -340,10 +341,10 @@ def saveModel(request):
       return response
     
     try:
-      m = BasicLensData.objects.get(id=mid)
+      m = LensData.objects.get(id=mid)
 
-    except BasicLensData.DoesNotExist:
-      print "BLD not found in save model"
+    except LensData.DoesNotExist:
+      print "LensData obj not found (in save model)"
       data = sjson.dumps({"status":"BAD_MODELID_DOES_NOT_EXIST","desc":"the saveModel view couldn't the basic_data_obj you wanted to save a result for"})
       response = HttpResponseNotFound(data, content_type="application/json")
       response['Access-Control-Allow-Origin'] = "*"
@@ -352,6 +353,7 @@ def saveModel(request):
     u = User.objects.all()[0]
     print "eval and save"
     obj = EvalAndSaveJSON(user_obj = u, # request.user,
+                          user_str = user,
                           data_obj= m,
                           jsonStr = st,
                           is_final= isf)
@@ -365,6 +367,14 @@ def saveModel(request):
     print "sending response"
     return response
 
+  elif request.method == "OPTIONS":
+    #print "in options"  
+    response = HttpResponse("")
+    response['Access-Control-Allow-Origin'] = "*"
+    response['Access-Control-Allow-Methods'] = "GET, POST, OPTIONS"
+    response['Access-Control-Allow-Headers'] = "x-requested-with, x-requested-by"
+    response['Access-Control-Max-Age'] = "180"
+    return response
 
 @csrf_exempt
 def saveModelFinal(request):
@@ -624,6 +634,14 @@ def _getNextFromList(list):
 def api(request):
   if request.method in ["POST"]:
     
+    request.session.set_test_cookie()
+
+    if request.session.test_cookie_worked():
+      #request.session.delete_test_cookie()
+      print "session works"
+    else:
+      print "session doesn't work"
+
     try:
       post = request.POST
       print post
@@ -631,11 +649,11 @@ def api(request):
       if post['action'] == 'getSrcList':
         resp = _getSrcList()
       elif post['action'] == 'selectSource':
-        resp = _selectSource(request, int(post['id']))
+        resp = _selectSource(request, int(post['id']), post['uname'])
       elif post['action'] == 'datasourceApi':
-        resp = _datasourceApi(request)
-      elif post['action'] == 'getBla':
-        resp = _getBla()
+        resp = _datasourceApi(request, int(post['src_id']))
+      elif post['action'] == 'saveModel':
+        resp = _saveModel(request)
       elif post['action'] == 'getBla':
         resp = _getBla()
       elif post['action'] == 'getBla':
@@ -679,17 +697,20 @@ def _getSrcList():
   return HttpResponse(data, content_type="application/json")
 
 
-def _selectSource(request, id):
+def _selectSource(request, id, username):
   sourceModule = datasources.members[id][3]
   request.session['datasource_id'] = id
+  request.session['username'] = username
   return HttpResponse(sjson.dumps(sourceModule.getDialog()), content_type="application/json")
 
-def _datasourceApi(request):
+def _datasourceApi(request, src_id):
+  print "this session:"
+  print request.session.items()
   try:
     id = request.session['datasource_id']
   except: # TODO: remove except: this cause is only here for local dev.. (no sessions)
     print "no session found"
-    id = 3
+    id = src_id
   sourceModule = datasources.members[int(id)][3]
   return HttpResponse(sjson.dumps(sourceModule.api(request.POST)), content_type="application/json")
 
@@ -697,3 +718,59 @@ def _datasourceApi(request):
 
 
 
+
+
+
+
+
+
+def _saveModel(request):
+  if request.method == "POST":
+    
+    #print repr(request.POST)
+    print "username:", request.user.username
+    
+    r = request.POST
+    #print "Got Data: ", int(r['modelid']), r['string'], r['isFinal'] in ["True", "true"]
+    #print r.__dict__
+    
+    try:
+      mid = int(r['modelid'])
+      st = r['string']
+      isf = r['isFinal'] in ["True", "true"]
+      user = r['username']
+
+      
+    except KeyError:
+      print "KeyError in save model"
+      data = sjson.dumps({"status":"BAD_JSON_DATA","desc":"the saveModel view couldn't access expected attributes in POST information"})
+      response = HttpResponseNotFound(data, content_type="application/json")
+      response['Access-Control-Allow-Origin'] = "*"
+      return response
+    
+    try:
+      m = LensData.objects.get(id=mid)
+
+    except LensData.DoesNotExist:
+      print "LensData obj not found (in save model)"
+      data = sjson.dumps({"status":"BAD_MODELID_DOES_NOT_EXIST","desc":"the saveModel view couldn't the basic_data_obj you wanted to save a result for"})
+      response = HttpResponseNotFound(data, content_type="application/json")
+      response['Access-Control-Allow-Origin'] = "*"
+      return response
+
+    u = User.objects.all()[0]
+    print "eval and save"
+    obj = EvalAndSaveJSON(user_obj = u, # request.user,
+                          user_str = user,
+                          data_obj= m,
+                          jsonStr = st,
+                          is_final= isf)
+    print "after eval and save"
+    #r.save()
+    
+    data = sjson.dumps({"status":"OK", "result_id": "%06i" % obj.result_id})
+    response = HttpResponse(data, content_type="application/json")
+      
+    response['Access-Control-Allow-Origin'] = "*"
+    print "sending response"
+    return response

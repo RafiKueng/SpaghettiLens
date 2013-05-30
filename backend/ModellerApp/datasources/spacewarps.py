@@ -112,6 +112,8 @@ def _createObj(lenses):
         datasource = 'spacewarps',
         datasource_id = lensid,
         
+        #created_by_str = user,
+        
         img_data = sjson.dumps({'url':url, 'preview':pvurl}),
         add_data = sjson.dumps({
           'metaid': metaid,

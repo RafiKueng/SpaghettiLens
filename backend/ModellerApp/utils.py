@@ -41,7 +41,7 @@ class Point(object):
 
 class EvalAndSaveJSON:
   
-  def __init__(self, user_obj, data_obj, jsonStr, is_final, prefs={}):
+  def __init__(self, user_obj, user_str, data_obj, jsonStr, is_final, prefs={}):
 
     #print "init easj"
     #self.username = "anonymous"
@@ -68,9 +68,9 @@ class EvalAndSaveJSON:
         setattr(self, key, value)
       
     #save databse elements / objects
-    self.basic_data_obj = data_obj
+    self.lens_data_obj = data_obj
     self.user_obj = user_obj
-    self.username = self.user_obj.username
+    self.user_str = user_str #self.user_obj.username
     self.jsonStr = jsonStr
     self.is_final = is_final
     
@@ -295,10 +295,10 @@ class EvalAndSaveJSON:
 
     self.logfilename = "../tmp_media/%06i/log.txt" % self.result_id
     try:
-      cat_name = "__" + str(self.basic_data_obj.catalog.name)
+      cat_name = "__" + str(self.lens_data_obj.catalog.name)
     except:
       cat_name = ""
-    self.lensidentifier = str(self.result_id) + "__" + str(self.basic_data_obj.name) + cat_name
+    self.lensidentifier = str(self.result_id) + "__" + str(self.lens_data_obj.name) + cat_name
     self.statefilepath = "../tmp_media/%06i/state.txt" % self.result_id
     self.imgpath = "../tmp_media/%06i/" % self.result_id
     self.img_name = "img%i.png"
@@ -314,7 +314,7 @@ class EvalAndSaveJSON:
       "import matplotlib as mpl"                                            ,
       "import pylab as pl"                                                  ,
       "glass_basis('glass.basis.pixels', solver='rwalk')"                   ,
-      "meta(author='%s', notes='using LensModellingTools')" % _.username    ,
+      "meta(author='%s', notes='using LensModellingTools')" % _.user_str    ,
       "setup_log('%s')" % _.logfilename                                     ,
       "samplex_random_seed(0)"                                              ,
       "samplex_acceptance(rate=0.25, tol=0.15)"                             ,
@@ -401,11 +401,12 @@ class EvalAndSaveJSON:
     #print "createMR easj"
 
     mr = ModellingResult(
-      basic_data_obj = self.basic_data_obj,
+      lens_data_obj = self.lens_data_obj,
       json_str      = self.jsonStr,
       is_final_result = self.is_final)
     
     mr.created_by = self.user_obj
+    mr.created_by_str = self.user_str
     #mr.log_text = self.logfilename = "bla.log"
     mr.is_rendered = False
  
@@ -428,6 +429,11 @@ class EvalAndSaveJSON:
     
     mr.save()
     
+    self.result = mr
+    self.result_id = mr.id
+
+    
+    """
     ms = ModellingSession(
             user           = self.user_obj,
             basic_data_obj = self.basic_data_obj,
@@ -438,4 +444,5 @@ class EvalAndSaveJSON:
     
     self.result = ms
     self.result_id = ms.id
+    """
     #return mr

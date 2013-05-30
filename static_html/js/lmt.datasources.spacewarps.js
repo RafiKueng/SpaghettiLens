@@ -23,6 +23,7 @@ LMT.datasources.spacewarps.init = function(){
       error: LMT.datasource.createFail,
       data: {
         action: "datasourceApi",
+        src_id: 3,
         do: "createObj",
         data: LMT.datasource.lenses,
       },
@@ -65,6 +66,7 @@ LMT.datasources.spacewarps.init = function(){
       error: LMT.datasource.fetchFail,
       data: {
         action: "datasourceApi",
+        src_id: 3,
         do: "fetch",
         swid: swid,
       },
@@ -78,11 +80,13 @@ LMT.datasources.spacewarps.init = function(){
       alert("fetching failed. sure it's a real image id? they start with 'ASW'");
     }
     else {
+      var train = json.list[0].metadata.training;
       $('#sw_loginfield').append(
         '<p>Got data:<br/>'+
         'id: ' + json.list[0].id + '<br/>' +
         'meta id: ' + json.list[0].metaid + '<br/>' +
-        'is training img: ' + (json.list[0].metadata.training ? 'yes' : 'no') + '</p>');
+        'is training img: ' + (train ? 'yes, @ '+train[0].x+'/'+train[0].y : 'no') +
+        '</p>');
       
       LMT.datasource.lenses = [json.list[0].id];
       $('#btn_gdd_ok').button('enable');

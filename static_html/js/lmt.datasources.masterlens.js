@@ -23,6 +23,7 @@ LMT.datasources.masterlens.init = function(){
       error: LMT.datasource.createFail,
       data: {
         action: "datasourceApi",
+        src_id: 2,
         do: "createObj",
         user: LMT.datasource.username,
         psw: LMT.datasource.password,
@@ -75,6 +76,7 @@ LMT.datasources.masterlens.init = function(){
       error: LMT.datasource.loginFail,
       data: {
         action: "datasourceApi",
+        src_id: 2,
         do: "login",
         user: user,
         psw: psw,

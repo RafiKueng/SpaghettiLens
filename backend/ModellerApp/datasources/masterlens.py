@@ -19,7 +19,7 @@ def getDialog():
   html = """
 <div id='ml_loginfield'>
   <p>Login Data<br/>
-  <label for="name">Username:</label>
+  <label for="username">Username:</label>
   <input type="text" name="username" id="username" class="text ui-widget-content ui-corner-all" />
   <br/>
   <label for="psw">Password:</label>
@@ -41,7 +41,9 @@ def getDialog():
 def api(post):
   
   x=post['do']
-  #print 'post: ', post
+  
+  print "masterlens api"
+  print 'post: ', post
   
   if x=='login':
     return _login(post['user'], post['psw']);
@@ -59,7 +61,7 @@ cache = {
 }
   
 def _login(user, psw):
-  print 'in _login'
+  print 'in _login, ', user, psw
 
   #check if cache is still valid TODO: delete this after dev
   if time.time() - cache['time'] < 2 * 60 * 60 * 1000:
@@ -73,14 +75,16 @@ def _login(user, psw):
 
   soup1 = BeautifulSoup(rq2.text, "html5lib")
   
+  print "  soup1"
+  
   #soup1.find('td', {'class':'red'})
   try:
     if not soup1.find('div', {'class':'galleryitems'}).find('h1').text == "Log in ":
       s.close()
-      return {'status': 'error'}
+      return {'status': 'error', 'detail':'no login text'}
   except:
     s.close()
-    return {'status': 'error'}
+    return {'status': 'error', 'detail':'soup fail'}
 
   #check if cache is still valid
   if time.time() - cache['time'] < 2 * 60 * 60 * 1000:
@@ -109,6 +113,7 @@ def _login(user, psw):
   cache['lenses'] = lenses
   
   s.close()
+  print "end _login"
   return {'status': 'ok', 'list': lenses}
   
   

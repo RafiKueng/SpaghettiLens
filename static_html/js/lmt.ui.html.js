@@ -27,13 +27,15 @@ html.SelectDatasourceDialog = {
       {
         text: "Ok",
         click: function(evt){
-          val = $("#sel_datasource").val();
+          var val = $("#sel_datasource").val();
           if (!val){
             alert("Please choose one datasource to continue");
             return;
           }
           else {
-            $.event.trigger("GetDatasourceDialog", [id = val]);
+            var uname = $("#username").val();
+            LMT.settings.username = uname;
+            $.event.trigger("GetDatasourceDialog", [id = val, uname=uname]);
             $('#select_datasource_dialog').dialog("close");
           }
         }}
