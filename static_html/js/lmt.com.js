@@ -74,7 +74,9 @@ com.getModelData = function(evt, model_ids, catalog, action) {
     
     LMT.modelData.ch = [];
     
+    LMT.modelData.imgurl = JSON.parse(obj[0].fields.img_data).url
     
+    /*
     if (LMT.modelData['img_type'] == "CO") {
       var data = LMT.modelData['channel1_data']=="" ? {co:1, br:0} : JSON.parse(LMT.modelData['channel1_data']);
       LMT.modelData.ch.push({
@@ -109,7 +111,8 @@ com.getModelData = function(evt, model_ids, catalog, action) {
           type: LMT.modelData['channel'+i+'_type']
         });
       }
-    }    
+    }
+    */    
     $.event.trigger('ReceivedModelData');
   };
   
@@ -194,6 +197,7 @@ com.UploadModel = function(evt) {
         modelid: LMT.modelData.id,
         string: LMT.model.getStateAsString(),
         isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
+        username: LMT.settings.username
     };
   
   LMT.simulationData.resultId = -1;
@@ -231,7 +235,9 @@ com.SaveModel = function(evt) {
     LMT.simulationData.resultId = jsonResp.result_id;
     //LMT.simulationData.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
     //$.event.trigger("UploadModelComplete")
-    alert("Model saved! \n(result_id: "+jsonResp.result_id+")");
+    alert("Model saved! \n(result_id: "+jsonResp.result_id+")\n"+
+      "access the raw data with:\n"+
+      "http://mite.physik.uzh.ch/data/"+jsonResp.result_id);
   };
   
   var fail = function(a, b, c) {
@@ -255,6 +261,7 @@ com.SaveModel = function(evt) {
         modelid: LMT.modelData.id,
         resultid: LMT.simulationData.resultId,
         isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
+        username: LMT.settings.username
     };
   
   //LMT.simulationData.resultId = -1;
@@ -339,6 +346,56 @@ com.GetSimulation = function(){
 
 
 
+
+
+com.getDatasourcesList = function(evt) {
+  
+  var success = function(jsonObj, b, c){
+    $.event.trigger("RcvDatasourcesList", [jsonObj]);
+  }
+  
+  var fail = function(a, b, c){
+    tmp=0;
+  }  
+  
+  var data = {action: 'getSrcList'};
+  
+  $.ajax(LMT.com.serverUrl + "/api", {
+      type:"POST",
+      success: success,
+      error: fail,
+      data: data,
+      dataType:"json", //data type expected from server
+  });
+  
+}
+
+
+com.getDatasourceDialog = function(evt, id, uname) {
+  
+  var success = function(jsonObj, b, c){
+    $.event.trigger("RcvDatasourceDialog", [jsonObj]);
+  }
+  
+  var fail = function(a, b, c){
+    tmp=0;
+  }  
+  
+  var data = {
+    action: 'selectSource',
+    id: id,
+    uname: uname
+  };
+  
+  $.ajax(LMT.com.serverUrl + "/api", {
+      type:"POST",
+      success: success,
+      error: fail,
+      data: data,
+      dataType:"json", //data type expected from server
+  });
+  
+}
 
 
 

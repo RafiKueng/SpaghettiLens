@@ -509,6 +509,10 @@ svg.bg = {
   	svg.bgCmatrix = [];
   	svg.compFilter = [];
   
+  
+    /* comment out because it's reallz laggy when yooming in, and not used so far
+      also note that the datastructre has changed, this one is not yet updated
+      
   	//for each background image...
   	for (var i = 0; i<ch.length; i++){
   		
@@ -547,6 +551,19 @@ svg.bg = {
   		svg.compFilter.push(comp)
   		filter.appendChild(comp);
   	}
+  	
+  	*/
+  	// instead simpy add the image
+    var img = document.createElementNS(svg.ns, "feImage");
+    img.setAttributeNS(svg.xlinkns,"href", LMT.modelData.imgurl);
+    img.setAttribute("x","0");
+    img.setAttribute("y","0");
+    img.setAttribute("width","100%");
+    img.setAttribute("height","100%");
+    img.setAttribute("result","img0");
+    filter.appendChild(img);
+    //\\ end of simplification
+  	
   
   	var bgrect = document.createElementNS(svg.ns, "rect");
   	bgrect.setAttribute("x","0");

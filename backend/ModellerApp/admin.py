@@ -4,7 +4,7 @@ Created on 26.01.2013
 @author: RafiK
 '''
 
-from ModellerApp.models import BasicLensData, ModellingResult, ModellingSession, Catalog
+from ModellerApp.models import LensData, BasicLensData, ModellingResult, ModellingSession, Catalog
 from django.contrib import admin
 
 
@@ -22,8 +22,8 @@ class BasicLensDataAdmin(admin.ModelAdmin):
 
 
 
+admin.site.register(LensData)
 admin.site.register(BasicLensData, BasicLensDataAdmin)
-#admin.site.register(BasicLensData)
 admin.site.register(Catalog)
 admin.site.register(ModellingResult)
 admin.site.register(ModellingSession)

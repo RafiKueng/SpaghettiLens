@@ -3,6 +3,49 @@ from django.contrib.auth.models import User
 from djcelery.models import TaskMeta
 
 # Create your models here.
+
+class LensData(models.Model):
+  id = models.AutoField(primary_key=True)
+  name = models.CharField(max_length=200)
+  
+  datasource = models.CharField(max_length=200)
+  datasource_id = models.CharField(max_length=200)
+  
+  img_data = models.TextField()
+  add_data = models.TextField()
+
+  n_res = models.IntegerField(blank=False, null=True, default=0) # how many finished results were uploaded?
+  created = models.DateTimeField(auto_now_add=True) #when was it added
+  created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)# by who was it added, for later use of user management
+  created_by_str = models.CharField(max_length=200, blank=True) # ...now just use strings
+  last_accessed = models.DateTimeField(blank=True, null=True) #when was it last accessed
+
+  def __unicode__(self):
+    return "LensdataN [id: %04i |name: %s | %s: %s]" % (
+      self.id,
+      self.name,
+      self.datasource,
+      self.datasource_id
+    )
+
+
+class Collection(models.Model):
+  name =  models.CharField(max_length=32) #identifier
+  description = models.CharField(max_length=300, blank=True) # further description
+  
+  lenses =  models.ManyToManyField(LensData)
+
+  created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)# by who was it added
+  created_by_str = models.CharField(max_length=200, blank=True)
+
+  def __unicode__(self):
+    return ''.join([
+      'Catalog [ id: %02i | name: %s | descr: %s ]' % (
+         self.pk,
+         self.name,
+         self.description if self.description else "-----" )])
+
+
 class BasicLensData(models.Model):
   id = models.AutoField(primary_key=True)
   name = models.CharField(max_length=200)
@@ -92,13 +135,16 @@ class Catalog(models.Model):
   
 class ModellingResult(models.Model):
   #id = models.AutoField(primary_key=True)
-  basic_data_obj = models.ForeignKey(BasicLensData)
+  #basic_data_obj = models.ForeignKey(BasicLensData, blank=True, null=True)
+  lens_data_obj = models.ForeignKey(LensData, blank=True, null=True)
   json_str = models.TextField() # the json model string from the frontside UI
   is_final_result = models.BooleanField() # did the user send this model in for storage (true) or was it temprarily saved for a test rendering
 
   #administrative fields
   created = models.DateTimeField(auto_now_add=True) #when was it added
   created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)# by who was it added
+  created_by_str = models.CharField(max_length=200, blank=True)
+
   rendered_last = models.DateTimeField(blank=True, null=True) #when was it last rendered (then was it started?)
   last_accessed = models.DateTimeField(blank=True, null=True) #when was it last accessed
   is_rendered = models.BooleanField(blank=True) # are the results (images) still available?
@@ -134,8 +180,8 @@ class ModellingResult(models.Model):
 
   def __unicode__(self):
     return ''.join(['ModRes [ id: ', `self.pk`,
-                    ' | modelId: ' , `self.basic_data_obj.id`,
-                    ' | userId: '  , (self.created_by.username if self.created_by is not None else "-----"),
+                    ' | modelId: ' , `self.lens_data_obj.id`,
+                    ' | userId: '  , self.created_by_str, #(self.created_by.username if self.created_by is not None else self.created_by_str),
                     ' | @ '        , str(self.created),
                     ' | final: '   , ('X' if self.is_final_result else "_"), " ]"])
   

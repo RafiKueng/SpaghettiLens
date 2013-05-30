@@ -177,26 +177,98 @@ body {
 
 
 
+/*table settings for datasource selection*/
+
+
+.dtab_img {
+  height: 50px;
+}
+
+
+
+.dataTables_length {
+    float: left;
+    width: 40%;
+}
+.dataTables_filter {
+    float: left;
+    text-align: left;
+}
+.dataTables_info {
+    float: left;
+}
+.dataTables_paginate {
+    float: right;
+    text-align: right;
+}
 
 
 
 
 
 
+.sorting_asc {
+    background: url("../img/datatable/sort_asc.png") no-repeat scroll right center transparent;
+}
+.sorting_desc {
+    background: url("../img/datatable/sort_desc.png") no-repeat scroll right center transparent;
+}
+.sorting {
+    background: url("../img/datatable/sort_both.png") no-repeat scroll right center transparent;
+}
+.sorting_asc_disabled {
+    background: url("../img/datatable/sort_asc_disabled.png") no-repeat scroll right center transparent;
+}
+.sorting_desc_disabled {
+    background: url("../img/datatable/sort_desc_disabled.png") no-repeat scroll right center transparent;
+}
+
+.DataTables_sort_icon {
+  display: inline-block;
+}
+
+table.display thead th:active, table.display thead td:active {
+    outline: medium none;
+}
+table.display tr.odd {
+    background-color: #000;
+}
+table.display tr.even {
+    background-color: #222;
+}
+
+.dtab_row_selected {
+  background-color: orange !important;
+}
 
 
 
 
-
-
-
-
-
-
-
-
-
-
+table.display {
+    clear: both;
+    margin: 0 auto;
+    width: 100%;
+}
+table.display thead th {
+    border-bottom: 1px solid black;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 3px 18px 3px 10px;
+}
+table.display tfoot th {
+    border-top: 1px solid black;
+    font-weight: bold;
+    padding: 3px 18px 3px 10px;
+}
+table.display tr.heading2 td {
+    border-bottom: 1px solid #AAAAAA;
+}
+table.display td {
+    padding: 3px 10px;
+}
+table.display td.center {
+    text-align: center;
+}
 
 
 
