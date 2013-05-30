@@ -404,7 +404,7 @@ def saveModelFinal(request):
       return response
 
     try:
-      m = BasicLensData.objects.get(id=mid)
+      m = LensData.objects.get(id=mid)
       r = ModellingResult.objects.get(id=rid)
     except:
       print "keyerror in save model final"
