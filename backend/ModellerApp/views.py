@@ -560,6 +560,7 @@ def getData(request, result_id):
   <h1>Result Nr %(rid)i for %(obj_name)s</h1>
   <p>%(rid_str)s<br />
   %(obj_str)s</p>
+  <img src="/result/%(rid)06i/img3.png" alt="ArrTPlot">
   <h2>Lens Image:</h2>
   <img src="%(obj_url)s" alt="LensURL">
   <h2>Contour Plot:</h2>
@@ -574,9 +575,9 @@ def getData(request, result_id):
 </html>''' % {'rid': result_id,
                 'mstr': res.json_str,
                 'rid_str': res.__unicode__(),
-                'obj_name': res.basic_data_obj.name,
-                'obj_str': res.basic_data_obj.__unicode__(),
-                'obj_url': res.basic_data_obj.channel1_imgurl
+                'obj_name': res.lens_data_obj.name,
+                'obj_str': res.lens_data_obj.__unicode__(),
+                'obj_url': sjson.loads(res.lens_data_obj.img_data)['url']
                 } 
   
     else:
