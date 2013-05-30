@@ -688,7 +688,8 @@ def _datasourceApi(request):
   try:
     id = request.session['datasource_id']
   except: # TODO: remove except: this cause is only here for local dev.. (no sessions)
-    id = 2
+    print "no session found"
+    id = 3
   sourceModule = datasources.members[int(id)][3]
   return HttpResponse(sjson.dumps(sourceModule.api(request.POST)), content_type="application/json")
 

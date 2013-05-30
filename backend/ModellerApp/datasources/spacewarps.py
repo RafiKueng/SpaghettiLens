@@ -37,15 +37,16 @@ def getDialog():
 def api(post):
   
   x=post['do']
-  #print 'post: ', post
+  print 'post: ', post
+  print post.dict()
   
   if x=='fetch':
     return _fetch(post['swid']);
   elif x=='createObj':
-    #print 'in api, create. post-data:', post.getlist('data[]')
-    return _createObj(post['user'], post['psw'], post.getlist('data[]'));
+    print 'in api, create. post-data:', post.getlist('data[]')
+    return _createObj(post.getlist('data[]'));
   else:
-    print 'error in datasource masterlens'
+    print 'error in datasource spacewarps'
     return {}
   
 
@@ -60,7 +61,7 @@ def _fetch(swID):
   url = json['location']['standard']
   metaid = json['metadata']['id']
 
-  print "img id: %s | metaid: %s @ %s" % (imgid, metaid, url)
+  print "img id: %s | metaid: %s @ %s" % (swID, metaid, url)
 
   lenses = [{
     'id': swID,
@@ -70,6 +71,7 @@ def _fetch(swID):
     'metadata': json['metadata']
   }]
   
+  s.close()
   return {'status': 'ok', 'list': lenses}
   
   
@@ -77,14 +79,13 @@ def _fetch(swID):
 def _createObj(lenses):
 
   gIDs = []
+  s = rq.Session()
 
-  print 'iddata', lenses
-  for lens in lenses:
-    print lens
-  
+  print 'lenses:', lenses
+  for lensid in lenses:
     # check if obj already exists in db
     qs = LensData.objects.filter(
-      datasource_id=lens['id']
+      datasource_id=lensid
     ).filter(
       datasource='spacewarps'
     )
@@ -94,16 +95,29 @@ def _createObj(lenses):
 
     #if not, fetch new data
     else:
-      print idnr, name, z_lens, z_src, url
+      r1 = s.get("https://api.zooniverse.org/projects/spacewarp/talk/subjects/"+lensid)
+
+      json = r1.json()
+      
+      url = json['location']['standard']
+      pvurl = json['location']['thumbnail']
+      metaid = json['metadata']['id']
+      id2 = json['id']
+      
+      print "creating obj:", lensid, metaid, id2, url
       
       ld = LensData(
-        name=name,
+        name=lensid,
         
         datasource = 'spacewarps',
-        datasource_id = lens['id'],
+        datasource_id = lensid,
         
-        img_data = sjson.dumps({'url':lens['url']}),
-        add_data = sjson.dumps(lens['metadata'])
+        img_data = sjson.dumps({'url':url, 'preview':pvurl}),
+        add_data = sjson.dumps({
+          'metaid': metaid,
+          'id2': id2,
+          
+        })
       )
       ld.save()
       gID = ld.pk

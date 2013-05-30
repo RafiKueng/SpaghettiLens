@@ -11,12 +11,13 @@ class LensData(models.Model):
   datasource = models.CharField(max_length=200)
   datasource_id = models.CharField(max_length=200)
   
-  img_data = models.CharField(max_length=4096)
-  add_data = models.CharField(max_length=4096)
+  img_data = models.TextField()
+  add_data = models.TextField()
 
   n_res = models.IntegerField(blank=False, null=True, default=0) # how many finished results were uploaded?
   created = models.DateTimeField(auto_now_add=True) #when was it added
-  created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)# by who was it added
+  created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)# by who was it added, for later use of user management
+  created_by_str = models.CharField(max_length=200, blank=True) # ...now just use strings
   last_accessed = models.DateTimeField(blank=True, null=True) #when was it last accessed
 
   def __unicode__(self):
@@ -33,6 +34,9 @@ class Collection(models.Model):
   description = models.CharField(max_length=300, blank=True) # further description
   
   lenses =  models.ManyToManyField(LensData)
+
+  created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)# by who was it added
+  created_by_str = models.CharField(max_length=200, blank=True)
 
   def __unicode__(self):
     return ''.join([
@@ -138,6 +142,8 @@ class ModellingResult(models.Model):
   #administrative fields
   created = models.DateTimeField(auto_now_add=True) #when was it added
   created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)# by who was it added
+  created_by_str = models.CharField(max_length=200, blank=True)
+
   rendered_last = models.DateTimeField(blank=True, null=True) #when was it last rendered (then was it started?)
   last_accessed = models.DateTimeField(blank=True, null=True) #when was it last accessed
   is_rendered = models.BooleanField(blank=True) # are the results (images) still available?
