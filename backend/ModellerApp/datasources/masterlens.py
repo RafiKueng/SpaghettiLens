@@ -76,12 +76,15 @@ def _login(user, psw):
   #soup1.find('td', {'class':'red'})
   try:
     if not soup1.find('div', {'class':'galleryitems'}).find('h1').text == "Log in ":
+      s.close()
       return {'status': 'error'}
   except:
+    s.close()
     return {'status': 'error'}
 
   #check if cache is still valid
   if time.time() - cache['time'] < 2 * 60 * 60 * 1000:
+    s.close()
     return {'status': 'ok', 'list': cache['lenses'], 'detail': 'cached'}
 
     
@@ -105,7 +108,7 @@ def _login(user, psw):
   cache['time'] = time.time()
   cache['lenses'] = lenses
   
-  
+  s.close()
   return {'status': 'ok', 'list': lenses}
   
   
