@@ -15,6 +15,110 @@ html.fire = function(evt){
 
 
 
+html.SelectDatasourceDialog = {
+  init: function(){
+    $('#select_datasource_dialog').dialog({
+      autoOpen: false,
+      minWidth: 550,
+      minHeight: 700,
+      modal: true,
+      open: function(){},
+      buttons: [
+      {
+        text: "Ok",
+        click: function(evt){
+          val = $("#sel_datasource").val();
+          if (!val){
+            alert("Please choose one datasource to continue");
+            return;
+          }
+          else {
+            $.event.trigger("GetDatasourceDialog", [id = val]);
+            $('#select_datasource_dialog').dialog("close");
+          }
+        }}
+      ]
+        
+    });
+
+    $("#sel_datasource").chosen({allow_single_deselect:true});
+    
+  },
+  
+  //event handler
+  show: function(evt){
+    $.event.trigger("GetDatasourcesList");
+    $('#select_datasource_dialog').dialog("open");
+  },
+  
+  // gets triggered if we received the list of all available datasources
+  onRcvDatasourcesList: function(evt, jsonDatasourcesList){
+
+    $selectObj = $("#sel_datasource");
+
+    for (var i=0; i<jsonDatasourcesList.length; i++){
+      var x = jsonDatasourcesList[i];
+      var elem = $('<option value="' + i + '">'
+        + x.id + ' (' + x.desc + ')</option>');
+      $selectObj.append(elem);
+    }
+    $selectObj.trigger("liszt:updated");
+  }
+}
+
+
+
+// generic lens selecetion dialog, this will be modified by an ajax request
+html.GenericDatasourceDialog = {
+  init: function(evt, jsonDialogData){
+    
+    var dd = jsonDialogData;
+
+    //add the html, construct the dialog    
+    $('#generic_datasource_dialog').append(dd.html);
+    
+    //execute the javascript
+    LMT.datasources[dd.id].init();
+    
+    $('#generic_datasource_dialog').dialog({
+      title: dd.title,
+      autoOpen: false,
+      minWidth: 550,
+      minHeight: 700,
+      modal: true,
+      open: function(){},
+      buttons: [
+      { id: "btn_gdd_ok",
+        text: "Ok",
+        click: function(evt){
+          $.event.trigger("LensesSelected");
+        }
+      }
+      ]
+        
+    });
+    LMT.ui.html.GenericDatasourceDialog.show()
+  },
+  
+  //event handler
+  show: function(evt){
+    $('#generic_datasource_dialog').dialog("open");
+  },
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 html.SelectModelDialog = {
   
@@ -689,7 +793,7 @@ html.Tooltip = {
 
 html.KeyboardListener = {
   init: function(){
-    $('body').on('keypress', LMT.ui.html.KeyboardListener.keyEvent);
+    //$('body').on('keypress', LMT.ui.html.KeyboardListener.keyEvent);
   },
   
   keyEvent: function(evt){

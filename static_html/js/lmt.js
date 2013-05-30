@@ -21,6 +21,9 @@ LMT.utils = {};   // some utils
 LMT.modelData = {};
 LMT.simulationData = {};
 
+LMT.datasources = {};
+LMT.datasource = {};
+
 LMT.settings = {
   
 	mode: 'image',  // 'none'for doing nothing; 'image' for images; 'ruler' for adding rulers; 'mass' to add external masses 

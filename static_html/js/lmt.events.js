@@ -45,6 +45,13 @@ var events = {
     
     LMT.ui.svg.initCanvas();
 
+
+    LMT.ui.html.SelectDatasourceDialog.init();
+
+
+    $.event.trigger("ShowSelectDatasourceDialog");
+
+    /*
     if (LMT.GET.hasOwnProperty("id")){
       id = parseInt(LMT.GET["id"]);
       $.event.trigger("GetModelData", model_id=id);
@@ -53,6 +60,7 @@ var events = {
       $.event.trigger("ShowSelectModelDataDialog"); //this will trigger the getmodedata on close
       //LMT.ui.html.SelectModelDialog.show();
     }
+    */
     
   },
   
@@ -61,6 +69,14 @@ var events = {
     
     // dummy function
     var fnc = function(){return false;}
+    
+    $(document).on('ShowSelectDatasourceDialog', LMT.ui.html.SelectDatasourceDialog.show);    
+    $(document).on('GetDatasourcesList', LMT.com.getDatasourcesList);
+    $(document).on('RcvDatasourcesList', LMT.ui.html.SelectDatasourceDialog.onRcvDatasourcesList);
+    
+    $(document).on('GetDatasourceDialog', LMT.com.getDatasourceDialog);
+    $(document).on('RcvDatasourceDialog', LMT.ui.html.GenericDatasourceDialog.init);
+    
     
     $(document).on('ToggleDisplay', LMT.ui.html.ToggleDisplay);
     $(document).on('ToggleHelpBar', LMT.ui.html.HelpBar.toggle);

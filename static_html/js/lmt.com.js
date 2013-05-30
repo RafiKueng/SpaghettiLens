@@ -74,7 +74,9 @@ com.getModelData = function(evt, model_ids, catalog, action) {
     
     LMT.modelData.ch = [];
     
+    LMT.modelData.imgurl = JSON.parse(obj[0].fields.img_data).url
     
+    /*
     if (LMT.modelData['img_type'] == "CO") {
       var data = LMT.modelData['channel1_data']=="" ? {co:1, br:0} : JSON.parse(LMT.modelData['channel1_data']);
       LMT.modelData.ch.push({
@@ -109,7 +111,8 @@ com.getModelData = function(evt, model_ids, catalog, action) {
           type: LMT.modelData['channel'+i+'_type']
         });
       }
-    }    
+    }
+    */    
     $.event.trigger('ReceivedModelData');
   };
   
@@ -339,6 +342,55 @@ com.GetSimulation = function(){
 
 
 
+
+
+com.getDatasourcesList = function(evt) {
+  
+  var success = function(jsonObj, b, c){
+    $.event.trigger("RcvDatasourcesList", [jsonObj]);
+  }
+  
+  var fail = function(a, b, c){
+    tmp=0;
+  }  
+  
+  var data = {action: 'getSrcList'};
+  
+  $.ajax(LMT.com.serverUrl + "/api", {
+      type:"POST",
+      success: success,
+      error: fail,
+      data: data,
+      dataType:"json", //data type expected from server
+  });
+  
+}
+
+
+com.getDatasourceDialog = function(evt, id) {
+  
+  var success = function(jsonObj, b, c){
+    $.event.trigger("RcvDatasourceDialog", [jsonObj]);
+  }
+  
+  var fail = function(a, b, c){
+    tmp=0;
+  }  
+  
+  var data = {
+    action: 'selectSource',
+    id: id,
+  };
+  
+  $.ajax(LMT.com.serverUrl + "/api", {
+      type:"POST",
+      success: success,
+      error: fail,
+      data: data,
+      dataType:"json", //data type expected from server
+  });
+  
+}
 
 
 
