@@ -418,10 +418,15 @@
 
 
 <div id="select_datasource_dialog" class="dialog" title="Select Datasource">
-  <p>Select Datasource:</p>
-  <select id="sel_datasource" data-placeholder="Choose a datasource" style="width:500px;" class="chzn-select-deselect" tabindex="7">
-    <option value=""></option>
-  </select>
+  <p>Plese enter your name:<br/>
+    <label for="username">Name:</label>
+    <input type="text" name="username" id="username" class="text ui-widget-content ui-corner-all" />
+  </p>
+  <p>Select Datasource:<br/>
+    <select id="sel_datasource" data-placeholder="Choose a datasource" style="width:500px;" class="chzn-select-deselect" tabindex="7">
+      <option value=""></option>
+    </select>
+  </p>
 </div>
 
 

@@ -197,6 +197,7 @@ com.UploadModel = function(evt) {
         modelid: LMT.modelData.id,
         string: LMT.model.getStateAsString(),
         isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
+        username: LMT.settings.username
     };
   
   LMT.simulationData.resultId = -1;
@@ -258,6 +259,7 @@ com.SaveModel = function(evt) {
         modelid: LMT.modelData.id,
         resultid: LMT.simulationData.resultId,
         isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
+        username: LMT.settings.username
     };
   
   //LMT.simulationData.resultId = -1;
@@ -367,7 +369,7 @@ com.getDatasourcesList = function(evt) {
 }
 
 
-com.getDatasourceDialog = function(evt, id) {
+com.getDatasourceDialog = function(evt, id, uname) {
   
   var success = function(jsonObj, b, c){
     $.event.trigger("RcvDatasourceDialog", [jsonObj]);
@@ -380,6 +382,7 @@ com.getDatasourceDialog = function(evt, id) {
   var data = {
     action: 'selectSource',
     id: id,
+    uname: uname
   };
   
   $.ajax(LMT.com.serverUrl + "/api", {

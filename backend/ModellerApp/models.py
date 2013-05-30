@@ -135,7 +135,8 @@ class Catalog(models.Model):
   
 class ModellingResult(models.Model):
   #id = models.AutoField(primary_key=True)
-  basic_data_obj = models.ForeignKey(BasicLensData)
+  #basic_data_obj = models.ForeignKey(BasicLensData, blank=True, null=True)
+  lens_data_obj = models.ForeignKey(LensData, blank=True, null=True)
   json_str = models.TextField() # the json model string from the frontside UI
   is_final_result = models.BooleanField() # did the user send this model in for storage (true) or was it temprarily saved for a test rendering
 
@@ -179,8 +180,8 @@ class ModellingResult(models.Model):
 
   def __unicode__(self):
     return ''.join(['ModRes [ id: ', `self.pk`,
-                    ' | modelId: ' , `self.basic_data_obj.id`,
-                    ' | userId: '  , (self.created_by.username if self.created_by is not None else "-----"),
+                    ' | modelId: ' , `self.lens_data_obj.id`,
+                    ' | userId: '  , (self.created_by.username if self.created_by is not None else self.created_by_str),
                     ' | @ '        , str(self.created),
                     ' | final: '   , ('X' if self.is_final_result else "_"), " ]"])
   
