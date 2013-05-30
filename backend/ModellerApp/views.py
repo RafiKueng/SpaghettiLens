@@ -560,7 +560,6 @@ def getData(request, result_id):
   <h1>Result Nr %(rid)i for %(obj_name)s</h1>
   <p>%(rid_str)s<br />
   %(obj_str)s</p>
-  <img src="/result/%(rid)06i/img3.png" alt="ArrTPlot">
   <h2>Lens Image:</h2>
   <img src="%(obj_url)s" alt="LensURL">
   <h2>Contour Plot:</h2>

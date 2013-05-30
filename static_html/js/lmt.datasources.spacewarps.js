@@ -8,7 +8,7 @@ LMT.datasources.spacewarps.init = function(){
   
   
   $(document).on('LensesSelected', function(evt){
-    alert("inet select");
+    //alert("inet select");
 
     //get the lens ids
     var ids = new Array();
@@ -96,7 +96,7 @@ LMT.datasources.spacewarps.init = function(){
   };
   
   LMT.datasource.fetchFail = function(a, b, c) {
-    alert('fetching failed');
+    alert('fetching failed. did you enter a valid image id?');
   };
   
   

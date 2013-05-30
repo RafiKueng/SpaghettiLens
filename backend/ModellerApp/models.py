@@ -181,7 +181,7 @@ class ModellingResult(models.Model):
   def __unicode__(self):
     return ''.join(['ModRes [ id: ', `self.pk`,
                     ' | modelId: ' , `self.lens_data_obj.id`,
-                    ' | userId: '  , (self.created_by.username if self.created_by is not None else self.created_by_str),
+                    ' | userId: '  , self.created_by_str, #(self.created_by.username if self.created_by is not None else self.created_by_str),
                     ' | @ '        , str(self.created),
                     ' | final: '   , ('X' if self.is_final_result else "_"), " ]"])
   
