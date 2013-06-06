@@ -66,13 +66,17 @@ Contour.prototype.update = function() {
 		*/	
 		
 		// check if 2 points close together, then delete one
-		var d = LMT.utils.dist2(this.cpoints[i], this.cpoints[i+1]);
-		if (d<3) {
-		  //$.event.trigger("DeleteContourPoint");
-			var rem = this.cpoints.splice(i,1);
-			rem[0].remove();
-			this.nContourPoints--;
-		}
+		// but only if a contour point is moved
+		if (LMT.ui.svg.events.state=="drag" &&
+  		LMT.ui.svg.events.dragTarget.jsObj instanceof LMT.objects.ContourPoint){
+  		var d = LMT.utils.dist2(this.cpoints[i], this.cpoints[i+1]);
+  		if (d < (10./LMT.settings.display.zoompan.scale)) {
+  		  //$.event.trigger("DeleteContourPoint");
+  			var rem = this.cpoints.splice(i,1);
+  			rem[0].remove();
+  			this.nContourPoints--;
+  		}
+    }
 	}
 	
 }
@@ -103,7 +107,7 @@ Contour.prototype.createCPs = function() {
 
 
 Contour.prototype.doublicateCP = function(pnt) {
-	var newCp = new LMT.objects.ContourPoint(pnt.r_fac, pnt.d_phi+0.1, this);
+	var newCp = new LMT.objects.ContourPoint(pnt.r_fac, pnt.d_phi+0.3, this);
 	newCp.init(this.idnr, this.extpnt);
 	newCp.update();
 	var i = this.cpoints.indexOf(pnt);
