@@ -19,15 +19,15 @@
 /*(function() {*/
 
 /**
- *	creates n new point 
- *	@constructor
+ *  creates n new point 
+ *  @constructor
  * 
- *	@param {Number} x the x coodrinate
+ *  @param {Number} x the x coodrinate
  *  @param {Number} y the y coordinate
- * 	@param {Object} [parent=None] the parent object
+ *  @param {Object} [parent=None] the parent object
  */
 function ExtremalPoint(x, y, depth, type) {
-	
+
 	this.idnr = LMT.model.NrOf.ExtremalPoints++;
 	
   this.x = parseInt(x) || 0;
@@ -226,7 +226,7 @@ ExtremalPoint.prototype.getRelCoordTo = function(pnt) {
 }
 
 
-ExtremalPoint.prototype.getDist2ToParent = function(pnt) {
+ExtremalPoint.prototype.getDist2ToParent = function() {
   return this.dx*this.dx + this.dy*this.dy; 
 }
 
@@ -288,23 +288,35 @@ ExtremalPoint.prototype.setChildren = function(child1, child2) {
 
 
 /**
- * expands a min / max in a saddle that has 2 children, each either min or max 
+ * expands a min / max in a saddle that has 2 children, each either min or max
+ * 
+ * p2e = point to expand = this point
+ * 
  */
 ExtremalPoint.prototype.expand = function() {
 
-  var dx = 50;
-  var dy = 50;
-  
   var p2e = this;
-  
-  //claculate the new coordinates of the spawned points
-  var p1x = p2e.x + dx / (p2e.depth / 3 + 1);
-  var p2x = p2e.x - dx / (p2e.depth / 3 + 1);
-  var pny = p2e.y + dy / (p2e.depth / 3 + 1);
 
+  var dl = 100; // the initial length / distance between original point and children
+  
+  if (p2e.parent) {
+    dl = this.dr / 2.;
+    dphi = this.dphi + Math.PI / 2.; //direction of parent +- pi/2
+    this.scaleContour(1.5);
+    //dphi2 = this.dphi - Math.PI / 2;
+  }
+  else {
+    dl  = dl / LMT.settings.display.zoompan.scale;
+    dphi = 0;
+    //dpih2 = Math.PI/2;
+  }
+  
+  var dx = dl * Math.cos(dphi);
+  var dy = dl * Math.sin(dphi);
+  
   //create the points
-  var child1 = new LMT.objects.ExtremalPoint(p1x, pny, p2e.depth+1, p2e.type);
-  var child2 = new LMT.objects.ExtremalPoint(p2x, pny, p2e.depth+1, p2e.type);
+  var child1 = new LMT.objects.ExtremalPoint(p2e.x+dx, p2e.y+dy, p2e.depth+1, p2e.type);
+  var child2 = new LMT.objects.ExtremalPoint(p2e.x-dx, p2e.y-dy, p2e.depth+1, p2e.type);
 
   child1.init(p2e, child2);
   child2.init(p2e, child1);
@@ -351,6 +363,12 @@ ExtremalPoint.prototype.collapse = function(keepThis) {
 			this.circle = null;
 		}
 	}
+	else {
+    // if this is the point to keep, scale it's contour down if it has one
+    if (this.contour) {
+      this.scaleContour(0.66667);
+    }	  
+	}
 }
 
 
@@ -362,6 +380,14 @@ ExtremalPoint.prototype.move = function(coord) {
 	LMT.model.update();
 	LMT.model.paint();
 
+}
+
+
+
+ExtremalPoint.prototype.scaleContour = function(fac) {
+  if (this.contour){
+    this.contour.scale(fac); //scale size of contour by * fac
+  }
 }
 
 

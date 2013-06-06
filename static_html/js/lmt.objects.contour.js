@@ -272,6 +272,18 @@ Contour.prototype.paint = function() {
 }
 
 
+/**
+ * scales the contour up by factor fac 
+ */
+Contour.prototype.scale = function(fac) {
+
+  for (var i =0; i<this.cpoints.length; ++i){
+    this.cpoints[i].r_fac *= fac;
+  }
+  this.update();
+}
+
+
 
 /**
  * 
