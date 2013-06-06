@@ -148,7 +148,11 @@ def _create_django_settings():
   
   
   
+  ############################
+  # update 
+  ############################
   
-  
+def update():
+  pass
   
   
