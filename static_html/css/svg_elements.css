@@ -55,6 +55,12 @@
 	fill: #00a;
 }
 
+
+.crosshair {
+  stroke: #ff0000;
+}
+
+
 /* use this class for elements that are not active */
 .inactive {
   opacity: 0.3;

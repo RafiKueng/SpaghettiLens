@@ -26,7 +26,12 @@ var svg = {
 		contourpoints: null,
 		extremalpoints: null,
 		rulers: null
+	},
+	
+	crosshair: {
+	  enabled: false
 	}
+
 };
 
 
@@ -207,6 +212,9 @@ svg.events = {
 		}
 		svg.root.addEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
 	
+	  if (dragTargetStr=="poin"){
+  	  LMT.ui.svg.enableCrosshairMode(evt.target);
+	  }
 	},
 	
 	
@@ -231,6 +239,10 @@ svg.events = {
 	  
 	  if (svg.events.state == 'drag') {
 	    var coord = LMT.ui.svg.coordTrans(evt);
+	    
+	    if (svg.crosshair.enabled) {
+	      $.event.trigger('MoveCrosshair', [svg.events.dragTarget.jsObj, svg.events.dragTarget, coord]);
+	    }
 	    
 	    $.event.trigger('MoveObject', [svg.events.dragTarget.jsObj, svg.events.dragTarget, coord]);
 	    
@@ -269,6 +281,9 @@ svg.events = {
 		svg.events.someElementWasDragged = false;
 		svg.root.removeEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
 
+    if (svg.crosshair.enabled) {
+      LMT.ui.svg.disableCrosshairMode();
+    }
     svg.events.state = 'none';
 	},
 	
@@ -462,14 +477,86 @@ svg.events = {
 
   },
   
-  /*
+  /* //TODO: if hover out of svg area, make it visible again (can happen if ext.point is at border of svg)
   hoverOut: function(evt) {
     alert("hoverout");
   },
   */
 	
 }
-	
+
+
+/**
+ * if moving a extremal point, hide most of the stuff and paint a crosshair
+ * we = west-easy
+ * ns = nord south 
+ */
+svg.enableCrosshairMode = function(target){
+  
+  if (! svg.crosshair.weline && ! svg.crosshair.nsline ) {
+    var weLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    var nsLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  
+    weLine.setAttribute("class", "crosshair");
+    nsLine.setAttribute("class", "crosshair");
+    
+    weLine.setAttribute("id", "crosshair_we");
+    nsLine.setAttribute("id", "crosshair_ns");
+  
+    weLine.setAttribute("style", "stroke-width: "+(1./LMT.settings.display.zoompan.scale));
+    nsLine.setAttribute("style", "stroke-width: "+(1./LMT.settings.display.zoompan.scale));
+  
+  
+    LMT.ui.svg.layer.bg.appendChild(weLine);
+    LMT.ui.svg.layer.bg.appendChild(nsLine);
+
+    svg.crosshair.weline = weLine;
+    svg.crosshair.nsline = nsLine;
+  }  
+  svg.crosshair.enabled = true;
+  
+  var $all = $(".contourpoint")
+    .add(".connectorline")
+    .add(".contourpath")
+    .add(".ruler")
+    .add(".ext_mass")
+    .add(target);
+
+  $all.addClassSVG("invisible");
+    
+}
+
+svg.disableCrosshairMode = function(){
+  LMT.ui.svg.layer.bg.removeChild(svg.crosshair.weline);
+  LMT.ui.svg.layer.bg.removeChild(svg.crosshair.nsline);
+  svg.crosshair.weline = null;
+  svg.crosshair.nsline = null;
+  svg.crosshair.enabled = false;
+  
+  var $all = $(".contourpoint")
+    .add(".connectorline")
+    .add(".contourpath")
+    .add(".ruler")
+    .add(".ext_mass");
+
+  $all.removeClassSVG("invisible");
+}
+
+svg.moveCrosshair = function(evt, jsTarget, svgTarget, coord){
+  svg.crosshair.weline.setAttribute("x1", ""+ (-100));
+  svg.crosshair.weline.setAttribute("x2", ""+ (1000));
+  svg.crosshair.weline.setAttribute("y1", ""+ coord.y);
+  svg.crosshair.weline.setAttribute("y2", ""+ coord.y);
+
+  svg.crosshair.nsline.setAttribute("y1", ""+ (-100));
+  svg.crosshair.nsline.setAttribute("y2", ""+ (1000));
+  svg.crosshair.nsline.setAttribute("x1", ""+ coord.x);
+  svg.crosshair.nsline.setAttribute("x2", ""+ coord.x);
+
+}
+
+
+
 /**
  * transforms the optained raw coordines in the coordinate system of the zoomed / panned layer 
  */
