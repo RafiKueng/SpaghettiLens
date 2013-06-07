@@ -522,7 +522,7 @@ svg.enableCrosshairMode = function(target){
     .add(".ext_mass")
     .add(target);
 
-  $all.addClassSVG("invisible");
+  $all.addClassSVG("almostinvis");
     
 }
 
@@ -537,9 +537,10 @@ svg.disableCrosshairMode = function(){
     .add(".connectorline")
     .add(".contourpath")
     .add(".ruler")
-    .add(".ext_mass");
+    .add(".ext_mass")
+    .add(".extremalpoint");
 
-  $all.removeClassSVG("invisible");
+  $all.removeClassSVG("almostinvis");
 }
 
 svg.moveCrosshair = function(evt, jsTarget, svgTarget, coord){

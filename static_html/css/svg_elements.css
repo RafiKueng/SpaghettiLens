@@ -66,6 +66,11 @@
   opacity: 0.3;
 }
 
+/* elements that should not be visible but still clickable */
+.almostinvis{
+  opacity: 0.01;
+}
+
 /* use this class for elements that are not displayed */
 .invisible {
 	visibility: hidden;
