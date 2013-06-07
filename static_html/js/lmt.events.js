@@ -150,6 +150,7 @@ var events = {
     $(document).on('CreateContourPoint', LMT.objects.ContourPoint.Doublicate);
     $(document).on('DeleteContourPoint', fnc);
     $(document).on('MoveObject', LMT.events.MoveObject);
+    $(document).on('MoveCrosshair', LMT.ui.svg.moveCrosshair);
     $(document).on('CreateExternalMass', LMT.objects.Model.CreateExternalMass);
     $(document).on('CreateRuler', LMT.objects.Model.CreateRuler);
     $(document).on('DeleteObject', LMT.objects.Model.RemoveObject); // expects supplied jsObj to be removed

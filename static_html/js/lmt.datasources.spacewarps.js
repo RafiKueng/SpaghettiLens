@@ -50,7 +50,12 @@ LMT.datasources.spacewarps.init = function(){
   
   $('#sw_fetch').button().click(function(){
     var swid = $('#swid').val();
-    alert(swid);
+    //alert(swid);
+    
+    //TODO: default value  if nothing was entered, for dev..
+    if (swid=='') {
+      swid = 'ASW0001mze';
+    }
     
     LMT.datasource.swid = swid;
     
