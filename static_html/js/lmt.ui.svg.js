@@ -208,6 +208,7 @@ svg.events = {
 		
     if (LMT.settings.mode == "ruler") {
       svg.ruler = new LMT.objects.Ruler2(coord);
+      svg.ruler.createSVG();
       //$.event.trigger('CreateRuler', [coord]);
       svg.root.addEventListener('mousemove', LMT.ui.svg.events.onMouseMoveRuler);
       svg.events.state = 'dragRuler';

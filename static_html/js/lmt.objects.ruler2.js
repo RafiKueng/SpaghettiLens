@@ -16,6 +16,7 @@
 function Ruler2(coords) {
 	this.x = coords.x;
 	this.y = coords.y;
+	this.idnr = 0;
 	this.mid = null;
 	this.circle = null;
 }
