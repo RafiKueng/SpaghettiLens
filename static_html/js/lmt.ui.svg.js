@@ -523,6 +523,9 @@ svg.enableCrosshairMode = function(target){
     .add(target);
 
   $all.addClassSVG("almostinvis");
+
+  var type = target.jsobj.type;
+  $(svg.crosshair.nsline).add(svg.crosshair.weline).addClassSVG(type);
     
 }
 
@@ -553,6 +556,12 @@ svg.moveCrosshair = function(evt, jsTarget, svgTarget, coord){
   svg.crosshair.nsline.setAttribute("y2", ""+ (1000));
   svg.crosshair.nsline.setAttribute("x1", ""+ coord.x);
   svg.crosshair.nsline.setAttribute("x2", ""+ coord.x);
+  
+  var type = jsTarget.type;
+  $(svg.crosshair.nsline).add(svg.crosshair.weline).removeClassSVG("min");
+  $(svg.crosshair.nsline).add(svg.crosshair.weline).removeClassSVG("max");
+  $(svg.crosshair.nsline).add(svg.crosshair.weline).removeClassSVG("sad");
+  $(svg.crosshair.nsline).add(svg.crosshair.weline).addClassSVG(type);
 
 }
 

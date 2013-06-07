@@ -57,8 +57,19 @@
 
 
 .crosshair {
-  stroke: #ff0000;
+  /*stroke: #ff0000;*/
 }
+.crosshair.min {
+  stroke: green;
+}
+.crosshair.max {
+  stroke: blue;
+}
+.crosshair.sad {
+  stroke: #ffff00;
+}
+
+
 
 
 /* use this class for elements that are not active */
