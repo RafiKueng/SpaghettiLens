@@ -28,7 +28,8 @@ function ContourPoint(r_fac, d_phi, parent) {
 	//indirectly set with init
 
 	//svg object
-	this.circle = null;
+  this.circle = null;
+  this.inv_circle = null;
 	
 	this.layer = LMT.ui.svg.layer.contourpoints;
 }
@@ -53,11 +54,18 @@ ContourPoint.prototype.createSVG = function() {
 	if (!this.circle){
 		this.circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
 	  this.circle.setAttribute("class", "contourpoint");
-	  //this.circle.setAttribute("fill", "black");
 	  this.circle.setAttribute("id", "cpnt" + (this.idnr));
+
+    this.inv_circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    this.inv_circle.setAttribute("class", "contourpoint, almostinvis");
+    this.inv_circle.setAttribute("id", "cpnt_inv" + (this.idnr));
+
 	  
-	  this.circle.jsObj = this;
-	  this.layer.appendChild(this.circle);
+    this.inv_circle.jsObj = this;
+    this.layer.appendChild(this.inv_circle);
+
+    this.circle.jsObj = this;
+    this.layer.appendChild(this.circle);
 	}
 }
 
@@ -68,6 +76,10 @@ ContourPoint.prototype.updateSVG = function() {
   this.circle.setAttribute("cx", this.x);
   this.circle.setAttribute("cy", this.y);
   this.circle.setAttribute("r", ContourPoint.r_def / LMT.settings.display.zoompan.scale);
+
+  this.inv_circle.setAttribute("cx", this.x);
+  this.inv_circle.setAttribute("cy", this.y);
+  this.inv_circle.setAttribute("r", ContourPoint.r_inv_def / LMT.settings.display.zoompan.scale);
 }
 
 
@@ -75,8 +87,10 @@ ContourPoint.prototype.updateSVG = function() {
  * 
  */
 ContourPoint.prototype.deleteSVG = function() {
-	this.layer.removeChild(this.circle);
+  this.layer.removeChild(this.circle);
   this.circle = null;
+  this.layer.removeChild(this.inv_circle);
+  this.inv_circle = null;
 }
 
 
@@ -178,7 +192,8 @@ ContourPoint.prototype.toJSON = function() {
  * static fncs 
  ************************************/
 
-ContourPoint.r_def = 5;
+ContourPoint.r_def = 3;
+ContourPoint.r_inv_def = 6; //invisible catch area
 
 
 /**

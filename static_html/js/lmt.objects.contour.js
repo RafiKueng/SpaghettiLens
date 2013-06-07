@@ -374,7 +374,7 @@ Contour.createFromJSONObj = function(obj) {
 		
 };
 
-Contour.strokeWidth_def = 3;
+Contour.strokeWidth_def = 1.5;
 
 
 

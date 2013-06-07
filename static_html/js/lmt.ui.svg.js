@@ -479,7 +479,7 @@ svg.events = {
 
     }
     else if (ctid == "contourpoints") {
-      var t = evt.target;
+      var t = evt.target.jsObj.circle;
       var tjs = evt.target.jsObj;
       var $c = evt.target.jsObj.parent.get$Elements();
       $c = $c.add(tjs.extpnt.circle);
