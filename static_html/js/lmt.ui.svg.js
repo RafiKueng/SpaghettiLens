@@ -30,7 +30,9 @@ var svg = {
 	
 	crosshair: {
 	  enabled: false
-	}
+	},
+	
+	ruler: null,
 
 };
 
@@ -192,25 +194,45 @@ svg.events = {
 	  evt.stopPropagation();
 	  evt.preventDefault();
 	
-		dragTargetStr = evt.target.id.substring(0,4)
-		if (dragTargetStr=="poin"
+		var dragTargetStr = evt.target.id.substring(0,4)
+		var coord = svg.coordTrans(evt);
+		
+		// clean up some bad programming...
+		if (svg.events.state == 'dragRuler' | dragTargetStr == 'rule' | svg.ruler) {
+		  svg.events.state = 'none';
+      svg.root.removeEventListener('mousemove', LMT.ui.svg.events.onMouseMoveRuler);
+		  svg.ruler.remove();
+		  svg.ruler = null;
+		  return;
+		}
+		
+    if (LMT.settings.mode == "ruler") {
+      svg.ruler = new LMT.objects.Ruler2(coord);
+      //$.event.trigger('CreateRuler', [coord]);
+      svg.root.addEventListener('mousemove', LMT.ui.svg.events.onMouseMoveRuler);
+      svg.events.state = 'dragRuler';
+    }
+
+		else if (dragTargetStr=="poin"
 			|| dragTargetStr=="cpnt"
 			|| dragTargetStr=="ext_"
 			|| dragTargetStr=="rule") {
 			svg.events.dragTarget = evt.target;
 			svg.events.state = 'drag';
-
+      svg.root.addEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
 
 		}
-		else {
+		else { //mouse down on background
 			svg.events.state = 'pan';
 			/*
 			svg.events.stateTf = svg.layer.zoompan.getCTM().inverse();
 			svg.events.stateOrigin = LMT.ui.svg.coordTrans(evt).matrixTransform(svg.events.stateTf);
 			*/
 			svg.events.stateOrigin = {x: evt.screenX, y: evt.screenY, scale: LMT.settings.display.zoompan.scale};
+      svg.root.addEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
+
 		}
-		svg.root.addEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
+		//svg.root.addEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
 	
 	  if (dragTargetStr=="poin"){
   	  LMT.ui.svg.enableCrosshairMode(evt.target);
@@ -264,14 +286,36 @@ svg.events = {
 	  }
 	},
 	
+	onMouseMoveRuler: function(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+
+    //prevent to high refresh rate (only each 50ms)
+    if (evt.timeStamp - svg.events.lastMouseMove < 20) {return;}
+    svg.events.lastMouseMove = evt.timeStamp;
+
+    var coord = svg.coordTrans(evt);
+    
+    //if (LMT.ui.svg.ruler) { //no need to check, ruler registers the handler, if it isn't created yet, nothing should happen
+    LMT.ui.svg.ruler.move(coord);
+    //}
+	},
 	
 	
 	onMouseUp: function(evt) {
+	  
 		if (svg.events.state == 'pan') {
 			if (svg.events.newState) {
 				LMT.settings.display.zoompan = svg.events.newState;
 			}
 		}
+		
+		else if (svg.events.state == 'dragRuler') {
+		  svg.root.removeEventListener('mousemove', LMT.ui.svg.events.onMouseMoveRuler);
+		  LMT.ui.svg.ruler.remove();
+      LMT.ui.svg.ruler = null;
+		}
+		
 		if (svg.events.someElementWasDragged) {
 			$.event.trigger("SaveModelState");
 
@@ -326,9 +370,11 @@ svg.events = {
 				$.event.trigger('CreateExternalMass', [coord]);
 			}
 			
+			/*
 			else if (LMT.settings.mode == 'ruler') {
 				$.event.trigger('CreateRuler', [coord]);
       }
+      */
 
       somethinghappend = true;
 		}	  
@@ -524,7 +570,7 @@ svg.enableCrosshairMode = function(target){
 
   $all.addClassSVG("almostinvis");
 
-  var type = target.jsobj.type;
+  var type = target.jsObj.type;
   $(svg.crosshair.nsline).add(svg.crosshair.weline).addClassSVG(type);
     
 }
