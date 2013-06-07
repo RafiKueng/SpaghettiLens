@@ -52,6 +52,7 @@ function ExtremalPoint(x, y, depth, type) {
 	//the svg objects references
 	this.line = null;
 	this.circle = null;
+  this.inv_circle = null;
 	
 	this.layer = LMT.ui.svg.layer.extremalpoints;
 	
@@ -359,8 +360,10 @@ ExtremalPoint.prototype.collapse = function(keepThis) {
 		}
 		
 		if (this.circle) { //remove the circle
-			this.layer.removeChild(this.circle);
-			this.circle = null;
+      this.layer.removeChild(this.circle);
+      this.circle = null;
+      this.layer.removeChild(this.inv_circle);
+      this.inv_circle = null;
 		}
 	}
 	else {
@@ -399,6 +402,15 @@ ExtremalPoint.prototype.scaleContour = function(fac) {
 ExtremalPoint.prototype.paint = function() {
 
   if (!this.circle) {
+    this.inv_circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    this.inv_circle.setAttribute("id", "point_inv" + this.idnr);
+    this.inv_circle.setAttribute("class", "extremalpoint, almostinvis");
+    
+    this.layer.appendChild(this.inv_circle);
+    //this.circle.pnt = this;
+    this.inv_circle.jsObj = this;
+
+
     this.circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     this.circle.setAttribute("id", "point" + this.idnr);
     this.circle.setAttribute("class", "extremalpoint");
@@ -406,11 +418,18 @@ ExtremalPoint.prototype.paint = function() {
     this.layer.appendChild(this.circle);
     //this.circle.pnt = this;
     this.circle.jsObj = this;
+    
+    
   }
 
   this.circle.setAttribute("cx", this.x);
   this.circle.setAttribute("cy", this.y);
   this.circle.setAttribute("r", ExtremalPoint.r_def / LMT.settings.display.zoompan.scale);
+
+  this.inv_circle.setAttribute("cx", this.x);
+  this.inv_circle.setAttribute("cy", this.y);
+  this.inv_circle.setAttribute("r", ExtremalPoint.r_inv_def / LMT.settings.display.zoompan.scale);
+
 	this.circle.classList.remove("min");
 	this.circle.classList.remove("max");
 	this.circle.classList.remove("sad");
@@ -477,8 +496,9 @@ ExtremalPoint.prototype.toJSON = function(){
  * static fncs
  ************************************************/
 
-ExtremalPoint.r_def = 10;
-ExtremalPoint.strokeWidth_def = 3;
+ExtremalPoint.r_def = 7;
+ExtremalPoint.r_inv_def = 12;
+ExtremalPoint.strokeWidth_def = 1;
 
 
 /*

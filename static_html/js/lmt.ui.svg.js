@@ -456,7 +456,7 @@ svg.events = {
 
     
     if (ctid=="extremalpoints"){
-      var t = evt.target;
+      var t = evt.target.jsObj.circle;//evt.target;
       var tjs = evt.target.jsObj;
       
       $all.addClassSVG("inactive");
@@ -566,7 +566,7 @@ svg.enableCrosshairMode = function(target){
     .add(".contourpath")
     .add(".ruler")
     .add(".ext_mass")
-    .add(target);
+    .add(target.jsObj.circle);
 
   $all.addClassSVG("almostinvis");
 
