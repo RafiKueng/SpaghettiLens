@@ -416,8 +416,9 @@ svg.events = {
 		// cross-browser wheel delta
 		var e = window.event || evt; // old IE support
 		var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+		var coord = svg.coordTrans(evt);
 		
-		$.event.trigger('Zoom', [delta]);
+		$.event.trigger('Zoom', [delta, coord]);
 
 		if (evt.stopPropagation) {evt.stopPropagation();}
 		if (evt.preventDefault) {evt.preventDefault();}
@@ -752,8 +753,13 @@ svg.bg = {
     //no RepaintModel should be needed, only in zoom case, whats already taken care of below
   },
   
-  zoom: function(evt, delta){
-    LMT.settings.display.zoompan.scale *= 1 + delta*0.1;
+  zoom: function(evt, delta, coord){
+    var d = delta*0.1;
+    LMT.settings.display.zoompan.scale *= 1 + d;
+    /*
+    LMT.settings.display.zoompan.x = LMT.settings.display.zoompan.x + coord.x*d;
+    LMT.settings.display.zoompan.y = LMT.settings.display.zoompan.y + coord.y*d;
+    */
     LMT.ui.svg.bg.updateZoomPan();
     $.event.trigger("RepaintModel"); //is needed to change the radii of the masses, rulers ect..
   },
