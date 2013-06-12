@@ -567,11 +567,12 @@ svg.enableCrosshairMode = function(target){
     .add(".connectorline")
     .add(".contourpath")
     .add(".ruler")
-    .add(".ext_mass")
-    .add(target.jsObj.circle);
+    .add(".ext_mass");
+  $all.addClassSVG("inactive");
 
-  $all.addClassSVG("almostinvis");
-
+  var $thispnt = $(target.jsObj.circle);
+  $thispnt.addClassSVG("almostinvis");
+  
   var type = target.jsObj.type;
   $(svg.crosshair.nsline).add(svg.crosshair.weline).addClassSVG(type);
     

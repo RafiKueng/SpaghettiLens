@@ -74,12 +74,12 @@
 
 /* use this class for elements that are not active */
 .inactive {
-  opacity: 0.3;
+  opacity: 0.25;
 }
 
 /* elements that should not be visible but still clickable */
 .almostinvis{
-  opacity: 0.01;
+  opacity: 0.001;
 }
 
 /* use this class for elements that are not displayed */
