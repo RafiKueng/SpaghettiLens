@@ -26,7 +26,14 @@ var svg = {
 		contourpoints: null,
 		extremalpoints: null,
 		rulers: null
-	}
+	},
+	
+	crosshair: {
+	  enabled: false
+	},
+	
+	ruler: null,
+
 };
 
 
@@ -187,26 +194,50 @@ svg.events = {
 	  evt.stopPropagation();
 	  evt.preventDefault();
 	
-		dragTargetStr = evt.target.id.substring(0,4)
-		if (dragTargetStr=="poin"
+		var dragTargetStr = evt.target.id.substring(0,4)
+		var coord = svg.coordTrans(evt);
+		
+		// clean up some bad programming...
+		if (svg.events.state == 'dragRuler' | dragTargetStr == 'rule' | svg.ruler) {
+		  svg.events.state = 'none';
+      svg.root.removeEventListener('mousemove', LMT.ui.svg.events.onMouseMoveRuler);
+		  svg.ruler.remove();
+		  svg.ruler = null;
+		  return;
+		}
+		
+    if (LMT.settings.mode == "ruler") {
+      svg.ruler = new LMT.objects.Ruler2(coord);
+      svg.ruler.createSVG();
+      //$.event.trigger('CreateRuler', [coord]);
+      svg.root.addEventListener('mousemove', LMT.ui.svg.events.onMouseMoveRuler);
+      svg.events.state = 'dragRuler';
+    }
+
+		else if (dragTargetStr=="poin"
 			|| dragTargetStr=="cpnt"
 			|| dragTargetStr=="ext_"
 			|| dragTargetStr=="rule") {
 			svg.events.dragTarget = evt.target;
 			svg.events.state = 'drag';
-
+      svg.root.addEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
 
 		}
-		else {
+		else { //mouse down on background
 			svg.events.state = 'pan';
 			/*
 			svg.events.stateTf = svg.layer.zoompan.getCTM().inverse();
 			svg.events.stateOrigin = LMT.ui.svg.coordTrans(evt).matrixTransform(svg.events.stateTf);
 			*/
 			svg.events.stateOrigin = {x: evt.screenX, y: evt.screenY, scale: LMT.settings.display.zoompan.scale};
+      svg.root.addEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
+
 		}
-		svg.root.addEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
+		//svg.root.addEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
 	
+	  if (dragTargetStr=="poin"){
+  	  LMT.ui.svg.enableCrosshairMode(evt.target);
+	  }
 	},
 	
 	
@@ -232,6 +263,10 @@ svg.events = {
 	  if (svg.events.state == 'drag') {
 	    var coord = LMT.ui.svg.coordTrans(evt);
 	    
+	    if (svg.crosshair.enabled) {
+	      $.event.trigger('MoveCrosshair', [svg.events.dragTarget.jsObj, svg.events.dragTarget, coord]);
+	    }
+	    
 	    $.event.trigger('MoveObject', [svg.events.dragTarget.jsObj, svg.events.dragTarget, coord]);
 	    
 			svg.events.someElementWasDragged = true;
@@ -252,14 +287,36 @@ svg.events = {
 	  }
 	},
 	
+	onMouseMoveRuler: function(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+
+    //prevent to high refresh rate (only each 50ms)
+    if (evt.timeStamp - svg.events.lastMouseMove < 20) {return;}
+    svg.events.lastMouseMove = evt.timeStamp;
+
+    var coord = svg.coordTrans(evt);
+    
+    //if (LMT.ui.svg.ruler) { //no need to check, ruler registers the handler, if it isn't created yet, nothing should happen
+    LMT.ui.svg.ruler.move(coord);
+    //}
+	},
 	
 	
 	onMouseUp: function(evt) {
+	  
 		if (svg.events.state == 'pan') {
 			if (svg.events.newState) {
 				LMT.settings.display.zoompan = svg.events.newState;
 			}
 		}
+		
+		else if (svg.events.state == 'dragRuler') {
+		  svg.root.removeEventListener('mousemove', LMT.ui.svg.events.onMouseMoveRuler);
+		  LMT.ui.svg.ruler.remove();
+      LMT.ui.svg.ruler = null;
+		}
+		
 		if (svg.events.someElementWasDragged) {
 			$.event.trigger("SaveModelState");
 
@@ -269,6 +326,9 @@ svg.events = {
 		svg.events.someElementWasDragged = false;
 		svg.root.removeEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
 
+    if (svg.crosshair.enabled) {
+      LMT.ui.svg.disableCrosshairMode();
+    }
     svg.events.state = 'none';
 	},
 	
@@ -311,9 +371,11 @@ svg.events = {
 				$.event.trigger('CreateExternalMass', [coord]);
 			}
 			
+			/*
 			else if (LMT.settings.mode == 'ruler') {
 				$.event.trigger('CreateRuler', [coord]);
       }
+      */
 
       somethinghappend = true;
 		}	  
@@ -354,8 +416,9 @@ svg.events = {
 		// cross-browser wheel delta
 		var e = window.event || evt; // old IE support
 		var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+		var coord = svg.coordTrans(evt);
 		
-		$.event.trigger('Zoom', [delta]);
+		$.event.trigger('Zoom', [delta, coord]);
 
 		if (evt.stopPropagation) {evt.stopPropagation();}
 		if (evt.preventDefault) {evt.preventDefault();}
@@ -395,7 +458,7 @@ svg.events = {
 
     
     if (ctid=="extremalpoints"){
-      var t = evt.target;
+      var t = evt.target.jsObj.circle;//evt.target;
       var tjs = evt.target.jsObj;
       
       $all.addClassSVG("inactive");
@@ -418,7 +481,7 @@ svg.events = {
 
     }
     else if (ctid == "contourpoints") {
-      var t = evt.target;
+      var t = evt.target.jsObj.circle;
       var tjs = evt.target.jsObj;
       var $c = evt.target.jsObj.parent.get$Elements();
       $c = $c.add(tjs.extpnt.circle);
@@ -462,14 +525,97 @@ svg.events = {
 
   },
   
-  /*
+  /* //TODO: if hover out of svg area, make it visible again (can happen if ext.point is at border of svg)
   hoverOut: function(evt) {
     alert("hoverout");
   },
   */
 	
 }
-	
+
+
+/**
+ * if moving a extremal point, hide most of the stuff and paint a crosshair
+ * we = west-easy
+ * ns = nord south 
+ */
+svg.enableCrosshairMode = function(target){
+  
+  if (! svg.crosshair.weline && ! svg.crosshair.nsline ) {
+    var weLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    var nsLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  
+    weLine.setAttribute("class", "crosshair");
+    nsLine.setAttribute("class", "crosshair");
+    
+    weLine.setAttribute("id", "crosshair_we");
+    nsLine.setAttribute("id", "crosshair_ns");
+  
+    weLine.setAttribute("style", "stroke-width: "+(1./LMT.settings.display.zoompan.scale));
+    nsLine.setAttribute("style", "stroke-width: "+(1./LMT.settings.display.zoompan.scale));
+  
+  
+    LMT.ui.svg.layer.bg.appendChild(weLine);
+    LMT.ui.svg.layer.bg.appendChild(nsLine);
+
+    svg.crosshair.weline = weLine;
+    svg.crosshair.nsline = nsLine;
+  }  
+  svg.crosshair.enabled = true;
+  
+  var $all = $(".contourpoint")
+    .add(".connectorline")
+    .add(".contourpath")
+    .add(".ruler")
+    .add(".ext_mass");
+  $all.addClassSVG("inactive");
+
+  var $thispnt = $(target.jsObj.circle);
+  $thispnt.addClassSVG("almostinvis");
+  
+  var type = target.jsObj.type;
+  $(svg.crosshair.nsline).add(svg.crosshair.weline).addClassSVG(type);
+    
+}
+
+svg.disableCrosshairMode = function(){
+  LMT.ui.svg.layer.bg.removeChild(svg.crosshair.weline);
+  LMT.ui.svg.layer.bg.removeChild(svg.crosshair.nsline);
+  svg.crosshair.weline = null;
+  svg.crosshair.nsline = null;
+  svg.crosshair.enabled = false;
+  
+  var $all = $(".contourpoint")
+    .add(".connectorline")
+    .add(".contourpath")
+    .add(".ruler")
+    .add(".ext_mass")
+    .add(".extremalpoint");
+
+  $all.removeClassSVG("almostinvis");
+}
+
+svg.moveCrosshair = function(evt, jsTarget, svgTarget, coord){
+  svg.crosshair.weline.setAttribute("x1", ""+ (-100));
+  svg.crosshair.weline.setAttribute("x2", ""+ (1000));
+  svg.crosshair.weline.setAttribute("y1", ""+ coord.y);
+  svg.crosshair.weline.setAttribute("y2", ""+ coord.y);
+
+  svg.crosshair.nsline.setAttribute("y1", ""+ (-100));
+  svg.crosshair.nsline.setAttribute("y2", ""+ (1000));
+  svg.crosshair.nsline.setAttribute("x1", ""+ coord.x);
+  svg.crosshair.nsline.setAttribute("x2", ""+ coord.x);
+  
+  var type = jsTarget.type;
+  $(svg.crosshair.nsline).add(svg.crosshair.weline).removeClassSVG("min");
+  $(svg.crosshair.nsline).add(svg.crosshair.weline).removeClassSVG("max");
+  $(svg.crosshair.nsline).add(svg.crosshair.weline).removeClassSVG("sad");
+  $(svg.crosshair.nsline).add(svg.crosshair.weline).addClassSVG(type);
+
+}
+
+
+
 /**
  * transforms the optained raw coordines in the coordinate system of the zoomed / panned layer 
  */
@@ -608,8 +754,13 @@ svg.bg = {
     //no RepaintModel should be needed, only in zoom case, whats already taken care of below
   },
   
-  zoom: function(evt, delta){
-    LMT.settings.display.zoompan.scale *= 1 + delta*0.1;
+  zoom: function(evt, delta, coord){
+    var d = delta*0.1;
+    LMT.settings.display.zoompan.scale *= 1 + d;
+    /*
+    LMT.settings.display.zoompan.x = LMT.settings.display.zoompan.x + coord.x*d;
+    LMT.settings.display.zoompan.y = LMT.settings.display.zoompan.y + coord.y*d;
+    */
     LMT.ui.svg.bg.updateZoomPan();
     $.event.trigger("RepaintModel"); //is needed to change the radii of the masses, rulers ect..
   },

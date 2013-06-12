@@ -8,7 +8,7 @@ LMT.datasources.masterlens.init = function(){
   
   
   $(document).on('LensesSelected', function(evt){
-    alert("inet select");
+    //alert("inet select");
 
     //get the lens ids
     var ids = new Array();

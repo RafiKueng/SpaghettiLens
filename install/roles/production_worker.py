@@ -57,6 +57,9 @@ echo backend : Agg > matplotlibrc
 
 # add this script
 # ~/bin/lmt/run_worker_glass
+#
+# hint: ./run_glass -t <NUM_OF_CPUS> .....
+
 '''
 #!/bin/sh
 
@@ -67,7 +70,7 @@ mkdir -p tmp_media/$1
 wget -P tmp_media/$1 10.0.0.10/result/$1/cfg.gls
 pwd
 cd worker
-./run_glass ../tmp_media/$1/cfg.gls
+./run_glass -t 2 ../tmp_media/$1/cfg.gls
 cd ..
 scp tmp_media/$1/img1.png lmt@10.0.0.10:/srv/lmt/tmp_media/$1/
 scp tmp_media/$1/img2.png lmt@10.0.0.10:/srv/lmt/tmp_media/$1/
@@ -120,10 +123,58 @@ cat id_rsa.pub >> .ssh/authorized_keys2
 '''
 
 
+####################
+# additionally: seperate configs for different worker in a shared file system (like at uzh)
+####################
+'''
+cd ~/bin/lmt
+
+mkdir _def
+kopiere alles von lmt in lmt/_def
+
+mkdir <machine_conf>
+cd <machine_conf>
+ln -s ../_def/backend backend
+ln -s ../_def/woker worker
+ln -s ../_def/py_env py_env
+# DONT move the _py_env dir, this will not work
+# OR create the virtualenv with the --relocatable option
+# OR change all the virt env files:
+# in py_env: 'find . -print | xargs sed -i 's:/old/path:/new/path:g'
+ln -s ../_def/tmp_media tmp_media
+cp ../_def/run_worker_glass run_worker_glass
+
+nano run_worker_glass
+
+'''
 
 
 
 
+##################
+# how to start a worker
+##################
+'''
+screen
+cd ~/bin/lmt/backend
+source ../py_env/bin/activate
+python manage.py celery worker -c 1 -E
+
+[crtl+a, d] to deattach
+'''
+
+
+
+
+####################
+# how to update worker
+#######################
+
+'''
+cd ~/src/lmt/
+git pull origin master
+cp -fR ~/src/lmt/backend ~/bin/lmt/backend
+'''
 
 
 
