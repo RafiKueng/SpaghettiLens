@@ -418,7 +418,7 @@
 
 
 <div id="select_datasource_dialog" class="dialog" title="Select Datasource">
-  <p>Plese enter your name:<br/>
+  <p>Please enter your name:<br/>
     <label for="username">Name:</label>
     <input type="text" name="username" id="username" class="text ui-widget-content ui-corner-all" />
   </p>
