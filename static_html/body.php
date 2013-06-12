@@ -7,7 +7,7 @@
   <div class="layout row">
     <div id="head" class="layout table rounded_top">
       <div id="headtitle" class="layout cell">
-        <h1>Lens Modelling Tool</h1>
+        <h1>SpaghettiLens</h1>
       </div>
       <div id="toolbarTop" class="layout cell centered">
         <span id="toolbarGrpTop" class="toolbar ui-widget-header ui-corner-all">
@@ -229,7 +229,9 @@
   </div>
 
   <div id="footer" class="layout row">
-    foot
+    <p class="foottext">
+      by Rafael Kueng; uses jquery ui, chosen, datatables, colorpicker, django, celery, gunicorn, mysql. Visit https://github.com/RafiKueng/SpaghettiLens
+    </p>
   </div>
 </div>
 
