@@ -156,3 +156,40 @@ def update():
   pass
   
   
+"""
+
+### update static_html part:
+###############################
+
+
+make sure head.html is updated with all the scripts
+(cpoy paste from local execution of lmt.php)
+
+
+cd ~/src/lmt
+git reset --hard HEAD
+git pull origin master
+
+sudo cp -rf static_html /srv/lmt/static_html
+cd /srv/lmt/static_html
+
+
+
+
+cd /home/rafik/src/lmt
+cp -rf static_html /srv/lmt/
+cd /srv/lmt/static_html/
+rm lmt.html
+echo '<!DOCTYPE html>' > lmt.html
+echo "<html lang='en'>" >> lmt.html
+cat head.html >> lmt.html
+cat body.php >> lmt.html
+echo '</html>' >> lmt.html
+
+chown -R lmt:www-lmt /srv/lmt/static_html/
+
+nano /srv/lmt/static_html/js/lmt.settings.js
+set local to false!!!!!!!!!!!!!!
+
+"""
+  
