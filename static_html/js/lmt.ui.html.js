@@ -11,8 +11,43 @@ var html = {};
 
 html.fire = function(evt){
 	
-}
+};
 
+
+
+html.SaveResultDialog = {
+  init: function() {
+    $('#save_results_dialog').dialog({
+      autoOpen: false,
+      minWidth: 800,
+      minHeight: 700,
+      modal: true,
+      open: function(){},
+      buttons: [
+        {
+          text: "Upload Spaghetti",
+          click: LMT.ui.html.SaveResultDialog.upload
+        },
+        {
+          text: "Ok",
+          click: function(evt){
+            $('#save_results_dialog').dialog("close");
+          }
+        }
+      ]
+    });
+  },
+  
+  show: function(){
+    $('#save_results_dialog').dialog("open");
+  },
+  
+  
+  upload: function(evt){
+    $.event.trigger("ConvertInputImageToPNG");
+  },
+  
+};
 
 
 html.SelectDatasourceDialog = {

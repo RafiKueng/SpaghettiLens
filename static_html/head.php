@@ -26,6 +26,12 @@ header( "Pragma: no-cache" );
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.js"></script>
   
+  
+  <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/rgbcolor.js"></script> 
+  <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/StackBlur.js"></script>
+  <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/canvg.js"></script>   
+
+  
   <script type="text/javascript" src="js/lmt.js"></script>
 <?php
   // include all script files in the folder /js

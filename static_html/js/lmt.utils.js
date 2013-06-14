@@ -57,6 +57,44 @@ LMT.utils.round = function(number, digits) {
 }
 
 
+
+
+
+/**
+ * loads a set of Objects (images), provides a callback on each
+ * loaded and one if all are loaded
+ * crossOrigin: default True: allow to load from forwign origins
+ * get the loaded images as an argument to the onAll callback
+ */
+LMT.utils.ImageLoader = function(listOfURLs, onEach, onAll, crossOrigin) {
+  
+  var urls = listOfURLs;
+  var imgs = [];
+  var nImgs = listOfURLs.length;
+  var nLoaded = 0;
+  
+  var co = typeof crossOrigin !== 'boolean' ? true : crossOrigin;
+  
+  for (var i=0; i<listOfURLs.length; i++) {
+    if (typeof urls[i] === 'string'){
+      var img = new Image();
+      img.onload = function(){
+        nLoaded++;
+        onEach({nLoaded:nLoaded, nImgs:nImgs, p:100.0*nLoaded/nImgs});
+        
+        if (nLoaded==nImgs){
+          onAll(imgs);
+        }
+      };
+      if (co) {img.setAttribute('crossOrigin','anonymous');}
+      img.src = urls[i];
+      imgs[i] = img;
+    }
+  }
+}
+
+
+
 /**
  * addons to jquery
  */

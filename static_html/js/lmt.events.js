@@ -37,6 +37,7 @@ var events = {
     LMT.ui.html.DisplaySettingsDialog.init();
     LMT.ui.html.GlassSettingsDialog.init();
     LMT.ui.html.ColorSettingsOutputDialog.init();
+    LMT.ui.html.SaveResultDialog.init();
     
     LMT.ui.html.HelpBar.init();
     
@@ -96,6 +97,9 @@ var events = {
     $(document).on('ReceivedModelData', LMT.ui.html.Toolbar.updateTop);
     $(document).on('ReceivedModelData', LMT.ui.svg.bg.init);
     $(document).on('ReceivedModelData', LMT.events.AppReadyHandler);
+
+    $(document).on('RefreshBackgroundImage', LMT.ui.svg.bg.refreshBackgroundImage);
+
     
     //everything is loaded and init
     $(document).on('AppReady', LMT.events.ready);
@@ -158,6 +162,12 @@ var events = {
     
     $(document).on('ShowTooltip', html.Tooltip.show);
     $(document).on('HideTooltip', html.Tooltip.hide);
+    
+    $(document).on('ConvertInputImageToPNG', LMT.ui.svg.ConvertToPNG);
+    //$(document).on('UploadInputImage', LMT.ui.com.UploadInputImage);
+    
+    
+    
   },
   
   ready: function(){

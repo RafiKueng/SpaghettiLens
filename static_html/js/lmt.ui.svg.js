@@ -635,7 +635,9 @@ svg.coordTrans = function(evt) {
 
 /**
  * Loads & Blends the background imgage(s) for the input canvas
- * using a svg filter chain 
+ * using a svg filter chain
+ * 
+ * outdated, see next version right below
  */
 svg.bg = {
   init: function() {
@@ -772,9 +774,134 @@ svg.bg = {
     LMT.ui.svg.bg.updateZoomPan();
     $.event.trigger("RepaintModel"); //is needed to change the radii of the masses, rulers ect..
   }
-  
-  
 }
+
+
+
+
+
+
+
+/**
+ * 2nd version of background image handling
+ * this version gets the image data from a canvas, that is used to mix the colors
+ * / adjust brightness ect. and then loads the result into the svg
+ */
+svg.bg = {
+  
+  /*
+   * creates the hidden canvas where the background image is composed on
+   * and imports it to the svg
+   */
+  init: function() {
+    alert('bg init');
+
+    svg.bg.canv = document.createElement('canvas');
+    svg.bg.ctx = svg.bg.canv.getContext('2d');
+    
+    var urls = [LMT.modelData.imgurl];
+    var onEach = function(status){
+      alert("loaded: "+status.p+"%");
+    }
+    var onAll = function(imgs){
+      var bg = LMT.ui.svg.bg;
+      bg.orgimg = imgs[0];
+      bg.canv.width = bg.orgimg.width;
+      bg.canv.height = bg.orgimg.height;
+      bg.ctx.drawImage(bg.orgimg, 0, 0);
+      $.event.trigger("RefreshBackgroundImage");
+    };
+    
+    LMT.utils.ImageLoader(urls, onEach, onAll, true);
+    
+    // the black background (needed for the svg to be clickable!!)
+    var bgrect = document.createElementNS(svg.ns, "rect");
+    bgrect.setAttribute("x","-10000");
+    bgrect.setAttribute("y","-10000");
+    bgrect.setAttribute("width","20000");
+    bgrect.setAttribute("height","20000");
+    bgrect.setAttribute("fill", "black");
+    bgrect.setAttribute("stroke", "none");
+  
+
+    // the image, created from the canvas.toDataURL
+    var svgimg = document.createElementNS(svg.ns, "image");
+    //svgimg.setAttributeNS(svg.xlinkns,"xlink:href", svg.bg.canv.toDataURL());
+    svgimg.setAttribute("x","0");
+    svgimg.setAttribute("y","0");
+    svgimg.setAttribute("width","100%");
+    svgimg.setAttribute("height","100%");
+    
+    svg.bg.svgimg = svgimg;
+    
+    svg.layer.bg.appendChild(bgrect);
+    svg.layer.bg.appendChild(svgimg);
+    
+  },
+  
+  
+  refreshBackgroundImage: function(evt) {
+    alert('refresh');
+    svg.bg.svgimg.setAttributeNS(svg.xlinkns,"xlink:href", svg.bg.canv.toDataURL());
+  },
+  
+  /*
+  updateColor: function(evt, i){
+    if (LMT.modelData.img_type == "BW"){
+      svg.bgCmatrix[i].setAttribute("values", svg.generateColorMatrix(LMT.modelData.ch[i]));
+    }
+    else {
+      svg.compFilter[i].setAttribute("k3", LMT.modelData.ch[i].co);
+      svg.compFilter[i].setAttribute("k4", LMT.modelData.ch[i].br);
+    }
+  },
+  */
+  
+  /**
+   * sets the model view zoom and pan status
+   * if state: to this coord and zoom factor, otherwise to the settings 
+   */
+  updateZoomPan: function(evt, state){
+    var s;
+    if (state){
+      s = "translate(" + (state.x) + "," +
+                             (state.y) + ") " + 
+              "scale(" + state.scale + ")";
+    }
+    else {
+      s = "translate(" + (LMT.settings.display.zoompan.x) + "," +
+                         (LMT.settings.display.zoompan.y) + ") " + 
+              "scale(" + LMT.settings.display.zoompan.scale + ")";
+    }
+    svg.layer.zoompan.setAttribute("transform", s);
+    //no RepaintModel should be needed, only in zoom case, whats already taken care of below
+  },
+  
+  zoom: function(evt, delta, coord){
+    var d = delta*0.1;
+    LMT.settings.display.zoompan.scale *= 1 + d;
+    /*
+    LMT.settings.display.zoompan.x = LMT.settings.display.zoompan.x + coord.x*d;
+    LMT.settings.display.zoompan.y = LMT.settings.display.zoompan.y + coord.y*d;
+    */
+    LMT.ui.svg.bg.updateZoomPan();
+    $.event.trigger("RepaintModel"); //is needed to change the radii of the masses, rulers ect..
+  },
+  
+  zoomPanReset: function() {
+    LMT.settings.display.zoompan.x = 0;
+    LMT.settings.display.zoompan.y = 0;
+    LMT.settings.display.zoompan.scale = 1;
+    LMT.ui.svg.bg.updateZoomPan();
+    $.event.trigger("RepaintModel"); //is needed to change the radii of the masses, rulers ect..
+  }
+}
+
+
+
+
+
+
 
 
 /**
@@ -856,6 +983,32 @@ svg.updateDisp = function() {
       layer[i].classList.add("invisible");
     }
   }
+}
+
+
+
+/**
+ * will convert the current canvas to a png string for later upload 
+ */
+svg.ConvertToPNG = function(evt) {
+  alert('convert');
+  var canvas = document.createElement('canvas');
+  canvas.width = 800;
+  canvas.height = 600;
+  
+  //var svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"><circle cx="100" cy="50" r="40" stroke="black" stroke-width="2" fill="red" /></svg>';
+  
+  // first add css to the svg!!
+  //  http://code.google.com/p/canvg/issues/detail?id=143
+  
+  canvg(canvas, (new XMLSerializer()).serializeToString(svg.root), { ignoreMouse: true, ignoreAnimation: true });
+  
+  $('#save_results_dialog').append(canvas);
+  
+  var img = canvas.toDataURL("image/png");
+  
+  $('#save_results_dialog').append('<img src="'+img+'"/>');
+  
 }
 
 

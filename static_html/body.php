@@ -436,6 +436,11 @@
 </div>
 
 
+<div id="save_results_dialog" class="dialog" title="Results saved">
+  <p>your results have been saved</p>
+</div>
+
+
 </body>
 
 <!-- END body.php -->
