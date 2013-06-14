@@ -794,14 +794,16 @@ svg.bg = {
    * and imports it to the svg
    */
   init: function() {
-    alert('bg init');
-
+    //alert('bg init');
+    
     svg.bg.canv = document.createElement('canvas');
     svg.bg.ctx = svg.bg.canv.getContext('2d');
     
     var urls = [LMT.modelData.imgurl];
+    LMT.ui.html.LoadProgressDialog.show(urls.length);
+
     var onEach = function(status){
-      alert("loaded: "+status.p+"%");
+      LMT.ui.html.LoadProgressDialog.update(status);
     }
     var onAll = function(imgs){
       var bg = LMT.ui.svg.bg;
@@ -809,6 +811,7 @@ svg.bg = {
       bg.canv.width = bg.orgimg.width;
       bg.canv.height = bg.orgimg.height;
       bg.ctx.drawImage(bg.orgimg, 0, 0);
+      LMT.ui.html.LoadProgressDialog.close();
       $.event.trigger("RefreshBackgroundImage");
     };
     
@@ -841,7 +844,7 @@ svg.bg = {
   
   
   refreshBackgroundImage: function(evt) {
-    alert('refresh');
+    //alert('refresh');
     svg.bg.svgimg.setAttributeNS(svg.xlinkns,"xlink:href", svg.bg.canv.toDataURL());
   },
   

@@ -441,6 +441,12 @@
 </div>
 
 
+<div id="load_progress_dialog" class="dialog" title="Loading images">
+  <p>    
+  </p>
+</div>
+
+
 </body>
 
 <!-- END body.php -->

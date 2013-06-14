@@ -50,6 +50,36 @@ html.SaveResultDialog = {
 };
 
 
+html.LoadProgressDialog = {
+  init: function() {
+    $('#load_progress_dialog').dialog({
+      autoOpen: false,
+      minWidth: 100,
+      minHeight: 50,
+      modal: true,
+      //open: function(){},
+      buttons: []
+    });
+    html.LoadProgressDialog.htmlelem = $("#load_progress_dialog :first-child");
+  },
+  
+  show: function(nImgs){
+    html.LoadProgressDialog.update({nImgs:nImgs, nLoaded:0,p:0})
+    $('#load_progress_dialog').dialog("open");
+  },
+  
+  close: function(){
+    $('#load_progress_dialog').dialog("close");
+  },
+  
+  update: function(stat){
+    html.LoadProgressDialog.htmlelem.html("loaded: "+stat.p+"% ("+stat.nLoaded+" of "+stat.nImgs+")");
+  },
+  
+};
+
+
+
 html.SelectDatasourceDialog = {
   init: function(){
     $('#select_datasource_dialog').dialog({

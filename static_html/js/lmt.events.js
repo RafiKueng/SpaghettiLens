@@ -48,7 +48,7 @@ var events = {
 
 
     LMT.ui.html.SelectDatasourceDialog.init();
-
+    LMT.ui.html.LoadProgressDialog.init();
 
     $.event.trigger("ShowSelectDatasourceDialog");
 
