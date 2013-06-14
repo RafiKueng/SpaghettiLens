@@ -1004,13 +1004,33 @@ svg.ConvertToPNG = function(evt) {
   // first add css to the svg!!
   //  http://code.google.com/p/canvg/issues/detail?id=143
   
-  canvg(canvas, (new XMLSerializer()).serializeToString(svg.root), { ignoreMouse: true, ignoreAnimation: true });
+  var clonedSVG = svg.root.clonenode(true);
+  
+  //get stylesheet for svg
+  for (var i=0;i<document.styleSheets.length, i++) {
+    str = document.styleSheets[i].href;
+    if (str.substr(str.length-16)=="svg_elements.css"){
+      var rules = document.styleSheets[i].rules;
+      for (var j=0; j<rules.length;j++){
+        rules[j];
+      }
+      break;
+    }
+  }
+  
+  
+  canvg(canvas, (new XMLSerializer()).serializeToString(clonedSVG), { ignoreMouse: true, ignoreAnimation: true });
   
   $('#save_results_dialog').append(canvas);
+  svg.canvasout = canvas;
   
-  var img = canvas.toDataURL("image/png");
+  setTimeout(function(){
+    var canvas = LMT.ui.svg.canvasout;
+    var img = canvas.toDataURL();
+    
+    $('#save_results_dialog').append('<img src="'+img+'"/>');
+  }, 1000);
   
-  $('#save_results_dialog').append('<img src="'+img+'"/>');
   
 }
 
