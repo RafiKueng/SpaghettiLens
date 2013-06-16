@@ -95,15 +95,59 @@ textarea {
 
 
 
+.topic {
+  display:block;
+  margin: 10px;
+  padding: 5px;
+  background-color: #ffa;
+}
+
+.topicgroup {
+  background-color: #faf;
+  width: 95%;
+  margin: 10px auto;
+}
+
+.topicbox {
+  background-color: #aff;
+  color: #333;
+  line-height: 130%;
+}
+
+.content {
+  margin-left: 200px;
+  border-left: 1px solid black;
+}
 
 
+.topictitle {
+  float: left;
+  width: 180px;
+  margin: 0;
+  padding: 0;
+}
 
+.topictitle h3,
+.topictitle h4 {
+  display: inline-block;
+  line-height: 1em;
+  padding: 5px;
+  margin: 0;
+}
 
+.topictitle h4 {
+  padding-left: 30px;
+}
 
+.topictitle h4:before {
+  content: "\25B6  "
+}
 
-
-
-
+.topictext {
+  margin-left: 200px;
+  border-left: 1px solid gray;
+  padding: 5px;
+}
 
 
 
