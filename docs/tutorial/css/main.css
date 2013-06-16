@@ -93,23 +93,25 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
-
+body {
+  display: none;
+}
 
 .topic {
   display:block;
   margin: 10px;
   padding: 5px;
-  background-color: #ffa;
+  /*background-color: #ffa;*/
 }
 
 .topicgroup {
-  background-color: #faf;
+  /*background-color: #faf;*/
   width: 95%;
   margin: 10px auto;
 }
 
 .topicbox {
-  background-color: #aff;
+  /*background-color: #aff;*/
   color: #333;
   line-height: 130%;
 }
@@ -147,10 +149,58 @@ textarea {
   margin-left: 200px;
   border-left: 1px solid gray;
   padding: 5px;
+  overflow: hidden;
+}
+
+i {
+  font-style: normal;
+  text-decoration: underline;
+  cursor: help;
+}
+
+i:before {
+  content:"[ ";
+}
+i:after {
+  content:" ]";
+}
+
+.adv {
+  background-color:#ffa;
+}
+.exp {
+  background-color:#faa;
 }
 
 
+.topictext img {
+  margin: 4px;
+  width: 300px; /*standart setting, can be overwritten by big/small class*/
+}
 
+.topictext img.left {
+  float: left;
+}
+
+.topictext img.right {
+  float: right;
+}
+
+.topictext img.clear {
+  clear: both;
+}
+
+.topictext img.big {
+  width: 500px;
+}
+
+.topictext img.medium {
+  width: 300px;
+}
+
+.topictext img.small {
+  width: 100px;
+}
 
 
 /* ==========================================================================
