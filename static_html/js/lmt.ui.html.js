@@ -708,7 +708,7 @@ html.GlassSettingsDialog = {
     $("#gset_pixrad_out").html("(" + $("#gset_pixrad_slide").slider( "value") + ")");
     $("#gset_nmodels_out").html("(" + $("#gset_nmodels_slide").slider( "value") + ")");
    
-    $("#gset_issymm").button("option", "label", "No");
+    $("#gset_issymm").button("option", "label", "Yes");
     
    
     $("#glass_dialog").removeClass("initHidden");

@@ -40,9 +40,13 @@ for i in doplot:
   ax.patch.set_facecolor('black')
 
   ticks = [-0.5,0,0.5]
+  ticks = []
+  zticks = [0,0.25,0.5]
+  zticks = []
+  
   ax.xaxis.set_ticks(ticks)
   ax.yaxis.set_ticks(ticks)
-  ax.zaxis.set_ticks(ticks)
+  ax.zaxis.set_ticks(zticks)
 
   col2 = (0.9,)*3
   ax.tick_params(axis='x', colors=col2)
@@ -71,6 +75,6 @@ for i in doplot:
 
   ax.set_zlim(zmin, zmax)
   #fig.colorbar(surf, shrink=0.5, aspect=5)
-  #show()
-  savefig('fig'+str(i)+'.png', dpi=100)
+  show()
+  #savefig('fig'+str(i)+'.png', dpi=100)
 
