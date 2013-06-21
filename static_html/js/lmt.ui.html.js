@@ -20,7 +20,7 @@ html.SelectDatasourceDialog = {
     $('#select_datasource_dialog').dialog({
       autoOpen: false,
       minWidth: 550,
-      minHeight: 700,
+      minHeight: 550,
       modal: true,
       open: function(){},
       buttons: [
@@ -86,7 +86,7 @@ html.GenericDatasourceDialog = {
       title: dd.title,
       autoOpen: false,
       minWidth: 550,
-      minHeight: 700,
+      minHeight: 550,
       modal: true,
       open: function(){},
       buttons: [
@@ -129,7 +129,7 @@ html.SelectModelDialog = {
     $('#select_model_dialog').dialog({
       autoOpen: false,
       minWidth: 550,
-      minHeight: 700,
+      minHeight: 550,
       modal: true,
       open: function(){},
       buttons: [
