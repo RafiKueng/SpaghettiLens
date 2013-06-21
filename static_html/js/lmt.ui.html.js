@@ -712,7 +712,8 @@ html.GlassSettingsDialog = {
     LMT.model.Parameters.n_models = $("#gset_nmodels_slide").slider("value");
     $("#gset_nmodels_out").html("(" + $("#gset_nmodels_slide").slider( "value") + ")");
    
-    LMT.model.Parameters.isSym = $("#gset_issymm").attr('checked') ? true : false;
+    //LMT.model.Parameters.isSym = $("#gset_issymm").attr('checked') ? true : false;
+    LMT.model.Parameters.isSym = true;
     $("#gset_issymm").attr('checked', true);
     $("#gset_issymm").button("option", "label", "Yes");
     
