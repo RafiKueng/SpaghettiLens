@@ -85,7 +85,7 @@ html.SelectDatasourceDialog = {
     $('#select_datasource_dialog').dialog({
       autoOpen: false,
       minWidth: 550,
-      minHeight: 700,
+      minHeight: 550,
       modal: true,
       open: function(){},
       buttons: [
@@ -151,7 +151,7 @@ html.GenericDatasourceDialog = {
       title: dd.title,
       autoOpen: false,
       minWidth: 550,
-      minHeight: 700,
+      minHeight: 550,
       modal: true,
       open: function(){},
       buttons: [
@@ -194,7 +194,7 @@ html.SelectModelDialog = {
     $('#select_model_dialog').dialog({
       autoOpen: false,
       minWidth: 550,
-      minHeight: 700,
+      minHeight: 550,
       modal: true,
       open: function(){},
       buttons: [
@@ -694,7 +694,7 @@ html.GlassSettingsDialog = {
         $("#gset_redshift_slide").slider("values",
           [LMT.model.Parameters.z_lens|| 0.5 ,
           LMT.model.Parameters.z_src || 1]);
-        $("#gset_pixrad_slide").slider("value", LMT.model.Parameters.pixrad || 5);
+        $("#gset_pixrad_slide").slider("value", LMT.model.Parameters.pixrad || 8);
         $("#gset_nmodels_slide").slider("value", LMT.model.Parameters.n_models || 200);
         $("#gset_issymm").prop("checked", LMT.model.Parameters.isSym || false).change();
       }
@@ -723,10 +723,10 @@ html.GlassSettingsDialog = {
 
     $("#gset_pixrad_slide").slider({
       range: false,
-      min: 3,
-      max: 8,
+      min: 5,
+      max: 12,
       step: 1,
-      value: 5, //default value will be set on open of diaalog..
+      value: 8, //default value will be set on open of dialog..
       slide: function(evt, ui){
         $("#gset_pixrad_out").html("("+ui.value+")");
       },
@@ -770,10 +770,17 @@ html.GlassSettingsDialog = {
     
     //set defaults
     $("#gset_redshift_out").html("(Lens: " + $("#gset_redshift_slide").slider( "values", 0 ) + " / Source: " + $("#gset_redshift_slide").slider( "values", 1 ) + ")");
+    
+    LMT.model.Parameters.pixrad = $("#gset_pixrad_slide").slider( "value");
     $("#gset_pixrad_out").html("(" + $("#gset_pixrad_slide").slider( "value") + ")");
+
+    LMT.model.Parameters.n_models = $("#gset_nmodels_slide").slider("value");
     $("#gset_nmodels_out").html("(" + $("#gset_nmodels_slide").slider( "value") + ")");
    
-    $("#gset_issymm").button("option", "label", "No");
+    //LMT.model.Parameters.isSym = $("#gset_issymm").attr('checked') ? true : false;
+    LMT.model.Parameters.isSym = true;
+    $("#gset_issymm").attr('checked', true);
+    $("#gset_issymm").button("option", "label", "Yes");
     
    
     $("#glass_dialog").removeClass("initHidden");

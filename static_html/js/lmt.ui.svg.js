@@ -596,13 +596,13 @@ svg.disableCrosshairMode = function(){
 }
 
 svg.moveCrosshair = function(evt, jsTarget, svgTarget, coord){
-  svg.crosshair.weline.setAttribute("x1", ""+ (-100));
-  svg.crosshair.weline.setAttribute("x2", ""+ (1000));
+  svg.crosshair.weline.setAttribute("x1", ""+ (-5000));
+  svg.crosshair.weline.setAttribute("x2", ""+ (5000));
   svg.crosshair.weline.setAttribute("y1", ""+ coord.y);
   svg.crosshair.weline.setAttribute("y2", ""+ coord.y);
 
-  svg.crosshair.nsline.setAttribute("y1", ""+ (-100));
-  svg.crosshair.nsline.setAttribute("y2", ""+ (1000));
+  svg.crosshair.nsline.setAttribute("y1", ""+ (-5000));
+  svg.crosshair.nsline.setAttribute("y2", ""+ (5000));
   svg.crosshair.nsline.setAttribute("x1", ""+ coord.x);
   svg.crosshair.nsline.setAttribute("x2", ""+ coord.x);
   
