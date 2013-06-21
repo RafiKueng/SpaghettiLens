@@ -27,8 +27,8 @@ Z[2] = sin(R)**2 - log(h)*0.3
 Z[3] = sin(R*1.5)**2 - log(g)*0.3
 Z[4] = (S1*S2)**0.5
 
-doplot = range(len(Z))
-#doplot = [4]
+#doplot = range(len(Z))
+doplot = [4]
 
 for i in doplot:
 

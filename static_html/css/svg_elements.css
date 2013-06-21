@@ -1,14 +1,14 @@
 /* SVG elements */
 .extremalpoint.min {
-	fill: green;
+	fill: cyan;
 }
 
 .extremalpoint.max {
-	fill: blue;
+	fill: red;
 }
 
 .extremalpoint.sad {
-	fill: #ffff00;
+	fill: green;
 }
 
 .contourpoint {
@@ -60,13 +60,13 @@
   /*stroke: #ff0000;*/
 }
 .crosshair.min {
-  stroke: green;
+  stroke: cyan;
 }
 .crosshair.max {
-  stroke: blue;
+  stroke: red;
 }
 .crosshair.sad {
-  stroke: #ffff00;
+  stroke: green;
 }
 
 
