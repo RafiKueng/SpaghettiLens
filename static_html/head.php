@@ -29,7 +29,9 @@ header( "Pragma: no-cache" );
   
   <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/rgbcolor.js"></script> 
   <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/StackBlur.js"></script>
+<!--
   <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/canvg.js"></script>   
+-->
 
   
   <script type="text/javascript" src="js/lmt.js"></script>

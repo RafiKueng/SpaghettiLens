@@ -404,7 +404,10 @@ ExtremalPoint.prototype.paint = function() {
   if (!this.circle) {
     this.inv_circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     this.inv_circle.setAttribute("id", "point_inv" + this.idnr);
-    this.inv_circle.setAttribute("class", "extremalpoint, almostinvis");
+    //this.inv_circle.setAttribute("class", "extremalpoint almostinvis");
+    //$(this.inv_circle).attr("class", "extremalpoint almostinvis");
+    this.inv_circle.classList.add("extremalpoint");
+    this.inv_circle.classList.add("hidden");
     
     this.layer.appendChild(this.inv_circle);
     //this.circle.pnt = this;

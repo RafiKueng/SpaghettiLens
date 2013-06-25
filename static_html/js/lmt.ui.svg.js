@@ -1004,20 +1004,39 @@ svg.ConvertToPNG = function(evt) {
   // first add css to the svg!!
   //  http://code.google.com/p/canvg/issues/detail?id=143
   
-  var clonedSVG = svg.root.clonenode(true);
+  var clonedSVG = svg.root.cloneNode(true);
+  
+  // fix for missing canvg advanced css
+  // classes of parents don't get applied to children
+  if (! LMT.settings.display.paintContours) {
+    $(clonedSVG).find(".contourpath").addClassSVG("invisible")
+  }
+  if (! LMT.settings.display.paintContourPoints) {
+    $(clonedSVG).find(".contourpoint").children().addClassSVG("invisible")
+  }
+  if (! LMT.settings.display.paintConnectingLines) {
+    $(clonedSVG).find(".connectorline").children().addClassSVG("invisible")
+  }
+  
+  
+  var style = document.createElementNS(svg.ns, "style");
+  
+  //style.textContent += "<![CDATA[\n";
   
   //get stylesheet for svg
-  for (var i=0;i<document.styleSheets.length, i++) {
+  for (var i=0;i<document.styleSheets.length; i++) {
     str = document.styleSheets[i].href;
     if (str.substr(str.length-16)=="svg_elements.css"){
       var rules = document.styleSheets[i].rules;
       for (var j=0; j<rules.length;j++){
-        rules[j];
+        style.textContent += (rules[j].cssText + "\n");
       }
       break;
     }
   }
+  //style.textContent += "]]>";
   
+  clonedSVG.getElementsByTagName("defs")[0].appendChild(style);
   
   canvg(canvas, (new XMLSerializer()).serializeToString(clonedSVG), { ignoreMouse: true, ignoreAnimation: true });
   
