@@ -889,11 +889,22 @@ html.KeyboardListener = {
         break;
         
       case 46: //num.
-        LMT.ui.html.SaveResultDialog.show()
+        LMT.ui.html.SaveResultDialog.show();
         break;
-      default:
+      
+      /*default:
         return;
+      */
     }
+
+    if (debug) { //debug keys
+      switch (code){
+        // show log on l
+        case 108: //l
+          $("#log").css({'display':'block'});
+      }
+    }
+
     if (keyCatched){
       if (evt.stopPropagation) {evt.stopPropagation();}
       if (evt.preventDefault) {evt.preventDefault();}
