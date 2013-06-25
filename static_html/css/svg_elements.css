@@ -89,5 +89,6 @@
 
 /* use this class for elements that are not displayed */
 .invisible {
+  opacity: 0.00;
 	visibility: hidden;
 }

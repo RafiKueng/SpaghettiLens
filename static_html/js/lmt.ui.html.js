@@ -867,28 +867,37 @@ html.Tooltip = {
 
 html.KeyboardListener = {
   init: function(){
-    //$('body').on('keypress', LMT.ui.html.KeyboardListener.keyEvent);
+    $('body').on('keypress', LMT.ui.html.KeyboardListener.keyEvent);
   },
   
   keyEvent: function(evt){
     var code = event.which || event.keyCode;
     log.write("keycode: "+code);
+    var keyCatched = false;
     
     switch (code) {
       case 13: //enter and numEnter
       case 48:
       case 96: //num0
         $.event.trigger("ZoomPanReset");
+        keyCatched = true;
         break;
       
       case 43: //num+
         $.event.trigger("Zoom", [+1]);
+        keyCatched = true;
+        break;
+        
+      case 46: //num.
+        LMT.ui.html.SaveResultDialog.show()
         break;
       default:
         return;
     }
-    if (evt.stopPropagation) {evt.stopPropagation();}
-    if (evt.preventDefault) {evt.preventDefault();}
+    if (keyCatched){
+      if (evt.stopPropagation) {evt.stopPropagation();}
+      if (evt.preventDefault) {evt.preventDefault();}
+    }
   }
 }
 

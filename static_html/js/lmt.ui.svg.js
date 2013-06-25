@@ -1008,15 +1008,17 @@ svg.ConvertToPNG = function(evt) {
   
   // fix for missing canvg advanced css
   // classes of parents don't get applied to children
+  /*
   if (! LMT.settings.display.paintContours) {
     $(clonedSVG).find(".contourpath").addClassSVG("invisible")
   }
   if (! LMT.settings.display.paintContourPoints) {
-    $(clonedSVG).find(".contourpoint").children().addClassSVG("invisible")
+    $(clonedSVG).find(".contourpoint").addClassSVG("invisible")
   }
   if (! LMT.settings.display.paintConnectingLines) {
-    $(clonedSVG).find(".connectorline").children().addClassSVG("invisible")
+    $(clonedSVG).find(".connectorline").addClassSVG("invisible")
   }
+  */
   
   
   var style = document.createElementNS(svg.ns, "style");
