@@ -871,7 +871,7 @@ html.KeyboardListener = {
   },
   
   keyEvent: function(evt){
-    var code = event.which || event.keyCode;
+    var code = evt.which || evt.keyCode;
     log.write("keycode: "+code);
     var keyCatched = false;
     
@@ -888,9 +888,7 @@ html.KeyboardListener = {
         keyCatched = true;
         break;
         
-      case 46: //num.
-        LMT.ui.html.SaveResultDialog.show();
-        break;
+
       
       /*default:
         return;
@@ -899,6 +897,10 @@ html.KeyboardListener = {
 
     if (debug) { //debug keys
       switch (code){
+        case 46: //num.
+          LMT.ui.html.SaveResultDialog.show();
+          break;
+        
         // show log on l
         case 108: //l
           $("#log").css({'display':'block'});

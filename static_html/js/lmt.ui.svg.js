@@ -994,32 +994,23 @@ svg.updateDisp = function() {
  * will convert the current canvas to a png string for later upload 
  */
 svg.ConvertToPNG = function(evt) {
-  alert('convert');
+  //alert('convert');
+  
+  // put canvas in parent element of fixed size, because canvg takes dimensions of parent
+  var $parent = $('<div style="width:800px;height:600px;position:absolute;top:0;left:0;zindex:0;"></div>');
+
   var canvas = document.createElement('canvas');
   canvas.width = 800;
   canvas.height = 600;
+  canvas.style.width  = '800px';
+  canvas.style.height = '600px';
   
-  //var svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"><circle cx="100" cy="50" r="40" stroke="black" stroke-width="2" fill="red" /></svg>';
+
   
   // first add css to the svg!!
+  // make a clone and add css to the clone
   //  http://code.google.com/p/canvg/issues/detail?id=143
-  
   var clonedSVG = svg.root.cloneNode(true);
-  
-  // fix for missing canvg advanced css
-  // classes of parents don't get applied to children
-  /*
-  if (! LMT.settings.display.paintContours) {
-    $(clonedSVG).find(".contourpath").addClassSVG("invisible")
-  }
-  if (! LMT.settings.display.paintContourPoints) {
-    $(clonedSVG).find(".contourpoint").addClassSVG("invisible")
-  }
-  if (! LMT.settings.display.paintConnectingLines) {
-    $(clonedSVG).find(".connectorline").addClassSVG("invisible")
-  }
-  */
-  
   
   var style = document.createElementNS(svg.ns, "style");
   
@@ -1029,7 +1020,7 @@ svg.ConvertToPNG = function(evt) {
   for (var i=0;i<document.styleSheets.length; i++) {
     str = document.styleSheets[i].href;
     if (str.substr(str.length-16)=="svg_elements.css"){
-      var rules = document.styleSheets[i].rules;
+      var rules = document.styleSheets[i].cssRules;
       for (var j=0; j<rules.length;j++){
         style.textContent += (rules[j].cssText + "\n");
       }
@@ -1042,15 +1033,30 @@ svg.ConvertToPNG = function(evt) {
   
   canvg(canvas, (new XMLSerializer()).serializeToString(clonedSVG), { ignoreMouse: true, ignoreAnimation: true });
   
-  $('#save_results_dialog').append(canvas);
-  svg.canvasout = canvas;
+  clonedSVG = null;
   
+
+  // add elements to dom, so canvas gets drawn
+  $parent.append(canvas);
+  $('body').append($parent);
+
+  //$(canvas).css({'display': 'none'});
+  //$parent.css({'display': 'none'});
+  //$(canvas).css({'visibility': 'hidden'});
+  $parent.css({'visibility': 'hidden'});
+
+  svg.canvasout = canvas;
+  svg.canvasoutprnt = $parent;
+  
+  // wait for the canvas to redraw
   setTimeout(function(){
     var canvas = LMT.ui.svg.canvasout;
     var img = canvas.toDataURL();
     
-    $('#save_results_dialog').append('<img src="'+img+'"/>');
-  }, 1000);
+    $('#save_results_dialog').append('<img style="width:300px;" src="'+img+'"/>');
+    svg.canvasoutprnt.remove();
+    LMT.ui.svg.canvasout = null;
+  }, 100);
   
   
 }
