@@ -1053,9 +1053,11 @@ svg.ConvertToPNG = function(evt) {
     var canvas = LMT.ui.svg.canvasout;
     var img = canvas.toDataURL();
     
-    $('#save_results_dialog').append('<img style="width:300px;" src="'+img+'"/>');
+    //$('#save_results_dialog').append('<img style="width:300px;" src="'+img+'"/>');
     svg.canvasoutprnt.remove();
     LMT.ui.svg.canvasout = null;
+    LMT.ui.svg.img = img;
+    $.event.trigger("InputImageGenerated");
   }, 100);
   
   

@@ -414,10 +414,14 @@ def saveModelFinal(request):
       return response
     
     try:
-      print "imgdata", r['imgData']
-      fh = open("../tmp_media/%06i/input.png" % rid, "wb")
-      fh.write(r['imgData'].decode('base64'))
-      fh.close()
+      print "imgdata", r['imgData'][0:200]
+      imgstr = r['imgData']
+      ident, img = imgstr.split(',')
+      print ident
+      if ident == "data:image/png;base64":
+        fh = open("../tmp_media/%06i/input.png" % rid, "wb")
+        fh.write(img.decode('base64'))
+        fh.close()
     except:
       pass
     

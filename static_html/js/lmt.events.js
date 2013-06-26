@@ -131,7 +131,8 @@ var events = {
     $(document).on('SwitchMode', LMT.ui.svg.SwitchMode);
     $(document).on('ModeSwitched', LMT.ui.html.Toolbar.update);
 
-    
+    $(document).on('ShowDialogSaveResult', LMT.ui.html.SaveResultDialog.show);
+    $(document).on('InputImageGenerated', LMT.ui.html.SaveResultDialog.generatedImage);
     $(document).on('SaveModel', LMT.com.SaveModel);  // upload model with is final tag
     $(document).on('UploadModel', LMT.com.UploadModel);
     $(document).on('SimulateModel', LMT.events.SimulateModel);

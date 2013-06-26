@@ -21,7 +21,7 @@
               Goto Previous Model
             </button>
             <button id="btnMainFinish"
-              data-event="SaveModel"
+              data-event="ShowDialogSaveResult"
               data-tooltip="Save the final model on the server"
               data-furtherinfo="http://www.google.com"
               data-hotkey="s"
@@ -436,8 +436,7 @@
 </div>
 
 
-<div id="save_results_dialog" class="dialog" title="Results saved">
-  <p>your results have been saved</p>
+<div id="save_results_dialog" class="dialog" title="Save your Model">
 </div>
 
 

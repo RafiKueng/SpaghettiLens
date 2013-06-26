@@ -19,17 +19,21 @@ html.SaveResultDialog = {
   init: function() {
     $('#save_results_dialog').dialog({
       autoOpen: false,
-      minWidth: 800,
-      minHeight: 700,
+      minWidth: 600,
+      minHeight: 400,
       modal: true,
       open: function(){},
       buttons: [
         {
-          text: "Upload Spaghetti",
+          text: "close",
+          click: LMT.ui.html.SaveResultDialog.close
+        },
+        {
+          text: "Upload",
           click: LMT.ui.html.SaveResultDialog.upload
         },
         {
-          text: "Ok",
+          text: "Abort",
           click: function(evt){
             $('#save_results_dialog').dialog("close");
           }
@@ -39,13 +43,34 @@ html.SaveResultDialog = {
   },
   
   show: function(){
+    $('#save_results_dialog').html('<p>genrating input image</p>');
     $('#save_results_dialog').dialog("open");
+    $(".ui-dialog-buttonpane button:contains('close')").button('disable');
+    $(".ui-dialog-buttonpane button:contains('Upload')").button('disable');
+    $.event.trigger("ConvertInputImageToPNG");
   },
   
   
   upload: function(evt){
-    $.event.trigger("ConvertInputImageToPNG");
+    $.event.trigger("SaveModel");
   },
+  
+  close: function(evt){
+    $('#save_results_dialog').dialog("close");
+  },
+  
+  generatedImage: function(evt){
+    $('#save_results_dialog').html('<p>input image:</p>');
+    
+    $('#save_results_dialog').append('<img style="width:300px;" src="'+LMT.ui.svg.img+'"/>');
+    $(".ui-dialog-buttonpane button:contains('close')").button('disable');
+    $(".ui-dialog-buttonpane button:contains('Upload')").button('enable');
+  },
+  
+  uploadSuccessful: function(evt){
+    $(".ui-dialog-buttonpane button:contains('close')").button('enable');
+    $(".ui-dialog-buttonpane button:contains('Upload')").button('disable');
+  }
   
 };
 

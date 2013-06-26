@@ -262,7 +262,7 @@ com.SaveModel = function(evt) {
         resultid: LMT.simulationData.resultId,
         isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
         username: LMT.settings.username,
-        imgData: "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkAQMAAABKLAcXAAAABlBMVEX/AAAAAP9sof2OAAAAIUlEQVR4nGNgGAWjgFTw//8HJF4Dg8CI5aGGxCgYBcQBAMULD/2Zt2wmAAAAAElFTkSuQmCC"
+        imgData: LMT.ui.svg.img
     };
   
   //LMT.simulationData.resultId = -1;
