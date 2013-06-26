@@ -261,7 +261,8 @@ com.SaveModel = function(evt) {
         modelid: LMT.modelData.id,
         resultid: LMT.simulationData.resultId,
         isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
-        username: LMT.settings.username
+        username: LMT.settings.username,
+        imgData: "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkAQMAAABKLAcXAAAABlBMVEX/AAAAAP9sof2OAAAAIUlEQVR4nGNgGAWjgFTw//8HJF4Dg8CI5aGGxCgYBcQBAMULD/2Zt2wmAAAAAElFTkSuQmCC"
     };
   
   //LMT.simulationData.resultId = -1;

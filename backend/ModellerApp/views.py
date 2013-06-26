@@ -405,20 +405,28 @@ def saveModelFinal(request):
 
     try:
       m = LensData.objects.get(id=mid)
-      r = ModellingResult.objects.get(id=rid)
+      res = ModellingResult.objects.get(id=rid)
     except:
       print "keyerror in save model final"
       data = sjson.dumps({"status":"BAD_KEYS","desc":"blabla"})
       response = HttpResponseNotFound(data, content_type="application/json")
       response['Access-Control-Allow-Origin'] = "*"
-      return response      
+      return response
+    
+    try:
+      print "imgdata", r['imgData']
+      fh = open("../tmp_media/%06i/input.png" % rid, "wb")
+      fh.write(r['imgData'].decode('base64'))
+      fh.close()
+    except:
+      pass
     
     if m.n_res: m.n_res = m.n_res + 1
     else: m.n_res = 1
     
-    r.is_final_result = True
+    res.is_final_result = True
     m.save()
-    r.save()
+    res.save()
 
     data = sjson.dumps({"status":"OK", "result_id": "%06i" % rid})
     response = HttpResponse(data, content_type="application/json")
