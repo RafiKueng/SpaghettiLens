@@ -134,6 +134,7 @@ var events = {
     $(document).on('ShowDialogSaveResult', LMT.ui.html.SaveResultDialog.show);
     $(document).on('InputImageGenerated', LMT.ui.html.SaveResultDialog.generatedImage);
     $(document).on('SaveModel', LMT.com.SaveModel);  // upload model with is final tag
+    $(document).on('SavedModel', LMT.ui.html.SaveResultDialog.savedModel);  // if successful saved
     $(document).on('UploadModel', LMT.com.UploadModel);
     $(document).on('SimulateModel', LMT.events.SimulateModel);
     $(document).one('UpdateRepaintModel', LMT.events.UpdateRepaintModel); //can only be called once, once finished with the update, it reassigns itself

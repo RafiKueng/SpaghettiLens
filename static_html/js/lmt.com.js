@@ -238,6 +238,7 @@ com.SaveModel = function(evt) {
     alert("Model saved! \n(result_id: "+jsonResp.result_id+")\n"+
       "access the raw data with:\n"+
       "http://mite.physik.uzh.ch/data/"+jsonResp.result_id);
+    $.event.trigger("SavedModel", jsonResp.result_id);
   };
   
   var fail = function(a, b, c) {

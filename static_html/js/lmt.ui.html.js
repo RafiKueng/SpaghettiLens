@@ -47,6 +47,7 @@ html.SaveResultDialog = {
     $('#save_results_dialog').dialog("open");
     $(".ui-dialog-buttonpane button:contains('close')").button('disable');
     $(".ui-dialog-buttonpane button:contains('Upload')").button('disable');
+    $(".ui-dialog-buttonpane button:contains('Abort')").button('enable');
     $.event.trigger("ConvertInputImageToPNG");
   },
   
@@ -67,9 +68,18 @@ html.SaveResultDialog = {
     $(".ui-dialog-buttonpane button:contains('Upload')").button('enable');
   },
   
-  uploadSuccessful: function(evt){
+  savedModel: function(evt, rid){
     $(".ui-dialog-buttonpane button:contains('close')").button('enable');
     $(".ui-dialog-buttonpane button:contains('Upload')").button('disable');
+    $(".ui-dialog-buttonpane button:contains('Abort')").button('disable');
+    var url = "http://mite.physik.uzh.ch/data/"+rid;
+    var html = [
+      '<p>Result Saved</p>',
+      '<p>You can retrieve your model at the following url:<br/>',
+      '<a href="'+url+'" target="_blank">'+url+'</a></p>'
+    ].join('\n');
+    
+    $('#save_results_dialog').html(html);
   }
   
 };
