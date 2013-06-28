@@ -42,7 +42,7 @@ var events = {
     LMT.ui.html.HelpBar.init();
     
     LMT.ui.html.Tooltip.init();
-    LMT.ui.html.KeyboardListener.init();
+    //LMT.ui.html.KeyboardListener.init(); only load when app is ready, no more dialogs
     
     LMT.ui.svg.initCanvas();
 
@@ -178,6 +178,7 @@ var events = {
   ready: function(){
     //push initial state to actionstack
     $.event.trigger("SaveModelState");
+    LMT.ui.html.KeyboardListener.init();
   }
   
 }  

@@ -139,7 +139,10 @@ html.SelectDatasourceDialog = {
       modal: true,
       open: function(){
         var uname = $.cookie('username');
-        if (username){$("#username").val(uname);}
+        if (username){
+          $("#username").val(uname);
+          $('.ui-dialog-buttonpane button:last').focus();
+        }
         var ds = $.cookie('ds');
         if (ds){$("#sel_datasource").val(ds).trigger("liszt:updated");}
       },
@@ -614,7 +617,8 @@ html.ColorSettingsDialog = {
   },
   
   show: function(){
-    $('#color_dialog').dialog("open");
+    $('#color_dialog')
+      .dialog("open");
   }
   
   
@@ -690,7 +694,13 @@ html.ColorSettingsOutputDialog = {
   },
   
   show: function(){
-    $('#color_out_dialog').dialog("open");
+    $('#color_out_dialog')
+      .dialog("open")
+      .dialog('widget').position({
+          my: "left center",
+          at: "left center",
+          of: $('#inp')
+      });
   },
   
   
@@ -874,7 +884,13 @@ html.GlassSettingsDialog = {
   },
   
   show: function() {
-    $('#glass_dialog').dialog("open");
+    $('#glass_dialog')
+      .dialog("open")
+      .dialog('widget').position({
+          my: "center center",
+          at: "center center",
+          of: $('body')
+      });
   }
 }
 
@@ -963,8 +979,7 @@ html.KeyboardListener = {
     var keyCatched = false;
     
     switch (code) {
-      case 13: //enter and numEnter
-      case 48:
+      case 48: //numEnter
       case 96: //num0
         $.event.trigger("ZoomPanReset");
         keyCatched = true;
