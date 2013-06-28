@@ -72,6 +72,7 @@ Ruler2.prototype.createSVG = function() {
 Ruler2.prototype.updateSVG = function() {
 
 	this.circle.setAttribute("r", this.r);
+	this.circle.setAttribute("stroke-width", Ruler2.strokeWidth_def / LMT.settings.display.zoompan.scale);
 }
 
 
@@ -124,6 +125,7 @@ Ruler2.prototype.move = function(coord) {
 //static fncs
 
 Ruler2.r_def = {mid: 7, handle: 5, r: 50}; //default radii of mid section and handle (before scaling)
+Ruler2.strokeWidth_def = 1.5;
 
 
 LMT.objects.Ruler2 = Ruler2;
