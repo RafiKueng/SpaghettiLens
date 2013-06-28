@@ -38,10 +38,10 @@ LMT.utils.logger = function(toConsole) {
     _log.innerHTML = "logging to js console";
     this.log = function() {
       var txt = "";
-      for (var i = 0;i<arguments.length;++i){
+      for (var i = 0;i<arguments.length-1;++i){
         txt += arguments[i] + '\n';
       }
-      //txt += '------';
+      txt += arguments[arguments.length-1];
       console.log(txt);
       _history.push(txt);
       if (_history.length>_length) _history.shift();

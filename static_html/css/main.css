@@ -349,7 +349,8 @@ table.display td.center {
  */
 
 #dsettings {
-	margin-top: 10px;
+	text-align: center;
+	line-height: 2.5;
 }
 
 

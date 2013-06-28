@@ -370,12 +370,14 @@
 
 <div id="display_dialog" class="dialog initHidden" title="Display Settings">
   <div id="dsettings">
+    <input type="checkbox" id="ds_all" />
+    <label for="ds_all">Toggle Model (all)</label>
     <input type="checkbox" id="conn_l" />
-    <label for="conn_l">ConnectingLines</label>
+    <label for="conn_l">Toggle Connecting Lines</label>
     <input type="checkbox" id="cont_p" />
-    <label for="cont_p">ContourPoints</label>
+    <label for="cont_p">Toggle Contour Points</label>
     <input type="checkbox" id="cont_l" />
-    <label for="cont_l">ContourLine</label>
+    <label for="cont_l">Toggle Contour Lines</label>
   </div>
 </div>
 

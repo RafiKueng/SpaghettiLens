@@ -615,6 +615,14 @@ svg.moveCrosshair = function(evt, jsTarget, svgTarget, coord){
 }
 
 
+svg.toggleModelDisplay = function(evt) {
+  log("svg | toggleModelDisplay");
+  $(svg.layer.masses).toggleClassSVG('invisible');
+  $(svg.layer.models).toggleClassSVG('invisible');
+  $(svg.layer.rulers).toggleClassSVG('invisible');
+};
+
+
 
 /**
  * transforms the optained raw coordines in the coordinate system of the zoomed / panned layer 

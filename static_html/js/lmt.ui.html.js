@@ -698,36 +698,49 @@ html.DisplaySettingsDialog = {
   	 */
   	$("#display_dialog").dialog({
   		autoOpen: false,
-  		minWidth: 700,
+  		minWidth: 200,
   		open: function(){ //update button status
   			// .change is a bugfix, as described here: http://stackoverflow.com/questions/8796680/jqueryui-button-state-not-changing-on-prop-call
+        $('#ds_all').prop("checked", LMT.settings.display.paintConnectingLines).change();
   			$('#conn_l').prop("checked", LMT.settings.display.paintConnectingLines).change();
   			$('#cont_p').prop("checked", LMT.settings.display.paintContourPoints).change();
   			$('#cont_l').prop("checked", LMT.settings.display.paintContours).change();
   		}
   	});
   	
-  	$('#dsettings').buttonset();
+  	//$('#dsettings').buttonset();
   	
-  	$('#conn_l').click(function(evt){
+  	$('#conn_l').button().click(function(evt){
   		LMT.settings.display.paintConnectingLines = this.checked;
   		$.event.trigger('ChangedDisplaySettings');
   	});
-  	$('#cont_p').click(function(evt){
+  	$('#cont_p').button().click(function(evt){
   		LMT.settings.display.paintContourPoints = this.checked;
       $.event.trigger('ChangedDisplaySettings');
   	})
-  	$('#cont_l').click(function(){
+  	$('#cont_l').button().click(function(){
   		LMT.settings.display.paintContours = this.checked;
       $.event.trigger('ChangedDisplaySettings');
   	});
+  	
+  	$('#ds_all').button().click(function(evt){
+      LMT.settings.display.paintModel = this.checked;
+      $.event.trigger('ToggleModelDisplay');
+  	});
+  	
   	
   	$("#display_dialog").removeClass("initHidden");
   	
 	},
 	
 	show: function() {
-	  $('#display_dialog').dialog("open");
+	  $('#display_dialog')
+	    .dialog("open")
+  	  .dialog('widget').position({
+          my: "center bottom",
+          at: "center bottom",
+          of: $('body')
+      });
 	}
 }
 	

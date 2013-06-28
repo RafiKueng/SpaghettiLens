@@ -111,6 +111,7 @@ var events = {
     
     //display settings were changed
     $(document).on('ChangedDisplaySettings', LMT.ui.svg.updateDisp);
+    $(document).on('ToggleModelDisplay', LMT.ui.svg.toggleModelDisplay);
 
     $(document).on('Undo', LMT.objects.ActionStack.Undo);
     $(document).on('Redo', LMT.objects.ActionStack.Redo);
