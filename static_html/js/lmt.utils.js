@@ -1,7 +1,12 @@
 
-LMT.utils.logger = function () {
-  this.log = document.getElementById("logcont");
+LMT.utils.logger = function(toConsole) {
+  var _log = document.getElementById("logcont");
+  var _history = [];
+  var _length = 10;
+  $("#log").css({'display':'block'});
+  $("#log").hide();
   
+  /*
   this.write = function(txt) {
     this.log.innerHTML = txt;
   };
@@ -13,10 +18,39 @@ LMT.utils.logger = function () {
   this.clear = function() {
     this.log.innerHTML = ""; 
   };
-}
-
-var log;
-if (debug) {
+  */
+  if (!toConsole){
+    this.log = function() {
+      var txt = arguments[0] ? arguments[0] : ""; //if no argument write empty
+      for (var i = 1;i<arguments.length;++i){
+        txt += '<br/>| '+arguments[i];
+      }
+      txt += arguments.length>1?'<br/>\\------':"";
+      
+      _history.push(txt);
+      if (_history.length>_length) _history.shift();
+      
+      _log.innerHTML = _history.join('<hr/>');
+    };
+  }
+  else {
+    if(!window.console){ window.console = {log: function(){} }; }
+    _log.innerHTML = "logging to js console";
+    this.log = function() {
+      var txt = "";
+      for (var i = 0;i<arguments.length;++i){
+        txt += arguments[i] + '\n';
+      }
+      //txt += '------';
+      console.log(txt);
+      _history.push(txt);
+      if (_history.length>_length) _history.shift();
+    }
+  };
+  
+  this.toggle = function(){
+    $("#log").toggle();
+  };
   
 }
 

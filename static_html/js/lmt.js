@@ -64,16 +64,24 @@ function initGetVars() {
   LMT.GET = GET;
 }
 
+var log = {};
+var logger = null;
 
 $(document).ready(function(){
 
-  log = new LMT.utils.logger();
-  log.write('init complete');
+  if (doLog) {
+    logger = new LMT.utils.logger(logToConsole)
+    log = logger.log;
+  }
+  else {
+    logger = {toggle:function(){}};
+    log = function(){};
+  }
 
 
-
+  log('document | ready | init complete');
   LMT.events.startUp();
-
+  log('document | ready | startup complete');
 
 
   

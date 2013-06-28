@@ -536,7 +536,7 @@ html.ColorSettingsDialog = {
   			}
   			
   			LMT.modelData.ch[id][type.substr(0,2)] = value;
-  			log.write("stopped sliding");
+  			//log("stopped sliding");
   			$.event.trigger('ChangedModelData', id);
   		}
   		
@@ -579,7 +579,7 @@ html.ColorSettingsDialog = {
   			LMT.modelData.ch[id].r = data.rgb.r;
   			LMT.modelData.ch[id].g = data.rgb.g;
   			LMT.modelData.ch[id].b = data.rgb.b;
-  			log.write("picked color for "+id);
+  			//log("picked color for "+id);
   			$.event.trigger('ChangedModelData', id);
   		},
   	});
@@ -632,7 +632,7 @@ html.ColorSettingsOutputDialog = {
           LMT.settings.display.out[i].br = value;
         }
         
-        log.write("stopped sliding");
+        //log("stopped sliding");
         $(this).parent().siblings('.cd_cell_value').children().text(value.toFixed(2));
         $.event.trigger('RedrawCurrentOutput');
       },
@@ -649,7 +649,7 @@ html.ColorSettingsOutputDialog = {
           LMT.settings.display.out[i].br = value;
         }
         
-        log.write("stopped sliding");
+        //log("stopped sliding");
         $.event.trigger('RedrawCurrentOutput');
       }
       
@@ -813,7 +813,6 @@ html.GlassSettingsDialog = {
         var state = !($btn.attr("checked")? true : false); //get old state, invert it to have new state
         $btn.attr("checked", state);
         LMT.model.Parameters.isSym = state;
-        log.write(state);
         $btn.button( "option", "label", state ? "Yes" : "No" );
       });
 
@@ -922,7 +921,7 @@ html.KeyboardListener = {
   
   keyEvent: function(evt){
     var code = evt.which || evt.keyCode;
-    log.write("keycode: "+code);
+    log('KeyBoardListener | keyEvent | keycode: '+code);
     var keyCatched = false;
     
     switch (code) {
@@ -937,6 +936,10 @@ html.KeyboardListener = {
         $.event.trigger("Zoom", [+1]);
         keyCatched = true;
         break;
+      case 45: //num-
+        $.event.trigger("Zoom", [-1]);
+        keyCatched = true;
+        break;
         
 
       
@@ -947,13 +950,10 @@ html.KeyboardListener = {
 
     if (debug) { //debug keys
       switch (code){
-        case 46: //num.
-          LMT.ui.html.SaveResultDialog.show();
-          break;
         
-        // show log on l
-        case 108: //l
-          $("#log").css({'display':'block'});
+        // show log on ` (` + space in some international cases)
+        case 96: // `
+          $.event.trigger("ToggleLog");
       }
     }
 

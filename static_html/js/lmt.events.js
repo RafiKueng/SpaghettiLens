@@ -71,6 +71,8 @@ var events = {
     // dummy function
     var fnc = function(){return false;}
     
+    $(document).on('ToggleLog', logger.toggle);
+    
     $(document).on('ShowSelectDatasourceDialog', LMT.ui.html.SelectDatasourceDialog.show);    
     $(document).on('GetDatasourcesList', LMT.com.getDatasourcesList);
     $(document).on('RcvDatasourcesList', LMT.ui.html.SelectDatasourceDialog.onRcvDatasourcesList);

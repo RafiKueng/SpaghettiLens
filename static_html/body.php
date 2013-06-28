@@ -236,7 +236,7 @@
 </div>
 
 
-<div id="log" onclick="togglelog();">
+<div id="log" style="display: none;">
   <p id="logtitle">
     DEBUG INFORMATION / LOG:
   </p>

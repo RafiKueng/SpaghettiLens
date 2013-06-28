@@ -168,7 +168,7 @@ svg.initBG = function(urls) {
 svg.SwitchMode = function(evt, newMode){
   LMT.settings.mode = newMode;
   $.event.trigger("ModeSwitched");
-  log.append("mode switched to " + newMode);
+  log('svg.SwitchMode | new mode: ' + newMode);
 }
 
 
