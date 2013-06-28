@@ -43,7 +43,13 @@ LMT.datasources.spacewarps.init = function(){
   
   
   LMT.ui.html.GenericDatasourceDialog.show = function(evt){
-    $('#generic_datasource_dialog').dialog("open");
+    $('#generic_datasource_dialog')
+      .dialog("open")
+      .keypress(function(e) {
+        if (e.keyCode == $.ui.keyCode.ENTER) {
+          $('#sw_fetch').button().click();
+        }
+      });
     $('#btn_gdd_ok').button('disable');
   }
   
@@ -96,6 +102,7 @@ LMT.datasources.spacewarps.init = function(){
       
       LMT.datasource.lenses = [json.list[0].id];
       $('#btn_gdd_ok').button('enable');
+      $('#btn_gdd_ok').click();
     }
       
     

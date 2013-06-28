@@ -37,17 +37,18 @@ var events = {
     LMT.ui.html.DisplaySettingsDialog.init();
     LMT.ui.html.GlassSettingsDialog.init();
     LMT.ui.html.ColorSettingsOutputDialog.init();
+    LMT.ui.html.SaveResultDialog.init();
     
     LMT.ui.html.HelpBar.init();
     
     LMT.ui.html.Tooltip.init();
-    LMT.ui.html.KeyboardListener.init();
+    //LMT.ui.html.KeyboardListener.init(); only load when app is ready, no more dialogs
     
     LMT.ui.svg.initCanvas();
 
 
     LMT.ui.html.SelectDatasourceDialog.init();
-
+    LMT.ui.html.LoadProgressDialog.init();
 
     $.event.trigger("ShowSelectDatasourceDialog");
 
@@ -69,6 +70,8 @@ var events = {
     
     // dummy function
     var fnc = function(){return false;}
+    
+    $(document).on('ToggleLog', logger.toggle);
     
     $(document).on('ShowSelectDatasourceDialog', LMT.ui.html.SelectDatasourceDialog.show);    
     $(document).on('GetDatasourcesList', LMT.com.getDatasourcesList);
@@ -96,6 +99,9 @@ var events = {
     $(document).on('ReceivedModelData', LMT.ui.html.Toolbar.updateTop);
     $(document).on('ReceivedModelData', LMT.ui.svg.bg.init);
     $(document).on('ReceivedModelData', LMT.events.AppReadyHandler);
+
+    $(document).on('RefreshBackgroundImage', LMT.ui.svg.bg.refreshBackgroundImage);
+
     
     //everything is loaded and init
     $(document).on('AppReady', LMT.events.ready);
@@ -105,6 +111,7 @@ var events = {
     
     //display settings were changed
     $(document).on('ChangedDisplaySettings', LMT.ui.svg.updateDisp);
+    $(document).on('ToggleModelDisplay', LMT.ui.svg.toggleModelDisplay);
 
     $(document).on('Undo', LMT.objects.ActionStack.Undo);
     $(document).on('Redo', LMT.objects.ActionStack.Redo);
@@ -127,8 +134,10 @@ var events = {
     $(document).on('SwitchMode', LMT.ui.svg.SwitchMode);
     $(document).on('ModeSwitched', LMT.ui.html.Toolbar.update);
 
-    
+    $(document).on('ShowDialogSaveResult', LMT.ui.html.SaveResultDialog.show);
+    $(document).on('InputImageGenerated', LMT.ui.html.SaveResultDialog.generatedImage);
     $(document).on('SaveModel', LMT.com.SaveModel);  // upload model with is final tag
+    $(document).on('SavedModel', LMT.ui.html.SaveResultDialog.savedModel);  // if successful saved
     $(document).on('UploadModel', LMT.com.UploadModel);
     $(document).on('SimulateModel', LMT.events.SimulateModel);
     $(document).one('UpdateRepaintModel', LMT.events.UpdateRepaintModel); //can only be called once, once finished with the update, it reassigns itself
@@ -158,11 +167,18 @@ var events = {
     
     $(document).on('ShowTooltip', html.Tooltip.show);
     $(document).on('HideTooltip', html.Tooltip.hide);
+    
+    $(document).on('ConvertInputImageToPNG', LMT.ui.svg.ConvertToPNG);
+    //$(document).on('UploadInputImage', LMT.ui.com.UploadInputImage);
+    
+    
+    
   },
   
   ready: function(){
     //push initial state to actionstack
     $.event.trigger("SaveModelState");
+    LMT.ui.html.KeyboardListener.init();
   }
   
 }  

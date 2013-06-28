@@ -21,7 +21,7 @@
               Goto Previous Model
             </button>
             <button id="btnMainFinish"
-              data-event="SaveModel"
+              data-event="ShowDialogSaveResult"
               data-tooltip="Save the final model on the server"
               data-furtherinfo="http://www.google.com"
               data-hotkey="s"
@@ -230,13 +230,13 @@
 
   <div id="footer" class="layout row">
     <p class="foottext">
-      by Rafael Kueng; uses jquery ui, chosen, datatables, colorpicker, django, celery, gunicorn, mysql. Visit https://github.com/RafiKueng/SpaghettiLens
+      by Rafael Kueng; uses glass (Jonathan Coles), jquery ui, chosen, datatables, colorpicker, django, celery, gunicorn, mysql. Visit https://github.com/RafiKueng/SpaghettiLens
     </p>
   </div>
 </div>
 
 
-<div id="log" onclick="togglelog();">
+<div id="log" style="display: none;">
   <p id="logtitle">
     DEBUG INFORMATION / LOG:
   </p>
@@ -370,12 +370,14 @@
 
 <div id="display_dialog" class="dialog initHidden" title="Display Settings">
   <div id="dsettings">
+    <input type="checkbox" id="ds_all" />
+    <label for="ds_all">Toggle Model (all)</label>
     <input type="checkbox" id="conn_l" />
-    <label for="conn_l">ConnectingLines</label>
+    <label for="conn_l">Toggle Connecting Lines</label>
     <input type="checkbox" id="cont_p" />
-    <label for="cont_p">ContourPoints</label>
+    <label for="cont_p">Toggle Contour Points</label>
     <input type="checkbox" id="cont_l" />
-    <label for="cont_l">ContourLine</label>
+    <label for="cont_l">Toggle Contour Lines</label>
   </div>
 </div>
 
@@ -426,13 +428,23 @@
   </p>
   <p>Select Datasource:<br/>
     <select id="sel_datasource" data-placeholder="Choose a datasource" style="width:500px;" class="chzn-select-deselect" tabindex="7">
-      <option value=""></option>
+      <!--<option value=""></option>-->
     </select>
   </p>
 </div>
 
 
 <div id="generic_datasource_dialog" class="dialog" title="INSERT TITLE">
+</div>
+
+
+<div id="save_results_dialog" class="dialog" title="Save your Model">
+</div>
+
+
+<div id="load_progress_dialog" class="dialog" title="Loading images">
+  <p>    
+  </p>
 </div>
 
 

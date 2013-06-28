@@ -11,7 +11,122 @@ var html = {};
 
 html.fire = function(evt){
 	
-}
+};
+
+
+
+html.SaveResultDialog = {
+  init: function() {
+    $('#save_results_dialog').dialog({
+      autoOpen: false,
+      minWidth: 600,
+      minHeight: 400,
+      modal: true,
+      open: function(){},
+      buttons: [
+        {
+          text: "Abort",
+          click: function(evt){
+            $('#save_results_dialog').dialog("close");
+          }
+        },
+        {
+          text: "Save",
+          click: LMT.ui.html.SaveResultDialog.upload
+        },
+        {
+          text: "Close",
+          click: LMT.ui.html.SaveResultDialog.close
+        },
+        {
+          text: "Restart",
+          click: function(evt){
+            document.location.reload(true);
+          }
+        }
+      ]
+    });
+  },
+  
+  show: function(){
+    $('#save_results_dialog').html('<p>genrating input image...</p>');
+    $('#save_results_dialog').dialog("open");
+    $(".ui-dialog-buttonpane button:contains('Restart')").button('disable');
+    $(".ui-dialog-buttonpane button:contains('Close')").button('disable');
+    $(".ui-dialog-buttonpane button:contains('Save')").button('disable');
+    $(".ui-dialog-buttonpane button:contains('Abort')").button('enable');
+    $.event.trigger("ConvertInputImageToPNG");
+  },
+  
+  
+  upload: function(evt){
+    $.event.trigger("SaveModel");
+  },
+  
+  close: function(evt){
+    $('#save_results_dialog').dialog("close");
+  },
+  
+  generatedImage: function(evt){
+    
+    var html = [
+      '<p>Input image:</p>',
+      '<img style="width:300px; float: left;" src="'+LMT.ui.svg.img+'"/>',
+      '<p>To adjust your image before uploading, press Abort, make your changes and reopen the save dialog.<br/>',
+      '(Pay attention not to <b>modify</b> the model, otherwise you\'d have to render the model again.)</p>'      
+    ].join('\n');
+    $('#save_results_dialog').html(html);
+
+    $(".ui-dialog-buttonpane button:contains('Close')").button('disable');
+    $(".ui-dialog-buttonpane button:contains('Save')").button('enable');
+  },
+  
+  savedModel: function(evt, rid){
+    $(".ui-dialog-buttonpane button:contains('Restart')").button('enable');
+    $(".ui-dialog-buttonpane button:contains('Close')").button('enable');
+    $(".ui-dialog-buttonpane button:contains('Save')").button('disable');
+    $(".ui-dialog-buttonpane button:contains('Abort')").button('disable');
+
+    var url = "http://mite.physik.uzh.ch/data/"+rid;
+    var html = [
+      '<p>Result Saved</p>',
+      '<p>You can retrieve your model at the following url:<br/>',
+      '<a href="'+url+'" target="_blank">'+url+'</a></p>'
+    ].join('\n');
+    
+    $('#save_results_dialog').html(html);
+  }
+  
+};
+
+
+html.LoadProgressDialog = {
+  init: function() {
+    $('#load_progress_dialog').dialog({
+      autoOpen: false,
+      minWidth: 100,
+      minHeight: 50,
+      modal: true,
+      //open: function(){},
+      buttons: []
+    });
+    html.LoadProgressDialog.htmlelem = $("#load_progress_dialog :first-child");
+  },
+  
+  show: function(nImgs){
+    html.LoadProgressDialog.update({nImgs:nImgs, nLoaded:0,p:0})
+    $('#load_progress_dialog').dialog("open");
+  },
+  
+  close: function(){
+    $('#load_progress_dialog').dialog("close");
+  },
+  
+  update: function(stat){
+    html.LoadProgressDialog.htmlelem.html("loaded: "+stat.p+"% ("+stat.nLoaded+" of "+stat.nImgs+")");
+  },
+  
+};
 
 
 
@@ -22,8 +137,31 @@ html.SelectDatasourceDialog = {
       minWidth: 550,
       minHeight: 550,
       modal: true,
-      open: function(){},
+      open: function(){
+        var uname = $.cookie('username');
+        if (username){
+          $("#username").val(uname);
+          $('.ui-dialog-buttonpane button:last').focus();
+        }
+        var ds = $.cookie('ds');
+        if (ds){$("#sel_datasource").val(ds).trigger("liszt:updated");}
+      },
       buttons: [
+      {
+        text: "Delete defaults",
+        click: function(){
+          $("#username").val('');
+          $.removeCookie('username');
+          $.removeCookie('ds');
+        }
+      },
+      {
+        text: "Save defaults",
+        click: function(){
+          $.cookie('username', $("#username").val(), { expires: 365 });
+          $.cookie('ds', $("#sel_datasource").val(), { expires: 365 });
+        }
+      },
       {
         text: "Ok",
         click: function(evt){
@@ -38,7 +176,9 @@ html.SelectDatasourceDialog = {
             $.event.trigger("GetDatasourceDialog", [id = val, uname=uname]);
             $('#select_datasource_dialog').dialog("close");
           }
-        }}
+        }
+        
+      },
       ]
         
     });
@@ -56,7 +196,7 @@ html.SelectDatasourceDialog = {
   // gets triggered if we received the list of all available datasources
   onRcvDatasourcesList: function(evt, jsonDatasourcesList){
 
-    $selectObj = $("#sel_datasource");
+    var $selectObj = $("#sel_datasource");
 
     for (var i=0; i<jsonDatasourcesList.length; i++){
       var x = jsonDatasourcesList[i];
@@ -64,6 +204,9 @@ html.SelectDatasourceDialog = {
         + x.id + ' (' + x.desc + ')</option>');
       $selectObj.append(elem);
     }
+    var ds = $.cookie('ds');
+    ds = ds ? ds : jsonDatasourcesList.length-1;
+    $selectObj.val(ds);
     $selectObj.trigger("liszt:updated");
   }
 }
@@ -311,7 +454,7 @@ html.Toolbar = {
     
     //un/re do buttons:
     $('#btnInUndo').add('#btnInRedo').button("disable");
-    
+    $('#btnInSettingsColor').button("disable");
     
   },
   
@@ -421,7 +564,7 @@ html.ColorSettingsDialog = {
   			}
   			
   			LMT.modelData.ch[id][type.substr(0,2)] = value;
-  			log.write("stopped sliding");
+  			//log("stopped sliding");
   			$.event.trigger('ChangedModelData', id);
   		}
   		
@@ -464,7 +607,7 @@ html.ColorSettingsDialog = {
   			LMT.modelData.ch[id].r = data.rgb.r;
   			LMT.modelData.ch[id].g = data.rgb.g;
   			LMT.modelData.ch[id].b = data.rgb.b;
-  			log.write("picked color for "+id);
+  			//log("picked color for "+id);
   			$.event.trigger('ChangedModelData', id);
   		},
   	});
@@ -474,7 +617,8 @@ html.ColorSettingsDialog = {
   },
   
   show: function(){
-    $('#color_dialog').dialog("open");
+    $('#color_dialog')
+      .dialog("open");
   }
   
   
@@ -517,7 +661,7 @@ html.ColorSettingsOutputDialog = {
           LMT.settings.display.out[i].br = value;
         }
         
-        log.write("stopped sliding");
+        //log("stopped sliding");
         $(this).parent().siblings('.cd_cell_value').children().text(value.toFixed(2));
         $.event.trigger('RedrawCurrentOutput');
       },
@@ -534,7 +678,7 @@ html.ColorSettingsOutputDialog = {
           LMT.settings.display.out[i].br = value;
         }
         
-        log.write("stopped sliding");
+        //log("stopped sliding");
         $.event.trigger('RedrawCurrentOutput');
       }
       
@@ -550,7 +694,13 @@ html.ColorSettingsOutputDialog = {
   },
   
   show: function(){
-    $('#color_out_dialog').dialog("open");
+    $('#color_out_dialog')
+      .dialog("open")
+      .dialog('widget').position({
+          my: "left center",
+          at: "left center",
+          of: $('#inp')
+      });
   },
   
   
@@ -583,36 +733,49 @@ html.DisplaySettingsDialog = {
   	 */
   	$("#display_dialog").dialog({
   		autoOpen: false,
-  		minWidth: 700,
+  		minWidth: 200,
   		open: function(){ //update button status
   			// .change is a bugfix, as described here: http://stackoverflow.com/questions/8796680/jqueryui-button-state-not-changing-on-prop-call
+        $('#ds_all').prop("checked", LMT.settings.display.paintConnectingLines).change();
   			$('#conn_l').prop("checked", LMT.settings.display.paintConnectingLines).change();
   			$('#cont_p').prop("checked", LMT.settings.display.paintContourPoints).change();
   			$('#cont_l').prop("checked", LMT.settings.display.paintContours).change();
   		}
   	});
   	
-  	$('#dsettings').buttonset();
+  	//$('#dsettings').buttonset();
   	
-  	$('#conn_l').click(function(evt){
+  	$('#conn_l').button().click(function(evt){
   		LMT.settings.display.paintConnectingLines = this.checked;
   		$.event.trigger('ChangedDisplaySettings');
   	});
-  	$('#cont_p').click(function(evt){
+  	$('#cont_p').button().click(function(evt){
   		LMT.settings.display.paintContourPoints = this.checked;
       $.event.trigger('ChangedDisplaySettings');
   	})
-  	$('#cont_l').click(function(){
+  	$('#cont_l').button().click(function(){
   		LMT.settings.display.paintContours = this.checked;
       $.event.trigger('ChangedDisplaySettings');
   	});
+  	
+  	$('#ds_all').button().click(function(evt){
+      LMT.settings.display.paintModel = this.checked;
+      $.event.trigger('ToggleModelDisplay');
+  	});
+  	
   	
   	$("#display_dialog").removeClass("initHidden");
   	
 	},
 	
 	show: function() {
-	  $('#display_dialog').dialog("open");
+	  $('#display_dialog')
+	    .dialog("open")
+  	  .dialog('widget').position({
+          my: "center bottom",
+          at: "center bottom",
+          of: $('body')
+      });
 	}
 }
 	
@@ -698,7 +861,6 @@ html.GlassSettingsDialog = {
         var state = !($btn.attr("checked")? true : false); //get old state, invert it to have new state
         $btn.attr("checked", state);
         LMT.model.Parameters.isSym = state;
-        log.write(state);
         $btn.button( "option", "label", state ? "Yes" : "No" );
       });
 
@@ -722,7 +884,13 @@ html.GlassSettingsDialog = {
   },
   
   show: function() {
-    $('#glass_dialog').dialog("open");
+    $('#glass_dialog')
+      .dialog("open")
+      .dialog('widget').position({
+          my: "center center",
+          at: "center center",
+          of: $('body')
+      });
   }
 }
 
@@ -802,28 +970,50 @@ html.Tooltip = {
 
 html.KeyboardListener = {
   init: function(){
-    //$('body').on('keypress', LMT.ui.html.KeyboardListener.keyEvent);
+    $('body').on('keypress', LMT.ui.html.KeyboardListener.keyEvent);
   },
   
   keyEvent: function(evt){
-    var code = event.which || event.keyCode;
-    log.write("keycode: "+code);
+    var code = evt.which || evt.keyCode;
+    log('KeyBoardListener | keyEvent | keycode: '+code);
+    var keyCatched = false;
     
     switch (code) {
-      case 13: //enter and numEnter
-      case 48:
+      case 48: //numEnter
       case 96: //num0
         $.event.trigger("ZoomPanReset");
+        keyCatched = true;
         break;
       
       case 43: //num+
         $.event.trigger("Zoom", [+1]);
+        keyCatched = true;
         break;
-      default:
+      case 45: //num-
+        $.event.trigger("Zoom", [-1]);
+        keyCatched = true;
+        break;
+        
+
+      
+      /*default:
         return;
+      */
     }
-    if (evt.stopPropagation) {evt.stopPropagation();}
-    if (evt.preventDefault) {evt.preventDefault();}
+
+    if (debug) { //debug keys
+      switch (code){
+        
+        // show log on ` (` + space in some international cases)
+        case 96: // `
+          $.event.trigger("ToggleLog");
+      }
+    }
+
+    if (keyCatched){
+      if (evt.stopPropagation) {evt.stopPropagation();}
+      if (evt.preventDefault) {evt.preventDefault();}
+    }
   }
 }
 

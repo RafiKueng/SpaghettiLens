@@ -57,7 +57,7 @@ ContourPoint.prototype.createSVG = function() {
 	  this.circle.setAttribute("id", "cpnt" + (this.idnr));
 
     this.inv_circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    this.inv_circle.setAttribute("class", "contourpoint, almostinvis");
+    this.inv_circle.setAttribute("class", "contourpoint hidden");
     this.inv_circle.setAttribute("id", "cpnt_inv" + (this.idnr));
 
 	  

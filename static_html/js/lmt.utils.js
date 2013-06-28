@@ -1,7 +1,12 @@
 
-LMT.utils.logger = function () {
-  this.log = document.getElementById("logcont");
+LMT.utils.logger = function(toConsole) {
+  var _log = document.getElementById("logcont");
+  var _history = [];
+  var _length = 10;
+  $("#log").css({'display':'block'});
+  $("#log").hide();
   
+  /*
   this.write = function(txt) {
     this.log.innerHTML = txt;
   };
@@ -13,8 +18,41 @@ LMT.utils.logger = function () {
   this.clear = function() {
     this.log.innerHTML = ""; 
   };
+  */
+  if (!toConsole){
+    this.log = function() {
+      var txt = arguments[0] ? arguments[0] : ""; //if no argument write empty
+      for (var i = 1;i<arguments.length;++i){
+        txt += '<br/>| '+arguments[i];
+      }
+      txt += arguments.length>1?'<br/>\\------':"";
+      
+      _history.push(txt);
+      if (_history.length>_length) _history.shift();
+      
+      _log.innerHTML = _history.join('<hr/>');
+    };
+  }
+  else {
+    if(!window.console){ window.console = {log: function(){} }; }
+    _log.innerHTML = "logging to js console";
+    this.log = function() {
+      var txt = "";
+      for (var i = 0;i<arguments.length-1;++i){
+        txt += arguments[i] + '\n';
+      }
+      txt += arguments[arguments.length-1];
+      console.log(txt);
+      _history.push(txt);
+      if (_history.length>_length) _history.shift();
+    }
+  };
+  
+  this.toggle = function(){
+    $("#log").toggle();
+  };
+  
 }
-
 
 
 /**************
@@ -55,6 +93,44 @@ LMT.utils.round = function(number, digits) {
   var rndedNum = Math.round(number * multiple) / multiple;
   return rndedNum;
 }
+
+
+
+
+
+/**
+ * loads a set of Objects (images), provides a callback on each
+ * loaded and one if all are loaded
+ * crossOrigin: default True: allow to load from forwign origins
+ * get the loaded images as an argument to the onAll callback
+ */
+LMT.utils.ImageLoader = function(listOfURLs, onEach, onAll, crossOrigin) {
+  
+  var urls = listOfURLs;
+  var imgs = [];
+  var nImgs = listOfURLs.length;
+  var nLoaded = 0;
+  
+  var co = typeof crossOrigin !== 'boolean' ? true : crossOrigin;
+  
+  for (var i=0; i<listOfURLs.length; i++) {
+    if (typeof urls[i] === 'string'){
+      var img = new Image();
+      img.onload = function(){
+        nLoaded++;
+        onEach({nLoaded:nLoaded, nImgs:nImgs, p:100.0*nLoaded/nImgs});
+        
+        if (nLoaded==nImgs){
+          onAll(imgs);
+        }
+      };
+      if (co) {img.setAttribute('crossOrigin','anonymous');}
+      img.src = urls[i];
+      imgs[i] = img;
+    }
+  }
+}
+
 
 
 /**

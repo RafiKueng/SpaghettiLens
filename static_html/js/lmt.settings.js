@@ -15,6 +15,11 @@ debug = true;
 //developper mode (are wo local?)
 local = true;
 
+// should we log stuff?
+doLog = true;
+// should we output the log to the console or to the page
+logToConsole = true;
+
 
 if (local) {
   LMT.com.serverUrl = "http://localhost:8000";

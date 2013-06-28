@@ -77,12 +77,18 @@
   opacity: 0.25;
 }
 
-/* elements that should not be visible but still clickable */
+/* elements that should not be visible but still clickable
+ ...for durable elements */
+.hidden {
+  opacity: 0.001;
+}
+/* ..and this for temporary states */
 .almostinvis{
   opacity: 0.001;
 }
 
 /* use this class for elements that are not displayed */
 .invisible {
+  opacity: 0.00;
 	visibility: hidden;
 }
