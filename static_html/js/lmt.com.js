@@ -235,9 +235,11 @@ com.SaveModel = function(evt) {
     LMT.simulationData.resultId = jsonResp.result_id;
     //LMT.simulationData.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
     //$.event.trigger("UploadModelComplete")
-    alert("Model saved! \n(result_id: "+jsonResp.result_id+")\n"+
+    /*
+      alert("Model saved! \n(result_id: "+jsonResp.result_id+")\n"+
       "access the raw data with:\n"+
       "http://mite.physik.uzh.ch/data/"+jsonResp.result_id);
+    */
     $.event.trigger("SavedModel", jsonResp.result_id);
   };
   

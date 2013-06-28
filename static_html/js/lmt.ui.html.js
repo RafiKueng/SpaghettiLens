@@ -25,17 +25,23 @@ html.SaveResultDialog = {
       open: function(){},
       buttons: [
         {
-          text: "close",
-          click: LMT.ui.html.SaveResultDialog.close
-        },
-        {
-          text: "Upload",
-          click: LMT.ui.html.SaveResultDialog.upload
-        },
-        {
           text: "Abort",
           click: function(evt){
             $('#save_results_dialog').dialog("close");
+          }
+        },
+        {
+          text: "Save",
+          click: LMT.ui.html.SaveResultDialog.upload
+        },
+        {
+          text: "Close",
+          click: LMT.ui.html.SaveResultDialog.close
+        },
+        {
+          text: "Restart",
+          click: function(evt){
+            document.location.reload(true);
           }
         }
       ]
@@ -43,10 +49,11 @@ html.SaveResultDialog = {
   },
   
   show: function(){
-    $('#save_results_dialog').html('<p>genrating input image</p>');
+    $('#save_results_dialog').html('<p>genrating input image...</p>');
     $('#save_results_dialog').dialog("open");
-    $(".ui-dialog-buttonpane button:contains('close')").button('disable');
-    $(".ui-dialog-buttonpane button:contains('Upload')").button('disable');
+    $(".ui-dialog-buttonpane button:contains('Restart')").button('disable');
+    $(".ui-dialog-buttonpane button:contains('Close')").button('disable');
+    $(".ui-dialog-buttonpane button:contains('Save')").button('disable');
     $(".ui-dialog-buttonpane button:contains('Abort')").button('enable');
     $.event.trigger("ConvertInputImageToPNG");
   },
@@ -61,17 +68,25 @@ html.SaveResultDialog = {
   },
   
   generatedImage: function(evt){
-    $('#save_results_dialog').html('<p>input image:</p>');
     
-    $('#save_results_dialog').append('<img style="width:300px;" src="'+LMT.ui.svg.img+'"/>');
-    $(".ui-dialog-buttonpane button:contains('close')").button('disable');
-    $(".ui-dialog-buttonpane button:contains('Upload')").button('enable');
+    var html = [
+      '<p>Input image:</p>',
+      '<img style="width:300px; float: left;" src="'+LMT.ui.svg.img+'"/>',
+      '<p>To adjust your image before uploading, press Abort, make your changes and reopen the save dialog.<br/>',
+      '(Pay attention not to <b>modify</b> the model, otherwise you\'d have to render the model again.)</p>'      
+    ].join('\n');
+    $('#save_results_dialog').html(html);
+
+    $(".ui-dialog-buttonpane button:contains('Close')").button('disable');
+    $(".ui-dialog-buttonpane button:contains('Save')").button('enable');
   },
   
   savedModel: function(evt, rid){
-    $(".ui-dialog-buttonpane button:contains('close')").button('enable');
-    $(".ui-dialog-buttonpane button:contains('Upload')").button('disable');
+    $(".ui-dialog-buttonpane button:contains('Restart')").button('enable');
+    $(".ui-dialog-buttonpane button:contains('Close')").button('enable');
+    $(".ui-dialog-buttonpane button:contains('Save')").button('disable');
     $(".ui-dialog-buttonpane button:contains('Abort')").button('disable');
+
     var url = "http://mite.physik.uzh.ch/data/"+rid;
     var html = [
       '<p>Result Saved</p>',

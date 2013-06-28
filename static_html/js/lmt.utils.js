@@ -15,6 +15,10 @@ LMT.utils.logger = function () {
   };
 }
 
+var log;
+if (debug) {
+  
+}
 
 
 /**************
