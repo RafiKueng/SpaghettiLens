@@ -230,7 +230,7 @@
 
   <div id="footer" class="layout row">
     <p class="foottext">
-      by Rafael Kueng; uses jquery ui, chosen, datatables, colorpicker, django, celery, gunicorn, mysql. Visit https://github.com/RafiKueng/SpaghettiLens
+      by Rafael Kueng; uses glass (Jonathan Coles), jquery ui, chosen, datatables, colorpicker, django, celery, gunicorn, mysql. Visit https://github.com/RafiKueng/SpaghettiLens
     </p>
   </div>
 </div>
@@ -428,7 +428,7 @@
   </p>
   <p>Select Datasource:<br/>
     <select id="sel_datasource" data-placeholder="Choose a datasource" style="width:500px;" class="chzn-select-deselect" tabindex="7">
-      <option value=""></option>
+      <!--<option value=""></option>-->
     </select>
   </p>
 </div>

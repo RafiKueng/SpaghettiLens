@@ -137,8 +137,28 @@ html.SelectDatasourceDialog = {
       minWidth: 550,
       minHeight: 550,
       modal: true,
-      open: function(){},
+      open: function(){
+        var uname = $.cookie('username');
+        if (username){$("#username").val(uname);}
+        var ds = $.cookie('ds');
+        if (ds){$("#sel_datasource").val(ds).trigger("liszt:updated");}
+      },
       buttons: [
+      {
+        text: "Delete defaults",
+        click: function(){
+          $("#username").val('');
+          $.removeCookie('username');
+          $.removeCookie('ds');
+        }
+      },
+      {
+        text: "Save defaults",
+        click: function(){
+          $.cookie('username', $("#username").val(), { expires: 365 });
+          $.cookie('ds', $("#sel_datasource").val(), { expires: 365 });
+        }
+      },
       {
         text: "Ok",
         click: function(evt){
@@ -153,7 +173,9 @@ html.SelectDatasourceDialog = {
             $.event.trigger("GetDatasourceDialog", [id = val, uname=uname]);
             $('#select_datasource_dialog').dialog("close");
           }
-        }}
+        }
+        
+      },
       ]
         
     });
@@ -171,7 +193,7 @@ html.SelectDatasourceDialog = {
   // gets triggered if we received the list of all available datasources
   onRcvDatasourcesList: function(evt, jsonDatasourcesList){
 
-    $selectObj = $("#sel_datasource");
+    var $selectObj = $("#sel_datasource");
 
     for (var i=0; i<jsonDatasourcesList.length; i++){
       var x = jsonDatasourcesList[i];
@@ -179,6 +201,9 @@ html.SelectDatasourceDialog = {
         + x.id + ' (' + x.desc + ')</option>');
       $selectObj.append(elem);
     }
+    var ds = $.cookie('ds');
+    ds = ds ? ds : jsonDatasourcesList.length-1;
+    $selectObj.val(ds);
     $selectObj.trigger("liszt:updated");
   }
 }
@@ -426,7 +451,7 @@ html.Toolbar = {
     
     //un/re do buttons:
     $('#btnInUndo').add('#btnInRedo').button("disable");
-    
+    $('#btnInSettingsColor').button("disable");
     
   },
   
