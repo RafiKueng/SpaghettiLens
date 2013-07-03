@@ -6,7 +6,7 @@ from django.core import serializers
 from django.utils import simplejson as sjson
 from django.utils.timezone import now
 from django.conf import settings as s
-
+from django.template import RequestContext, loader
 
 
 from lmt import tasks
@@ -553,6 +553,22 @@ def getSimulationFiles(request, result_id, filename):
 
 @csrf_exempt
 def getData(request, result_id):
+  
+  result_id = int(result_id)
+  try:
+    res = ModellingResult.objects.get(id=result_id)
+    if res.is_rendered: #and imgExists: #nginx will catch this case for images, but not for the json objects..
+      #deliver images
+      # check imgExists: because a clean up prog could have deleted the files in the mean time and forgot to set the right flags in the db.. evil prog...
+  
+      res.last_accessed = now()
+      res.save()
+      
+  
+  
+  
+  
+  """
   result_id = int(result_id)
   print "in getData"
   
@@ -604,7 +620,7 @@ def getData(request, result_id):
   print "sending response"
   return response
 
-
+  """
 
 
 
