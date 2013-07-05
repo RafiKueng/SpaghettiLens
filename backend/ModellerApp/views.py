@@ -591,6 +591,27 @@ def getData(request, result_id):
       print "nope"
       return None
   
+  parent = res.parent_result
+  if parent:
+    parent_data = {
+      'nr':   parent.pk,
+      'user': parent.created_by_str
+    }
+  else:
+    parent_data = None
+    
+  children = res.child_results.all()
+  print "found x children", children
+  
+  if children.count() > 0:
+    children_data = []
+    for child in children:
+      children_data.append({
+        'nr'  : child.pk,
+        'user': child.created_by_str
+      })
+  else:
+    children_data = None
   
   
   context = {
@@ -617,8 +638,8 @@ def getData(request, result_id):
     },
              
     'links': {
-       'next' : [{'nr': '005', 'user': 'aa'},{'nr': 'b', 'user': 'bb'},{'nr': 'c', 'user': 'cc'}],#[None],
-       'prev' : {'nr':'p', 'user':'pp'},
+       'next' : children_data,#[{'nr': '005', 'user': 'aa'},{'nr': 'b', 'user': 'bb'},{'nr': 'c', 'user': 'cc'}],#[None],
+       'prev' : parent_data,
        'fork' : 'http://', 
     },
              
