@@ -35,6 +35,11 @@ h3 {
   padding: 15px;
 }
 
+h3>span{
+  font-size: 75%;
+  font-weight:normal;
+}
+
 img {
   max-height: 500px;
   width: 480px;
@@ -134,7 +139,7 @@ li > span{
     <body>
 
 <!-- START site content -->
-<h1>Result for {% firstof lensdata.name lensdata.id "Unknown Lens (how did you do it??)" %}</h1>
+<h1>Result for {% firstof lensdata.name lensdata.id "Unknown Lens (how did you do it?? please report)" %}</h1>
 
 
 <div class="box adv">
@@ -146,7 +151,7 @@ li > span{
   {% endif %}
   {% if links.prev %}
     <div class="elem link back" data-link="{{links.prev.nr}}">
-      <h3>see parent model by {{links.prev.user}}</h3>
+      <h3>see parent model <span>by {{links.prev.user}} {{links.prev.date|date:'Y-m-d H:i'}}</span></h3>
     </div>
   {% else %}
     <div class="elem back">
@@ -155,7 +160,7 @@ li > span{
   {% endif %}
   {% for elem in links.next %}
     <div class="elem link forw" data-link="{{elem.nr}}">
-      <h3>see improvement by {{elem.user}}</h3>
+      <h3>see improvement <span>by {{elem.user}} {{elem.date|date:'Y-m-d H:i'}}</span></h3>
     </div>
   {% empty %}
     <div class="elem forw">

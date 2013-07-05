@@ -643,7 +643,8 @@ def getData(request, result_id):
   if parent:
     parent_data = {
       'nr':   parent.pk,
-      'user': parent.created_by_str
+      'user': parent.created_by_str,
+      'date': parent.created
     }
   else:
     parent_data = None
@@ -656,7 +657,8 @@ def getData(request, result_id):
     for child in children:
       children_data.append({
         'nr'  : child.pk,
-        'user': child.created_by_str
+        'user': child.created_by_str,
+        'date': child.created
       })
   else:
     children_data = None
