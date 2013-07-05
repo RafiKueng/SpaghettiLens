@@ -6,8 +6,8 @@ from django.core import serializers
 from django.utils import simplejson as sjson
 from django.utils.timezone import now
 from django.conf import settings as s
-from django.template import RequestContext, loader
-
+from django.shortcuts import render
+from django.http import Http404
 
 from lmt import tasks
 import random
@@ -550,21 +550,94 @@ def getSimulationFiles(request, result_id, filename):
 
 
 
+import os.path
 
 @csrf_exempt
 def getData(request, result_id):
+  print "in getData"
   
   result_id = int(result_id)
   try:
     res = ModellingResult.objects.get(id=result_id)
-    if res.is_rendered: #and imgExists: #nginx will catch this case for images, but not for the json objects..
-      #deliver images
-      # check imgExists: because a clean up prog could have deleted the files in the mean time and forgot to set the right flags in the db.. evil prog...
+  except ModellingResult.DoesNotExist:
+    raise Http404
+
+
+  try:
+    ldata = res.lens_data_obj
+    lensdataitems = [
+      ('Id', ldata.pk),
+      ('Name', ldata.name),
+      ('From', ldata.datasource),
+      ('Saved by', ldata.created_by_str)
+    ]
+    lensimg = sjson.loads(ldata.img_data)['url']
+  except:
+    print 'error'
+    lensdataitems = None
+    lensimg = None
+
   
-      res.last_accessed = now()
-      res.save()
-      
+  res.last_accessed = now()
+  res.save()
   
+  def checkFile(resnr, name):
+    path = "../tmp_media/%06i/%s" % (resnr, name)
+    print "checking path", path,
+    if os.path.isfile(path):
+      print "exists"
+      return "/result/%06i/%s" % (resnr, name)
+    else:
+      print "nope"
+      return None
+  
+  
+  
+  context = {
+    'elem': 5,
+    'result': res,
+    'lensdata': ldata,
+
+    'print_result_items': [
+      ('Id', res.pk),
+      ('User', res.created_by_str),
+      ('Pixel Radius', res.pixrad)
+    ],
+    
+    'print_lensdata_items': lensdataitems,
+             
+    'images': {
+      'lens'       : lensimg,
+      'input'      : checkFile(result_id, 'input.png'),
+      'contour'    : checkFile(result_id, 'img1.png'),
+      'synthetic'  : checkFile(result_id, 'img3.png'),
+      'mass_dist'  : checkFile(result_id, 'img2.png'),
+      'mass_encl'  : checkFile(result_id, 'img4.png'),
+      'no_img_txt' : 'refreshing image, please wait for reload<br/>esimated time: 1 minute'
+    },
+             
+    'links': {
+       'next' : [{'nr': '005', 'user': 'aa'},{'nr': 'b', 'user': 'bb'},{'nr': 'c', 'user': 'cc'}],#[None],
+       'prev' : {'nr':'p', 'user':'pp'},
+       'fork' : 'http://', 
+    },
+             
+    'files': [    # tuple (download filename, [data]url)
+      ('Model JSON Object', '%06i.json'%result_id, 'data:text/plain;base64,' + res.json_str.encode("base64")),
+      ('Glass Config File', '%06i.config.gls'%result_id, checkFile(result_id, 'cfg.gls')),
+      ('Glass Object File', '%06i.state'%result_id, checkFile(result_id, 'state.txt')),
+      ('Glass Log File',    '%06i.log.txt'%result_id, checkFile(result_id, 'log.txt')),
+    ]
+  
+  }
+  
+  response = render(request, 'result.html', context)
+  
+  response['Access-Control-Allow-Origin'] = "*"
+  print "sending response"
+  return response
+  
+    
   
   
   

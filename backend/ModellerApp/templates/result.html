@@ -1,3 +1,6 @@
+{{result}}
+{{lensdata}}
+
 <!DOCTYPE html>
     <head>
         <meta charset="utf-8">
@@ -28,12 +31,18 @@ h2 {
 
 h3 {
   display: block;
-  margin: 3px;
-  padding: 3px;
+  margin: 0px;
+  padding: 15px;
 }
 
 img {
   max-height: 500px;
+  width: 480px;
+  padding: 10px;
+}
+
+.waiting4img{
+  display: inline-block;
   width: 500px;
 }
 
@@ -50,7 +59,6 @@ img {
 .elem {
   display:inline-block;
   margin: 10px;
-  padding: 10px;
   min-width: 500px;
 
   background-color:#CCCCCC;
@@ -59,6 +67,10 @@ img {
   
   text-align: left;
   vertical-align: top;
+}
+
+.elem > a {
+  display: block;
 }
 
 .clear {
@@ -127,58 +139,75 @@ li > span{
 
 <div class="box adv">
   <h2>actions:</h2>
-  <div>
-    <div class="elem link fork" data-link="http://mite.physik.uzh.ch/result/000169/cfg.gls">
-      <h3>try to improve yourself</h3>
+  {% if links.fork %}
+    <div class="elem link fork" data-link="{{links.fork}}">
+      <h3>try to improve</h3>
     </div>
-    <div class="elem link back" data-link="http://mite.physik.uzh.ch/result/000169/cfg.gls">
-      <h3>see parent model by XXX </h3>
+  {% endif %}
+  {% if links.prev %}
+    <div class="elem link back" data-link="{{links.prev.nr}}">
+      <h3>see parent model by {{links.prev.user}}</h3>
     </div>
-  </div>
-  <div>
-    <div class="elem link forw" data-link="http://mite.physik.uzh.ch/result/000169/cfg.gls">
-      <h3>see improvement by XXX</h3>
+  {% else %}
+    <div class="elem back">
+      <h3>has no parent model</h3>
     </div>
-    <div class="elem link forw" data-link="http://mite.physik.uzh.ch/result/000169/log.txt">
-      <h3>see improvement by XXX</h3>
+  {% endif %}
+  {% if links.next %}
+    {% for elem in links.next %}
+      <div class="elem link forw" data-link="{{elem.nr}}">
+        <h3>see improvement by {{elem.user}}</h3>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="elem forw">
+      <h3>has not been improvend yet</h3>
     </div>
-  </div>
+  {% endif %}
 </div>
 
 
 
 <div class="box">
+  
+{% if result or lensdata %}
   <h2>basic data:</h2>
+  {% if lensdata %}
   <div class="elem">
     <h3>Lens Data:</h3>
     <ul>
-      <li><span>id:</span>00000</li>
-      <li><span>name:</span>Rafik</li>
-      <li><span>date added:</span>1900.01.01 00:00</li>
+    {% for key, val in print_lensdata_items %}
+      <li><span>{{key}}:</span>{{val}}</li>
+    {% endfor %}
     </ul>   
   </div>
-  
+  {% endif %}
+
+  {% if result %}
   <div class="elem">
     <h3>Result Data:</h3>
     <ul>
-      <li><span>id:</span>00000</li>
-      <li><span>user:</span>rafik</li>
-      <li><span>date:</span>1900.01.01 00:00</li>
-      <li><span>final:</span>X</li>
+    {% for key, val in print_result_items %}
+      <li><span>{{key}}:</span>{{val}}</li>
+    {% endfor %}
     </ul>   
   </div>
+  {% endif %}
 </div>
+{% endif %}
 
 <div class="box">
   <h2>input data:</h2>
   <div class="elem">
     <h3>Lens Image</h3>
-    <img src="http://spacewarps.org/subjects/standard/5183f151e4bb21021900ee93.png" alt="LensURL" />
+    <img src="{{images.lens}}" alt="LensURL" />
   </div>
+  {% if images.input %}
   <div class="elem">
     <h3>Input Image</h3>
-    <img src="http://spacewarps.org/subjects/standard/5183f151e4bb21021900ee93.png" alt="LensURL" />    
+    <img src="{{images.input}}" alt="LensURL" />    
   </div>
+  {% endif %}
 </div>
 
 
@@ -186,11 +215,19 @@ li > span{
   <h2>basic output:</h2>
   <div class="elem">
     <h3>Synthetic Image</h3>
-    <img src="http://mite.physik.uzh.ch/result/000169/img3.png" alt="SynImg">
+    {% if images.synthetic %}
+      <img src="{{images.synthetic}}" alt="SynImg">
+    {% else %}
+      <div class="waiting4img">{{images.no_img_txt|safe}}</div>
+    {% endif %}
   </div>
   <div class="elem">
     <h3>Contour Plot</h3>
-    <img src="http://mite.physik.uzh.ch/result/000169/img1.png" alt="ContPlot">
+    {% if images.contour %}
+      <img src="{{images.contour}}" alt="ContPlot">
+    {% else %}
+      <div class="waiting4img">{{images.no_img_txt|safe}}</div>
+    {% endif %}
   </div>
 </div>
 
@@ -198,29 +235,32 @@ li > span{
   <h2>advanced output images:</h2>
   <div class="elem">
     <h3>Mass Distribution</h3>
-    <img src="http://mite.physik.uzh.ch/result/000169/img2.png" alt="MassDist">
+    {% if images.mass_dist %}
+      <img src="{{images.mass_dist}}" alt="MassDist">
+    {% else %}
+      <div class="waiting4img">{{images.no_img_txt|safe}}</div>
+    {% endif %}
   </div>
   <div class="elem">
     <h3>Enclosed Mass</h3>
-    <img src="http://mite.physik.uzh.ch/result/000169/img4.png" alt="EncMass">
+    {% if images.mass_encl %}
+      <img src="{{images.mass_encl}}" alt="EncMass">
+    {% else %}
+      <div class="waiting4img">{{images.no_img_txt|safe}}</div>
+    {% endif %}
   </div>
 </div>
 
 
 <div class="box adv">
   <h2>advanced output data:</h2>
-  <div class="elem link download" data-link="http://mite.physik.uzh.ch/result/000169/cfg.gls">
-    <h3>Model JSON Object</h3>
-  </div>
-  <div class="elem link download" data-link="http://mite.physik.uzh.ch/result/000169/cfg.gls">
-    <h3>Glass Config File</h3>
-  </div>
-  <div class="elem link download" data-link="http://mite.physik.uzh.ch/result/000169/cfg.gls">
-    <h3>Glass Object File</h3>
-  </div>
-  <div class="elem link download" data-link="http://mite.physik.uzh.ch/result/000169/log.txt">
-    <h3>Glass Log File</h3>
-  </div>
+  {% for name, filename, url in files %}
+    {% if url %}
+      <div class="elem download" data-link="{{url}}" data-filename="{{filename}}">
+        <h3>{{name}}</h3>
+      </div>
+    {% endif %}
+  {% endfor %}
 </div>
 
 
@@ -245,14 +285,12 @@ $(document).ready(function(){
   $('.adv > div').hide();
   $('.adv > h2').toggleClass('notExpanded expanded');
   
-  //style download link "buttons"
-  $('.elem.link').click(function(evt){
-    window.location.href = $(this).data('link');
-  });
   $('.elem.link > h3').wrap(function(evt){
-    return '<a href="'+$(this).parent().data('link')+'" />';
+    return '<a href="'+$(this).parent().data('link')+'" target="_blank"/>';
   });
-
+  $('.elem.download > h3').wrap(function(evt){
+    return '<a download="'+$(this).parent().data('filename')+'" href="'+$(this).parent().data('link')+'" />';
+  });
   // create links around images
   $('img').wrap(function(evt){
     return '<a href="'+this.src+'" />';

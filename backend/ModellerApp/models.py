@@ -145,6 +145,7 @@ class ModellingResult(models.Model):
   created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)# by who was it added
   created_by_str = models.CharField(max_length=200, blank=True)
 
+  parent_result = models.ForeignKey('self', default=None, blank=True, null=True, related_name='child_results') #
   rendered_last = models.DateTimeField(blank=True, null=True) #when was it last rendered (then was it started?)
   last_accessed = models.DateTimeField(blank=True, null=True) #when was it last accessed
   is_rendered = models.BooleanField(blank=True) # are the results (images) still available?
