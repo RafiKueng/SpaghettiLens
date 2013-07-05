@@ -699,7 +699,7 @@ def getData(request, result_id):
     'files': [    # tuple (download filename, [data]url)
       ('Model JSON Object', '%06i.json'%result_id, 'data:text/plain;base64,' + res.json_str.encode("base64")),
       ('Glass Config File', '%06i.config.gls'%result_id, file_gls),
-      ('Glass Object File', '%06i.state'%result_id, file_state),
+      ('Glass State File (binary)', '%06i.state'%result_id, file_state),
       ('Glass Log File',    '%06i.log.txt'%result_id, file_log),
     ]
   
