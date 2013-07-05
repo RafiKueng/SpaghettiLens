@@ -1,6 +1,3 @@
-{{result}}
-{{lensdata}}
-
 <!DOCTYPE html>
     <head>
         <meta charset="utf-8">
@@ -8,6 +5,9 @@
         <title>ResultView</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
+        {% if refresh %}
+          <meta http-equiv="refresh" content="{{refresh}}" > 
+        {% endif %}
 
 <style type="text/css">
 
@@ -134,7 +134,7 @@ li > span{
     <body>
 
 <!-- START site content -->
-<h1>Result for ASW0000</h1>
+<h1>Result for {% firstof lensdata.name lensdata.id "Unknown Lens (how did you do it??)" %}</h1>
 
 
 <div class="box adv">
@@ -153,17 +153,15 @@ li > span{
       <h3>has no parent model</h3>
     </div>
   {% endif %}
-  {% if links.next %}
-    {% for elem in links.next %}
-      <div class="elem link forw" data-link="{{elem.nr}}">
-        <h3>see improvement by {{elem.user}}</h3>
-      </div>
-    {% endfor %}
-  {% else %}
-    <div class="elem forw">
-      <h3>has not been improvend yet</h3>
+  {% for elem in links.next %}
+    <div class="elem link forw" data-link="{{elem.nr}}">
+      <h3>see improvement by {{elem.user}}</h3>
     </div>
-  {% endif %}
+  {% empty %}
+    <div class="elem forw">
+      <h3>has not been improved yet</h3>
+    </div>
+  {% endfor %}
 </div>
 
 

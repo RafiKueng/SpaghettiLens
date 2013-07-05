@@ -583,13 +583,61 @@ def getData(request, result_id):
   
   def checkFile(resnr, name):
     path = "../tmp_media/%06i/%s" % (resnr, name)
-    print "checking path", path,
+    #print "checking path", path,
     if os.path.isfile(path):
-      print "exists"
+      #print "exists"
       return "/result/%06i/%s" % (resnr, name)
     else:
-      print "nope"
+      #print "nope"
       return None
+  
+  file_inp = checkFile(result_id, 'input.png')
+  file_1 = checkFile(result_id, 'img1.png')
+  file_2 = checkFile(result_id, 'img2.png')
+  file_3 = checkFile(result_id, 'img3.png')
+  file_4 = checkFile(result_id, 'img4.png')
+  file_gls = checkFile(result_id, 'cfg.gls')
+  file_state = checkFile(result_id, 'state.txt')
+  file_log = checkFile(result_id, 'log.txt')
+
+  # if one doesn't exist, recalulate the model
+  refresh = False  
+  if not (file_1 and file_2 and file_3): #file_4
+    #TODO: if state exists, only create images
+
+    print "getData: sone images missing, should recalculate"
+
+    if not isinstance(res.task_id, type(None)) and len(res.task_id) > 2:
+      print "task is started already"
+  
+      task = AsyncResult(res.task_id)
+      print "status: ", task.state
+      
+      if task.state == "SUCCESS":
+        #TODO: it could be that this point is never reached, take care of it!!
+        res.task_id = "";
+        res.is_rendered = True;
+        res.last_accessed = now()
+        res.save()
+        refresh = False
+      # task failed
+      elif task.state == "FAILURE":
+        refresh = False
+      
+      # task is still running
+      else:
+        refresh = 30
+      
+    else:
+      print "starting new task"
+      task = calculateModel.delay(result_id)
+      res.is_rendered = False
+      res.task_id = task.task_id
+      res.rendered_last = now();
+      res.save()
+      pass
+      refresh = 60
+  
   
   parent = res.parent_result
   if parent:
@@ -601,7 +649,7 @@ def getData(request, result_id):
     parent_data = None
     
   children = res.child_results.all()
-  print "found x children", children
+  #print "found x children", children
   
   if children.count() > 0:
     children_data = []
@@ -617,6 +665,9 @@ def getData(request, result_id):
   context = {
     'elem': 5,
     'result': res,
+    
+    'refresh': refresh, #false or time in sec to refresh the page for fetching new images
+    
     'lensdata': ldata,
 
     'print_result_items': [
@@ -629,12 +680,12 @@ def getData(request, result_id):
              
     'images': {
       'lens'       : lensimg,
-      'input'      : checkFile(result_id, 'input.png'),
-      'contour'    : checkFile(result_id, 'img1.png'),
-      'synthetic'  : checkFile(result_id, 'img3.png'),
-      'mass_dist'  : checkFile(result_id, 'img2.png'),
-      'mass_encl'  : checkFile(result_id, 'img4.png'),
-      'no_img_txt' : 'refreshing image, please wait for reload<br/>esimated time: 1 minute'
+      'input'      : file_inp,
+      'contour'    : file_1,
+      'synthetic'  : file_3,
+      'mass_dist'  : file_2,
+      'mass_encl'  : file_4,
+      'no_img_txt' : 'image not available'#refreshing image, please wait for reload'#<br/>esimated time: 1 minute'
     },
              
     'links': {
@@ -645,9 +696,9 @@ def getData(request, result_id):
              
     'files': [    # tuple (download filename, [data]url)
       ('Model JSON Object', '%06i.json'%result_id, 'data:text/plain;base64,' + res.json_str.encode("base64")),
-      ('Glass Config File', '%06i.config.gls'%result_id, checkFile(result_id, 'cfg.gls')),
-      ('Glass Object File', '%06i.state'%result_id, checkFile(result_id, 'state.txt')),
-      ('Glass Log File',    '%06i.log.txt'%result_id, checkFile(result_id, 'log.txt')),
+      ('Glass Config File', '%06i.config.gls'%result_id, file_gls),
+      ('Glass Object File', '%06i.state'%result_id, file_state),
+      ('Glass Log File',    '%06i.log.txt'%result_id, file_log),
     ]
   
   }
