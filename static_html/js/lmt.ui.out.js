@@ -93,6 +93,7 @@ out = {
 		that.imgData = [0,1,2]; //original raw image data
 		that.img = [0,1,2]; // image objects
 		var urls = LMT.simulationData.img;
+		that.shownImage = -1; 
 
 		that.$out.empty(); //remove previous results
 		that.$btns.empty(); //remove the number navigation buttons from previous results
