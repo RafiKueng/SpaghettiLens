@@ -160,14 +160,18 @@ body {
 }
 
 #log {
-  display: none;
-  position: absolute;
-  height: 200px;
+  /*display: none;*/
+  position: relative;
+  /*height: 200px;*/
+  
+  margin: 10px;
+  padding: 10px;
   
   background-color: lime;
   font-size: 75%;
   font-family: "Courier New", "Lucida Console";
 }
+
 
 
 .foottext {
@@ -345,7 +349,8 @@ table.display td.center {
  */
 
 #dsettings {
-	margin-top: 10px;
+	text-align: center;
+	line-height: 2.5;
 }
 
 
@@ -446,6 +451,12 @@ table.display td.center {
   padding: 0px 0px 0px 3px;
   border-left-style: dotted;
   border-width: 1px;
+  line-height: 0.9em;
+
+}
+
+#logcont hr {
+  border-style: solid none none;
 }
 
 h1 {

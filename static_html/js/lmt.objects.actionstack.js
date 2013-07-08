@@ -179,7 +179,7 @@ ActionStack.Undo = function(evt) {
     return true;
   }
   else {
-    log.write("undo failed");
+    log('ActionStack | undo | failed');
     return false;
   }
 }
@@ -193,7 +193,7 @@ ActionStack.Redo = function(evt) {
     return true;
   }
   else {
-    log.write("undo failed");
+    log('ActionStack | Redo | failed');
     return false;
   }}
 

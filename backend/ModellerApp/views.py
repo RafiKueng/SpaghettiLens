@@ -6,8 +6,8 @@ from django.core import serializers
 from django.utils import simplejson as sjson
 from django.utils.timezone import now
 from django.conf import settings as s
-
-
+from django.shortcuts import render
+from django.http import Http404
 
 from lmt import tasks
 import random
@@ -405,20 +405,32 @@ def saveModelFinal(request):
 
     try:
       m = LensData.objects.get(id=mid)
-      r = ModellingResult.objects.get(id=rid)
+      res = ModellingResult.objects.get(id=rid)
     except:
       print "keyerror in save model final"
       data = sjson.dumps({"status":"BAD_KEYS","desc":"blabla"})
       response = HttpResponseNotFound(data, content_type="application/json")
       response['Access-Control-Allow-Origin'] = "*"
-      return response      
+      return response
+    
+    try:
+      #print "imgdata", r['imgData'][0:200]
+      imgstr = r['imgData']
+      ident, img = imgstr.split(',')
+      #print ident
+      if ident == "data:image/png;base64":
+        fh = open("../tmp_media/%06i/input.png" % rid, "wb")
+        fh.write(img.decode('base64'))
+        fh.close()
+    except:
+      pass
     
     if m.n_res: m.n_res = m.n_res + 1
     else: m.n_res = 1
     
-    r.is_final_result = True
+    res.is_final_result = True
     m.save()
-    r.save()
+    res.save()
 
     data = sjson.dumps({"status":"OK", "result_id": "%06i" % rid})
     response = HttpResponse(data, content_type="application/json")
@@ -538,9 +550,172 @@ def getSimulationFiles(request, result_id, filename):
 
 
 
+import os.path
 
 @csrf_exempt
 def getData(request, result_id):
+  print "in getData"
+  
+  result_id = int(result_id)
+  try:
+    res = ModellingResult.objects.get(id=result_id)
+  except ModellingResult.DoesNotExist:
+    raise Http404
+
+
+  try:
+    ldata = res.lens_data_obj
+    lensdataitems = [
+      ('Id', ldata.pk),
+      ('Name', ldata.name),
+      ('From', ldata.datasource),
+      ('Saved by', ldata.created_by_str)
+    ]
+    lensimg = sjson.loads(ldata.img_data)['url']
+  except:
+    print 'error'
+    lensdataitems = None
+    lensimg = None
+
+  
+  res.last_accessed = now()
+  res.save()
+  
+  def checkFile(resnr, name):
+    path = "../tmp_media/%06i/%s" % (resnr, name)
+    #print "checking path", path,
+    if os.path.isfile(path):
+      #print "exists"
+      return "/result/%06i/%s" % (resnr, name)
+    else:
+      #print "nope"
+      return None
+  
+  file_inp = checkFile(result_id, 'input.png')
+  file_1 = checkFile(result_id, 'img1.png')
+  file_2 = checkFile(result_id, 'img2.png')
+  file_3 = checkFile(result_id, 'img3.png')
+  file_4 = checkFile(result_id, 'img4.png')
+  file_gls = checkFile(result_id, 'cfg.gls')
+  file_state = checkFile(result_id, 'state.txt')
+  file_log = checkFile(result_id, 'log.txt')
+
+  # if one doesn't exist, recalulate the model
+  refresh = False  
+  if not (file_1 and file_2 and file_3): #file_4
+    #TODO: if state exists, only create images
+
+    print "getData: sone images missing, should recalculate"
+
+    if not isinstance(res.task_id, type(None)) and len(res.task_id) > 2:
+      print "task is started already"
+  
+      task = AsyncResult(res.task_id)
+      print "status: ", task.state
+      
+      if task.state == "SUCCESS":
+        #TODO: it could be that this point is never reached, take care of it!!
+        res.task_id = "";
+        res.is_rendered = True;
+        res.last_accessed = now()
+        res.save()
+        refresh = False
+      # task failed
+      elif task.state == "FAILURE":
+        refresh = False
+      
+      # task is still running
+      else:
+        refresh = 30
+      
+    else:
+      print "starting new task"
+      task = calculateModel.delay(result_id)
+      res.is_rendered = False
+      res.task_id = task.task_id
+      res.rendered_last = now();
+      res.save()
+      pass
+      refresh = 60
+  
+  
+  parent = res.parent_result
+  if parent:
+    parent_data = {
+      'nr':   parent.pk,
+      'user': parent.created_by_str,
+      'date': parent.created
+    }
+  else:
+    parent_data = None
+    
+  children = res.child_results.all()
+  #print "found x children", children
+  
+  if children.count() > 0:
+    children_data = []
+    for child in children:
+      children_data.append({
+        'nr'  : child.pk,
+        'user': child.created_by_str,
+        'date': child.created
+      })
+  else:
+    children_data = None
+  
+  
+  context = {
+    'elem': 5,
+    'result': res,
+    
+    'refresh': refresh, #false or time in sec to refresh the page for fetching new images
+    
+    'lensdata': ldata,
+
+    'print_result_items': [
+      ('Id', res.pk),
+      ('User', res.created_by_str),
+      ('Pixel Radius', res.pixrad)
+    ],
+    
+    'print_lensdata_items': lensdataitems,
+             
+    'images': {
+      'lens'       : lensimg,
+      'input'      : file_inp,
+      'contour'    : file_1,
+      'synthetic'  : file_3,
+      'mass_dist'  : file_2,
+      'mass_encl'  : file_4,
+      'no_img_txt' : 'image not available'#refreshing image, please wait for reload'#<br/>esimated time: 1 minute'
+    },
+             
+    'links': {
+       'next' : children_data,#[{'nr': '005', 'user': 'aa'},{'nr': 'b', 'user': 'bb'},{'nr': 'c', 'user': 'cc'}],#[None],
+       'prev' : parent_data,
+       'fork' : 'http://', 
+    },
+             
+    'files': [    # tuple (download filename, [data]url)
+      ('Model JSON Object', '%06i.json'%result_id, 'data:text/plain;base64,' + res.json_str.encode("base64")),
+      ('Glass Config File', '%06i.config.gls'%result_id, file_gls),
+      ('Glass State File (binary)', '%06i.state'%result_id, file_state),
+      ('Glass Log File',    '%06i.log.txt'%result_id, file_log),
+    ]
+  
+  }
+  
+  response = render(request, 'result.html', context)
+  
+  response['Access-Control-Allow-Origin'] = "*"
+  print "sending response"
+  return response
+  
+    
+  
+  
+  
+  """
   result_id = int(result_id)
   print "in getData"
   
@@ -592,7 +767,7 @@ def getData(request, result_id):
   print "sending response"
   return response
 
-
+  """
 
 
 

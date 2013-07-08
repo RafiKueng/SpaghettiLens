@@ -107,6 +107,7 @@ def _generateConfigFile():
   
   cfg = """
 server {
+  client_max_body_size 5M; #allow to post images, 5m max should be ok
   listen %(PUBLIC_PORT)s; ## listen for ipv4; this line is default and implied
   listen   [::]:%(PUBLIC_PORT)s default ipv6only=on; ## listen for ipv6
 
