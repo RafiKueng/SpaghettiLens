@@ -49,6 +49,7 @@ wiki/*
 # or only add changed files, to keep track of changes
 ##########################################################
 glass/
+glass2/
 
 
 # allow for individual starter page

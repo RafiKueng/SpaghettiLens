@@ -42,7 +42,7 @@ var events = {
     LMT.ui.html.HelpBar.init();
     
     LMT.ui.html.Tooltip.init();
-    //LMT.ui.html.KeyboardListener.init(); only load when app is ready, no more dialogs
+    //LMT.ui.html.KeyboardListener.init(); //only load when app is ready, no more dialogs
     
     LMT.ui.svg.initCanvas();
 

@@ -78,6 +78,8 @@ scp tmp_media/$1/img3.png lmt@10.0.0.10:/srv/lmt/tmp_media/$1/
 
 scp tmp_media/$1/log.txt lmt@10.0.0.10:/srv/lmt/tmp_media/$1/
 scp tmp_media/$1/state.txt lmt@10.0.0.10:/srv/lmt/tmp_media/$1/
+
+rm tmp_media/$1/state.txt
 '''
 
 
