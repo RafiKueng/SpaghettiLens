@@ -8,8 +8,13 @@ def install():
 
 
 # updates an existing install
-def update():
+def update_local(install_dir="./build"):
   pass
+
+
+
+
+
 
 
 # restarts any server
