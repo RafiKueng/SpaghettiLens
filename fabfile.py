@@ -9,8 +9,10 @@ def install():
 
 # updates an existing install
 def update_local(install_dir="./build"):
+  version = local("git describe --abbrev=1 --tags")
+  time_str = dt.now().strftime("%Y%m%d-%H%M")
   pass
-
+  
 
 
 
