@@ -16,10 +16,10 @@ header( "Pragma: no-cache" );
   <link href="css/jquery.chosen.css" rel="stylesheet" />
   <link href="css/font-awesome.css" rel="stylesheet" type="text/css"/>
 
-  <link rel="stylesheet" href="css/main.css" type="text/css" />
-  <link rel="stylesheet" href="css/svg_elements.css" type="text/css" />
-  <link rel="stylesheet" href="css/big_screen.css" type="text/css" />
-  <link rel="stylesheet" href="css/small_screen.css" type="text/css" />
+  <link rel="stylesheet" href="css/lmt.css" type="text/css" />
+  <link rel="stylesheet" href="css/lmt.10.big_screen.css" type="text/css" />
+  <link rel="stylesheet" href="css/lmt.20.small_screen.css" type="text/css" />
+  <link rel="stylesheet" href="css/lmt.90.svg_elements.css" type="text/css" />
 
 
 
