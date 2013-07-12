@@ -4,6 +4,7 @@ from fabric.context_managers import lcd
 from datetime import datetime as dt
 import os
 import hashlib
+import gzip
 
 import install.install as i
 
@@ -26,7 +27,7 @@ def update_html(install_dir="D:/temp/lmt", htmldir = 'static_html'):
   time_str = dt.now().strftime("%Y%m%d%H%M")
   v_str = version + "-" + time_str
   
-  print ">", v_str
+  print "version string:", v_str
   
   js = {
     'name': 'lmt.'+v_str+'.min.js',
@@ -46,6 +47,9 @@ def update_html(install_dir="D:/temp/lmt", htmldir = 'static_html'):
     'html': os.path.abspath('./static_html/')
   }
 
+
+
+  print 'generating js file:', js['full']
   js_files = [f for f in os.listdir(src['js']) if f.startswith("lmt") and f.endswith(".js") and not f=='lmt.js']
   
   if not os.path.isdir(js['root']):
@@ -58,7 +62,9 @@ def update_html(install_dir="D:/temp/lmt", htmldir = 'static_html'):
       with open(os.path.join(src['js'], fname)) as infile:
         for line in infile:
           outfile.write(line)
-          
+
+
+
   vendor_js_files = [f for f in os.listdir(src['js']) if f.startswith("jquery")]
   vendor_js_files.append('canvg.js')
   
@@ -71,15 +77,19 @@ def update_html(install_dir="D:/temp/lmt", htmldir = 'static_html'):
   vjs['full'] = os.path.join(vjs['root'], vjs['name'])
 
   if os.path.isfile(vjs['full']):
-    print "skipping regeneration of vendor js"
+    print "skipping regeneration of vendor js", vjs['full']
   else:
+    print 'generating vendor js file:', vjs['full']
     with open(vjs['full'], 'w') as outfile:
       for fname in vendor_js_files:
         with open(os.path.join(src['js'], fname)) as infile:
           for line in infile:
             outfile.write(line)
-  
 
+
+
+  
+  print 'generating css file:', css['full']
   css_files = [f for f in os.listdir(src['css']) if f.startswith("lmt") and f.endswith(".css") and not f=='lmt.css']
   
   if not os.path.isdir(css['root']):
@@ -93,6 +103,10 @@ def update_html(install_dir="D:/temp/lmt", htmldir = 'static_html'):
         for line in infile:
           outfile.write(line)
   
+  
+
+
+
   
   vendor_css_files = [f for f in os.listdir(src['css']) if f.startswith("jquery")]
   vendor_css_files.append('font-awesome.css')
@@ -108,11 +122,25 @@ def update_html(install_dir="D:/temp/lmt", htmldir = 'static_html'):
   if os.path.isfile(vcss['full']):
     print "skipping regeneration of vendor css"
   else:
+    print 'generating vendor css file:', vcss['full']
     with open(vcss['full'], 'w') as outfile:
-      for fname in vendor_js_files:
-        with open(os.path.join(src['js'], fname)) as infile:
+      for fname in vendor_css_files:
+        with open(os.path.join(src['css'], fname)) as infile:
           for line in infile:
             outfile.write(line)
+
+
+
+  bigfiles = [js['full'], vjs['full'], css['full'], vcss['full']]
+  for filen in bigfiles:
+    if os.path.isfile(filen+'.gz'):
+      print "skipping gzip of", filen
+    else:
+      print "gzip of", filen
+      with open(filen, 'r') as inp, gzip.open(filen+'.gz', 'w') as gz:
+        gz.write(inp.read())
+    
+
           
   
   csslist = [
@@ -132,16 +160,23 @@ def update_html(install_dir="D:/temp/lmt", htmldir = 'static_html'):
   
   csstags = ''
   for url in csslist:
-    csstags += '?  <link rel="stylesheet" href="%s" />\n' % url
+    csstags += '  <link rel="stylesheet" href="%s" />\n' % url
 
   jstags = ''
   for url in jslist:
-    jstags += '?  <script src="%s"></script>\n' % url
+    jstags += '  <script src="%s"></script>\n' % url
   
-  with open(os.path.join(install_dir,htmldir,'lmt.html'), 'w') as out:
-    with open(os.path.join(src['html'],'head.html.tmpl'), 'r') as inp:
-      str = inp.read()
-      out.write(str.format(css=csstags, js=jstags))
+  lmtdir = os.path.join(install_dir,htmldir,'lmt.html')
+  
+  print 'wrinting lmt.html', lmtdir
+  with open(lmtdir, 'w') as out:
+    with open(os.path.join(src['html'],'html.tmpl'), 'r') as head:
+      with open(os.path.join(src['html'],'body.php'), 'r') as body:
+        str = head.read()
+        str = str.format(css=csstags,
+                         js=jstags,
+                         body=body.read())
+        out.write(str)
   
 
 
