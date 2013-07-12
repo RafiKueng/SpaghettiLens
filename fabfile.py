@@ -61,9 +61,11 @@ def update_html(install_dir="./build", htmldir = 'static_html'):
     os.makedirs(js['root'])
   with open(js['full'], 'w') as outfile:
     with open(os.path.join(src['js'], 'lmt.js')) as infile:
+      print '  > lmt.js'
       for line in infile:
           outfile.write(line)
     for fname in js_files:
+      print '  >',fname
       with open(os.path.join(src['js'], fname)) as infile:
         for line in infile:
           outfile.write(line)
@@ -77,7 +79,7 @@ def update_html(install_dir="./build", htmldir = 'static_html'):
     ]
     print 'using lmt.settings.js config: (hardcoded)'
     for _ in set: print '  >', _
-    outfile.write('\n'.join(set))
+    outfile.write('\n'+'\n'.join(set))
 
 
 
