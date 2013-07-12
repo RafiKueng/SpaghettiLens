@@ -14,14 +14,14 @@ def install():
 
 
 # updates an existing install
-def update_html(install_dir="D:/temp/lmt", htmldir = 'static_html'):
+def update_html(install_dir="./build", htmldir = 'static_html'):
   '''
   combine all vendor js sand css files, (TODO: minimize them) and tag with a file hash
   so they stay the same as long as nothing changed
   
   all lmt files will be tagged with version number and time.
   '''
-  install_dir=os.path.normpath(install_dir)
+  install_dir=os.path.realpath(install_dir)
   
   version = local("git describe --abbrev=1 --tags", capture=True)
   time_str = dt.now().strftime("%Y%m%d%H%M")
