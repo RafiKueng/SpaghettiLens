@@ -23,6 +23,8 @@ def update_html(install_dir="./build", htmldir = 'static_html'):
   '''
   install_dir=os.path.realpath(install_dir)
   
+  # make sure to have the latest tags
+  local('git fetch --tags')
   version = local("git describe --abbrev=1 --tags", capture=True)
   time_str = dt.now().strftime("%Y%m%d%H%M")
   v_str = version + "-" + time_str
@@ -50,7 +52,10 @@ def update_html(install_dir="./build", htmldir = 'static_html'):
 
 
   print 'generating js file:', js['full']
-  js_files = [f for f in os.listdir(src['js']) if f.startswith("lmt") and f.endswith(".js") and not f=='lmt.js']
+  js_files = [f for f in os.listdir(src['js']) if f.startswith("lmt")
+                                                and f.endswith(".js")
+                                                and not f=='lmt.js'
+                                                and not f=='lmt.settings.js']
   
   if not os.path.isdir(js['root']):
     os.makedirs(js['root'])
@@ -62,6 +67,17 @@ def update_html(install_dir="./build", htmldir = 'static_html'):
       with open(os.path.join(src['js'], fname)) as infile:
         for line in infile:
           outfile.write(line)
+    # write settings
+    set = [
+      'debug = true;',
+      'local = false;',
+      'doLog = true;',
+      'logToConsole = true;',
+      'LMT.com.serverUrl = "";',
+    ]
+    print 'using lmt.settings.js config: (hardcoded)'
+    for _ in set: print '  >', _
+    outfile.write('\n'.join(set))
 
 
 
