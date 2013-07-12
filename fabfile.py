@@ -3,6 +3,7 @@ from fabric.context_managers import lcd
 
 from datetime import datetime as dt
 import os
+import hashlib
 
 import install.install as i
 
@@ -12,7 +13,15 @@ def install():
 
 
 # updates an existing install
-def update_html(install_dir="D:/temp/lmt"):
+def update_html(install_dir="D:/temp/lmt", htmldir = 'static_html'):
+  '''
+  combine all vendor js sand css files, (TODO: minimize them) and tag with a file hash
+  so they stay the same as long as nothing changed
+  
+  all lmt files will be tagged with version number and time.
+  '''
+  install_dir=os.path.normpath(install_dir)
+  
   version = local("git describe --abbrev=1 --tags", capture=True)
   time_str = dt.now().strftime("%Y%m%d%H%M")
   v_str = version + "-" + time_str
@@ -21,20 +30,20 @@ def update_html(install_dir="D:/temp/lmt"):
   
   js = {
     'name': 'lmt.'+v_str+'.min.js',
-    'root': os.path.join(os.path.normpath(install_dir),'static_html','js'),
+    'root': os.path.join(install_dir,htmldir,'js'),
     }
   js['full'] = os.path.join(js['root'], js['name'])
 
   css = {
     'name': 'lmt.'+v_str+'.min.css',
-    'root': os.path.join(os.path.normpath(install_dir),'static_html','css'),
+    'root': os.path.join(install_dir,htmldir,'css'),
     }
   css['full'] = os.path.join(css['root'], css['name'])
 
-
   src = {
-    'js': './static_html/js',
-    'css': './static_html/css'
+    'js': os.path.abspath('./static_html/js'),
+    'css': os.path.abspath('./static_html/css'),
+    'html': os.path.abspath('./static_html/')
   }
 
   js_files = [f for f in os.listdir(src['js']) if f.startswith("lmt") and f.endswith(".js") and not f=='lmt.js']
@@ -50,6 +59,26 @@ def update_html(install_dir="D:/temp/lmt"):
         for line in infile:
           outfile.write(line)
           
+  vendor_js_files = [f for f in os.listdir(src['js']) if f.startswith("jquery")]
+  vendor_js_files.append('canvg.js')
+  
+  vjshash = "".join([hashlib.sha256(open(os.path.join(src['js'], fname), 'rb').read()).hexdigest()[:4] for fname in vendor_js_files])
+
+  vjs = {
+    'name': 'vendor.'+vjshash+'.min.js',
+    'root': os.path.join(install_dir,htmldir,'js'),
+    }
+  vjs['full'] = os.path.join(vjs['root'], vjs['name'])
+
+  if os.path.isfile(vjs['full']):
+    print "skipping regeneration of vendor js"
+  else:
+    with open(vjs['full'], 'w') as outfile:
+      for fname in vendor_js_files:
+        with open(os.path.join(src['js'], fname)) as infile:
+          for line in infile:
+            outfile.write(line)
+  
 
   css_files = [f for f in os.listdir(src['css']) if f.startswith("lmt") and f.endswith(".css") and not f=='lmt.css']
   
@@ -63,6 +92,56 @@ def update_html(install_dir="D:/temp/lmt"):
       with open(os.path.join(src['css'], fname)) as infile:
         for line in infile:
           outfile.write(line)
+  
+  
+  vendor_css_files = [f for f in os.listdir(src['css']) if f.startswith("jquery")]
+  vendor_css_files.append('font-awesome.css')
+
+  vcsshash = "".join([hashlib.sha256(open(os.path.join(src['css'], fname), 'rb').read()).hexdigest()[:4] for fname in vendor_css_files])
+
+  vcss = {
+    'name': 'vendor.'+vcsshash+'.min.css',
+    'root': os.path.join(install_dir,htmldir,'css'),
+    }
+  vcss['full'] = os.path.join(vcss['root'], vcss['name'])
+  
+  if os.path.isfile(vcss['full']):
+    print "skipping regeneration of vendor css"
+  else:
+    with open(vcss['full'], 'w') as outfile:
+      for fname in vendor_js_files:
+        with open(os.path.join(src['js'], fname)) as infile:
+          for line in infile:
+            outfile.write(line)
+          
+  
+  csslist = [
+    'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/ui-darkness/jquery-ui.css',
+    'css/'+vcss['name'],
+    'css/'+css['name']
+  ]
+  
+  jslist = [
+    'http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js',
+    'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.js',
+    'http://canvg.googlecode.com/svn/trunk/rgbcolor.js',
+    'http://canvg.googlecode.com/svn/trunk/StackBlur.js',
+    'js/'+vjs['name'],
+    'js/'+js['name']
+  ]
+  
+  csstags = ''
+  for url in csslist:
+    csstags += '?  <link rel="stylesheet" href="%s" />\n' % url
+
+  jstags = ''
+  for url in jslist:
+    jstags += '?  <script src="%s"></script>\n' % url
+  
+  with open(os.path.join(install_dir,htmldir,'lmt.html'), 'w') as out:
+    with open(os.path.join(src['html'],'head.html.tmpl'), 'r') as inp:
+      str = inp.read()
+      out.write(str.format(css=csstags, js=jstags))
   
 
 
