@@ -124,6 +124,10 @@ LMT.utils.ImageLoader = function(listOfURLs, onEach, onAll, crossOrigin) {
           onAll(imgs);
         }
       };
+      img.onerror = function(evt,a,b) {
+        alert("Error loading image\n\nI'm sorry, you just got the CORS Chrome bug...\nPlease open spaghettiLens in an inkognito mode tab (ctrl + shift + n) or use firefox to prevent it.");
+        LMT.utils.ImageLoader(listOfURLs, onEach, onAll, false)
+      };
       if (co) {img.setAttribute('crossOrigin','anonymous');}
       img.src = urls[i];
       imgs[i] = img;

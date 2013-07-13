@@ -807,7 +807,7 @@ svg.bg = {
     svg.bg.canv = document.createElement('canvas');
     svg.bg.ctx = svg.bg.canv.getContext('2d');
     
-    var urls = [LMT.modelData.imgurl];
+    var urls = [LMT.modelData.imgurl + '?v=lmt']; //?v=1 to prevent to get cached image with wrong access origin settings
     LMT.ui.html.LoadProgressDialog.show(urls.length);
 
     var onEach = function(status){

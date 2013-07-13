@@ -93,7 +93,7 @@ LMT.datasources.spacewarps.init = function(){
     }
     else {
       var train = json.list[0].metadata.training;
-      if (train.length == 0) {train = false;}
+      if (train && train.length == 0) {train = false;}
       $('#sw_loginfield').append(
         '<p>Got data:<br/>'+
         'id: ' + json.list[0].id + '<br/>' +
