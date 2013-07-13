@@ -22,10 +22,10 @@ LMT.datasources.spacewarps.init = function(){
       success: LMT.datasource.createSuccess,
       error: LMT.datasource.createFail,
       data: {
-        action: "datasourceApi",
-        src_id: 3,
-        do: "createObj",
-        data: LMT.datasource.lenses,
+        'action': "datasourceApi",
+        'src_id': 3,
+        'do': "createObj",
+        'data': LMT.datasource.lenses,
       },
       datatype: "json",
     });
@@ -77,10 +77,10 @@ LMT.datasources.spacewarps.init = function(){
       success: LMT.datasource.fetchSuccess,
       error: LMT.datasource.fetchFail,
       data: {
-        action: "datasourceApi",
-        src_id: 3,
-        do: "fetch",
-        swid: swid,
+        'action': "datasourceApi",
+        'src_id': 3,
+        'do': "fetch",
+        'swid': swid,
       },
       datatype: "json",
     })
@@ -93,6 +93,7 @@ LMT.datasources.spacewarps.init = function(){
     }
     else {
       var train = json.list[0].metadata.training;
+      if (train.length == 0) {train = false;}
       $('#sw_loginfield').append(
         '<p>Got data:<br/>'+
         'id: ' + json.list[0].id + '<br/>' +
