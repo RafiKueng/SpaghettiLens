@@ -56,6 +56,7 @@ glass2/
 ##########################################################
 /index.html
 python_env/*
+py_env/*
 
 # OOo temp files
 .~lock*
