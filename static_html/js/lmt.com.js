@@ -406,33 +406,4 @@ com.getDatasourceDialog = function(evt, id, uname) {
 }
 
 
-com.getImage = function(evt, name, success) {
-  
-  var success = function(jsonObj, b, c){
-    log('getDatasourceDialog | success');
-    $.event.trigger("RcvDatasourceDialog", [jsonObj]);
-  }
-  
-  var fail = function(a, b, c){
-    log('getDatasourceDialog | fail');
-    alert("Server api down");
-  }  
-  
-  var data = {
-    action: 'selectSource',
-    id: id,
-    uname: uname
-  };
-  
-  $.ajax(LMT.com.serverUrl + "/api", {
-      type:"POST",
-      success: success,
-      error: fail,
-      data: data,
-      dataType:"json", //data type expected from server
-  });
-  
-}
-
-
 LMT.com = com;
