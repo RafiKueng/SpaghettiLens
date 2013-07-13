@@ -130,6 +130,62 @@ html.LoadProgressDialog = {
 
 
 
+
+html.WaitForResultDialog = {
+  init: function() {
+    $('#wait_for_results_dialog').dialog({
+      autoOpen: false,
+      minWidth: 350,
+      minHeight: 100,
+      modal: false,
+      //open: html.WaitForResultDialog.onOpen,
+      buttons: []
+    });
+  },
+  
+  show: function(){
+    $('#wait_for_results_dialog')
+      .dialog('open')
+      .dialog('widget').position({
+        my: "center center",
+        at: "center center",
+        of: $('#out')
+      });
+  },
+  
+  close: function(){
+    $('#wait_for_results_dialog').dialog('close');
+  },
+  
+  startRefresh: function(){
+    html.WaitForResultDialog.doRefresh = true;
+    var now = new Date();
+    html.WaitForResultDialog.startTime = now.getTime() / 1000;
+    html.WaitForResultDialog.estTime = 0;
+    setTimeout(html.WaitForResultDialog.update,1);
+  },
+  
+  stopRefresh: function(){
+    html.WaitForResultDialog.doRefresh = false;
+  },
+  
+  update: function(){
+    if (html.WaitForResultDialog.doRefresh == true) {
+      var now = new Date();
+      dt = now.getTime()/1000 - html.WaitForResultDialog.startTime;
+      $('#wfrd_running').html(dt);
+      $('#wfrd_est').html(html.WaitForResultDialog.estTime);
+      setTimeout(function(){html.WaitForResultDialog.update()},500);
+    }
+    else {
+      $('#wfrd_running').html(0);
+      $('#wfrd_est').html(0);
+    }
+  },
+  
+};
+
+
 html.SelectDatasourceDialog = {
   init: function(){
     $('#select_datasource_dialog').dialog({

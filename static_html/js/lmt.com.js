@@ -333,6 +333,9 @@ com.GetSimulation = function(){
   };
 
 
+  $('body').css('cursor', 'progress');
+  $.event.trigger("WaitForSimulation");
+
   $.ajax(LMT.com.serverUrl + LMT.com.resultUrl + LMT.simulationData.resultId + ".json", {
       type:"GET",
       //contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
@@ -346,7 +349,6 @@ com.GetSimulation = function(){
       error: fail
       //mimeType: "text/plain"
   });
-  $('body').css('cursor', 'progress');
 }
 
 
