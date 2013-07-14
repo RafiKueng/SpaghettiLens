@@ -301,20 +301,23 @@ com.GetSimulation = function(){
     if (jsonResp.status!="READY"){ //polling
       if (jsonResp.status=="FAILURE") { // did the worker crash?
         alert("error with worker: crash");
+        $.event.trigger("GetSimulationFail");
         $('body').css('cursor', '');
         return false;
       }
       else if (jsonResp.status=="REVOKED") { // is the server under heavy load?
         alert("the server is currently under heavy load\nYour request couldn't be processed.\nTry again later. Sorry!");
         $('body').css('cursor', '');
+        $.event.trigger("GetSimulationFail");
         return false;
       }
+      /*
       if (LMT.com.refreshCounter>LMT.settings.estimate*2+10) { //if more than 10min waiting time... assume 0.5 refresh / sec
         alert("Timeout on the server side..");
         LMT.com.refreshCounter = 0;
         $('body').css('cursor', '');
         return false;
-      }
+      }*/
 
       setTimeout(function(){$.event.trigger("GetSimulation");}, 1000);
       LMT.com.refreshCounter += 1;

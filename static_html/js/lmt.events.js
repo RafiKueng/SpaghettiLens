@@ -149,9 +149,13 @@ var events = {
     $(document).on('RepaintModel', LMT.objects.Model.Repaint);
 
     $(document).on('GetSimulation', LMT.com.GetSimulation);
+
+    $(document).on('GetSimulationFail', LMT.ui.html.WaitForResultDialog.stopRefresh);
+
     $(document).on('ReceivedSimulation', LMT.ui.out.load);
     $(document).on('ReceivedSimulation', LMT.ui.html.Toolbar.updateTop);
     $(document).on('ReceivedSimulation', LMT.ui.html.WaitForResultDialog.stopRefresh);
+    
     
     $(document).on('DisplayOutputSlide', LMT.ui.out.show); //needs a id
     $(document).on('DisplayOutputSlideNext', LMT.ui.out.next);
