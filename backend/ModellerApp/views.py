@@ -10,7 +10,9 @@ from django.shortcuts import render
 from django.http import Http404
 
 from lmt import tasks
+
 import random
+from math import exp
 
 from ModellerApp.models import LensData, BasicLensData, ModellingResult, Catalog
 from ModellerApp.utils import EvalAndSaveJSON
@@ -500,15 +502,25 @@ def getSimulationJSON(request, result_id):
 
     elif task.state == "FAILURE":
       data = sjson.dumps({"status":"FAILURE", "result_id": "%06i" % result_id})
+
+    elif task.state == "REVOKED":
+      data = sjson.dumps({"status":"REVOKED", "result_id": "%06i" % result_id})
       
     else:
       data = sjson.dumps({"status":"PENDING", "result_id": "%06i" % result_id})
     
   else:
-    print "starting new task"
+    #calculating the time limits
+    pr = res.pixrad
+    nm = res.n_models
+    dt = (0.108 * exp(0.506*pr) + 0.01 * nm + 0.5) * 2 + 30
+
+    print "starting new task with timeout:", dt 
     # print result_id
     # print type(result_id)
-    task = calculateModel.delay(result_id)
+    #task = calculateModel.delay(result_id)
+    
+    task = calculateModel.apply_async(args=[result_id], timeout=dt, expires=3*60)
     res.is_rendered = False
     # print task.task_id, type(task.task_id)
     res.task_id = task.task_id

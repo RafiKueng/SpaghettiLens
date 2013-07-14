@@ -304,6 +304,11 @@ com.GetSimulation = function(){
         $('body').css('cursor', '');
         return false;
       }
+      else if (jsonResp.status=="REVOKED") { // is the server under heavy load?
+        alert("the server is currently under heavy load\nYour request couldn't be processed.\nTry again later. Sorry!");
+        $('body').css('cursor', '');
+        return false;
+      }
       if (LMT.com.refreshCounter>LMT.settings.estimate*2+10) { //if more than 10min waiting time... assume 0.5 refresh / sec
         alert("Timeout on the server side..");
         LMT.com.refreshCounter = 0;
