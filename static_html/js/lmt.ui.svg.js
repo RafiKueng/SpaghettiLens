@@ -1058,18 +1058,32 @@ svg.ConvertToPNG = function(evt) {
   
   // wait for the canvas to redraw
   setTimeout(function(){
+    LMT.ui.svg.CheckInputImage();
+  }, 10);
+  
+  
+};
+
+svg.CheckInputImage = function(){
     var canvas = LMT.ui.svg.canvasout;
     var img = canvas.toDataURL();
+    log('svg.CheckInputImage | img.length'+img.length);
+    if (img.length == 12950) { //if empty image, retry! we have to wait for the image load and canvas update
+      log('svg.CheckInputImage | recheck for input image');
+      setTimeout(function(){
+        LMT.ui.svg.CheckInputImage();
+      }, 10);
+      return;
+    }
     
     //$('#save_results_dialog').append('<img style="width:300px;" src="'+img+'"/>');
     svg.canvasoutprnt.remove();
     LMT.ui.svg.canvasout = null;
     LMT.ui.svg.img = img;
     $.event.trigger("InputImageGenerated");
-  }, 100);
-  
-  
 }
+
+
 
 
 LMT.ui.svg = svg;
