@@ -458,7 +458,7 @@
 </div>
 
 <script type="text/javascript">
-  if (! LMT) {
+  if (typeof(LMT) === 'undefined') {
     $('#new_version').dialog({
       autoOpen: true,
       minWidth: 600,
