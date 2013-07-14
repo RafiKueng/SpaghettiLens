@@ -162,13 +162,15 @@ html.WaitForResultDialog = {
   },
   
   startRefresh: function(){
-    html.WaitForResultDialog.doRefresh = true;
-    var now = new Date();
-    html.WaitForResultDialog.startTime = now.getTime() / 1000;
-    var pr = LMT.model.Parameters.pixrad;
-    var nm = LMT.model.Parameters.n_models;
-    html.WaitForResultDialog.estimate(pr, nm);
-    setTimeout(html.WaitForResultDialog.update,1);
+    if (~html.WaitForResultDialog.doRefresh){
+      html.WaitForResultDialog.doRefresh = true;
+      var now = new Date();
+      html.WaitForResultDialog.startTime = now.getTime() / 1000;
+      var pr = LMT.model.Parameters.pixrad;
+      var nm = LMT.model.Parameters.n_models;
+      html.WaitForResultDialog.estimate(pr, nm);
+      setTimeout(html.WaitForResultDialog.update,1);
+    }
   },
   
   stopRefresh: function(){

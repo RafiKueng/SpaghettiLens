@@ -338,6 +338,11 @@ com.GetSimulation = function(){
   
   var fail = function(a, b, c) {
     log('GetSimulation | fail', a, b, c, a.responseText);
+    if (c && c=='Bad Gateway') {
+      alert("the server is currently not online. Please drop a note to rafi. I'm sorry!");
+      $('body').css('cursor', '');
+      $.event.trigger("GetSimulationFail");
+    }
   };
 
 
