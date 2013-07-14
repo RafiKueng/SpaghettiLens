@@ -451,6 +451,22 @@
   </p>
 </div>
 
+<div id="new_version" class="dialog" title="new version available">
+  <p>There is a new version available<br/>
+    Please press Ctrl + F5 to force a reload
+  </p>
+</div>
+
+<script type="text/javascript">
+  if (! LMT) {
+    $('#new_version').dialog({
+      autoOpen: true,
+      minWidth: 600,
+      minHeight: 400,
+      modal: false
+    })
+  }
+</script>
 
 </body>
 
