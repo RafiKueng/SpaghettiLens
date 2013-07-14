@@ -162,7 +162,7 @@ html.WaitForResultDialog = {
   },
   
   startRefresh: function(){
-    if (~html.WaitForResultDialog.doRefresh){
+    if (!html.WaitForResultDialog.doRefresh){
       html.WaitForResultDialog.doRefresh = true;
       var now = new Date();
       html.WaitForResultDialog.startTime = now.getTime() / 1000;
