@@ -153,6 +153,10 @@ html.WaitForResultDialog = {
       });
   },
   
+  estimate: function(pixrad, nmodels) {
+    LMT.settings.estimate = Math.round(0.108 * Math.exp(0.506*pixrad) + 0.01*nmodels + 0.5)
+  },
+  
   close: function(){
     $('#wait_for_results_dialog').dialog('close');
   },
@@ -161,21 +165,24 @@ html.WaitForResultDialog = {
     html.WaitForResultDialog.doRefresh = true;
     var now = new Date();
     html.WaitForResultDialog.startTime = now.getTime() / 1000;
-    html.WaitForResultDialog.estTime = 0;
+    var pr = LMT.model.Parameters.pixrad;
+    var nm = LMT.model.Parameters.n_models;
+    html.WaitForResultDialog.estimate(pr, nm);
     setTimeout(html.WaitForResultDialog.update,1);
   },
   
   stopRefresh: function(){
     html.WaitForResultDialog.doRefresh = false;
+    $('#wait_for_results_dialog').dialog('close');
   },
   
   update: function(){
     if (html.WaitForResultDialog.doRefresh == true) {
       var now = new Date();
       dt = now.getTime()/1000 - html.WaitForResultDialog.startTime;
-      $('#wfrd_running').html(dt);
-      $('#wfrd_est').html(html.WaitForResultDialog.estTime);
-      setTimeout(function(){html.WaitForResultDialog.update()},500);
+      $('#wfrd_running').html(dt.toFixed(1));
+      $('#wfrd_est').html(LMT.settings.estimate);
+      setTimeout(function(){html.WaitForResultDialog.update()},100);
     }
     else {
       $('#wfrd_running').html(0);

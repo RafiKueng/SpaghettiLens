@@ -304,14 +304,14 @@ com.GetSimulation = function(){
         $('body').css('cursor', '');
         return false;
       }
-      if (LMT.com.refreshCounter>30*10) { //if more than 10min waiting time... assume 0.5 refresh / sec
-        alert("server not available");
+      if (LMT.com.refreshCounter>LMT.settings.estimate*2+10) { //if more than 10min waiting time... assume 0.5 refresh / sec
+        alert("Timeout on the server side..");
         LMT.com.refreshCounter = 0;
         $('body').css('cursor', '');
         return false;
       }
 
-      setTimeout(function(){$.event.trigger("GetSimulation");}, 2000);
+      setTimeout(function(){$.event.trigger("GetSimulation");}, 1000);
       LMT.com.refreshCounter += 1;
       return;
     }

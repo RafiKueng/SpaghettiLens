@@ -38,6 +38,7 @@ var events = {
     LMT.ui.html.GlassSettingsDialog.init();
     LMT.ui.html.ColorSettingsOutputDialog.init();
     LMT.ui.html.SaveResultDialog.init();
+    LMT.ui.html.WaitForResultDialog.init();
     
     LMT.ui.html.HelpBar.init();
     
