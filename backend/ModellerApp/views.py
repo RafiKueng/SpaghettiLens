@@ -514,13 +514,14 @@ def getSimulationJSON(request, result_id):
     pr = res.pixrad
     nm = res.n_models
     dt = (0.108 * exp(0.506*pr) + 0.01 * nm + 0.5) * 2 + 30
+    dt = 5
 
     print "starting new task with timeout:", dt 
     # print result_id
     # print type(result_id)
     #task = calculateModel.delay(result_id)
     
-    task = calculateModel.apply_async(args=[result_id], timeout=dt, expires=3*60)
+    task = calculateModel.apply_async(args=(result_id), timeout=dt, expires=5)
     res.is_rendered = False
     # print task.task_id, type(task.task_id)
     res.task_id = task.task_id

@@ -15,7 +15,7 @@ if s.MODULE_WORKER == "celery":
     @task()
     def calculateModel(result_id):
       rq = current_task.request
-      print "TASK (expires:",rq.expires,', kwargs:', rq.kwargs, ', options', rq.options
+      print "TASK (expires:",rq.expires,', kwargs:', rq.kwargs #, ', options', rq.options
       #myname = socket.gethostname()
 
       retval = subprocess.call(['../run_worker_glass', '%06i' % result_id])
@@ -28,7 +28,7 @@ if s.MODULE_WORKER == "celery":
     @task()
     def calculateModel(result_id):
       rq = current_task.request
-      print "TASK (expires:",rq.expires,', kwargs:', rq.kwargs, ', options', rq.options
+      print "TASK (expires:",rq.expires,', kwargs:', rq.kwargs #, ', options', rq.options
       #print "we're in a task now, calculating a result"
       #print '../tmp_media/'+str(result_id)+'/cfg.gls'
       #print os.path.exists('../tmp_media/%06i/cfg.gls' % result_id)
