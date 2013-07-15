@@ -306,7 +306,7 @@ com.GetSimulation = function(){
         return false;
       }
       else if (jsonResp.status=="REVOKED") { // is the server under heavy load?
-        alert("the server is currently under heavy load\nYour request couldn't be processed.\nTry again later. Sorry!");
+        alert("the server is currently under heavy load\nYour request couldn't be processed, I've waited 30sec, then gave up.\nTry again later. Sorry!\nIf this happens often please inform Rafi to upgrade the server!");
         $('body').css('cursor', '');
         $.event.trigger("GetSimulationFail");
         return false;
