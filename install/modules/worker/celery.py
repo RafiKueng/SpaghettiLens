@@ -157,6 +157,9 @@ CELERYD_OPTS="--time-limit=%(CELERY_TASK_TIMELIMIT)s --concurrency=%(CELERY_N_TH
 CELERYD_USER="%(CELERY_USER)s"
 CELERYD_GROUP="%(CELERY_GROUP)s"
 
+# worker only reserves one task per concurrency
+CELERYD_PREFETCH_MULTIPLIER = 1
+
 # Name of the projects settings module.
 export DJANGO_SETTINGS_MODULE="settings.settings"  
 ''' % conf
