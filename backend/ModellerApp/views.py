@@ -521,7 +521,7 @@ def getSimulationJSON(request, result_id):
     # print type(result_id)
     #task = calculateModel.delay(result_id)
     
-    task = calculateModel.apply_async(args=(result_id), timeout=dt, expires=5)
+    task = calculateModel.apply_async(args=(result_id,), timeout=dt, expires=5)
     res.is_rendered = False
     # print task.task_id, type(task.task_id)
     res.task_id = task.task_id
