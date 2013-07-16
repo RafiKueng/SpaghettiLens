@@ -420,7 +420,7 @@ def saveModelFinal(request):
       imgstr = r['imgData']
       ident, img = imgstr.split(',')
       #print ident
-      if ident == "data:image/png;base64" and img.starts_with('iVBORw0KGgo'):
+      if ident == "data:image/png;base64" and img.startswith('iVBORw0KGgo'):
         fh = open("../tmp_media/%06i/input.png" % rid, "wb")
         fh.write(img.decode('base64'))
         fh.close()
