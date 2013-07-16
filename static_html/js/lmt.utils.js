@@ -39,7 +39,7 @@ LMT.utils.logger = function(toConsole) {
     this.log = function() {
       var txt = "";
       for (var i = 0;i<arguments.length-1;++i){
-        txt += arguments[i] + '\n';
+        txt += arguments[i] + ' | ';
       }
       txt += arguments[arguments.length-1];
       console.log(txt);
@@ -51,6 +51,10 @@ LMT.utils.logger = function(toConsole) {
   this.toggle = function(){
     $("#log").toggle();
   };
+  
+  this.hist = function(){
+    return _history;
+  }
   
 }
 
@@ -123,6 +127,10 @@ LMT.utils.ImageLoader = function(listOfURLs, onEach, onAll, crossOrigin) {
         if (nLoaded==nImgs){
           onAll(imgs);
         }
+      };
+      img.onerror = function(evt,a,b) {
+        alert("Error loading image\n\nI'm sorry, you just got the CORS Chrome bug...\nPlease open spaghettiLens in an inkognito mode tab (ctrl + shift + n) or use firefox to prevent it.");
+        LMT.utils.ImageLoader(listOfURLs, onEach, onAll, false)
       };
       if (co) {img.setAttribute('crossOrigin','anonymous');}
       img.src = urls[i];

@@ -807,7 +807,7 @@ svg.bg = {
     svg.bg.canv = document.createElement('canvas');
     svg.bg.ctx = svg.bg.canv.getContext('2d');
     
-    var urls = [LMT.modelData.imgurl];
+    var urls = [LMT.modelData.imgurl + '?v=lmt']; //?v=1 to prevent to get cached image with wrong access origin settings
     LMT.ui.html.LoadProgressDialog.show(urls.length);
 
     var onEach = function(status){
@@ -1027,7 +1027,7 @@ svg.ConvertToPNG = function(evt) {
   //get stylesheet for svg
   for (var i=0;i<document.styleSheets.length; i++) {
     str = document.styleSheets[i].href;
-    if (str.substr(str.length-16)=="svg_elements.css"){
+    if (str.indexOf('lmt.v')>-1){
       var rules = document.styleSheets[i].cssRules;
       for (var j=0; j<rules.length;j++){
         style.textContent += (rules[j].cssText + "\n");
@@ -1058,18 +1058,32 @@ svg.ConvertToPNG = function(evt) {
   
   // wait for the canvas to redraw
   setTimeout(function(){
+    LMT.ui.svg.CheckInputImage();
+  }, 10);
+  
+  
+};
+
+svg.CheckInputImage = function(){
     var canvas = LMT.ui.svg.canvasout;
     var img = canvas.toDataURL();
+    log('svg.CheckInputImage | img.length'+img.length);
+    if (img.length == 12950) { //if empty image, retry! we have to wait for the image load and canvas update
+      log('svg.CheckInputImage | recheck for input image');
+      setTimeout(function(){
+        LMT.ui.svg.CheckInputImage();
+      }, 10);
+      return;
+    }
     
     //$('#save_results_dialog').append('<img style="width:300px;" src="'+img+'"/>');
     svg.canvasoutprnt.remove();
     LMT.ui.svg.canvasout = null;
     LMT.ui.svg.img = img;
     $.event.trigger("InputImageGenerated");
-  }, 100);
-  
-  
 }
+
+
 
 
 LMT.ui.svg = svg;

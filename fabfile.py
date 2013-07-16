@@ -1,5 +1,7 @@
 from fabric.operations import local
+from fabric.api import local, settings, abort
 from fabric.context_managers import lcd
+from fabric.contrib.console import confirm
 
 from datetime import datetime as dt
 import os
@@ -24,10 +26,16 @@ def update_html(install_dir="./build", htmldir = 'static_html'):
   install_dir=os.path.realpath(install_dir)
   
   # make sure to have the latest tags
-  local('git fetch --tags')
+  if confirm("update git tags?"):
+    local('git fetch --tags')
   version = local("git describe --abbrev=1 --tags", capture=True)
   time_str = dt.now().strftime("%Y%m%d%H%M")
   v_str = version + "-" + time_str
+
+  if confirm("delete old files?"):
+    with settings(warn_only=True):
+      local("rm "+os.path.join(install_dir,htmldir,'js','lmt.v*'))
+      local("rm "+os.path.join(install_dir,htmldir,'css','lmt.v*'))
   
   print "version string:", v_str
   

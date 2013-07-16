@@ -9,12 +9,13 @@ from django.conf import settings as s
 
 if s.MODULE_WORKER == "celery":
   #from djcelery import celery
-  from celery import task
+  from celery import task, current_task
 
   if s.ROLE == "production_worker":
     @task()
     def calculateModel(result_id):
-      print "we're in a task now, calculating a result"
+      rq = current_task.request
+      print "TASK (expires:",rq.expires,', kwargs:', rq.kwargs #, ', options', rq.options
       #myname = socket.gethostname()
 
       retval = subprocess.call(['../run_worker_glass', '%06i' % result_id])
@@ -26,6 +27,8 @@ if s.MODULE_WORKER == "celery":
   else: 
     @task()
     def calculateModel(result_id):
+      rq = current_task.request
+      print "TASK (expires:",rq.expires,', kwargs:', rq.kwargs #, ', options', rq.options
       #print "we're in a task now, calculating a result"
       #print '../tmp_media/'+str(result_id)+'/cfg.gls'
       #print os.path.exists('../tmp_media/%06i/cfg.gls' % result_id)
