@@ -92,6 +92,8 @@ if MODULE_WORKER == "celery":
                 '@'+BROKER_HOST+':'+str(BROKER_PORT)+'/'+BROKER_VHOST)
   CELERY_IMPORTS = ("lmt.tasks", )
   
+  CELERYD_PREFETCH_MULTIPLIER = 1  #one worker get one task at a time, no reserving
+  
 elif MODULE_WORKER == "mp":
   pass
 

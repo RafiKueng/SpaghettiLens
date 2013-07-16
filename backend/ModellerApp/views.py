@@ -10,7 +10,9 @@ from django.shortcuts import render
 from django.http import Http404
 
 from lmt import tasks
+
 import random
+from math import exp
 
 from ModellerApp.models import LensData, BasicLensData, ModellingResult, Catalog
 from ModellerApp.utils import EvalAndSaveJSON
@@ -418,12 +420,14 @@ def saveModelFinal(request):
       imgstr = r['imgData']
       ident, img = imgstr.split(',')
       #print ident
-      if ident == "data:image/png;base64":
+      if ident == "data:image/png;base64" and img.starts_with('iVBORw0KGgo'):
         fh = open("../tmp_media/%06i/input.png" % rid, "wb")
         fh.write(img.decode('base64'))
         fh.close()
+      else:
+        print 'Error: no image upload'
     except:
-      pass
+      print 'Could not open/write file'
     
     if m.n_res: m.n_res = m.n_res + 1
     else: m.n_res = 1
@@ -500,15 +504,27 @@ def getSimulationJSON(request, result_id):
 
     elif task.state == "FAILURE":
       data = sjson.dumps({"status":"FAILURE", "result_id": "%06i" % result_id})
+
+    elif task.state == "REVOKED":
+      data = sjson.dumps({"status":"REVOKED", "result_id": "%06i" % result_id})
       
     else:
       data = sjson.dumps({"status":"PENDING", "result_id": "%06i" % result_id})
     
   else:
-    print "starting new task"
+    #calculating the time limits
+    pr = res.pixrad
+    nm = res.n_models
+    dt = (0.108 * exp(0.506*pr) + 0.01 * nm + 0.5) * 2 + 30
+    dt = 60*15
+    expire = 30 # a task won't run if it's been more than 30s in the queue
+
+    #print "starting new task with timeout:", dt 
     # print result_id
     # print type(result_id)
-    task = calculateModel.delay(result_id)
+    #task = calculateModel.delay(result_id)
+    
+    task = calculateModel.apply_async(args=(result_id,), timeout=dt, expires=expire)
     res.is_rendered = False
     # print task.task_id, type(task.task_id)
     res.task_id = task.task_id
@@ -711,64 +727,6 @@ def getData(request, result_id):
   print "sending response"
   return response
   
-    
-  
-  
-  
-  """
-  result_id = int(result_id)
-  print "in getData"
-  
-  try:
-    res = ModellingResult.objects.get(id=result_id)
-    if res.is_rendered: #and imgExists: #nginx will catch this case for images, but not for the json objects..
-      #deliver images
-      # check imgExists: because a clean up prog could have deleted the files in the mean time and forgot to set the right flags in the db.. evil prog...
-  
-      res.last_accessed = now()
-      res.save()
-      
-      html = '''
-<html>
-<head></head>
-<body>
-  <h1>Result Nr %(rid)i for %(obj_name)s</h1>
-  <p>%(rid_str)s<br />
-  %(obj_str)s</p>
-  <h2>Lens Image:</h2>
-  <img src="%(obj_url)s" alt="LensURL">
-  <h2>Contour Plot:</h2>
-  <img src="/result/%(rid)06i/img1.png" alt="ContPlot">
-  <h2>Mass Distribution Plot:</h2>
-  <img src="/result/%(rid)06i/img2.png" alt="MDistrPlot">
-  <h2>Arrival Time Plot:</h2>
-  <img src="/result/%(rid)06i/img3.png" alt="ArrTPlot">
-  <h2>Model JSON:</h2>
-  <p>%(mstr)s</p>
-</body>
-</html>''' % {'rid': result_id,
-                'mstr': res.json_str,
-                'rid_str': res.__unicode__(),
-                'obj_name': res.lens_data_obj.name,
-                'obj_str': res.lens_data_obj.__unicode__(),
-                'obj_url': sjson.loads(res.lens_data_obj.img_data)['url']
-                } 
-  
-    else:
-      raise
-  except:
-    print "some error in getting result data overview"
-    html = "<html><head></head><body>no data available</body></html>"
-  
-  
-  response = HttpResponse(html)
-  
-  response['Access-Control-Allow-Origin'] = "*"
-  print "sending response"
-  return response
-
-  """
-
 
 
 ############### helper ##########################

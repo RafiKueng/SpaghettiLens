@@ -38,6 +38,7 @@ var events = {
     LMT.ui.html.GlassSettingsDialog.init();
     LMT.ui.html.ColorSettingsOutputDialog.init();
     LMT.ui.html.SaveResultDialog.init();
+    LMT.ui.html.WaitForResultDialog.init();
     
     LMT.ui.html.HelpBar.init();
     
@@ -138,14 +139,23 @@ var events = {
     $(document).on('InputImageGenerated', LMT.ui.html.SaveResultDialog.generatedImage);
     $(document).on('SaveModel', LMT.com.SaveModel);  // upload model with is final tag
     $(document).on('SavedModel', LMT.ui.html.SaveResultDialog.savedModel);  // if successful saved
+    
+    $(document).on('WaitForSimulation', LMT.ui.html.WaitForResultDialog.show);
+    $(document).on('WaitForSimulation', LMT.ui.html.WaitForResultDialog.startRefresh);
+    
     $(document).on('UploadModel', LMT.com.UploadModel);
     $(document).on('SimulateModel', LMT.events.SimulateModel);
     $(document).one('UpdateRepaintModel', LMT.events.UpdateRepaintModel); //can only be called once, once finished with the update, it reassigns itself
     $(document).on('RepaintModel', LMT.objects.Model.Repaint);
 
     $(document).on('GetSimulation', LMT.com.GetSimulation);
+
+    $(document).on('GetSimulationFail', LMT.ui.html.WaitForResultDialog.stopRefresh);
+
     $(document).on('ReceivedSimulation', LMT.ui.out.load);
     $(document).on('ReceivedSimulation', LMT.ui.html.Toolbar.updateTop);
+    $(document).on('ReceivedSimulation', LMT.ui.html.WaitForResultDialog.stopRefresh);
+    
     
     $(document).on('DisplayOutputSlide', LMT.ui.out.show); //needs a id
     $(document).on('DisplayOutputSlideNext', LMT.ui.out.next);

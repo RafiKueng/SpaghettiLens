@@ -134,13 +134,13 @@ def _create_django_settings():
 
   inp = StringIO()
   with settings(user=conf['SYS_USER'], password=conf['SYS_PSW']):
-    get(conf['INSTALL_DIR']+'/backend/settings/machine.template.py', inp)
+    get(conf['INSTALL_DIR']+'/backend/settings/machine.py-template', inp)
   outp = StringIO(inp.getvalue() % conf)
   put(outp, conf['INSTALL_DIR']+'/backend/settings/machine.py', use_sudo=True)
   
   inp = StringIO()
   with settings(user=conf['SYS_USER'], password=conf['SYS_PSW']):
-    get(conf['INSTALL_DIR']+'/backend/settings/secrets.template.py', inp)
+    get(conf['INSTALL_DIR']+'/backend/settings/secrets.py-template', inp)
   outp = StringIO(inp.getvalue() % conf)
   put(outp, conf['INSTALL_DIR']+'/backend/settings/secrets.py', use_sudo=True)
     
@@ -157,6 +157,14 @@ def update():
   
   
 """
+
+#### DONT USE THIS ANYMORE..
+use the fab file
+fab update_html:install_dir='.'
+to regenerate the html/js/css part
+
+
+
 
 ### update static_html part:
 ###############################

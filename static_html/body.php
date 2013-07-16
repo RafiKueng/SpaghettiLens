@@ -441,12 +441,32 @@
 <div id="save_results_dialog" class="dialog" title="Save your Model">
 </div>
 
+<div id="wait_for_results_dialog" class="dialog" title="Currently Crunching Numbers">
+  <p>Runnung since: <span id="wfrd_running">0</span>s</p>
+  <p>Estimanted duration: <span id="wfrd_est">0</span>s</p>
+</div>
 
 <div id="load_progress_dialog" class="dialog" title="Loading images">
   <p>    
   </p>
 </div>
 
+<div id="new_version" class="dialog" title="new version available">
+  <p>There is a new version available<br/>
+    Please press Ctrl + F5 to force a reload
+  </p>
+</div>
+
+<script type="text/javascript">
+  if (typeof(LMT) === 'undefined') {
+    $('#new_version').dialog({
+      autoOpen: true,
+      minWidth: 600,
+      minHeight: 400,
+      modal: false
+    })
+  }
+</script>
 
 </body>
 
