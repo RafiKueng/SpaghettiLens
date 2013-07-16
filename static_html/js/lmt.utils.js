@@ -39,7 +39,7 @@ LMT.utils.logger = function(toConsole) {
     this.log = function() {
       var txt = "";
       for (var i = 0;i<arguments.length-1;++i){
-        txt += arguments[i] + '\n';
+        txt += arguments[i] + ' | ';
       }
       txt += arguments[arguments.length-1];
       console.log(txt);
@@ -51,6 +51,10 @@ LMT.utils.logger = function(toConsole) {
   this.toggle = function(){
     $("#log").toggle();
   };
+  
+  this.hist = function(){
+    return _history;
+  }
   
 }
 

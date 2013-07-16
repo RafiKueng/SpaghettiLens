@@ -57,7 +57,7 @@ com.getModelData = function(evt, model_ids, catalog, action) {
     // obj[0].fields['channel1_data']
     // obj[0].fields['channel1_url']
     
-    log("getModelData | success", obj, status_text, resp);
+    log("com.getModelData | success", "pk: " + obj[0].pk);
     
     LMT.modelData = obj[0].fields;
     LMT.modelData.id = obj[0].pk;
@@ -168,7 +168,7 @@ com.getModelData = function(evt, model_ids, catalog, action) {
 com.UploadModel = function(evt) {
 
   var success = function(jsonResp, statusTxt, XHRRespObj) {
-    log('UploadModel | success:', 'result_id:' + jsonResp.result_id);
+    log('UploadModel | success', 'result_id:' + jsonResp.result_id);
     LMT.simulationData.resultId = jsonResp.result_id;
     //LMT.simulationData.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
     $.event.trigger("UploadModelComplete")
@@ -295,7 +295,7 @@ com.SaveModel = function(evt) {
  */
 com.GetSimulation = function(){
   var success = function(jsonResp, statusTxt, XHRRespObj) {
-    log("GetSimulation | success", jsonResp.status, jsonResp.result_id);
+    log("GetSimulation | success", 'status:' + jsonResp.status + ' res_id: ' + jsonResp.result_id);
     
     LMT.simulationData.img = [];
     if (jsonResp.status!="READY"){ //polling
@@ -339,10 +339,13 @@ com.GetSimulation = function(){
   var fail = function(a, b, c) {
     log('GetSimulation | fail', a, b, c, a.responseText);
     if (c && c=='Bad Gateway') {
-      alert("the server is currently not online. Please drop a note to rafi. I'm sorry!");
-      $('body').css('cursor', '');
-      $.event.trigger("GetSimulationFail");
+      alert("the server is currently not online. Please drop a note to Rafael. I'm sorry!");
     }
+    else {
+      alert('This it bad.. server is not reachable. I\'m sorry! Please let Rafael know about this error!');
+    }
+    $('body').css('cursor', '');
+    $.event.trigger("GetSimulationFail");
   };
 
 
@@ -377,6 +380,7 @@ com.getDatasourcesList = function(evt) {
   
   var fail = function(a, b, c){
     log('getDatasourcesList | fail');
+    alert("Server api down! I'm sorry! Please drop a mail to rafael about this");
   }  
   
   var data = {action: 'getSrcList'};
@@ -401,7 +405,7 @@ com.getDatasourceDialog = function(evt, id, uname) {
   
   var fail = function(a, b, c){
     log('getDatasourceDialog | fail');
-    alert("Server api down");
+    alert("Server api down. I'm sorry! Please drop a mail to rafael about this");
   }  
   
   var data = {
