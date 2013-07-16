@@ -466,6 +466,9 @@
       modal: false
     })
   }
+  else {
+    $('.foottext').prepend(LMT.version + '; ');
+  }
 </script>
 
 </body>

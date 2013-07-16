@@ -1,13 +1,8 @@
-
-
-
-
-
 // this file WILL BE OVERWRITTEN if you do an automatic prod server isntall
 
-
-
-
+LMT.version = 'DEBUG'
+LMT.build = '[none]'
+LMT.build_time = '000000000000'
 
 // debug flag
 debug = true;
