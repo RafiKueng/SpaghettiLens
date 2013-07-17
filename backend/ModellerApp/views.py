@@ -593,7 +593,7 @@ def getData(request, result_id):
       ('Id', ldata.pk),
       ('Name', ldata.name),
       ('From', ldata.datasource),
-      ('Saved by', ldata.created_by_str)
+      #('Saved by', ldata.created_by_str)
     ]
     lensimg = sjson.loads(ldata.img_data)['url']
   except:
@@ -699,7 +699,8 @@ def getData(request, result_id):
     'print_result_items': [
       ('Id', res.pk),
       ('User', res.created_by_str),
-      ('Pixel Radius', res.pixrad)
+      ('Pixel Radius', res.pixrad),
+      ('Nr of models', res.n_models)
     ],
     
     'print_lensdata_items': lensdataitems,
