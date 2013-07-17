@@ -39,12 +39,11 @@ com.getInitData = function(evt) {
 }
 
 
-/*
 com.getAndLoadResult = function(evt, rid, loadHandler) {
   var success = function(obj, status_text, resp) {
     res_data = {
-      'model_id': resp.model_id,
-      'json_str': resp.json_str,
+      'model_id': obj.model_id,
+      'json_str': obj.json_str,
     };
     loadHandler(res_data);
   }
@@ -69,8 +68,6 @@ com.getAndLoadResult = function(evt, rid, loadHandler) {
   
 }
 
-* */
-
 
 
 
@@ -93,7 +90,10 @@ com.getModelData = function(evt, model_ids, catalog, action) {
     
     log("com.getModelData | success", "pk: " + obj[0].pk);
     
+    var pid = null;
+    if (LMT.modelData && LMT.modelData.parentId) {pid = LMT.modelData.parentId;}
     LMT.modelData = obj[0].fields;
+    if (pid) {LMT.modelData.parentId = pid;}
     LMT.modelData.id = obj[0].pk;
     LMT.modelData.nTodo = obj[1].todo;
     LMT.modelData.nDone = obj[1].done;
@@ -230,8 +230,8 @@ com.UploadModel = function(evt) {
         modelid: LMT.modelData.id,
         string: LMT.model.getStateAsString(),
         isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
-        username: LMT.settings.username
-        //parentResult: (LMT.modelData.parentId ? LMT.modelData.parentId : -1)
+        username: LMT.settings.username ? LMT.settings.username : '',
+        parentid: (LMT.modelData.parentId ? LMT.modelData.parentId : -1)
     };
   
   LMT.simulationData.resultId = -1;
@@ -303,7 +303,7 @@ com.SaveModel = function(evt) {
         isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
         username: LMT.settings.username,
         imgData: LMT.ui.svg.img,
-        //parentResult: (LMT.modelData.parentId ? LMT.modelData.parentId : -1)
+        parentid: (LMT.modelData.parentId ? LMT.modelData.parentId : -1)
     };
   
   //LMT.simulationData.resultId = -1;

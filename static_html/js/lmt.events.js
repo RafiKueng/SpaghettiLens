@@ -51,11 +51,12 @@ var events = {
     LMT.ui.html.SelectDatasourceDialog.init();
     LMT.ui.html.LoadProgressDialog.init();
 
-    $.event.trigger("ShowSelectDatasourceDialog");
-
     /*
+    $.event.trigger("ShowSelectDatasourceDialog");
+    */
+
     if (LMT.GET.hasOwnProperty("mid")){
-      id = parseInt(LMT.GET["mid"]);
+      mid = parseInt(LMT.GET["mid"]);
       $.event.trigger("GetModelData", [[mid],'','init']);
     }
     else if (LMT.GET.hasOwnProperty("rid")) {
@@ -74,7 +75,6 @@ var events = {
     else {
       $.event.trigger("ShowSelectDatasourceDialog");
     }
-    */
   },
   
   
@@ -91,6 +91,8 @@ var events = {
     
     $(document).on('GetDatasourceDialog', LMT.com.getDatasourceDialog);
     $(document).on('RcvDatasourceDialog', LMT.ui.html.GenericDatasourceDialog.init);
+    
+    $(document).on('GetAndLoadResult', LMT.com.getAndLoadResult);
     
     
     $(document).on('ToggleDisplay', LMT.ui.html.ToggleDisplay);

@@ -832,6 +832,7 @@ def api(request):
 
 
 def _getResultData(request, rid):
+  print 'in getResultData', rid
   try:
     res = ModellingResult.objects.get(id=rid)
   except ModellingResult.DoesNotExist:

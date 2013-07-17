@@ -66,6 +66,10 @@ elif s.MODULE_WORKER == "dummy":
       print "starting the dummy task"
       self.result_id = resnr
       return self
+    def apply_async(self, *args, **kwargs):
+      print "starting the dummy task", args
+      self.result_id = 1
+      return self
     
   
 
