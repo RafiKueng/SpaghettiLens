@@ -146,10 +146,14 @@ li > span{
   <h2>actions:</h2>
   {% if links.fork %}
     <div class="elem link fork" data-link="{{links.fork}}">
-      <h3>try to improve (NOT YET WORKING)</h3>
+      <h3>Revise this result</h3>
     </div>
   {% endif %}
-  {% if links.prev %}
+  {% if links.new %}
+    <div class="elem link fork" data-link="{{links.new}}">
+      <h3>Start from scratch</h3>
+    </div>
+  {% endif %}  {% if links.prev %}
     <div class="elem link back" data-link="{{links.prev.nr}}">
       <h3>see parent model <span>by {{links.prev.user}} {{links.prev.date|date:'Y-m-d H:i'}}</span></h3>
     </div>
@@ -160,11 +164,11 @@ li > span{
   {% endif %}
   {% for elem in links.next %}
     <div class="elem link forw" data-link="{{elem.nr}}">
-      <h3>see improvement <span>by {{elem.user}} {{elem.date|date:'Y-m-d H:i'}}</span></h3>
+      <h3>see revision <span>by {{elem.user}} {{elem.date|date:'Y-m-d H:i'}}</span></h3>
     </div>
   {% empty %}
     <div class="elem forw">
-      <h3>has not been improved yet</h3>
+      <h3>has not been revised yet</h3>
     </div>
   {% endfor %}
 </div>
@@ -288,8 +292,11 @@ $(document).ready(function(){
   $('.adv > div').hide();
   $('.adv > h2').toggleClass('notExpanded expanded');
   
-  $('.elem.link > h3').wrap(function(evt){
+  $('.elem.fork > h3').wrap(function(evt){
     return '<a href="'+$(this).parent().data('link')+'" target="_blank"/>';
+  });
+  $('.elem.back > h3').add('.elem.forw > h3').wrap(function(evt){
+    return '<a href="'+$(this).parent().data('link')+'" />';
   });
   $('.elem.download > h3').wrap(function(evt){
     return '<a download="'+$(this).parent().data('filename')+'" href="'+$(this).parent().data('link')+'" />';

@@ -717,7 +717,8 @@ def getData(request, result_id):
     'links': {
        'next' : children_data,#[{'nr': '005', 'user': 'aa'},{'nr': 'b', 'user': 'bb'},{'nr': 'c', 'user': 'cc'}],#[None],
        'prev' : parent_data,
-       'fork' : 'http://', 
+       'fork' : '/?rid='+str(result_id), 
+       'new'  : '/?mid='+str(res.lens_data_obj.pk)
     },
              
     'files': [    # tuple (download filename, [data]url)
