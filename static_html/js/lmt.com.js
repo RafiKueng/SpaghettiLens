@@ -39,6 +39,40 @@ com.getInitData = function(evt) {
 }
 
 
+/*
+com.getAndLoadResult = function(evt, rid, loadHandler) {
+  var success = function(obj, status_text, resp) {
+    res_data = {
+      'model_id': resp.model_id,
+      'json_str': resp.json_str,
+    };
+    loadHandler(res_data);
+  }
+  
+  var fail = function(resp, status_text, code) {
+    log("getAndLoadResult | fail", resp, status_text, code);
+  };
+  
+  var data = {
+    action: 'getResultData',
+    rid: rid,
+  };
+  
+  $.ajax(LMT.com.serverUrl + "/api", {
+      type:"POST",
+      success: success,
+      error: fail,
+      data: data,
+      dataType:"json", //data type expected from server
+  });
+  
+  
+}
+
+* */
+
+
+
 
 /**
  * gets the model data such as

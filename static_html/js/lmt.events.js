@@ -54,13 +54,24 @@ var events = {
     $.event.trigger("ShowSelectDatasourceDialog");
 
     /*
-    if (LMT.GET.hasOwnProperty("id")){
-      id = parseInt(LMT.GET["id"]);
-      $.event.trigger("GetModelData", model_id=id);
+    if (LMT.GET.hasOwnProperty("mid")){
+      id = parseInt(LMT.GET["mid"]);
+      $.event.trigger("GetModelData", [[mid],'','init']);
+    }
+    else if (LMT.GET.hasOwnProperty("rid")) {
+      rid = parseInt(LMT.GET["rid"]);
+      var loadResult = function(res_data) {
+        mid = res_data.model_id;
+        jsonStr = res_data.json_str;
+
+        $.event.trigger("GetModelData", [[mid],'','init']);
+        LMT.model = Model.getModelFormJSONString(jsonStr);
+        $.event.trigger("UpdateRepaintModel");
+      };
+      $.event.trigger("GetAndLoadResult", [rid, loadResult]);
     }
     else {
-      $.event.trigger("ShowSelectModelDataDialog"); //this will trigger the getmodedata on close
-      //LMT.ui.html.SelectModelDialog.show();
+      $.event.trigger("ShowSelectDatasourceDialog");
     }
     */
     
