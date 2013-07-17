@@ -67,6 +67,7 @@ var events = {
         $.event.trigger("GetModelData", [[mid],'','init']);
         LMT.model = Model.getModelFormJSONString(jsonStr);
         $.event.trigger("UpdateRepaintModel");
+        LMT.modelData.parentId = rid;
       };
       $.event.trigger("GetAndLoadResult", [rid, loadResult]);
     }
@@ -74,7 +75,6 @@ var events = {
       $.event.trigger("ShowSelectDatasourceDialog");
     }
     */
-    
   },
   
   

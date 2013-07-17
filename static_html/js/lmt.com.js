@@ -192,9 +192,10 @@ com.getModelData = function(evt, model_ids, catalog, action) {
 /**
  * event handler 
  * save the resulting model string in the database
+ * as a temporary result for rendering
  * - model name
  * - model string: the serialized model data (json)
- * - isFinal: is this a temoprary push or a save of a final model
+ * - isFinal: false
  * 
  * post returns json 
  * {status: "OK" or "BAD..."
@@ -230,6 +231,7 @@ com.UploadModel = function(evt) {
         string: LMT.model.getStateAsString(),
         isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
         username: LMT.settings.username
+        //parentResult: (LMT.modelData.parentId ? LMT.modelData.parentId : -1)
     };
   
   LMT.simulationData.resultId = -1;
@@ -300,7 +302,8 @@ com.SaveModel = function(evt) {
         resultid: LMT.simulationData.resultId,
         isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
         username: LMT.settings.username,
-        imgData: LMT.ui.svg.img
+        imgData: LMT.ui.svg.img,
+        //parentResult: (LMT.modelData.parentId ? LMT.modelData.parentId : -1)
     };
   
   //LMT.simulationData.resultId = -1;
