@@ -153,8 +153,21 @@ html.WaitForResultDialog = {
       });
   },
   
-  estimate: function(pixrad, nmodels) {
-    LMT.settings.estimate = Math.round(0.108 * Math.exp(0.506*pixrad) + 0.01*nmodels + 0.5)
+  estimate: function tottime(p,n) {
+    //parameters from variious fits
+    //machine: how much slower is the worker than anker (@2.8Ghz): 2.21 for mite
+    var aa1= 34.1040000000;
+    var bb1=-28.0330000000;
+    var aa2=  0.9857000000;
+    var bb2=  2.3436000000;
+    var cc1=  0.0000000000;
+    var a11=  0.0000001989;
+    var a12=  0.8493931800;
+    var a21=  0.0000005989;
+    var a22=  0.0055298878;
+    var a23= -3.0273621847;
+    var machine=  2.2100000000;
+    return machine*(aa1*(a11*Math.pow(p,7) + a12)+bb1 + aa2*(a21*Math.pow(p,7) + a22*n*3 + a23)+bb2 + cc1);
   },
   
   close: function(){
