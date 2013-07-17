@@ -181,7 +181,7 @@ html.WaitForResultDialog = {
       html.WaitForResultDialog.startTime = now.getTime() / 1000;
       var pr = LMT.model.Parameters.pixrad;
       var nm = LMT.model.Parameters.n_models;
-      html.WaitForResultDialog.estimate(pr, nm);
+      LMT.settings.estimate = html.WaitForResultDialog.estimate(pr, nm);
       setTimeout(html.WaitForResultDialog.update,1);
     }
   },
