@@ -30,7 +30,7 @@ html.SetUsernameDialog = {
           text: "Ok",
           click: function(evt){
             $('#get_username').dialog("close");
-            var uname = $("#username").val();
+            var uname = $("#username2").val();
             LMT.settings.username = uname;
           }
         },],
