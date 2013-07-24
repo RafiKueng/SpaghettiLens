@@ -39,6 +39,7 @@ var events = {
     LMT.ui.html.ColorSettingsOutputDialog.init();
     LMT.ui.html.SaveResultDialog.init();
     LMT.ui.html.WaitForResultDialog.init();
+    LMT.ui.html.SetUsernameDialog.init();
     
     LMT.ui.html.HelpBar.init();
     
@@ -51,19 +52,32 @@ var events = {
     LMT.ui.html.SelectDatasourceDialog.init();
     LMT.ui.html.LoadProgressDialog.init();
 
-    $.event.trigger("ShowSelectDatasourceDialog");
-
     /*
-    if (LMT.GET.hasOwnProperty("id")){
-      id = parseInt(LMT.GET["id"]);
-      $.event.trigger("GetModelData", model_id=id);
+    $.event.trigger("ShowSelectDatasourceDialog");
+    */
+
+    if (LMT.GET.hasOwnProperty("mid")){
+      mid = parseInt(LMT.GET["mid"]);
+      $.event.trigger("GetModelData", [[mid],'','init']);
+      $.event.trigger("SetUsername");
+    }
+    else if (LMT.GET.hasOwnProperty("rid")) {
+      rid = parseInt(LMT.GET["rid"]);
+      var loadResult = function(res_data) {
+        mid = res_data.model_id;
+        jsonStr = res_data.json_str;
+
+        $.event.trigger("GetModelData", [[mid],'','init']);
+        LMT.model = Model.getModelFormJSONString(jsonStr);
+        $.event.trigger("UpdateRepaintModel");
+        LMT.modelData.parentId = rid;
+      };
+      $.event.trigger("GetAndLoadResult", [rid, loadResult]);
+      $.event.trigger("SetUsername");
     }
     else {
-      $.event.trigger("ShowSelectModelDataDialog"); //this will trigger the getmodedata on close
-      //LMT.ui.html.SelectModelDialog.show();
+      $.event.trigger("ShowSelectDatasourceDialog");
     }
-    */
-    
   },
   
   
@@ -81,6 +95,8 @@ var events = {
     $(document).on('GetDatasourceDialog', LMT.com.getDatasourceDialog);
     $(document).on('RcvDatasourceDialog', LMT.ui.html.GenericDatasourceDialog.init);
     
+    $(document).on('GetAndLoadResult', LMT.com.getAndLoadResult);
+    $(document).on('SetUsername', LMT.ui.html.SetUsernameDialog.show);
     
     $(document).on('ToggleDisplay', LMT.ui.html.ToggleDisplay);
     $(document).on('ToggleHelpBar', LMT.ui.html.HelpBar.toggle);

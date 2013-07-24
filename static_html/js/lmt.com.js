@@ -39,6 +39,37 @@ com.getInitData = function(evt) {
 }
 
 
+com.getAndLoadResult = function(evt, rid, loadHandler) {
+  var success = function(obj, status_text, resp) {
+    res_data = {
+      'model_id': obj.model_id,
+      'json_str': obj.json_str,
+    };
+    loadHandler(res_data);
+  }
+  
+  var fail = function(resp, status_text, code) {
+    log("getAndLoadResult | fail", resp, status_text, code);
+  };
+  
+  var data = {
+    action: 'getResultData',
+    rid: rid,
+  };
+  
+  $.ajax(LMT.com.serverUrl + "/api", {
+      type:"POST",
+      success: success,
+      error: fail,
+      data: data,
+      dataType:"json", //data type expected from server
+  });
+  
+  
+}
+
+
+
 
 /**
  * gets the model data such as
@@ -59,7 +90,10 @@ com.getModelData = function(evt, model_ids, catalog, action) {
     
     log("com.getModelData | success", "pk: " + obj[0].pk);
     
+    var pid = null;
+    if (LMT.modelData && LMT.modelData.parentId) {pid = LMT.modelData.parentId;}
     LMT.modelData = obj[0].fields;
+    if (pid) {LMT.modelData.parentId = pid;}
     LMT.modelData.id = obj[0].pk;
     LMT.modelData.nTodo = obj[1].todo;
     LMT.modelData.nDone = obj[1].done;
@@ -158,9 +192,10 @@ com.getModelData = function(evt, model_ids, catalog, action) {
 /**
  * event handler 
  * save the resulting model string in the database
+ * as a temporary result for rendering
  * - model name
  * - model string: the serialized model data (json)
- * - isFinal: is this a temoprary push or a save of a final model
+ * - isFinal: false
  * 
  * post returns json 
  * {status: "OK" or "BAD..."
@@ -195,7 +230,8 @@ com.UploadModel = function(evt) {
         modelid: LMT.modelData.id,
         string: LMT.model.getStateAsString(),
         isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
-        username: LMT.settings.username
+        username: LMT.settings.username ? LMT.settings.username : '',
+        parentid: (LMT.modelData.parentId ? LMT.modelData.parentId : -1)
     };
   
   LMT.simulationData.resultId = -1;
@@ -266,7 +302,8 @@ com.SaveModel = function(evt) {
         resultid: LMT.simulationData.resultId,
         isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
         username: LMT.settings.username,
-        imgData: LMT.ui.svg.img
+        imgData: LMT.ui.svg.img,
+        parentid: (LMT.modelData.parentId ? LMT.modelData.parentId : -1)
     };
   
   //LMT.simulationData.resultId = -1;

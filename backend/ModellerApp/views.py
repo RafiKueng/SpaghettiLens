@@ -390,6 +390,7 @@ def saveModelFinal(request):
       mid = int(r['modelid'])
       rid = int(r['resultid'])
       isf = r['isFinal'] in ["True", "true"]
+      pid = int(r['parentid'])
 
     except KeyError:
       print "KeyError in save model final"
@@ -431,6 +432,13 @@ def saveModelFinal(request):
     
     if m.n_res: m.n_res = m.n_res + 1
     else: m.n_res = 1
+    
+    if pid>-1:
+      try:
+        pres = ModellingResult.objects.get(id=pid)
+        res.parent_result = pres
+      except:
+        pass
     
     res.is_final_result = True
     m.save()
@@ -585,7 +593,7 @@ def getData(request, result_id):
       ('Id', ldata.pk),
       ('Name', ldata.name),
       ('From', ldata.datasource),
-      ('Saved by', ldata.created_by_str)
+      #('Saved by', ldata.created_by_str)
     ]
     lensimg = sjson.loads(ldata.img_data)['url']
   except:
@@ -691,7 +699,8 @@ def getData(request, result_id):
     'print_result_items': [
       ('Id', res.pk),
       ('User', res.created_by_str),
-      ('Pixel Radius', res.pixrad)
+      ('Pixel Radius', res.pixrad),
+      ('Nr of models', res.n_models)
     ],
     
     'print_lensdata_items': lensdataitems,
@@ -709,7 +718,8 @@ def getData(request, result_id):
     'links': {
        'next' : children_data,#[{'nr': '005', 'user': 'aa'},{'nr': 'b', 'user': 'bb'},{'nr': 'c', 'user': 'cc'}],#[None],
        'prev' : parent_data,
-       'fork' : 'http://', 
+       'fork' : '/?rid='+str(result_id), 
+       'new'  : '/?mid='+str(res.lens_data_obj.pk)
     },
              
     'files': [    # tuple (download filename, [data]url)
@@ -787,8 +797,8 @@ def api(request):
         resp = _datasourceApi(request, int(post['src_id']))
       elif post['action'] == 'saveModel':
         resp = _saveModel(request)
-      elif post['action'] == 'getBla':
-        resp = _getBla()
+      elif post['action'] == 'getResultData':
+        resp = _getResultData(request, int(post['rid']))
       elif post['action'] == 'getBla':
         resp = _getBla()
       elif post['action'] == 'getBla':
@@ -821,6 +831,21 @@ def api(request):
   else:
     return HttpResponseNotFound("internal server error.. can't access teh models and catalogues", content_type="text/plain")
     
+
+
+def _getResultData(request, rid):
+  print 'in getResultData', rid
+  try:
+    res = ModellingResult.objects.get(id=rid)
+  except ModellingResult.DoesNotExist:
+    raise Http404
+  d = {
+    'model_id': res.lens_data_obj.pk,
+    'json_str': res.json_str
+    }
+  data = sjson.dumps(d)
+  response = HttpResponse(data, content_type="application/json")
+  return response
 
 
 
