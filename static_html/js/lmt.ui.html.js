@@ -148,7 +148,7 @@ html.LoadProgressDialog = {
   init: function() {
     $('#load_progress_dialog').dialog({
       autoOpen: false,
-      minWidth: 100,
+      minWidth: 250,
       minHeight: 50,
       modal: true,
       //open: function(){},

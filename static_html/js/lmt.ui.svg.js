@@ -206,6 +206,8 @@ svg.events = {
 		  return;
 		}
 		
+    svg.events.stateOrigin = {x: evt.screenX, y: evt.screenY, scale: LMT.settings.display.zoompan.scale};
+
     if (LMT.settings.mode == "ruler") {
       svg.ruler = new LMT.objects.Ruler2(coord);
       svg.ruler.createSVG();
@@ -229,7 +231,6 @@ svg.events = {
 			svg.events.stateTf = svg.layer.zoompan.getCTM().inverse();
 			svg.events.stateOrigin = LMT.ui.svg.coordTrans(evt).matrixTransform(svg.events.stateTf);
 			*/
-			svg.events.stateOrigin = {x: evt.screenX, y: evt.screenY, scale: LMT.settings.display.zoompan.scale};
       svg.root.addEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
 
 		}
