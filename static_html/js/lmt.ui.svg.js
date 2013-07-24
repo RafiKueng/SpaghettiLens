@@ -1027,7 +1027,7 @@ svg.ConvertToPNG = function(evt) {
   //get stylesheet for svg
   for (var i=0;i<document.styleSheets.length; i++) {
     str = document.styleSheets[i].href;
-    if (str.indexOf('lmt.v')>-1){
+    if (str.indexOf('lmt.v')>-1 || str.indexOf('lmt.90.')>-1){
       var rules = document.styleSheets[i].cssRules;
       for (var j=0; j<rules.length;j++){
         style.textContent += (rules[j].cssText + "\n");

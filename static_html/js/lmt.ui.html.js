@@ -14,6 +14,50 @@ html.fire = function(evt){
 };
 
 
+/**
+ * creates a dialog that asks for the username
+ * used when loading a result or model
+ */
+html.SetUsernameDialog = {
+  init: function() {
+    var $div = $('#get_username').dialog({
+      autoOpen: false,
+      minWidth: 400,
+      minHeight: 200,
+      modal: true,
+      buttons: [
+        {
+          text: "Ok",
+          click: function(evt){
+            $('#get_username').dialog("close");
+            var uname = $("#username").val();
+            LMT.settings.username = uname;
+          }
+        },],
+      open: function(){
+        var uname = $.cookie('username');
+        if (uname){
+          $("#username2").val(uname);
+          $('.ui-dialog-buttonpane button:last').focus();
+        }
+        
+      }
+    });
+  },
+  
+  show: function() {
+    var uname = $.cookie('username');
+    if (uname){
+      LMT.settings.username = uname;
+    }
+    else {
+      $('#get_username').dialog("open");
+    }
+  }
+  
+
+}
+
 
 html.SaveResultDialog = {
   init: function() {
@@ -217,7 +261,7 @@ html.SelectDatasourceDialog = {
       modal: true,
       open: function(){
         var uname = $.cookie('username');
-        if (username){
+        if (uname){
           $("#username").val(uname);
           $('.ui-dialog-buttonpane button:last').focus();
         }
