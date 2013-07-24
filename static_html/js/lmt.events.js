@@ -39,6 +39,7 @@ var events = {
     LMT.ui.html.ColorSettingsOutputDialog.init();
     LMT.ui.html.SaveResultDialog.init();
     LMT.ui.html.WaitForResultDialog.init();
+    LMT.ui.html.SetUsernameDialog.init();
     
     LMT.ui.html.HelpBar.init();
     
@@ -58,6 +59,7 @@ var events = {
     if (LMT.GET.hasOwnProperty("mid")){
       mid = parseInt(LMT.GET["mid"]);
       $.event.trigger("GetModelData", [[mid],'','init']);
+      $.event.trigger("SetUsername");
     }
     else if (LMT.GET.hasOwnProperty("rid")) {
       rid = parseInt(LMT.GET["rid"]);
@@ -71,6 +73,7 @@ var events = {
         LMT.modelData.parentId = rid;
       };
       $.event.trigger("GetAndLoadResult", [rid, loadResult]);
+      $.event.trigger("SetUsername");
     }
     else {
       $.event.trigger("ShowSelectDatasourceDialog");
@@ -93,7 +96,7 @@ var events = {
     $(document).on('RcvDatasourceDialog', LMT.ui.html.GenericDatasourceDialog.init);
     
     $(document).on('GetAndLoadResult', LMT.com.getAndLoadResult);
-    
+    $(document).on('SetUsername', LMT.ui.html.SetUsernameDialog.show);
     
     $(document).on('ToggleDisplay', LMT.ui.html.ToggleDisplay);
     $(document).on('ToggleHelpBar', LMT.ui.html.HelpBar.toggle);

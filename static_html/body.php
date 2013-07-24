@@ -457,6 +457,16 @@
   </p>
 </div>
 
+
+<div id="get_username" class="dialog" title="Username">
+  <p>Please enter your name:<br/>
+    <label for="username2"></label>
+    <input type="text" name="username2" id="username2" class="text ui-widget-content ui-corner-all" />
+  </p>
+</div>
+
+
+
 <script type="text/javascript">
   if (typeof(LMT) === 'undefined') {
     $('#new_version').dialog({

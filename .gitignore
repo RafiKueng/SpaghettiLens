@@ -48,9 +48,7 @@ wiki/*
 # glass is already on svn.physik. no need to add it here
 # or only add changed files, to keep track of changes
 ##########################################################
-glass/
-glass2/
-
+glass*/
 
 # allow for individual starter page
 ##########################################################
