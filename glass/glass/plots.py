@@ -21,6 +21,11 @@ from glass.utils import dist_range
 from scipy.ndimage.filters import correlate1d
 from scipy.misc import central_diff_weights
 
+# added by rafik
+import scipy.interpolate as interp
+import scipy.optimize as optimize
+from matplotlib import colors as mplcolors
+
 rc('text', usetex=True)
 #rc('text', dvipnghack=True)
 rc('font',**{'family':'serif','serif':['Computer Modern Roman']})
@@ -553,15 +558,13 @@ def srcdiff_plot(env, model, **kwargs):
 def srcdiff_plot_adv(env, model, **kwargs):
     obj_index       = kwargs.pop('obj_index', 0)
     src_index       = kwargs.pop('src_index', 0)
-    with_colorbar   = kwargs.pop('with_colorbar', False)
-    xlabel          = kwargs.pop('xlabel', r'arcsec')
-    ylabel          = kwargs.pop('ylabel', r'arcsec')
+    xlabel          = kwargs.pop('xlabel', r'')
+    ylabel          = kwargs.pop('ylabel', r'')
     nightMode       = kwargs.pop('night', False) # colormode with black background
     upsample        = kwargs.pop('upsample', False) # upsample this
 
 
     if nightMode:
-      print "!! nightmode on"
       matplotlib.rcParams['lines.color'] = 'black'
       matplotlib.rcParams['patch.edgecolor'] = 'black'
       matplotlib.rcParams['text.color'] = 'black'
@@ -575,40 +578,9 @@ def srcdiff_plot_adv(env, model, **kwargs):
       matplotlib.rcParams['figure.edgecolor'] = 'black'
       matplotlib.rcParams['savefig.facecolor'] = 'black'
       matplotlib.rcParams['savefig.edgecolor'] = 'black'
-      
-
 
     obj, data = model['obj,data'][obj_index]
       
-#    if upsample:
-#      print 'upsampling by fact of', upsample
-#      obj.basis.subdivision = upsample
-      #g = obj.basis.srcdiff_grid(data)[src_index]
-      #g1 = obj.basis.srcdiff_grid_adv(data)[src_index]
-      #g2 = obj.basis.refined_xy_grid(obj.basis.srcdiff(data, src_index))
-      
-      
-      #print g
-      #print np.shape(g)#, np.shape(g1), np.shape(g2)
-      
-      #print type(obj), type(data)
-
-
-#      ndata = obj.basis.srcdiff(data, src_index)
-#      ndataongrid = obj.basis._hires_to_grid(ndata, refinement=2)
-#      ndataongrid2 = obj.basis._simple_to_grid(ndata, refinement=1)
-#      ndat2 = obj.basis.refined_xy_grid(data)
-      #print np.shape(data), np.shape(ndata), np.shape(ndataongrid),np.shape(ndataongrid2), np.shape(ndat2)
-      #print ndataongrid
-      #print ndat2
-#      for e in [ndata, ndataongrid, ndataongrid2, ndat2]:
-#        print np.shape(e), np.amin(e), np.amax(e)
-      #for key, item in data.items(): print key
-      #for key, item in ndat2.items(): print key
-      #print ndat2
-      #print data['srcdiff']
-      
-
     S = obj.basis.subdivision
     R = obj.basis.mapextent
 
@@ -621,7 +593,7 @@ def srcdiff_plot_adv(env, model, **kwargs):
     if upsample:
       xdim, ydim = np.shape(g)
       R = obj.basis.mapextent
-      print xdim, ydim
+      #print xdim, ydim
       xvec = np.linspace(-R, R, xdim)
       yvec = np.linspace(-R, R, ydim)
       from scipy.interpolate import RectBivariateSpline
@@ -637,22 +609,18 @@ def srcdiff_plot_adv(env, model, **kwargs):
     #vmax = np.log10(np.amax(g[g>0]))
 
     gdat = np.log10(g + 1e-10)
+    gave = np.average(gdat)
     kw = default_kw(R, kwargs) #, vmin=vmin, vmax=vmin+2)
     kw['vmin'] = vmin
+    kw['vmax'] = gave   # remember: arraival time: small -> brigt -> inner parts
     kw['cmap'] = 'Greys'
 
     #loglev = logspace(1, log(amax(g)-amin(g)), 20, base=math.e) + amin(g)
 
     pl.matshow(gdat, **kw)
     
-    matplotlib.rcParams['contour.negative_linestyle'] = 'solid'
-    if with_colorbar: glspl.colorbar()
-#   pl.over(contour, g, 50,  colors='w',               linewidths=1, 
-#        extent=[-R,R,-R,R], origin='upper', extend='both')
-    #pl.grid()
-
-    #pl.xlabel(xlabel)
-    #pl.ylabel(ylabel)
+    pl.xlabel(xlabel)
+    pl.ylabel(ylabel)
 
 
 @command
