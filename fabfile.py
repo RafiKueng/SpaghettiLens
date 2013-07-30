@@ -83,7 +83,10 @@ def update_html(install_dir="./build", htmldir = 'static_html'):
       'local = false;',
       'doLog = true;',
       'logToConsole = true;',
-      'LMT.com.serverUrl = "";',
+      'LMT.com.serverUrl = \'\';',
+      'LMT.version = \'%s\'' % version,
+      'LMT.build_time = \'%s\'' % time_str,
+      'LMT.build = \'%s\'' % v_str,
     ]
     print 'using lmt.settings.js config: (hardcoded)'
     for _ in set: print '  >', _

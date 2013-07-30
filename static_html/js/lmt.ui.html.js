@@ -30,7 +30,7 @@ html.SetUsernameDialog = {
           text: "Ok",
           click: function(evt){
             $('#get_username').dialog("close");
-            var uname = $("#username").val();
+            var uname = $("#username2").val();
             LMT.settings.username = uname;
           }
         },],
@@ -148,7 +148,7 @@ html.LoadProgressDialog = {
   init: function() {
     $('#load_progress_dialog').dialog({
       autoOpen: false,
-      minWidth: 100,
+      minWidth: 250,
       minHeight: 50,
       modal: true,
       //open: function(){},
@@ -197,8 +197,21 @@ html.WaitForResultDialog = {
       });
   },
   
-  estimate: function(pixrad, nmodels) {
-    LMT.settings.estimate = Math.round(0.108 * Math.exp(0.506*pixrad) + 0.01*nmodels + 0.5)
+  estimate: function tottime(p,n) {
+    //parameters from variious fits
+    //machine: how much slower is the worker than anker (@2.8Ghz): 2.21 for mite
+    var aa1= 34.1040000000;
+    var bb1=-28.0330000000;
+    var aa2=  0.9857000000;
+    var bb2=  2.3436000000;
+    var cc1=  0.0000000000;
+    var a11=  0.0000001989;
+    var a12=  0.8493931800;
+    var a21=  0.0000005989;
+    var a22=  0.0055298878;
+    var a23= -3.0273621847;
+    var machine=  2.2100000000;
+    return machine*(aa1*(a11*Math.pow(p,7) + a12)+bb1 + aa2*(a21*Math.pow(p,7) + a22*n*3 + a23)+bb2 + cc1);
   },
   
   close: function(){
@@ -212,7 +225,7 @@ html.WaitForResultDialog = {
       html.WaitForResultDialog.startTime = now.getTime() / 1000;
       var pr = LMT.model.Parameters.pixrad;
       var nm = LMT.model.Parameters.n_models;
-      html.WaitForResultDialog.estimate(pr, nm);
+      LMT.settings.estimate = html.WaitForResultDialog.estimate(pr, nm);
       setTimeout(html.WaitForResultDialog.update,1);
     }
   },
@@ -227,7 +240,7 @@ html.WaitForResultDialog = {
       var now = new Date();
       dt = now.getTime()/1000 - html.WaitForResultDialog.startTime;
       $('#wfrd_running').html(dt.toFixed(1));
-      $('#wfrd_est').html(LMT.settings.estimate);
+      $('#wfrd_est').html(LMT.settings.estimate.toFixed(1));
       setTimeout(function(){html.WaitForResultDialog.update()},100);
     }
     else {

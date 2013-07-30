@@ -160,7 +160,7 @@ com.getModelData = function(evt, model_ids, catalog, action) {
       alert("server is down, please try later");
     }
     
-    log("getModelData | fail", resp, status_text, code);
+    log("com.getModelData | fail", resp, status_text, code);
   };
 
   /*
@@ -203,14 +203,14 @@ com.getModelData = function(evt, model_ids, catalog, action) {
 com.UploadModel = function(evt) {
 
   var success = function(jsonResp, statusTxt, XHRRespObj) {
-    log('UploadModel | success', 'result_id:' + jsonResp.result_id);
+    log('com.UploadModel | success', 'result_id:' + jsonResp.result_id);
     LMT.simulationData.resultId = jsonResp.result_id;
     //LMT.simulationData.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
     $.event.trigger("UploadModelComplete")
   };
   
   var fail = function(a, b, c) {
-    log("UploadModel | fail", a, b, c, a.responseText);
+    log("com.UploadModel | fail", a, b, c, a.responseText);
     var win=window.open('about:blank');
     with(win.document)
     {
@@ -265,7 +265,7 @@ com.UploadModel = function(evt) {
 com.SaveModel = function(evt) {
 
   var success = function(jsonResp, statusTxt, XHRRespObj) {
-    log('SaveModel | success', 'result_id: ' + jsonResp.result_id);
+    log('com.SaveModel | success', 'result_id: ' + jsonResp.result_id);
     LMT.simulationData.resultId = jsonResp.result_id;
     //LMT.simulationData.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
     //$.event.trigger("UploadModelComplete")
@@ -278,7 +278,7 @@ com.SaveModel = function(evt) {
   };
   
   var fail = function(a, b, c) {
-    log('SaveModel | fail', a, b, c, a.responseText);
+    log('com.SaveModel | fail', a, b, c, a.responseText);
 
     /*
     var win=window.open('about:blank');
@@ -332,7 +332,7 @@ com.SaveModel = function(evt) {
  */
 com.GetSimulation = function(){
   var success = function(jsonResp, statusTxt, XHRRespObj) {
-    log("GetSimulation | success", 'status:' + jsonResp.status + ' res_id: ' + jsonResp.result_id);
+    log("com.GetSimulation | success", 'status:' + jsonResp.status + ' res_id: ' + jsonResp.result_id);
     
     LMT.simulationData.img = [];
     if (jsonResp.status!="READY"){ //polling
@@ -374,7 +374,7 @@ com.GetSimulation = function(){
   };
   
   var fail = function(a, b, c) {
-    log('GetSimulation | fail', a, b, c, a.responseText);
+    log('com.GetSimulation | fail', a, b, c, a.responseText);
     if (c && c=='Bad Gateway') {
       alert("the server is currently not online. Please drop a note to Rafael. I'm sorry!");
     }
@@ -411,7 +411,7 @@ com.GetSimulation = function(){
 com.getDatasourcesList = function(evt) {
   
   var success = function(jsonObj, b, c){
-    log('getDatasourcesList | success');
+    log('com.getDatasourcesList | success');
     $.event.trigger("RcvDatasourcesList", [jsonObj]);
   }
   
@@ -436,12 +436,12 @@ com.getDatasourcesList = function(evt) {
 com.getDatasourceDialog = function(evt, id, uname) {
   
   var success = function(jsonObj, b, c){
-    log('getDatasourceDialog | success');
+    log('com.getDatasourceDialog | success');
     $.event.trigger("RcvDatasourceDialog", [jsonObj]);
   }
   
   var fail = function(a, b, c){
-    log('getDatasourceDialog | fail');
+    log('com.getDatasourceDialog | fail');
     alert("Server api down. I'm sorry! Please drop a mail to rafael about this");
   }  
   

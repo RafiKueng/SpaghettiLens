@@ -421,7 +421,7 @@ def saveModelFinal(request):
       imgstr = r['imgData']
       ident, img = imgstr.split(',')
       #print ident
-      if ident == "data:image/png;base64" and img.starts_with('iVBORw0KGgo'):
+      if ident == "data:image/png;base64" and img.startswith('iVBORw0KGgo'):
         fh = open("../tmp_media/%06i/input.png" % rid, "wb")
         fh.write(img.decode('base64'))
         fh.close()
@@ -718,8 +718,8 @@ def getData(request, result_id):
     'links': {
        'next' : children_data,#[{'nr': '005', 'user': 'aa'},{'nr': 'b', 'user': 'bb'},{'nr': 'c', 'user': 'cc'}],#[None],
        'prev' : parent_data,
-       'fork' : '/?rid='+str(result_id), 
-       'new'  : '/?mid='+str(res.lens_data_obj.pk)
+       'fork' : '/lmt.html?rid='+str(result_id), 
+       'new'  : '/lmt.html?mid='+str(res.lens_data_obj.pk)
     },
              
     'files': [    # tuple (download filename, [data]url)
