@@ -550,6 +550,264 @@ def srcdiff_plot(env, model, **kwargs):
     pl.ylabel(ylabel)
 
 @command
+def srcdiff_plot_adv(env, model, **kwargs):
+    obj_index       = kwargs.pop('obj_index', 0)
+    src_index       = kwargs.pop('src_index', 0)
+    with_colorbar   = kwargs.pop('with_colorbar', False)
+    xlabel          = kwargs.pop('xlabel', r'arcsec')
+    ylabel          = kwargs.pop('ylabel', r'arcsec')
+    nightMode       = kwargs.pop('night', False) # colormode with black background
+    upsample        = kwargs.pop('upsample', False) # upsample this
+
+
+    if nightMode:
+      print "!! nightmode on"
+      matplotlib.rcParams['lines.color'] = 'black'
+      matplotlib.rcParams['patch.edgecolor'] = 'black'
+      matplotlib.rcParams['text.color'] = 'black'
+      matplotlib.rcParams['axes.facecolor'] = 'black'
+      matplotlib.rcParams['axes.edgecolor'] = 'black'
+      matplotlib.rcParams['axes.labelcolor'] = 'black'
+      matplotlib.rcParams['xtick.color'] = 'black'
+      matplotlib.rcParams['ytick.color'] = 'black'
+      matplotlib.rcParams['grid.color'] = 'black'
+      matplotlib.rcParams['figure.facecolor'] = 'black'
+      matplotlib.rcParams['figure.edgecolor'] = 'black'
+      matplotlib.rcParams['savefig.facecolor'] = 'black'
+      matplotlib.rcParams['savefig.edgecolor'] = 'black'
+      
+
+
+    obj, data = model['obj,data'][obj_index]
+      
+#    if upsample:
+#      print 'upsampling by fact of', upsample
+#      obj.basis.subdivision = upsample
+      #g = obj.basis.srcdiff_grid(data)[src_index]
+      #g1 = obj.basis.srcdiff_grid_adv(data)[src_index]
+      #g2 = obj.basis.refined_xy_grid(obj.basis.srcdiff(data, src_index))
+      
+      
+      #print g
+      #print np.shape(g)#, np.shape(g1), np.shape(g2)
+      
+      #print type(obj), type(data)
+
+
+#      ndata = obj.basis.srcdiff(data, src_index)
+#      ndataongrid = obj.basis._hires_to_grid(ndata, refinement=2)
+#      ndataongrid2 = obj.basis._simple_to_grid(ndata, refinement=1)
+#      ndat2 = obj.basis.refined_xy_grid(data)
+      #print np.shape(data), np.shape(ndata), np.shape(ndataongrid),np.shape(ndataongrid2), np.shape(ndat2)
+      #print ndataongrid
+      #print ndat2
+#      for e in [ndata, ndataongrid, ndataongrid2, ndat2]:
+#        print np.shape(e), np.amin(e), np.amax(e)
+      #for key, item in data.items(): print key
+      #for key, item in ndat2.items(): print key
+      #print ndat2
+      #print data['srcdiff']
+      
+
+    S = obj.basis.subdivision
+    R = obj.basis.mapextent
+
+    g = obj.basis.srcdiff_grid(data)[src_index]
+
+    #set outside to max value    
+    gmax = np.amax(g)
+    g += np.array(g==0, dtype=float)*gmax
+    
+    if upsample:
+      xdim, ydim = np.shape(g)
+      R = obj.basis.mapextent
+      print xdim, ydim
+      xvec = np.linspace(-R, R, xdim)
+      yvec = np.linspace(-R, R, ydim)
+      from scipy.interpolate import RectBivariateSpline
+      interpol = RectBivariateSpline(xvec, yvec, g)
+      
+      xnew = np.linspace(-R, R, xdim*upsample)
+      ynew = np.linspace(-R, R, ydim*upsample)
+      
+      g = interpol(xnew, ynew)            
+
+    
+    vmin = np.log10(np.amin(g[g>0]))
+    #vmax = np.log10(np.amax(g[g>0]))
+
+    gdat = np.log10(g + 1e-10)
+    kw = default_kw(R, kwargs) #, vmin=vmin, vmax=vmin+2)
+    kw['vmin'] = vmin
+    kw['cmap'] = 'Greys'
+
+    #loglev = logspace(1, log(amax(g)-amin(g)), 20, base=math.e) + amin(g)
+
+    pl.matshow(gdat, **kw)
+    
+    matplotlib.rcParams['contour.negative_linestyle'] = 'solid'
+    if with_colorbar: glspl.colorbar()
+#   pl.over(contour, g, 50,  colors='w',               linewidths=1, 
+#        extent=[-R,R,-R,R], origin='upper', extend='both')
+    #pl.grid()
+
+    #pl.xlabel(xlabel)
+    #pl.ylabel(ylabel)
+
+
+@command
+def kappa_enclosed_plot(env, model, **kwargs):
+    obj_index       = kwargs.pop('obj_index', 0)
+    src_index       = kwargs.pop('src_index', 0)
+    err_margin      = kwargs.pop('err_margin', 1) #err_margin = 0.9 -> 90% -> values within from 5% .. 95%
+    xlabel          = kwargs.pop('xlabel', r'image radius [SpaceWarps pixels]')
+    ylabel          = kwargs.pop('ylabel', r'mean convergance [1]')
+    plot_rE         = kwargs.pop('plot_rE', True)
+    plot_rE_box     = kwargs.pop('plot_rE_box', True)
+    rscale           = kwargs.pop('rscale', 440./500*100) #default Spacewarps -> SL -> glass scaling of radius
+
+    obj, data = model['obj,data'][obj_index]
+
+    ### HELPER FUNCTION ########################################
+    def getEinsteinR(x, y):
+      poly = interp.PiecewisePolynomial(x,y[:,np.newaxis])
+      
+      def one(x):
+        return poly(x)-1
+      
+      x_min = np.min(x)
+      x_max = np.max(x)
+      x_mid = poly(x[len(x)/2])
+      
+      rE,infodict,ier,mesg = optimize.fsolve(one, x_mid, full_output=True)
+      
+      #print rE,infodict,ier,mesg
+      
+      if (ier==1 or ier==5) and x_min<rE<x_max and len(rE)==1:
+        return rE[0]
+      elif len(rE)>1:
+        for r in rE:
+          if x_min<r<x_max:
+            return r
+      else:
+        return -1
+
+
+    
+    ### DO THE CALCULATIONS ####################################
+    # maybe you want to put this stuff to another file..
+    
+    # def constants
+    n_rings = len(obj.basis.rings) # number of rings with center (=pixrad+1)
+    distance_factor = 0.428 #TODO don't hardcode this one..
+
+    # init vars
+    kappaRenc_median = np.zeros(n_rings)
+    kappaRenc_xsigmaplus = np.zeros(n_rings)
+    kappaRenc_xsigmaminus = np.zeros(n_rings)
+    
+    pixPerRing = np.zeros(n_rings)
+    pixEnc = np.zeros(n_rings)
+
+    # get pixels per ring and encolsed pixels per ring
+    #TODO this data is probably already around??
+    for i in range(n_rings):
+      pixEnc[i] = len(obj.basis.rings[i])
+      pixPerRing[i] = len(obj.basis.rings[i])
+      for j in range(i):
+        pixEnc[i] += len(obj.basis.rings[j])
+
+    # collect data
+    for k in range(n_rings):
+      kappaRenc_k_all = np.zeros(0)
+      for m in env.models:
+        obj,ps = m['obj,data'][0]
+  
+        kappaRenc_model = ps['kappa(R)'][k]*pixPerRing[k]
+        for kk in range(k):
+          kappaRenc_model += ps['kappa(R)'][kk] * pixPerRing[kk]
+        kappaRenc_k_all = np.append(kappaRenc_k_all,kappaRenc_model)
+  
+      kappaRenc_k_all /= pixEnc[k]
+      kappaRenc_k_all *= distance_factor
+      kappaRenc_k_all = np.sort(kappaRenc_k_all)
+      
+      kappaRenc_median[k] = kappaRenc_k_all[len(kappaRenc_k_all)/2]
+      
+      if 0 < err_margin < 1:
+        p = err_margin / 2.
+        kappaRenc_xsigmaplus[k] = kappaRenc_k_all[int((0.5+p)*len(kappaRenc_k_all))]
+        kappaRenc_xsigmaminus[k] = kappaRenc_k_all[int((0.5-p)*len(kappaRenc_k_all))]
+      elif err_margin == 1:
+        kappaRenc_xsigmaplus[k] = kappaRenc_k_all[-1]
+        kappaRenc_xsigmaminus[k] = kappaRenc_k_all[0]
+      else:
+        #TODO crash gracefully
+        kappaRenc_xsigmaplus[k] = 0
+        kappaRenc_xsigmaminus[k] = 0
+    
+    x_vals = (np.arange(n_rings)+0.5) * rscale * obj.basis.cell_size[0]  
+    
+    print x_vals
+    print '------------'
+    print kappaRenc_median
+    print '------------'
+    print kappaRenc_xsigmaplus
+    print '------------'
+    print kappaRenc_xsigmaminus
+
+    if plot_rE:
+      rE_mean = getEinsteinR(x_vals, kappaRenc_median)
+      rE_max = getEinsteinR(x_vals, kappaRenc_xsigmaplus)
+      rE_min = getEinsteinR(x_vals, kappaRenc_xsigmaminus)
+      if rE_mean<0 or rE_max<0 or rE_min<0:
+        plot_rE = False
+    
+    ### DO THE PLOTTING ########################################
+    
+    if plot_rE:
+      a_re_min = np.array([rE_min, rE_min])
+      a_re_max = np.array([rE_max, rE_max])
+      a_re_mean = np.array([rE_mean, rE_mean])
+      
+      mmax = np.amax(kappaRenc_xsigmaplus)
+      rE_pos = max(round(mmax*0.75), 3) # there to draw the einsteinradius text
+      t_dx = 0.0
+      t_dy = 0.1
+      t_props = {'ha':'left', 'va':'bottom'}       
+      
+
+      pl.plot(a_re_mean, [0,rE_pos], '--', color=(0,0.5,0))
+      pl.text(rE_mean+t_dx, rE_pos+t_dy, 'r_E = %4.2f [%4.2f .. %4.2f]'%(rE_mean, rE_min, rE_max), **t_props)
+
+      if plot_rE_box:
+        cy = np.ones(rE_pos*4) # spaced in 1/4 steps, rE_pos is int!
+        cy[0]=0
+        cy[1]=0.5
+        cy[-1]=0
+        cy[-2]=0.5
+        cy = np.array([cy,cy]).transpose()
+        cdict = { 'red':   ((0,0,0),(1,0,0)),
+                  'green': ((0,0.5,0.5),(1,0.5,0.5)),
+                  'blue':  ((0,0,0),(1,0,0)),
+                  'alpha': ((0,1,1),(1,1,1))}
+        cmblue = mplcolors.LinearSegmentedColormap('TransparentGreen', cdict)
+        pl.imshow(cy, interpolation='bilinear', cmap=cmblue, extent=(rE_min, rE_max, 0.0, rE_pos), alpha=0.7, aspect='auto')
+      else:
+        pl.plot(a_re_min, [0,rE_pos-0.25], ':b')
+        pl.plot(a_re_max, [0,rE_pos-0.25], ':b')
+
+    pl.plot(x_vals, kappaRenc_xsigmaplus, 'b')
+    pl.plot(x_vals, kappaRenc_xsigmaminus, 'b')
+    pl.fill_between(x_vals, kappaRenc_xsigmaplus, kappaRenc_xsigmaminus, facecolor='blue', alpha=0.5)
+    pl.plot([0,np.amax(x_vals)], [1,1], ':m')         
+    
+    pl.xlabel(xlabel)
+    pl.ylabel(ylabel)
+    
+    
+    
+@command
 def deflect_plot(env, model, obj_index, which, src_index):
     obj, data = model['obj,data'][obj_index]
     S = obj.basis.subdivision
