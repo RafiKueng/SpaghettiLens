@@ -1,4 +1,5 @@
 from ModellerApp.models import ModellingResult, ModellingSession
+from django.conf import settings
 
 import json
 import os
@@ -311,6 +312,8 @@ class EvalAndSaveJSON:
     #print "start gls"
     
     gls = [
+      "# LMT_GLS_%s" % settings.GLS_VERSION ,
+      "# LMT_%s" % settings.LMT_VERSION ,
       "import matplotlib as mpl"                                            ,
       "import pylab as pl"                                                  ,
       "glass_basis('glass.basis.pixels', solver='rwalk')"                   ,
