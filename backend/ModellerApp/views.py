@@ -483,7 +483,7 @@ def getSimulationJSON(request, result_id):
                          "img1desc": "Contour Plot",
                          "img2url": "/result/%06i/img2.png" % result_id,
                          "img2desc": "Mass Distribution",
-                         "img3url": srcploturl,
+                         "img3url": srcplturl,
                          "img3desc": srcpltdesc,
                          })
   
