@@ -467,6 +467,14 @@ def getSimulationJSON(request, result_id):
   print "in getSimulationJSON"
   
   def returnDataIfReady(result_id):
+    imgExists = os.path.exists("../tmp_media/%06i/img3_ipol.png" % result_id)
+    if imgExists:
+      srcplturl = '/result/%06i/img3_ipol.png' % result_id
+      srcpltdesc = "Arrival Time Plot (upsampled)"
+    else:
+      srcplturl = '/result/%06i/img3.png' % result_id
+      srcpltdesc = "Arrival Time Plot"
+      
     return sjson.dumps({"status":"READY",
                          "cached": True,
                          "result_id": "%06i" % result_id,
@@ -475,8 +483,8 @@ def getSimulationJSON(request, result_id):
                          "img1desc": "Contour Plot",
                          "img2url": "/result/%06i/img2.png" % result_id,
                          "img2desc": "Mass Distribution",
-                         "img3url": "/result/%06i/img3.png" % result_id,
-                         "img3desc": "Arrival Time Plot",
+                         "img3url": srcploturl,
+                         "img3desc": srcpltdesc,
                          })
   
   try:
