@@ -560,24 +560,10 @@ def srcdiff_plot_adv(env, model, **kwargs):
     src_index       = kwargs.pop('src_index', 0)
     xlabel          = kwargs.pop('xlabel', r'')
     ylabel          = kwargs.pop('ylabel', r'')
-    nightMode       = kwargs.pop('night', False) # colormode with black background
+    nightMode       = kwargs.pop('night', False) # colormode for use with black background (use with savefig(.. facecolor='black'))
     upsample        = kwargs.pop('upsample', False) # upsample this
+    ppp             = kwargs.pop('range', 0.5) # map values [vmin, vmin + ppp*(vmax-vmin)] to colormap grayscale [white ... black]; aka dynamic range;
 
-
-    if nightMode:
-      matplotlib.rcParams['lines.color'] = 'black'
-      matplotlib.rcParams['patch.edgecolor'] = 'black'
-      matplotlib.rcParams['text.color'] = 'black'
-      matplotlib.rcParams['axes.facecolor'] = 'black'
-      matplotlib.rcParams['axes.edgecolor'] = 'black'
-      matplotlib.rcParams['axes.labelcolor'] = 'black'
-      matplotlib.rcParams['xtick.color'] = 'black'
-      matplotlib.rcParams['ytick.color'] = 'black'
-      matplotlib.rcParams['grid.color'] = 'black'
-      matplotlib.rcParams['figure.facecolor'] = 'black'
-      matplotlib.rcParams['figure.edgecolor'] = 'black'
-      matplotlib.rcParams['savefig.facecolor'] = 'black'
-      matplotlib.rcParams['savefig.edgecolor'] = 'black'
 
     obj, data = model['obj,data'][obj_index]
       
@@ -606,21 +592,39 @@ def srcdiff_plot_adv(env, model, **kwargs):
 
     
     vmin = np.log10(np.amin(g[g>0]))
-    #vmax = np.log10(np.amax(g[g>0]))
+    vmax = np.log10(np.amax(g[g>0]))
+    
 
     gdat = np.log10(g + 1e-10)
     gave = np.average(gdat)
     kw = default_kw(R, kwargs) #, vmin=vmin, vmax=vmin+2)
     kw['vmin'] = vmin
-    kw['vmax'] = gave   # remember: arraival time: small -> brigt -> inner parts
+    kw['vmax'] = vmin + ppp*(vmax-vmin)    # remember: arraival time: small -> brigt -> inner parts
     kw['cmap'] = 'Greys'
+    print vmin, vmax, gave
 
     #loglev = logspace(1, log(amax(g)-amin(g)), 20, base=math.e) + amin(g)
 
-    pl.matshow(gdat, **kw)
+    ax = pl.gca()
+    fig = pl.gcf()
     
-    pl.xlabel(xlabel)
-    pl.ylabel(ylabel)
+    if nightMode:
+      fig.set_facecolor('black')
+      fig.patch.set_facecolor('black')
+    else:
+      pass
+    
+    pl.matshow(gdat, **kw)
+    fig.set_facecolor('black')
+      
+    if nightMode:
+      pl.xlabel('')
+      pl.ylabel('')
+      pl.axis('off')
+      pl.tight_layout() #if this doesn't work update matplotlib
+    else:
+      pl.xlabel(xlabel)
+      pl.ylabel(ylabel)
 
 
 @command
@@ -686,50 +690,56 @@ def kappa_enclosed_plot(env, model, **kwargs):
         pixEnc[i] += len(obj.basis.rings[j])
 
     # collect data
-    for k in range(n_rings):
-      kappaRenc_k_all = np.zeros(0)
-      for m in env.models:
-        obj,ps = m['obj,data'][0]
-  
-        kappaRenc_model = ps['kappa(R)'][k]*pixPerRing[k]
-        for kk in range(k):
-          kappaRenc_model += ps['kappa(R)'][kk] * pixPerRing[kk]
-        kappaRenc_k_all = np.append(kappaRenc_k_all,kappaRenc_model)
-  
-      kappaRenc_k_all /= pixEnc[k]
-      kappaRenc_k_all *= distance_factor
-      kappaRenc_k_all = np.sort(kappaRenc_k_all)
-      
-      kappaRenc_median[k] = kappaRenc_k_all[len(kappaRenc_k_all)/2]
-      
-      if 0 < err_margin < 1:
-        p = err_margin / 2.
-        kappaRenc_xsigmaplus[k] = kappaRenc_k_all[int((0.5+p)*len(kappaRenc_k_all))]
-        kappaRenc_xsigmaminus[k] = kappaRenc_k_all[int((0.5-p)*len(kappaRenc_k_all))]
-      elif err_margin == 1:
-        kappaRenc_xsigmaplus[k] = kappaRenc_k_all[-1]
-        kappaRenc_xsigmaminus[k] = kappaRenc_k_all[0]
-      else:
-        #TODO crash gracefully
-        kappaRenc_xsigmaplus[k] = 0
-        kappaRenc_xsigmaminus[k] = 0
+    
+    kappaRenc_median
+
+
+    if 1:
+      for k in range(n_rings):
+        kappaRenc_k_all = np.zeros(0)
+        for m in env.models:
+          obj,ps = m['obj,data'][0]
+    
+          kappaRenc_model = ps['kappa(R)'][k]*pixPerRing[k]
+          for kk in range(k):
+            kappaRenc_model += ps['kappa(R)'][kk] * pixPerRing[kk]
+          kappaRenc_k_all = np.append(kappaRenc_k_all,kappaRenc_model)
+    
+        kappaRenc_k_all /= pixEnc[k]
+        kappaRenc_k_all *= distance_factor
+        kappaRenc_k_all = np.sort(kappaRenc_k_all)
+        
+        kappaRenc_median[k] = kappaRenc_k_all[len(kappaRenc_k_all)/2]
+        
+        if 0 < err_margin < 1:
+          p = err_margin / 2.
+          kappaRenc_xsigmaplus[k] = kappaRenc_k_all[int((0.5+p)*len(kappaRenc_k_all))]
+          kappaRenc_xsigmaminus[k] = kappaRenc_k_all[int((0.5-p)*len(kappaRenc_k_all))]
+        elif err_margin == 1:
+          kappaRenc_xsigmaplus[k] = kappaRenc_k_all[-1]
+          kappaRenc_xsigmaminus[k] = kappaRenc_k_all[0]
+        else:
+          #TODO crash gracefully
+          kappaRenc_xsigmaplus[k] = 0
+          kappaRenc_xsigmaminus[k] = 0
+    
+    else:
+      for mod in env.models:
+        for rng in range(n_rings):
+          kappaR[mod, rng]
+    
+    
     
     x_vals = (np.arange(n_rings)+0.5) * rscale * obj.basis.cell_size[0]  
     
-    print x_vals
-    print '------------'
-    print kappaRenc_median
-    print '------------'
-    print kappaRenc_xsigmaplus
-    print '------------'
-    print kappaRenc_xsigmaminus
-
+    # calulate einstein radii
     if plot_rE:
       rE_mean = getEinsteinR(x_vals, kappaRenc_median)
       rE_max = getEinsteinR(x_vals, kappaRenc_xsigmaplus)
       rE_min = getEinsteinR(x_vals, kappaRenc_xsigmaminus)
       if rE_mean<0 or rE_max<0 or rE_min<0:
         plot_rE = False
+
     
     ### DO THE PLOTTING ########################################
     
@@ -738,9 +748,10 @@ def kappa_enclosed_plot(env, model, **kwargs):
       a_re_max = np.array([rE_max, rE_max])
       a_re_mean = np.array([rE_mean, rE_mean])
       
+      # define some text properties      
       mmax = np.amax(kappaRenc_xsigmaplus)
       rE_pos = max(round(mmax*0.75), 3) # there to draw the einsteinradius text
-      t_dx = 0.0
+      t_dx = 0.0 # text offset position
       t_dy = 0.1
       t_props = {'ha':'left', 'va':'bottom'}       
       
@@ -749,6 +760,7 @@ def kappa_enclosed_plot(env, model, **kwargs):
       pl.text(rE_mean+t_dx, rE_pos+t_dy, 'r_E = %4.2f [%4.2f .. %4.2f]'%(rE_mean, rE_min, rE_max), **t_props)
 
       if plot_rE_box:
+        # this would allow for a colored box with gradient, see the cdict
         cy = np.ones(rE_pos*4) # spaced in 1/4 steps, rE_pos is int!
         cy[0]=0
         cy[1]=0.5
@@ -759,7 +771,7 @@ def kappa_enclosed_plot(env, model, **kwargs):
                   'green': ((0,0.5,0.5),(1,0.5,0.5)),
                   'blue':  ((0,0,0),(1,0,0)),
                   'alpha': ((0,1,1),(1,1,1))}
-        cmblue = mplcolors.LinearSegmentedColormap('TransparentGreen', cdict)
+        cmblue = mplcolors.LinearSegmentedColormap('DarkGreen', cdict)
         pl.imshow(cy, interpolation='bilinear', cmap=cmblue, extent=(rE_min, rE_max, 0.0, rE_pos), alpha=0.7, aspect='auto')
       else:
         pl.plot(a_re_min, [0,rE_pos-0.25], ':b')
@@ -772,7 +784,8 @@ def kappa_enclosed_plot(env, model, **kwargs):
     
     pl.xlabel(xlabel)
     pl.ylabel(ylabel)
-    
+
+ 
     
     
 @command
