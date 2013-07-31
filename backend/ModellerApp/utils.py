@@ -1,4 +1,5 @@
 from ModellerApp.models import ModellingResult, ModellingSession
+from django.conf import settings
 
 import json
 import os
@@ -311,6 +312,8 @@ class EvalAndSaveJSON:
     #print "start gls"
     
     gls = [
+      "# LMT_GLS_%s" % settings.GLS_VERSION ,
+      "# LMT_%s" % settings.LMT_VERSION ,
       "import matplotlib as mpl"                                            ,
       "import pylab as pl"                                                  ,
       "glass_basis('glass.basis.pixels', solver='rwalk')"                   ,
@@ -383,6 +386,9 @@ class EvalAndSaveJSON:
       "pl.gca().axes.get_xaxis().set_visible(False)",
       "pl.gca().axes.get_yaxis().set_visible(False)",
       "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%3))                    ,
+      "pl.close()"                                                          ,
+      "g.srcdiff_plot_adv(g.ensemble_average, night=True, upsample=8)"      ,
+      "pl.savefig('%s%s', facecolor='black', edgecolor='none')" % (_.imgpath, ('img%i_ipol.png'%3))    ,
       "pl.close()"                                                          ,
     ])
  

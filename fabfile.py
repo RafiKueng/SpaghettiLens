@@ -15,6 +15,23 @@ def install():
   i.install()
 
 
+# updates the backend, assuming NO DATABASE changes were made
+def update_backend(install_dir="./build", htmldir = 'static_html'):
+  
+  install_dir=os.path.realpath(install_dir)
+  
+  # make sure to have the latest tags
+  if confirm("update git tags?"):
+    local('git fetch --tags')
+  version = local("git describe --abbrev=1 --tags --match 'v*'", capture=True)
+  glsversion = local('git describe --abbrev=0 --tags --match "gls\.v[0-9]*"', capture=True) #retuns 'gls.vX'
+  glsversion = glsversion.split('.')[1]
+  time_str = dt.now().strftime("%Y%m%d%H%M")
+  v_str = version + "-" + time_str
+
+
+
+
 # updates an existing install
 def update_html(install_dir="./build", htmldir = 'static_html'):
   '''
@@ -28,7 +45,7 @@ def update_html(install_dir="./build", htmldir = 'static_html'):
   # make sure to have the latest tags
   if confirm("update git tags?"):
     local('git fetch --tags')
-  version = local("git describe --abbrev=1 --tags", capture=True)
+  version = local("git describe --abbrev=1 --tags --match 'v*'", capture=True)
   time_str = dt.now().strftime("%Y%m%d%H%M")
   v_str = version + "-" + time_str
 

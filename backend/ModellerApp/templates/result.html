@@ -239,22 +239,23 @@ li > span{
 
 <div class="box adv">
   <h2>advanced output images:</h2>
-  <div class="elem">
-    <h3>Mass Distribution</h3>
-    {% if images.mass_dist %}
-      <img src="{{images.mass_dist}}" alt="MassDist">
-    {% else %}
-      <div class="waiting4img">{{images.no_img_txt|safe}}</div>
-    {% endif %}
-  </div>
-  <div class="elem">
-    <h3>Enclosed Mass</h3>
-    {% if images.mass_encl %}
-      <img src="{{images.mass_encl}}" alt="EncMass">
-    {% else %}
-      <div class="waiting4img">{{images.no_img_txt|safe}}</div>
-    {% endif %}
-  </div>
+  {% for advimg in images.adv %}
+    <div class="elem">
+      <h3>{{advimg.title}}</h3>
+      {% if advimg.url %}
+        <img src="{{advimg.url}}" alt="{{advimg.alt}}">
+      {% else %}
+        <div class="waiting4img">{{images.no_img_txt|safe}}</div>
+      {% endif %}
+    </div>
+  {% endfor %}
+
+  {% if images.furtherToCome %}
+    <div class="elem">
+      <h3>Note</h3>
+      <div class="waiting4img">further images are generated...</div>
+    </div>
+  {% endif %}
 </div>
 
 
