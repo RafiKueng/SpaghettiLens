@@ -387,7 +387,7 @@ class EvalAndSaveJSON:
       "pl.gca().axes.get_yaxis().set_visible(False)",
       "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%3))                    ,
       "pl.close()"                                                          ,
-      "g.srcdiff_plot_adv(g.ensemble_average, night=True, upsample=8)"      ,
+      "env().srcdiff_plot_adv(env().ensemble_average, night=True, upsample=8)"      ,
       "pl.savefig('%s%s', facecolor='black', edgecolor='none')" % (_.imgpath, ('img%i_ipol.png'%3))    ,
       "pl.close()"                                                          ,
     ])
