@@ -701,7 +701,7 @@ def getData(request, result_id):
   if file_3a:
     advimgs.append({
       'title': 'Original SourceDiffPlot',
-      'url': file3,
+      'url': file_3,
       'alt': 'org srcdiffplot'
     })
     file_3 = file_3a # deliver the interpolated version as srcdiffplot
