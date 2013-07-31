@@ -627,6 +627,7 @@ def getData(request, result_id):
   file_1 = checkFile(result_id, 'img1.png')
   file_2 = checkFile(result_id, 'img2.png')
   file_3 = checkFile(result_id, 'img3.png')
+  file_3a = checkFile(result_id, 'img3_ipol.png')
   file_4 = checkFile(result_id, 'img4.png')
   file_gls = checkFile(result_id, 'cfg.gls')
   file_state = checkFile(result_id, 'state.txt')
@@ -694,6 +695,32 @@ def getData(request, result_id):
       })
   else:
     children_data = None
+    
+  advimgs = []
+  
+  if file3a:
+    advimgs.append({
+      'title': 'Original SourceDiffPlot',
+      'url': file3,
+      'alt': 'org srcdiffplot'
+    })
+    file3 = file3a # deliver the interpolated version as srcdiffplot
+    
+  if file2:
+    advimgs.append({
+      'title': 'Mass Distribution',
+      'url': file2,
+      'alt': 'MassDist'
+    })
+    
+  if file4:
+    advimgs.append({
+      'title': 'Enclosed Mass',
+      'url': file4,
+      'alt': 'EnclMass'
+    })
+    
+    
   
   
   context = {
@@ -718,9 +745,12 @@ def getData(request, result_id):
       'input'      : file_inp,
       'contour'    : file_1,
       'synthetic'  : file_3,
-      'mass_dist'  : file_2,
-      'mass_encl'  : file_4,
-      'no_img_txt' : 'image not available'#refreshing image, please wait for reload'#<br/>esimated time: 1 minute'
+      #'mass_dist'  : file_2,
+      #'mass_encl'  : file_4,
+      'no_img_txt' : 'image not available',#refreshing image, please wait for reload'#<br/>esimated time: 1 minute'
+      
+      'adv'        : advimgs,
+      'furtherToCome': False,
     },
              
     'links': {
