@@ -15,6 +15,8 @@ from secrets import *
 # import machine configuration
 from machine import *
 
+#import version numbers
+from version import *
 
 
 if ROLE == "developpment_local":
