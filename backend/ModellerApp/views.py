@@ -698,25 +698,25 @@ def getData(request, result_id):
     
   advimgs = []
   
-  if file3a:
+  if file_3a:
     advimgs.append({
       'title': 'Original SourceDiffPlot',
       'url': file3,
       'alt': 'org srcdiffplot'
     })
-    file3 = file3a # deliver the interpolated version as srcdiffplot
+    file_3 = file_3a # deliver the interpolated version as srcdiffplot
     
-  if file2:
+  if file_2:
     advimgs.append({
       'title': 'Mass Distribution',
-      'url': file2,
+      'url': file_2,
       'alt': 'MassDist'
     })
     
-  if file4:
+  if file_4:
     advimgs.append({
       'title': 'Enclosed Mass',
-      'url': file4,
+      'url': file_4,
       'alt': 'EnclMass'
     })
     
