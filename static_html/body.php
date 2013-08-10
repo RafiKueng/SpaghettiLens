@@ -442,7 +442,7 @@
 </div>
 
 <div id="wait_for_results_dialog" class="dialog" title="Currently Crunching Numbers">
-  <p>Runnung since: <span id="wfrd_running">0</span>s</p>
+  <p>Running since: <span id="wfrd_running">0</span>s</p>
   <p>Estimated duration: (very roughly) <span id="wfrd_est">0</span>s</p>
 </div>
 
