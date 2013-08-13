@@ -178,7 +178,7 @@ class EvalAndSaveJSON:
     self.z_src = 1.00
     self.n_models = 200
     
-    self.viewport = 500
+    self.viewport = 500   # viewport size default in <GLSv3, LMTv1.6
     self.imgSize  = 440   # default for spacewarps
     self.pxScale  = 100.0 # default [glass] arcsec -> [LMT] pixel coordinates factor
     
