@@ -14,25 +14,28 @@
           <span id="btngrpMainNav" class="btnset">
             <button id="btnMainActionPrev"
               data-event="PrevModel"
-              data-tooltip="goto previous model"
-              data-furtherinfo="http://www.google.com"
-              data-hotkey="C"
+              data-ttip-title="Previous"
+              data-ttip-text="goto previous model"
+              data-ttip-link=""
+              data-hotkey=""
               data-icon="icon-chevron-left">
               Goto Previous Model
             </button>
             <button id="btnMainFinish"
               data-event="ShowDialogSaveResult"
-              data-tooltip="Save the final model on the server"
-              data-furtherinfo="http://www.google.com"
-              data-hotkey="s"
+              data-ttip-title="Save Model"
+              data-ttip-text="Save this model and your input on the server"
+              data-ttip-link=""
+              data-hotkey=""
               data-icon="icon-ok">
               Save the final model on the server
             </button>
             <button id="btnMainActionNext"
               data-event="NextModel"
-              data-tooltip="goto next model"
-              data-furtherinfo="http://www.google.com"
-              data-hotkey="C"
+              data-ttip-title="Next"
+              data-ttip-text="load the next model in the list"
+              data-ttip-link=""
+              data-hotkey=""
               data-icon="icon-chevron-right">
               Goto Next Model
             </button>
@@ -40,17 +43,19 @@
           
           <button id="btnMainLogin"
             data-event="LoginClicked"
-            data-tooltip="log in / create user account"
-            data-furtherinfo="http://www.google.com"
-            data-hotkey="Ctrl+Z; Q"
+            data-ttip-title="Log In"
+            data-ttip-text="log in / create user account"
+            data-ttip-link=""
+            data-hotkey=""
             data-icon="icon-signin">
             Log in / Create user account
           </button>
 
           <input id="btnMainHelp" type="checkbox"
             data-event="ToggleHelpBar"
-            data-tooltip="Displays the mouseover help"
-            data-furtherinfo="http://www.google.com"
+            data-ttip-title="Context Help"
+            data-ttip-text="Displays the mouseover help"
+            data-ttip-link=""
             data-hotkey="H, F1"
             data-icon="icon-question-sign" />
           <label for="btnMainHelp">Toggle Mouseover Help</label>
@@ -72,16 +77,18 @@
           <span id="btnsetXxdo" class="btnset">
             <button id="btnInUndo"
               data-event="Undo"
-              data-tooltip="reverts the last action"
-              data-furtherinfo="http://www.google.com"
+              data-ttip-title="Undo"
+              data-ttip-text="reverts the last action"
+              data-ttip-link=""
               data-hotkey="Ctrl+Z; Q"
               data-icon="icon-undo">
               Undo
             </button>
             <button id="btnInRedo"
               data-event="Redo"
-              data-tooltip="reapplies the last undone action"
-              data-furtherinfo="http://www.google.com"
+              data-ttip-title="Redo"
+              data-ttip-text="reapplies the last undone action"
+              data-ttip-link="http://www.google.com"
               data-hotkey="Ctrl+Y; W"
               data-icon="icon-repeat">
               Redo
@@ -91,55 +98,60 @@
           <span id="btngrpSettings" class="btnset">
             <button id="btnInSettingsColor"
               data-event="ShowDialogColorSettings"
-              data-tooltip="Change the brightness / contrast and colormapping of the background image"
-              data-furtherinfo="http://www.google.com"
-              data-hotkey="C"
+              data-ttip.title="Color Settings"
+              data-ttip-text="Change the brightness / contrast and colormapping of the background image"
+              data-ttip-link=""
+              data-hotkey=""
               data-icon="icon-adjust">
               background image settings
             </button>
             <button id="btnInSettingsLines"
               data-event="ShowDialogDisplaySettings"
-              data-tooltip="Change the appeareance of the model"
-              data-furtherinfo="http://www.google.com"
-              data-hotkey="C"
+              data-ttip-title="Model Display Settings"
+              data-ttip-text="Change the appeareance of the model, hide contour lines, contour points, ..."
+              data-ttip-link=""
+              data-hotkey=""
               data-icon="icon-eye-open">
-              display settings
+              input panel display settings
             </button>
           </span>
           
           <span id="btngrpMode" class="btnset">
             <input type="radio" id="btnInModeMass" name="mode"
               data-event="SwitchMode" data-value="mass"
-              data-tooltip="places additional point masses"
-              data-furtherinfo="http://www.google.com"
-              data-hotkey="C"
+              data-ttip-title="Add Point Mass"
+              data-ttip-text="Place additional point masses"
+              data-ttip-link=""
+              data-hotkey=""
               data-icon="icon-star" />
-            <label for="btnInModeMass">Place Point Masses</label>
+            <label for="btnInModeMass">add external point masses</label>
 
             <input type="radio" id="btnInModeImage" name="mode"
               data-event="SwitchMode" data-value="image"
-              data-tooltip="mark images as min / max / sad"
-              data-furtherinfo="http://www.google.com"
-              data-hotkey="C"
+              data-ttip-title="Image Tool"
+              data-ttip-text="Mark / identify lensed images"
+              data-ttip-link=""
+              data-hotkey=""
               data-icon="icon-screenshot"
               checked="checked"/>
-            <label for="btnInModeImage">Mark Images</label>
+            <label for="btnInModeImage">identify images</label>
 
             <input type="radio" id="btnInModeRuler" name="mode"
               data-event="SwitchMode" data-value="ruler"
-              data-tooltip="places a helping ruler to estimate distances"
-              data-furtherinfo="http://www.google.com"
-              data-hotkey="C"
+              data-ttip-title="Ruler Tool"
+              data-ttip-text="Click and drag to use a ruler to estimate distances"
+              data-ttip-link=""
+              data-hotkey=""
               data-icon="icon-resize-horizontal" />
-            <label for="btnInModeRuler">Add Ruler to esimate Distances</label>
+            <label for="btnInModeRuler">use to estimate distances</label>
           </span>
           
           <span id="btngrpActions" class="btnset">
             <!--
             <button id="btnInActionSave"
               data-event="SaveModel"
-              data-tooltip="Save the Model"
-              data-furtherinfo="http://www.google.com"
+              data-ttip-text="Save the Model"
+              data-ttip-link="http://www.google.com"
               data-hotkey="C"
               data-icon="icon-save">
               Save the model locally
@@ -148,8 +160,8 @@
             <!--
             <button id="btnInActionUpload"
               data-event="UploadModel"
-              data-tooltip="Save the final model on the server"
-              data-furtherinfo="http://www.google.com"
+              data-ttip-text="Save the final model on the server"
+              data-ttip-link="http://www.google.com"
               data-hotkey="C"
               data-icon="icon-cloud-upload">
               Save the final model on the server
@@ -157,9 +169,10 @@
             -->
             <button id="btnInActionSimulateModel"
               data-event="SimulateModel"
-              data-tooltip="update the simulated results"
-              data-furtherinfo="http://www.google.com"
-              data-hotkey="C"
+              data-ttip-title="Model"
+              data-ttip-text="Send your input to be modelled"
+              data-ttip-link=""
+              data-hotkey=""
               data-icon="icon-cogs">
               Simulate the Model and Refresh the Output Images
             </button>
@@ -175,17 +188,19 @@
           <span id="btnsetOutConfig">
             <button id="btnOutGraphics"
               data-event="ShowDialogOutputGraphics"
-              data-tooltip="display the graphicssettings for the output"
-              data-furtherinfo="http://www.google.com"
-              data-hotkey="t"
+              data-ttip-title="Adjust Output"
+              data-ttip-text="Adjust brightness and contrast of the rendered output images"
+              data-ttip-link=""
+              data-hotkey=""
               data-icon="icon-adjust">
               Change brightness and contrast of output images
             </button>
             <button id="btnOutGlassConfig"
               data-event=""
-              data-tooltip="Configure simulation properties"
-              data-furtherinfo="http://www.google.com"
-              data-hotkey="g"
+              data-ttip-title="Simulation Properties"
+              data-ttip-text="Set up modelling properties such as resolution, redshifts, ..."
+              data-ttip-link=""
+              data-hotkey=""
               data-icon="icon-tasks">
               Configure simulation properties
             </button>

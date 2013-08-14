@@ -360,7 +360,20 @@ com.GetSimulation = function(){
       LMT.com.refreshCounter += 1;
       return;
     }
+
+    var imgs = jsonResp.imgs;
+    var n = imgs.length;
     
+    LMT.simulationResult.imgs = new Array(n);
+    
+    for (var i=0; i<n; i++) {
+      LMT.simulationResult.imgs[i] = {
+        type: imgs[i].type,
+        url: imgs[i].url,
+      };
+    }
+    
+    /*
     var n = parseInt(jsonResp.n_img);
     for (var i = 1; i<=n; i++){
       imgdata = {
@@ -369,6 +382,8 @@ com.GetSimulation = function(){
       }
       LMT.simulationData.img.push(imgdata);
     }
+    */
+    
     $('body').css('cursor', '');
     $.event.trigger("ReceivedSimulation");
   };

@@ -92,38 +92,61 @@ out = {
 		that.ctx = [0,1,2]; //canvas contexts
 		that.imgData = [0,1,2]; //original raw image data
 		that.img = [0,1,2]; // image objects
-		var urls = LMT.simulationData.img;
+		var simImgs = LMT.simulationResult.imgs;
 		that.shownImage = -1; 
 
 		that.$out.empty(); //remove previous results
 		that.$btns.empty(); //remove the number navigation buttons from previous results
 		
-		var tooltips = [
-		  "arrival time contour map",
-		  "Mass distribution",
-		  "Synthetic image"
-	  ];
-	  
-    var hotkeys = [
-      "1",
-      "2",
-      "3"
-    ];
-    
-    var tooltiplists = [
-      "description 1",
-      "description 2",
-      "description 3"
-    ];
-	  
+		var nSimImgs = simImgs.length
 		
-		$.each(urls, function(i, val) {
-		  /*
-			var $div = $('<div class="slide"><img class="slide_img" src="'+ val.url +'" /></div>');
-			$div.hide();
-			$div.appendTo(that.$out);
-			that.slides.push($div);
-      */
+		LMT.settings.display.out = new Array(nSimImgs);
+    
+    var newSimImgs = new Array(nSimImgs);
+
+    /**
+     * reoder, give names, sshortcuts, ect...
+     * the key element is the type, this should never change 
+     */
+		$.each(simImgs, function(i, simImg){
+      if (simImg.type=='cont') {
+        simImg.btntxt  = 'Cont';
+        simImg.title   = 'Contour Map';
+        simImg.ttiptxt = 'The reconstructed contour (spaghetti) graph';
+        simImg.hkey    = '2';
+        simImg.order   = '1';
+      }
+      else if (simImg.type=='mdis') {
+        simImg.btntxt  = 'Mass';
+        simImg.title   = 'Mass Distribution Map';
+        simImg.ttiptxt = 'Shows the distribution of the mass in the lens';
+        simImg.hkey    = '3';
+        simImg.order   = '2';
+      }
+      else if (simImg.type=='synt') {
+        simImg.btntxt  = 'OSyn';
+        simImg.title   = 'Original Synthetic Image';
+        simImg.ttiptxt = 'Synthetic image, approximating the visual appearance of the lens';
+        simImg.hkey    = '4';
+        simImg.order   = '3';
+      }
+      else if (simImg.type=='isyn') {
+        simImg.btntxt  = 'Synt';
+        simImg.title   = 'Synthetic Image';
+        simImg.ttiptxt = 'Interpolated synthetic image, approximating the visual appearance of the lens';
+        simImg.hkey    = '1';
+        simImg.order   = '0';
+      }
+		  
+		  newSimImgs[simImg.order] = simImg;
+
+		});
+
+    LMT.simulationResult.imgs = newSimImgs;
+    var simImgs = LMT.simulationResult.imgs;
+		
+		$.each(simImgs, function(i, simImg) {
+
       var imageObj = new Image();
       imageObj.onload = function(){
         // this = imageObj
@@ -150,26 +173,18 @@ out = {
         
         that.draw(i);
       };
-      imageObj.src = val.url;
+      imageObj.src = simImg.url;
       that.img[i] = imageObj;
 
-			
-			/*
-			var $nr = $('<span class="slide_btn">_' + i +'_</span>');
-			$nr.on('click', {that: that, id:i}, function(evt){
-				var that = evt.data.that;
-				that.show(evt.data.id);
-			});
-			$nr.appendTo(that.$btns);
-			*/
 			var $nr = $('<input ' + 
 			  'type="radio" ' +
 			  'id="btnSlideRadio'+i+'" ' +
-        'data-tooltip="'+ tooltips[i] +'" ' +
-        'data-hotkey="'+ hotkeys[i] +'" ' +
-        'data-tooltiplist="'+ tooltiplists[i] +'" ' +
+        'data-ttip-title="'+ simImg.title +'" ' +
+        'data-ttip-text="'+ simImg.ttiptxt +'" ' +
+        'data-hotkey="'+ simImg.hkey +'" ' +
+        'data-tooltiplist="'+ simImg.ttiptxt +'" ' +  // this is legay for the helping text below
 			  'name="slideNr" />'+
-			  '<label for="btnSlideRadio'+i+'">'+i+'</label>');
+			  '<label for="btnSlideRadio'+i+'">'+ simImg.btntxt +'</label>');
 			$nr.appendTo(that.$btns);
 			$nr.on('click', {id:i}, function(evt){
 				$.event.trigger('DisplayOutputSlide', [evt.data.id]);
@@ -178,6 +193,8 @@ out = {
 				that.show(evt.data.id);
 				*/
 			});
+			
+			LMT.settings.display.out[i] = {br:0, co:1};
 			
 		});
 		
@@ -188,7 +205,10 @@ out = {
 		that.$btns.buttonset();
 		
 		//reset the output color/contrast
-		LMT.settings.display.out = [{br:0, co:1},{br:0, co:1},{br:0, co:1}];
+		//LMT.settings.display.out = [{br:0, co:1},{br:0, co:1},{br:0, co:1}];
+		
+		
+		$.event.trigger('InitTooltips'); //enable tooltips for newly created buttons
 		
 		$("#btnsetOutNav > button").button({ disabled: false });
 		$('#btnOutGraphics').button({disabled: false});

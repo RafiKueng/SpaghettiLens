@@ -1018,6 +1018,68 @@ html.GlassSettingsDialog = {
 
 
 
+/**
+ * second try to do tooltips, this time use jqyerys tooltips 
+ */
+html.Tooltip2 = {
+  init: function(){
+    $('*').tooltip({
+      content: LMT.ui.html.Tooltip2.content,
+      close:   LMT.ui.html.Tooltip2.close,
+      tooltipClass: 'ttip'
+    });
+  },
+
+  content: function(response) {
+    
+    var tag = this.tagName;
+    var $this = null
+    
+    if (tag=='LABEL') {
+      $this = $(this).prev(); //.attr('data-tooltip'); //data('tooltip') doen't work!
+    }
+    else if (tag=='BUTTON') {
+      $this = $(this);
+    }
+    
+    var tit = $this.data("ttipTitle");
+    var txt = $this.data("ttipText");
+    var lnk = $this.data("ttipLink");
+    var key = $this.data("hotkey");
+
+    var html =
+      '<span class="title">'+tit+'</span>' + 
+      '<span class="txt">'+txt+'</span>';
+      
+    if (lnk!='' || key!='') {
+      html += '<span class="small">';
+      if (lnk!='') {html += '<span class="info"><a href="'+lnk+'">...more info</a></span>';}
+      if (key!='') {html += '<span class="key">hotkey: '+key+'</span>';}
+      html += '</span>';
+    }
+    
+    return html
+    // those are equal:
+    //return 'haaa'
+    //response('haaa')
+  },
+  
+  /**
+   * prevent tooltip from closing on mouseover 
+   */
+  close: function(evt, ui){
+    ui.tooltip.hover(
+      function(evt){
+        $(this).stop(true).fadeTo(400,1);
+      },
+      function(evt){
+        $(this).fadeOut("400", function(){ $(this).remove(); })
+      }
+    )
+  },
+  
+}
+
 
 
 html.Tooltip = {
