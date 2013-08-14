@@ -467,6 +467,30 @@ def getSimulationJSON(request, result_id):
   print "in getSimulationJSON"
   
   def returnDataIfReady(result_id):
+    
+    fpath = "../tmp_media/%06i/" % result_id
+    rurl = "/result/%06i/" % result_id
+    
+    typeurl = [
+      {'type':'cont', 'file':'img1.png'},
+      {'type':'mdis', 'file':'img2.png'},
+      {'type':'synt', 'file':'img3.png'},
+      {'type':'isyn', 'file':'img3_ipol.png'},
+    ]
+    
+    imgs = []
+    for e in typeurl:
+      if os.path.exists(os.path.join(fpath,e['file'])):
+        imgs.append({'type': e['type'],'url': rurl+e['file']})
+    
+    return sjson.dumps({
+      "status":"READY",
+      "cached": True,
+      "result_id": "%06i" % result_id,
+      'imgs'  : imgs
+    })
+    
+    '''    
     imgExists = os.path.exists("../tmp_media/%06i/img3_ipol.png" % result_id)
     if imgExists:
       srcplturl = '/result/%06i/img3_ipol.png' % result_id
@@ -486,6 +510,7 @@ def getSimulationJSON(request, result_id):
                          "img3url": srcplturl,
                          "img3desc": srcpltdesc,
                          })
+     '''
   
   try:
     res = ModellingResult.objects.get(id=result_id)
@@ -532,8 +557,8 @@ def getSimulationJSON(request, result_id):
     pr = res.pixrad
     nm = res.n_models
     dt = (0.108 * exp(0.506*pr) + 0.01 * nm + 0.5) * 2 + 30
-    dt = 60*15
-    expire = 30 # a task won't run if it's been more than 30s in the queue
+    dt = 60*30
+    expire = 60 # a task won't run if it's been more than 30s in the queue
 
     #print "starting new task with timeout:", dt 
     # print result_id

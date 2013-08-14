@@ -141,6 +141,11 @@ out = {
 		  newSimImgs[simImg.order] = simImg;
 
 		});
+		
+		//delete empy enties
+		for (var i=0;i<newSimImgs.length;i++){
+		  if (typeof(newSimImgs[i])=='undefined') {newSimImgs.splice(i, 1);}
+		}
 
     LMT.simulationResult.imgs = newSimImgs;
     var simImgs = LMT.simulationResult.imgs;
@@ -198,9 +203,9 @@ out = {
 			
 		});
 		
-		$("#toolbarGrp2 label").add(".slide")
-		  .hover( function(evt){$.event.trigger('MouseEnter',evt);},
-              function(evt){$.event.trigger('MouseLeave',evt);});
+		$("#toolbarGrp2 label").add(".slide");
+//		  .hover( function(evt){$.event.trigger('MouseEnter',evt);},
+//              function(evt){$.event.trigger('MouseLeave',evt);});
 		
 		that.$btns.buttonset();
 		
