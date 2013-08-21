@@ -137,17 +137,18 @@ body {
 }
 
 #help .title {
-  display: table-cell;
+  display: block;
   font-weight: bold;
 }
 
 #help .body {
-  display: table-cell;
+  display: block;
   margin:0px;
   padding-left:20px;
 }
 
 #help .list {
+  display: block;
   margin:0px;
   padding-left:20px;
 }

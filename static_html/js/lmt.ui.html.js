@@ -1445,7 +1445,7 @@ html.HelpBar = {
     
     else if ((ctid && ctid.substr(0,3)=="btn") || (cid && cid.substr(0,3) == "btn")) {
       var $t = control ? $(control) : $(evt.currentTarget);
-      html.HelpBar.show($t.data("tooltip"), $t.data("tooltiplist"), $t.data("hotkey"), $t.data("furtherinfo"));
+      html.HelpBar.show($t.data("ttip-title"), $t.data("ttip-text"), $t.data("hotkey"), $t.data("ttip-link"));
     }
 
     else {
