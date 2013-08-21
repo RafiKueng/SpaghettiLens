@@ -58,14 +58,14 @@ var events = {
     */
 
     if (LMT.GET.hasOwnProperty("mid")){
-      mid = parseInt(LMT.GET["mid"]);
+      var mid = parseInt(LMT.GET["mid"]);
       $.event.trigger("GetModelData", [[mid],'','init']);
       $.event.trigger("SetUsername");
     }
     else if (LMT.GET.hasOwnProperty("rid")) {
       rid = parseInt(LMT.GET["rid"]);
       var loadResult = function(res_data) {
-        mid = res_data.model_id;
+        var mid = res_data.model_id;
         jsonStr = res_data.json_str;
 
         $.event.trigger("GetModelData", [[mid],'','init']);
