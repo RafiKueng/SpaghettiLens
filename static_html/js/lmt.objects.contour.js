@@ -305,7 +305,7 @@ Contour.prototype.remove = function() {
  * returns a jquery object containing all the svg elements that this contour is made of 
  */
 Contour.prototype.get$Elements = function(){
-  $elems = $(this.path);
+  var $elems = $(this.path);
   for (var i in this.cpoints){
     var cp = this.cpoints[i];
     $elems = $elems.add(cp.circle);

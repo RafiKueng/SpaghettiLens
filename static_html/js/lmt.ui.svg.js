@@ -209,6 +209,18 @@ svg.events = {
     svg.events.stateOrigin = {x: evt.screenX, y: evt.screenY, scale: LMT.settings.display.zoompan.scale};
 
     if (LMT.settings.mode == "ruler") {
+      
+      // bad programming again.. make all elements visible again
+      var $all = $(".extremalpoint")
+        .add(".contourpoint")
+        .add(".connectorline")
+        .add(".contourpath")
+        .add(".ruler")
+        .add(".ext_mass");
+      var $txt = $('.ext_mass.text');
+      $all.removeClassSVG('inactive');
+      $txt.addClassSVG('invisible');
+      
       svg.ruler = new LMT.objects.Ruler2(coord);
       svg.ruler.createSVG();
       //$.event.trigger('CreateRuler', [coord]);
@@ -224,6 +236,9 @@ svg.events = {
 			svg.events.state = 'drag';
       svg.root.addEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
 
+      if (dragTargetStr=="poin"){
+        LMT.ui.svg.enableCrosshairMode(evt.target);
+      }
 		}
 		else { //mouse down on background
 			svg.events.state = 'pan';
@@ -236,9 +251,6 @@ svg.events = {
 		}
 		//svg.root.addEventListener('mousemove', LMT.ui.svg.events.onMouseMove);
 	
-	  if (dragTargetStr=="poin"){
-  	  LMT.ui.svg.enableCrosshairMode(evt.target);
-	  }
 	},
 	
 	
@@ -510,16 +522,22 @@ svg.events = {
       $all.addClassSVG("inactive");
       $act.removeClassSVG("inactive"); 
     }
-    else if (ctid == "masses" || ctid == "rulers") {
+    else if (ctid == "masses") {
       var t = evt.target;
       var tjs = evt.target.jsObj;
-      var $act = $(tjs.mid).add(tjs.handle).add(tjs.circle);
+      var $act = $(tjs.mid).add(tjs.handle).add(tjs.circle).add(tjs.text);
+      var $txt = $(tjs.text);
       
       $all.addClassSVG("inactive");
-      $act.removeClassSVG("inactive"); 
+      $act.removeClassSVG("inactive");
+      $txt.removeClassSVG("invisible");
+    }
+    else if (ctid == "rulers") {
+      
     }
     else if (ctid == "bg") {
       $all.removeClassSVG("inactive");
+      $('.ext_mass.text').addClassSVG("invisible");
     }
     else {  
     }

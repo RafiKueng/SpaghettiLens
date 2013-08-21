@@ -299,6 +299,7 @@ ExtremalPoint.prototype.expand = function() {
   var p2e = this;
 
   var dl = 100; // the initial length / distance between original point and children
+  var dphi = 0;
   
   if (p2e.parent) {
     dl = this.dr / 2.;

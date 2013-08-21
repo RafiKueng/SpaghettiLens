@@ -44,6 +44,7 @@ var events = {
     LMT.ui.html.HelpBar.init();
     
     LMT.ui.html.Tooltip.init();
+    LMT.ui.html.Tooltip2.init();
     //LMT.ui.html.KeyboardListener.init(); //only load when app is ready, no more dialogs
     
     LMT.ui.svg.initCanvas();
@@ -57,14 +58,14 @@ var events = {
     */
 
     if (LMT.GET.hasOwnProperty("mid")){
-      mid = parseInt(LMT.GET["mid"]);
+      var mid = parseInt(LMT.GET["mid"]);
       $.event.trigger("GetModelData", [[mid],'','init']);
       $.event.trigger("SetUsername");
     }
     else if (LMT.GET.hasOwnProperty("rid")) {
       rid = parseInt(LMT.GET["rid"]);
       var loadResult = function(res_data) {
-        mid = res_data.model_id;
+        var mid = res_data.model_id;
         jsonStr = res_data.json_str;
 
         $.event.trigger("GetModelData", [[mid],'','init']);
@@ -190,13 +191,14 @@ var events = {
     $(document).on('CreateRuler', LMT.objects.Model.CreateRuler);
     $(document).on('DeleteObject', LMT.objects.Model.RemoveObject); // expects supplied jsObj to be removed
 
-    
+    /*
     $(document).on('ShowTooltip', html.Tooltip.show);
     $(document).on('HideTooltip', html.Tooltip.hide);
+    */
+    $(document).on('HideAllTooltips', html.Tooltip2.closeAll); // should be called whenever a button gets deactivated due to a bug in jquery ui tooltip
     
     $(document).on('ConvertInputImageToPNG', LMT.ui.svg.ConvertToPNG);
     //$(document).on('UploadInputImage', LMT.ui.com.UploadInputImage);
-    
     
     
   },

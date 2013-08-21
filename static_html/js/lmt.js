@@ -19,7 +19,8 @@ LMT.utils = {};   // some utils
 
 
 LMT.modelData = {};
-LMT.simulationData = {};
+LMT.simulationResult = {}; // one should not use this anymore
+LMT.simulationResult = {};
 
 LMT.datasources = {};
 LMT.datasource = {};

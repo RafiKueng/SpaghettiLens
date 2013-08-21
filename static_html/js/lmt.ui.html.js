@@ -238,7 +238,7 @@ html.WaitForResultDialog = {
   update: function(){
     if (html.WaitForResultDialog.doRefresh == true) {
       var now = new Date();
-      dt = now.getTime()/1000 - html.WaitForResultDialog.startTime;
+      var dt = now.getTime()/1000 - html.WaitForResultDialog.startTime;
       $('#wfrd_running').html(dt.toFixed(1));
       $('#wfrd_est').html(LMT.settings.estimate.toFixed(1));
       setTimeout(function(){html.WaitForResultDialog.update()},100);
@@ -590,6 +590,8 @@ html.Toolbar = {
     // un / redo buttons whether there is something to be undone / redone
     $('#btnInUndo').button(LMT.actionstack.undoSize>0 ? "enable" : "disable");
     $('#btnInRedo').button(LMT.actionstack.redoSize>0 ? "enable" : "disable");
+    
+    $.event.trigger("HideAllTooltips"); //workaround for stuck tooltips of deact. buttons
   },
   
   /**
@@ -610,6 +612,8 @@ html.Toolbar = {
     $('#btnMainActionPrev').button(LMT.modelData.prevAvail ? "enable" : "disable");
     $('#btnMainActionNext').button(LMT.modelData.nextAvail ? "enable" : "disable");
     $('#btnMainFinish').button(LMT.settings.renderedEqualsModel ? "enable" : "disable");
+    
+    $.event.trigger("HideAllTooltips"); //workaround for stuck tooltips of deact. buttons
   },
   
   /**
@@ -1018,6 +1022,92 @@ html.GlassSettingsDialog = {
 
 
 
+/**
+ * second try to do tooltips, this time use jqyerys tooltips 
+ */
+html.Tooltip2 = {
+  init: function(item){
+    var item = item || '*';
+    $(item).tooltip({
+      content: LMT.ui.html.Tooltip2.content,
+      close:   LMT.ui.html.Tooltip2.close,
+      tooltipClass: 'ttip'
+    });
+  },
+
+  content: function(response) {
+    
+    var tag = this.tagName;
+    var $this = null
+    
+    if (tag=='LABEL') {
+      $this = $(this).prev(); //.attr('data-tooltip'); //data('tooltip') doen't work!
+    }
+    else if (tag=='BUTTON') {
+      $this = $(this);
+    }
+    else {
+      return '';
+    }
+    
+    var tit = $this.data("ttipTitle");
+    var txt = $this.data("ttipText");
+    var lnk = $this.data("ttipLink");
+    var key = $this.data("hotkey");
+
+    var html =
+      '<span class="titlebox">' + 
+      '<span class="title">'+tit+'</span>' + 
+      '<span class="close" onclick="LMT.ui.html.Tooltip2.forceClose(event)">[X]</span>' +
+      '</span>' + 
+      '<span class="txt">'+txt+'</span>';
+      
+    if (lnk!='' || key!='') {
+      html += '<span class="small">';
+      if (lnk!='') {html += '<span class="info"><a href="'+lnk+'">...more info</a></span>';}
+      if (key!='') {html += '<span class="key">hotkey: '+key+'</span>';}
+      html += '</span>';
+    }
+    
+    return html
+    // those are equal:
+    //return 'haaa'
+    //response('haaa')
+  },
+  
+  /**
+   * prevent tooltip from closing on mouseover 
+   */
+  close: function(evt, ui){
+    ui.tooltip.hover(
+      function(evt){
+        $(this).stop(true).fadeTo(400,1);
+      },
+      function(evt){
+        $(this).fadeOut("400", function(){ $(this).remove(); })
+      }
+    )
+  },
+  
+  /**
+   * manually close a tooltip in case it gets stuck
+   * there are still many bugs in jqueryui tooltip... 
+   */
+  forceClose: function(evt){
+    $(evt.currentTarget).parent().parent().parent().stop(true).fadeOut(200, function(){
+      $(this).remove();
+    });
+  },
+  
+  /**
+   * event to close all stuck tooltips 
+   */
+  closeAll: function(){
+    $('.ttip').stop(true).fadeOut(200, function(){$(this).remove();});
+  }
+  
+}
+
 
 
 html.Tooltip = {
@@ -1379,7 +1469,7 @@ html.HelpBar = {
     
     else if ((ctid && ctid.substr(0,3)=="btn") || (cid && cid.substr(0,3) == "btn")) {
       var $t = control ? $(control) : $(evt.currentTarget);
-      html.HelpBar.show($t.data("tooltip"), $t.data("tooltiplist"), $t.data("hotkey"), $t.data("furtherinfo"));
+      html.HelpBar.show($t.data("ttip-title"), $t.data("ttip-text"), $t.data("hotkey"), $t.data("ttip-link"));
     }
 
     else {

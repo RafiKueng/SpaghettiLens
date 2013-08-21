@@ -204,8 +204,8 @@ com.UploadModel = function(evt) {
 
   var success = function(jsonResp, statusTxt, XHRRespObj) {
     log('com.UploadModel | success', 'result_id:' + jsonResp.result_id);
-    LMT.simulationData.resultId = jsonResp.result_id;
-    //LMT.simulationData.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
+    LMT.simulationResult.resultId = jsonResp.result_id;
+    //LMT.simulationResult.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
     $.event.trigger("UploadModelComplete")
   };
   
@@ -234,8 +234,8 @@ com.UploadModel = function(evt) {
         parentid: (LMT.modelData.parentId ? LMT.modelData.parentId : -1)
     };
   
-  LMT.simulationData.resultId = -1;
-  LMT.simulationData.resultModelHash = data.string.hashCode();
+  LMT.simulationResult.resultId = -1;
+  LMT.simulationResult.resultModelHash = data.string.hashCode();
   
   $.ajax(LMT.com.serverUrl + LMT.com.saveDataUrl, {
       type:"POST",
@@ -266,8 +266,8 @@ com.SaveModel = function(evt) {
 
   var success = function(jsonResp, statusTxt, XHRRespObj) {
     log('com.SaveModel | success', 'result_id: ' + jsonResp.result_id);
-    LMT.simulationData.resultId = jsonResp.result_id;
-    //LMT.simulationData.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
+    LMT.simulationResult.resultId = jsonResp.result_id;
+    //LMT.simulationResult.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
     //$.event.trigger("UploadModelComplete")
     /*
       alert("Model saved! \n(result_id: "+jsonResp.result_id+")\n"+
@@ -299,15 +299,15 @@ com.SaveModel = function(evt) {
   
   var data = {
         modelid: LMT.modelData.id,
-        resultid: LMT.simulationData.resultId,
+        resultid: LMT.simulationResult.resultId,
         isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
         username: LMT.settings.username,
         imgData: LMT.ui.svg.img,
         parentid: (LMT.modelData.parentId ? LMT.modelData.parentId : -1)
     };
   
-  //LMT.simulationData.resultId = -1;
-  //LMT.simulationData.resultModelHash = data.string.hashCode();
+  //LMT.simulationResult.resultId = -1;
+  //LMT.simulationResult.resultModelHash = data.string.hashCode();
   
   $.ajax(LMT.com.serverUrl + LMT.com.saveDataFinalUrl, {
       type:"POST",
@@ -334,7 +334,7 @@ com.GetSimulation = function(){
   var success = function(jsonResp, statusTxt, XHRRespObj) {
     log("com.GetSimulation | success", 'status:' + jsonResp.status + ' res_id: ' + jsonResp.result_id);
     
-    LMT.simulationData.img = [];
+    LMT.simulationResult.img = [];
     if (jsonResp.status!="READY"){ //polling
       if (jsonResp.status=="FAILURE") { // did the worker crash?
         alert("error with worker: crash");
@@ -360,15 +360,30 @@ com.GetSimulation = function(){
       LMT.com.refreshCounter += 1;
       return;
     }
+
+    var imgs = jsonResp.imgs;
+    var n = imgs.length;
     
+    LMT.simulationResult.imgs = new Array(n);
+    
+    for (var i=0; i<n; i++) {
+      LMT.simulationResult.imgs[i] = {
+        type: imgs[i].type,
+        url: imgs[i].url,
+      };
+    }
+    
+    /*
     var n = parseInt(jsonResp.n_img);
     for (var i = 1; i<=n; i++){
       imgdata = {
         desc: jsonResp['img'+i+'desc'],
         url: jsonResp['img'+i+'url'], 
       }
-      LMT.simulationData.img.push(imgdata);
+      LMT.simulationResult.img.push(imgdata);
     }
+    */
+    
     $('body').css('cursor', '');
     $.event.trigger("ReceivedSimulation");
   };
@@ -389,7 +404,7 @@ com.GetSimulation = function(){
   $('body').css('cursor', 'progress');
   $.event.trigger("WaitForSimulation");
 
-  $.ajax(LMT.com.serverUrl + LMT.com.resultUrl + LMT.simulationData.resultId + ".json", {
+  $.ajax(LMT.com.serverUrl + LMT.com.resultUrl + LMT.simulationResult.resultId + ".json", {
       type:"GET",
       //contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
       //data: {
