@@ -189,7 +189,7 @@ out = {
         'data-hotkey="'+ simImg.hkey +'" ' +
         'data-tooltiplist="'+ simImg.ttiptxt +'" ' +  // this is legay for the helping text below
 			  'name="slideNr" />'+
-			  '<label for="btnSlideRadio'+i+'">'+ simImg.btntxt +'</label>');
+			  '<label for="btnSlideRadio'+i+'" title="">'+ simImg.btntxt +'</label>');
 			$nr.appendTo(that.$btns);
 			$nr.on('click', {id:i}, function(evt){
 				$.event.trigger('DisplayOutputSlide', [evt.data.id]);
@@ -206,7 +206,7 @@ out = {
 		$("#toolbarGrp2 label").add(".slide");
 //		  .hover( function(evt){$.event.trigger('MouseEnter',evt);},
 //              function(evt){$.event.trigger('MouseLeave',evt);});
-		
+		//that.$btns.children('input').button({label:null});
 		that.$btns.buttonset();
 		
 		//reset the output color/contrast

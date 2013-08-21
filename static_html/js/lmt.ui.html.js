@@ -1022,8 +1022,9 @@ html.GlassSettingsDialog = {
  * second try to do tooltips, this time use jqyerys tooltips 
  */
 html.Tooltip2 = {
-  init: function(){
-    $('*').tooltip({
+  init: function(item){
+    var item = item || '*';
+    $(item).tooltip({
       content: LMT.ui.html.Tooltip2.content,
       close:   LMT.ui.html.Tooltip2.close,
       tooltipClass: 'ttip'
@@ -1040,6 +1041,9 @@ html.Tooltip2 = {
     }
     else if (tag=='BUTTON') {
       $this = $(this);
+    }
+    else {
+      return '';
     }
     
     var tit = $this.data("ttipTitle");
