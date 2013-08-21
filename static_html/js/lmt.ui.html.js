@@ -238,7 +238,7 @@ html.WaitForResultDialog = {
   update: function(){
     if (html.WaitForResultDialog.doRefresh == true) {
       var now = new Date();
-      dt = now.getTime()/1000 - html.WaitForResultDialog.startTime;
+      var dt = now.getTime()/1000 - html.WaitForResultDialog.startTime;
       $('#wfrd_running').html(dt.toFixed(1));
       $('#wfrd_est').html(LMT.settings.estimate.toFixed(1));
       setTimeout(function(){html.WaitForResultDialog.update()},100);

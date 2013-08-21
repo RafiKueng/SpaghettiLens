@@ -51,7 +51,7 @@ function Model() {
 
 Model.prototype.init = function() {
 	if (this.Sources) {
-		for (i = 0; i < this.Sources.length; ++i) {
+		for (var i = 0; i < this.Sources.length; ++i) {
 			this.Sources[i].init();
 		}
 	}
@@ -60,7 +60,7 @@ Model.prototype.init = function() {
 	}
 
   if (this.ExternalMasses) {
-    for (i = 0; i < this.ExternalMasses.length; ++i) {
+    for (var i = 0; i < this.ExternalMasses.length; ++i) {
       this.ExternalMasses[i].init();
     }
   }
@@ -69,7 +69,7 @@ Model.prototype.init = function() {
   }
 
   if (this.Rulers) {
-    for (i = 0; i < this.Rulers.length; ++i) {
+    for (var i = 0; i < this.Rulers.length; ++i) {
       this.Rulers[i].init();
     }
   }
@@ -84,26 +84,26 @@ Model.prototype.init = function() {
  * updates the whole model
  */
 Model.prototype.update = function() {
-	for (i = 0; i < this.Sources.length; ++i) {
+	for (var i = 0; i < this.Sources.length; ++i) {
 		this.Sources[i].update();
 	}
-  for (i = 0; i < this.ExternalMasses.length; ++i) {
+  for (var i = 0; i < this.ExternalMasses.length; ++i) {
     this.ExternalMasses[i].update();
   }
-  for (i = 0; i < this.Rulers.length; ++i) {
+  for (var i = 0; i < this.Rulers.length; ++i) {
     this.Rulers[i].update();
   }
 }
 
 
 Model.prototype.paint = function() {
-	for (i = 0; i < this.Sources.length; ++i) {
+	for (var i = 0; i < this.Sources.length; ++i) {
 		this.Sources[i].paint();
 	}
-  for (i = 0; i < this.ExternalMasses.length; ++i) {
+  for (var i = 0; i < this.ExternalMasses.length; ++i) {
     this.ExternalMasses[i].paint();
   }
-  for (i = 0; i < this.Rulers.length; ++i) {
+  for (var i = 0; i < this.Rulers.length; ++i) {
     this.Rulers[i].paint();
   }
 }
