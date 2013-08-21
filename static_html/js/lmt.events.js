@@ -191,13 +191,14 @@ var events = {
     $(document).on('CreateRuler', LMT.objects.Model.CreateRuler);
     $(document).on('DeleteObject', LMT.objects.Model.RemoveObject); // expects supplied jsObj to be removed
 
-    
+    /*
     $(document).on('ShowTooltip', html.Tooltip.show);
     $(document).on('HideTooltip', html.Tooltip.hide);
+    */
+    $(document).on('HideAllTooltips', html.Tooltip2.closeAll); // should be called whenever a button gets deactivated due to a bug in jquery ui tooltip
     
     $(document).on('ConvertInputImageToPNG', LMT.ui.svg.ConvertToPNG);
     //$(document).on('UploadInputImage', LMT.ui.com.UploadInputImage);
-    
     
     
   },

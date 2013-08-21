@@ -590,6 +590,8 @@ html.Toolbar = {
     // un / redo buttons whether there is something to be undone / redone
     $('#btnInUndo').button(LMT.actionstack.undoSize>0 ? "enable" : "disable");
     $('#btnInRedo').button(LMT.actionstack.redoSize>0 ? "enable" : "disable");
+    
+    $.event.trigger("HideAllTooltips"); //workaround for stuck tooltips of deact. buttons
   },
   
   /**
@@ -610,6 +612,8 @@ html.Toolbar = {
     $('#btnMainActionPrev').button(LMT.modelData.prevAvail ? "enable" : "disable");
     $('#btnMainActionNext').button(LMT.modelData.nextAvail ? "enable" : "disable");
     $('#btnMainFinish').button(LMT.settings.renderedEqualsModel ? "enable" : "disable");
+    
+    $.event.trigger("HideAllTooltips"); //workaround for stuck tooltips of deact. buttons
   },
   
   /**
@@ -1052,7 +1056,10 @@ html.Tooltip2 = {
     var key = $this.data("hotkey");
 
     var html =
+      '<span class="titlebox">' + 
       '<span class="title">'+tit+'</span>' + 
+      '<span class="close" onclick="LMT.ui.html.Tooltip2.forceClose(event)">[X]</span>' +
+      '</span>' + 
       '<span class="txt">'+txt+'</span>';
       
     if (lnk!='' || key!='') {
@@ -1081,6 +1088,23 @@ html.Tooltip2 = {
       }
     )
   },
+  
+  /**
+   * manually close a tooltip in case it gets stuck
+   * there are still many bugs in jqueryui tooltip... 
+   */
+  forceClose: function(evt){
+    $(evt.currentTarget).parent().parent().parent().stop(true).fadeOut(200, function(){
+      $(this).remove();
+    });
+  },
+  
+  /**
+   * event to close all stuck tooltips 
+   */
+  closeAll: function(){
+    $('.ttip').stop(true).fadeOut(200, function(){$(this).remove();});
+  }
   
 }
 

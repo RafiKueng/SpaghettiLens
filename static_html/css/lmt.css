@@ -517,9 +517,19 @@ h1 {
  * tooltips
  */
 
-.ttip .title {
+.ttip .titlebox {
   display:block;
+}
+.ttip .title {
+  display:inline-block;
   font-weight:bold;
+}
+
+.ttip .close {
+  float: right;
+  font-weight:bold;
+  font-size: 80%;
+  cursor:pointer;
 }
 
 .ttip .text {
