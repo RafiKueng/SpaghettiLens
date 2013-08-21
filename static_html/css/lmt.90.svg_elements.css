@@ -29,16 +29,24 @@
 
 .ruler.mid {
 	r: 7;
-	fill: white;
+	fill: lime;
 }
 
 .ruler.circ {
 	fill: none;
-	stroke: white;
+	stroke: lime;
 }
 
+/*
 .ruler.handle {
-	fill: #ffaaaa;
+  fill: #ffaaaa;
+}
+*/
+
+.ruler.text {
+  font-family:Arial, Helvetica, sans-serif;
+  fill: lime;
+  stroke: black;
 }
 
 
@@ -55,6 +63,11 @@
 	fill: #00a;
 }
 
+.ext_mass.text {
+  font-family:Arial, Helvetica, sans-serif;
+  fill: lime;
+  stroke: black;
+}
 
 .crosshair {
   /*stroke: #ff0000;*/

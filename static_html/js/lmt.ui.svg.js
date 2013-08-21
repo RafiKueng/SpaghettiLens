@@ -510,16 +510,22 @@ svg.events = {
       $all.addClassSVG("inactive");
       $act.removeClassSVG("inactive"); 
     }
-    else if (ctid == "masses" || ctid == "rulers") {
+    else if (ctid == "masses") {
       var t = evt.target;
       var tjs = evt.target.jsObj;
-      var $act = $(tjs.mid).add(tjs.handle).add(tjs.circle);
+      var $act = $(tjs.mid).add(tjs.handle).add(tjs.circle).add(tjs.text);
+      var $txt = $(tjs.text);
       
       $all.addClassSVG("inactive");
-      $act.removeClassSVG("inactive"); 
+      $act.removeClassSVG("inactive");
+      $txt.removeClassSVG("invisible");
+    }
+    else if (ctid == "rulers") {
+      
     }
     else if (ctid == "bg") {
       $all.removeClassSVG("inactive");
+      $('.ext_mass.text').addClassSVG("invisible");
     }
     else {  
     }
