@@ -115,6 +115,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'lazysignup', 
     'ModellerApp',
+    'tools',
     'south',
 )
 
