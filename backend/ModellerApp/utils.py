@@ -37,7 +37,7 @@ class Point(object):
   
   '''rescales the values from px to arcsec'''
   def changePxToArcsec(self, pxScale):
-    f = 1.0 / pxScale
+    f = pxScale
     self.x *= f
     self.y *= -f
     
@@ -119,12 +119,12 @@ class ExtMass(object):
   def changePxToArcsec(self, origin, pxScale):
 
     # rescale the location
-    self.x = (self.x_px - origin.x) *  1.0 / pxScale
-    self.y = (self.y_px - origin.y) * -1.0 / pxScale
+    self.x = (self.x_px - origin.x) *  1.0 * pxScale
+    self.y = (self.y_px - origin.y) * -1.0 * pxScale
 
     # convert the radius in px to mass in arcsec
-    #f = 1.0 * viewport/imgSize/pxScale
-    f = 1.0 / pxScale
+    #f = 1.0 * viewport/imgSize * pxScale
+    f = pxScale
     m     = self.m_px*f     if self.m_px     else None 
     m_min = self.m_px_min*f if self.m_px_min else None 
     m_max = self.m_px_max*f if self.m_px_max else None 
@@ -180,7 +180,7 @@ class EvalAndSaveJSON:
     
     self.viewport = 500   # viewport size default in <GLSv3, LMTv1.6
     self.imgSize  = 440   # default for spacewarps
-    self.pxScale  = 100.0 # default [glass] arcsec -> [LMT] pixel coordinates factor
+    self.pxScale  = 0.01  # default [LMT] pixel coordinates factor -> [glass] arcsec; 1px = pxScale arcsec
     
 
     #self.points = [Pnt(2,3), Pnt(2,1), Pnt(5,2)]  
