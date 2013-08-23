@@ -298,11 +298,16 @@ out = {
 	 */
 	showSlide: function(i){
 	  
+	  if (!LMT.simulationResult.resultId) {return;}
+	  
 	  var that = LMT.ui.out;
+
 		//cancle current timeout of caption
+		/* those are left overs from ooold times
 		if (that.captionRemoveTimer){
 			window.clearTimeout(that.captionRemoveTimer);
 		}
+		*/
     
     if (i == that.shownImage){
       return;
@@ -326,12 +331,13 @@ out = {
       $curr.css({zIndex: 81});
 		});
 		
+		/* again, old times
 		//show the caption 3 secs
 		$('.slide_caption').slideDown();
 		that.captionRemoveTimer = window.setTimeout(function(){
 			$('.slide_caption').slideUp();
 		}, 3000);
-		
+		*/
 	  //update the color settings output dialog if shown
     LMT.ui.html.ColorSettingsOutputDialog.refresh();
 		

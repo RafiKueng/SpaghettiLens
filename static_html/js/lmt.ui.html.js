@@ -1182,32 +1182,90 @@ html.Tooltip = {
 
 html.KeyboardListener = {
   init: function(){
-    $('body').on('keypress', LMT.ui.html.KeyboardListener.keyEvent);
+    $('body').on('keydown', LMT.ui.html.KeyboardListener.keyEvent);
+    //$('body').on('keypress', LMT.ui.html.KeyboardListener.keyEvent);
+    //$('body').on('keyup', LMT.ui.html.KeyboardListener.keyEvent);
   },
   
   keyEvent: function(evt){
-    var code = evt.which || evt.keyCode;
-    log('KeyBoardListener | keyEvent | keycode: '+code);
+    evt = evt || window.event;
+    
+    if (evt.target.tagName=="INPUT") {return;}
+    if (evt.target.tagName=="BUTTON") {return;}
+    
+    var code = evt.keyCode;
+    //var code = evt.which || evt.keyCode;
+    log('KeyBoardListener | keyEvent: '+evt.type +', '+ evt.keyCode);
     var keyCatched = false;
     
     switch (code) {
-      case 48: //numEnter
       case 96: //num0
+      case 48: //0
+      case 8: //[backspace]
         $.event.trigger("ZoomPanReset");
         keyCatched = true;
         break;
       
-      case 43: //num+
+      case 107: //num+
+      case 187: // =+
         $.event.trigger("Zoom", [+1]);
         keyCatched = true;
         break;
-      case 45: //num-
+      case 109: //num-
+      case 189: //-_
         $.event.trigger("Zoom", [-1]);
         keyCatched = true;
         break;
-        
 
-      
+      case 49: //1
+      case 50: //2
+      case 51: //3
+      case 52: //4
+      //case 53: //5
+      //case 54: //6
+        $.event.trigger('DisplayOutputSlide', [code-49]);
+        keyCatched = true;
+        break;
+        
+      case 81: //Q
+        $.event.trigger('Undo');
+        keyCatched = true;
+        break;
+      case 87: //W
+        $.event.trigger('Redo');
+        keyCatched = true;
+        break;
+
+      case 65: //ASD
+      case 83: //ASD
+      case 68: //ASD
+        mode = code==65 ? 'mass' : (code==83?'image':'ruler') ;
+        $.event.trigger('SwitchMode', mode);
+        keyCatched = true;
+        break;
+
+      case 88: //x
+        $.event.trigger('SimulateModel');
+        keyCatched = true;
+        break;
+
+      case 90: //z
+        $.event.trigger('ShowDialogGlassSettings');
+        keyCatched = true;
+        break;
+
+
+      case 72: //h
+        $.event.trigger('ToggleHelpBar');
+        keyCatched = true;
+        break;
+
+      case 67://c
+      case 32://[space]
+        $.event.trigger('ShowDialogSaveResult');
+        keyCatched = true;
+        break;
+              
       /*default:
         return;
       */
