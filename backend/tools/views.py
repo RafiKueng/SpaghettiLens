@@ -104,7 +104,11 @@ def ResultDataTable(request):
       continue
     if only_final and not res.is_final_result:
       continue
-    
+    child_ids = []
+    children = res.child_results.all()
+    for child in children:
+      child_ids.append(str(child.pk))
+
     d = [
       ('result_id', id),
       ('model_id', res.lens_data_obj.pk),
@@ -114,6 +118,7 @@ def ResultDataTable(request):
       ('created' , res.created.isoformat(' ') if res.created else ''),
       ('user' , res.created_by_str),
       ('parent' , res.parent_result.pk if res.parent_result else ''),
+      ('children' , ', '.join(child_ids)),
       ('rendered' , res.rendered_last.isoformat(' ') if res.rendered_last else ''),
       ('last_accessed' , res.last_accessed.isoformat(' ') if res.last_accessed else ''),
       ('n_models' , res.n_models),
