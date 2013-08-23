@@ -21,23 +21,141 @@ class Point(object):
         dx = child.x - self.x
         dy = child.y - self.y
         child.distParent2 = dx*dx+dy*dy
-        
+  
+  '''get the dist squarred to another point like obj'''
   def getDist2To(self, other):
     dx = other.x - self.x
     dy = other.y - self.y
     return dx*dx+dy*dy
     
-  # calculates the relative coordinates, returns a SimplePoint
+  '''calculates the relative coordinates to another point, returns a new point'''
   def getRelCoordTo(self, pnt):
     dx = self.x - pnt.x
     dy = self.y - pnt.y
     #print " "*30, "in new point: ", self.type, self.wasType
     return Point(x=dx, y=dy, _type=self.type);
   
+  '''rescales the values from px to arcsec'''
+  def changePxToArcsec(self, pxScale):
+    f = pxScale
+    self.x *= f
+    self.y *= -f
+    
+
   def __repr__(self):
-    return "Point [ x:%.2f | y:%.2f | type:%s ]" % (self.x, self.y, self.type)
+    return "Point [ x:% .2f | y:% .2f | type:%s ]" % (self.x, self.y, self.type)
   def __str__(self):
     return self.__repr__()
+
+
+'''
+represents an external mass
+m, m_min, m_max stand for the Mass in units of einsteinradius! arcsec!!
+derr1: if m supllied, allow m to variate between m*(1-derr) and m*(1+derr)
+  0.1 -> 10% -> 0.9*m ... 1.1*m
+derr2: if m supllied, allow m to variate between m*(1/derr) and m*(1*derr)
+  2  -> 1/2 * m ... 2 * m
+'''
+class ExtMass(object):
+  #def __init__(self, x, y, id=-1, m=None, m_min=None, m_max=None, derr=None, derr2=None):
+  def __init__(self, x_px, y_px, id=-1, m_px=None,
+               m_px_min=None, m_px_max=None, derr1=None, derr2=None):
+    self.id = id
+    self.x_px = x_px
+    self.y_px = y_px
+
+    self.m_px = m_px
+    self.m_px_min = m_px_min
+    self.m_px_max = m_px_max
+    self.derr1 = derr1
+    self.derr2 = derr2
+    
+    self.x = self.y = self.m = self.m_min = self.m_max = None
+    
+    self.init = False
+
+  def getStr(self):
+    _=self
+    if not _.init: return ""
+    rstr = ''
+    if not _.m and not _.m_min and not _.m_max:
+      rstr=""
+    elif _.m:
+      rstr = ",%.6f" % _.m
+    else:
+      rstr = ",[%.6f,%.6f]" % (_.m_min, _.m_max)
+    return "external_mass(PointMass(%.4f,%.4f,name='PM%i')%s)" % (_.x, _.y, _.id, rstr)
+        
+  def __repr__(self):
+    _=self
+    mstr = ''
+    if not _.m_px and not _.m_px_min and not _.m_px_max:
+      mstr="None"
+    elif _.m_px:
+      mstr = "%.6f" % _.m_px
+    else:
+      mstr = "[%.6f,%.6f]" % (_.m_px_min, _.m_px_max)
+
+    str = "ExtPointMass [ nr:%i | x_px:%.2f | y_px:%.2f | m_px:%s ]" % (self.id, self.x_px, self.y_px, mstr)
+
+    if _.init:
+      rstr = ''
+      if not _.m and not _.m_min and not _.m_max:
+        rstr="None"
+      elif _.m:
+        rstr = "%.6f" % _.m
+      else:
+        rstr = "[%.6f,%.6f]" % (_.m_min, _.m_max)
+      return str + "[ x:% .3f | y:% .3f | m:%s ]" % (self.x, self.y, rstr)
+    else:
+      return str
+  
+  def __str__(self):
+    return self.__repr__()
+
+  # changes the pixel values to relative values
+  # and the massses/radius to arcsec
+  # note: origin is and stays in pixels!!
+  def changePxToArcsec(self, origin, pxScale):
+
+    # rescale the location
+    self.x = (self.x_px - origin.x) *  1.0 * pxScale
+    self.y = (self.y_px - origin.y) * -1.0 * pxScale
+
+    # convert the radius in px to mass in arcsec
+    #f = 1.0 * viewport/imgSize * pxScale
+    f = pxScale
+    m     = self.m_px*f     if self.m_px     else None 
+    m_min = self.m_px_min*f if self.m_px_min else None 
+    m_max = self.m_px_max*f if self.m_px_max else None 
+    
+    if not m_min and not m_max and m: #-1 or None
+      if self.derr1:
+        self.m = None
+        self.m_min = m*(1.-derr1)
+        self.m_max = m*(1.+derr1)
+      elif self.derr2:
+        self.m = None
+        self.m_min = m*(1./derr2)
+        self.m_max = m*(1.*derr2)
+      else:
+        self.m = m
+        self.m_min = None
+        self.m_max = None
+        
+    elif not m and m_min and m_max:
+      self.m = None
+      self.m_min = m_min
+      self.m_max = m_max
+    else:
+      self.m = None
+      self.m_min = None
+      self.m_max = None
+    
+    self.init = True
+    return self
+    
+
 
 
 class EvalAndSaveJSON:
@@ -59,6 +177,10 @@ class EvalAndSaveJSON:
     self.shear = 0.01
     self.z_src = 1.00
     self.n_models = 200
+    
+    self.viewport = 500   # viewport size default in <GLSv3, LMTv1.6
+    self.imgSize  = 440   # default for spacewarps
+    self.pxScale  = 0.01  # default [LMT] pixel coordinates factor -> [glass] arcsec; 1px = pxScale arcsec
     
 
     #self.points = [Pnt(2,3), Pnt(2,1), Pnt(5,2)]  
@@ -98,13 +220,14 @@ class EvalAndSaveJSON:
       #print "in ObjHook"
       if '__type' in dct:
         if dct['__type'] == "extpnt":
-          return Point(x=dct['x']/100., y=dct['y']/(-100.), _type=dct['type'], child1=dct['child1'], child2=dct['child2'], wasType=dct['wasType'])
+          #return Point(x=dct['x']/100., y=dct['y']/(-100.), _type=dct['type'], child1=dct['child1'], child2=dct['child2'], wasType=dct['wasType'])
+          return Point(x=dct['x'], y=dct['y'], _type=dct['type'], child1=dct['child1'], child2=dct['child2'], wasType=dct['wasType'])
         if dct['__type'] == "contour":
           return None
         if dct['__type'] == "cpnt":
           return None
         if dct['__type'] == "ext_mass":
-          return None
+          return ExtMass(id=dct['idnr'], x_px=dct['x'], y_px=dct['y'], m_px=dct['r'])
         if dct['__type'] == "ruler":
           return None
       return dct
@@ -130,7 +253,11 @@ class EvalAndSaveJSON:
                       'maprad': float,
                       'shear': float,
                       'z_src': float,
-                      'n_models': int}
+                      'n_models': int,
+                      
+                      'viewport': int, # viewport size of svg window in pixel, needed for px - arcsec conversion
+                      'imgSize': int,  # original image size, same here
+                      'pxScale': float}  # viewport pixel -> arcsec
     
     for attr, type in glassParameter.iteritems():
       #print "trying ", attr, ":",  attr in r
@@ -144,7 +271,6 @@ class EvalAndSaveJSON:
         
     #self.isSym = True;
     
-    
     #return self.jsonObj
   
   
@@ -154,6 +280,7 @@ class EvalAndSaveJSON:
     # find origin first
     pnt = self.jsonObj['Sources'][0] #TODO: here is hardcoded that only the fors soucre is supported
     
+    # note: origin is and stays in pixels!!
     try:
       origin = pnt
       for child in [pnt.child1, pnt.child2]:
@@ -209,85 +336,23 @@ class EvalAndSaveJSON:
     res.sort(key=lambda pnt: pnt.level)
     print "sorted"
     for r in res:
-      print r, "-> x:%.2f, y:%.2f, type:%s, level:%.2f, depth:%i" % (r.x, r.y, r.type, r.level, r.depth)
+      r.changePxToArcsec(self.pxScale)
+      print r, "-> x:% .2f, y:% .2f, type:%s, level:% .2f, depth:%i" % (r.x, r.y, r.type, r.level, r.depth)
       
     # if the last point is a max, take it out
     if res[-1].type == "max":
       res = res[:-1]
     self.points = res
     
-    
-  
-  
-  def orderPoints(self):
-    #print "order easj"
-    
-    # recursive function returning all the points coordinates for ONE source
-    # relative to origin
-    # origin is the max of the root group (or the point more close to the saddle
-    # point)
-    # the desired order is: (postorder)
-    # 1. point futher away from saddlepoint
-    # 2. point closer
-    # 3. saddle point
-    # (ported from js)
-    def recursiveWalker(pnt, origin, i=0):
-      res = []
-      #print " "*(3*i), "recW ", `i`
-      #print " "*(3*i), "pnt:    ", pnt
-      #print " "*(3*i), "origin: ", origin
-
-      if (pnt.child1):
-        ps = pnt
-        c1 = pnt.child1
-        c2 = pnt.child2
-
-        
-        # maintain postorder traversal, nodes sortet by distance
-        if (c1.distParent2 < c2.distParent2):
-          tmp = c1
-          c1 = c2;
-          c2 = tmp
-
-        #print " "*(3*i), "c1d: ", c1.distParent2
-        #print " "*(3*i), "c2d: ", c2.distParent2        
-        
-        skiporigin = False
-        if not origin: #if origin of type None
-          #print " "*(3*i), "not jet origin: setting to c2 "
-          origin = c2
-          skiporigin = True
-          #print " "*(3*i), "go on with"
-          p2arr = recursiveWalker(c2, origin, i+1)
-          res.extend(p2arr)
-          
-        p1arr = recursiveWalker(c1, origin, i+1)
-        res.extend(p1arr)
-        
-        if not skiporigin:
-          p2arr = recursiveWalker(c2, origin, i+1)
-          res.extend(p2arr)
-
-        res.append(ps.getRelCoordTo(origin))
-
-      
-      else:
-        if not origin: # origin == None
-          pass
-        else:
-          pnt = pnt.getRelCoordTo(origin)
-
-        res.append(pnt)
-        
-      return res
-    
-    print "start the recursiveWalker"
-    pnt = self.jsonObj['Sources'][0] #TODO: here is hardcoded that only the fors soucre is supported
-    res = recursiveWalker(pnt, None)
-    self.points = res
-    #return res
-    
-  
+    # rescale and set the external masses
+    print 'adding external masses'
+    print 'origin:', origin
+    self.ext_masses = []
+    for m in self.jsonObj["ExternalMasses"]:
+      # note: origin is and stays in pixels!!
+      self.ext_masses.append(m.changePxToArcsec(origin, self.pxScale))
+      print m
+   
   
   
   def createConfigFile(self):
@@ -331,7 +396,13 @@ class EvalAndSaveJSON:
       "  'hubble_constant',"                                                ,
       "  'PLsmoothness3',"                                                  ,
       "  'shared_h',"                                                       ,
-      "  'external_shear'"                                                  ,
+      "  'external_shear',"                                                 ,
+      ]
+    
+    if _.ext_masses:
+      gls.append("  'external_mass',")
+      
+    gls.extend([
       ")"                                                                   ,
       "hubble_time(%f)" % _.hubbletime                                      ,
       "globject('%s')" % _.lensidentifier                                   ,
@@ -343,15 +414,15 @@ class EvalAndSaveJSON:
       "symm()" if _.isSym else ""                                           ,
       "maprad(%.4f)" % _.maprad if _.maprad else ""                         ,
       "shear(%.2f)" % _.shear                                               ,
-      ""]
+      ""])
              
     for i in range(len(_.points)):
       gls.append(
-        "%s = %.2f, %.2f" % (chr(65+i), _.points[i].x, _.points[i].y)
+        "%s = %.3f, %.3f" % (chr(65+i), _.points[i].x, _.points[i].y)
         )
 
     gls.append(
-      "source(%.2f," % _.z_src
+      "source(%.3f," % _.z_src
     )
     #print "adding points"
     for i in range(len(_.points)):
@@ -367,6 +438,10 @@ class EvalAndSaveJSON:
       gls.append(
         "  %s, '%s', %s" % (chr(65+i), _.points[i].type,  delaystr)
       )
+      
+    print _.ext_masses
+    for em in _.ext_masses:
+      gls.append(em.getStr())
       
     gls.extend([
       "model(%s)" % _.n_models                                              ,
@@ -390,6 +465,17 @@ class EvalAndSaveJSON:
       "env().srcdiff_plot_adv(env().ensemble_average, night=True, upsample=8)"      ,
       "pl.savefig('%s%s', facecolor='black', edgecolor='none')" % (_.imgpath, ('img%i_ipol.png'%3))    ,
       "pl.close()"                                                          ,
+    ])
+    
+    # append LMT data object
+    gls.extend([
+      "LMT={",
+      " 'viewport'    : %i,"     % _.viewport,
+      " 'imgSize'     : %i,"     % _.imgSize,
+      " 'pxScale'     : %.5f,"   % _.pxScale,
+      " 'gls_version' : '%s',"   % settings.GLS_VERSION ,
+      " 'lmt_version' : '%s',"   % settings.LMT_VERSION ,
+      "}"
     ])
  
     

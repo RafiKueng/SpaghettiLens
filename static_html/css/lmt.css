@@ -137,17 +137,18 @@ body {
 }
 
 #help .title {
-  display: table-cell;
+  display: block;
   font-weight: bold;
 }
 
 #help .body {
-  display: table-cell;
+  display: block;
   margin:0px;
   padding-left:20px;
 }
 
 #help .list {
+  display: block;
   margin:0px;
   padding-left:20px;
 }
@@ -508,4 +509,42 @@ h1 {
   border-color: #333333;
   border-style:dashed;
   border-width:1px;
+}
+
+
+
+/************
+ * tooltips
+ */
+
+.ttip .titlebox {
+  display:block;
+}
+.ttip .title {
+  display:inline-block;
+  font-weight:bold;
+}
+
+.ttip .close {
+  float: right;
+  font-weight:bold;
+  font-size: 80%;
+  cursor:pointer;
+}
+
+.ttip .text {
+  display:block;
+}
+
+.ttip .small {
+  display:block;
+  font-size: 80%;
+}
+
+.ttip .info {
+  float: left;
+}
+
+.ttip .key {
+  float: right;
 }

@@ -63,15 +63,36 @@ elif s.MODULE_WORKER == "dummy":
     def __call__(self, resid):
       return self
     def delay(self, resnr):
-      print "starting the dummy task"
+      print "starting the dummy task1"
       self.result_id = resnr
+      
+      # create dummy files
+      for i in range(1,4):
+        with open('../tmp_media/%06i/img%i.png'%(resnr,i), 'w') as f:
+          f.write(str(i))
       return self
+    
+    
     def apply_async(self, *args, **kwargs):
-      print "starting the dummy task", args
-      self.result_id = 1
+      
+      print "starting the dummy task2", args, kwargs
+      rid = kwargs['args'][0]
+      # create dummy files
+      #os.mkdir('..\\tmp_media\\%06i\\'%rid)
+#      for i in range(1,4):
+#        with open('../tmp_media/%06i/img%i.png'%(rid,i), 'w') as f:
+#          f.write(str(i))
+      import shutil
+      shutil.copyfile('../tmp_media/1.png','../tmp_media/%06i/img1.png'%(rid) )
+      shutil.copyfile('../tmp_media/2.png','../tmp_media/%06i/img2.png'%(rid) )
+      shutil.copyfile('../tmp_media/3.png','../tmp_media/%06i/img3.png'%(rid) )
+      shutil.copyfile('../tmp_media/4.png','../tmp_media/%06i/img3_ipol.png'%(rid) )
+      self.result_id = rid
       return self
     
   
 
   calculateModel = calculateModel_D()
-  DummyAsyncResult = calculateModel 
+  DummyAsyncResult = calculateModel
+  
+

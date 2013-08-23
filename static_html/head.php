@@ -29,18 +29,17 @@ header( "Pragma: no-cache" );
   
   <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/rgbcolor.js"></script> 
   <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/StackBlur.js"></script>
-<!--
+<!-- using my onw with bugfixes
   <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/canvg.js"></script>   
 -->
 
-  
   <script type="text/javascript" src="js/lmt.js"></script>
 <?php
   // include all script files in the folder /js
   $handle=opendir("js/");
 
   while (($file = readdir($handle))!==false) {
-    if ($file[0] != '.' && $file != 'lmt.js') {
+    if ($file[0] != '.' && $file != 'lmt.js' && $file != 'bkup') {
       echo '  <script type="text/javascript" src="js/' . $file . '"></script>' . "\n";
     }
   }
@@ -51,36 +50,6 @@ header( "Pragma: no-cache" );
 
 
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
-  
-<!--
-  <link rel="stylesheet" href="demo-ui.css" type="text/css" />
-
-  <script type="text/javascript" src="Color.js"></script>
-  <script type="text/javascript" src="object.ui.BandColorSelector.js"></script>
-
-  
-  <script type="text/javascript" src="demo-ui.gen.js"></script>
-  <script type="text/javascript" src="demo-ui.objects.js"></script>
-  <script type="text/javascript" src="demo-ui.obj.contour.js"></script>
-  <script type="text/javascript" src="demo-ui.obj.contourPoint.js"></script>
-  <script type="text/javascript" src="demo-ui.obj.model.js"></script>
-  <script type="text/javascript" src="demo-ui.obj.actionstack.js"></script>
-  <script type="text/javascript" src="object.ruler.js"></script>
-  <script type="text/javascript" src="object.external_mass.js"></script>
-
-  <script type="text/javascript" src="demo-ui.intel.js"></script>
-  <script type="text/javascript" src="demo-ui.com.js"></script>
-  <script type="text/javascript" src="demo-ui.ui-svg.js"></script>
-  <script type="text/javascript" src="demo-ui.widget.js"></script>
-  <script type="text/javascript" src="demo-ui.ui-canv.js"></script>
- 
-  <script type="text/javascript" src="demo-ui.ui-actionmenu.js"></script>
-  <script type="text/javascript" src="demo-ui.ui-modemenu.js"></script>
-  <script type="text/javascript" src="demo-ui.ui-settingstab.js"></script>
-  <script type="text/javascript" src="demo-ui.ui-xxdo.js"></script>
-  <script type="text/javascript" src="ui.popup.displaySettings.js"></script>
-  <script type="text/javascript" src="ui.popup.graphicSettings.js"></script>
--->
 
   <title>LensModellingTool</title>
 </head>
