@@ -26,7 +26,7 @@
               data-ttip-title="Save Model"
               data-ttip-text="Save this model and your input on the server"
               data-ttip-link=""
-              data-hotkey=""
+              data-hotkey="C, [SPACE]"
               data-icon="icon-ok">
               Save the final model on the server
             </button>
@@ -56,7 +56,7 @@
             data-ttip-title="Context Help"
             data-ttip-text="Displays the mouseover help"
             data-ttip-link=""
-            data-hotkey="H, F1"
+            data-hotkey="H"
             data-icon="icon-question-sign" />
           <label for="btnMainHelp">Toggle Mouseover Help</label>
                     
@@ -80,7 +80,7 @@
               data-ttip-title="Undo"
               data-ttip-text="reverts the last action"
               data-ttip-link=""
-              data-hotkey="Ctrl+Z; Q"
+              data-hotkey="Q"
               data-icon="icon-undo">
               Undo
             </button>
@@ -89,7 +89,7 @@
               data-ttip-title="Redo"
               data-ttip-text="reapplies the last undone action"
               data-ttip-link="http://www.google.com"
-              data-hotkey="Ctrl+Y; W"
+              data-hotkey="W"
               data-icon="icon-repeat">
               Redo
             </button>
@@ -122,7 +122,7 @@
               data-ttip-title="Add Point Mass"
               data-ttip-text="Place additional point masses"
               data-ttip-link=""
-              data-hotkey=""
+              data-hotkey="A"
               data-icon="icon-star" />
             <label for="btnInModeMass">add external point masses</label>
 
@@ -131,7 +131,7 @@
               data-ttip-title="Image Tool"
               data-ttip-text="Mark / identify lensed images"
               data-ttip-link=""
-              data-hotkey=""
+              data-hotkey="S"
               data-icon="icon-screenshot"
               checked="checked"/>
             <label for="btnInModeImage">identify images</label>
@@ -141,7 +141,7 @@
               data-ttip-title="Ruler Tool"
               data-ttip-text="Click and drag to use a ruler to estimate distances"
               data-ttip-link=""
-              data-hotkey=""
+              data-hotkey="D"
               data-icon="icon-resize-horizontal" />
             <label for="btnInModeRuler">use to estimate distances</label>
           </span>
@@ -172,7 +172,7 @@
               data-ttip-title="Model"
               data-ttip-text="Send your input to be modelled"
               data-ttip-link=""
-              data-hotkey=""
+              data-hotkey="X"
               data-icon="icon-cogs">
               Simulate the Model and Refresh the Output Images
             </button>
@@ -200,7 +200,7 @@
               data-ttip-title="Simulation Properties"
               data-ttip-text="Set up modelling properties such as resolution, redshifts, ..."
               data-ttip-link=""
-              data-hotkey=""
+              data-hotkey="Z"
               data-icon="icon-tasks">
               Configure simulation properties
             </button>
