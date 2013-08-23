@@ -904,6 +904,29 @@ def _getResultData(request, rid):
     raise Http404
   d = {
     'model_id': res.lens_data_obj.pk,
+    'model_name' : res.lens_data_obj.name,
+    'datasource' : res.lens_data_obj.datasource,
+    'is_final' : res.is_final_result,
+    'created' : res.created.isoformat() if res.created else '',
+    'user' : res.created_by_str,
+    'parent' : res.parent_result.pk if res.parent_result else '',
+    'rendered' : res.rendered_last.isoformat() if res.rendered_last else '',
+    'last_accessed' : res.last_accessed.isoformat() if res.last_accessed else '',
+    'n_models' : res.n_models,
+    'pixrad' : res.pixrad,
+    'hubbletime' : res.hubbletime,
+    'steepness_min' : res.steepness_min,
+    'steepness_max' : res.steepness_max,
+    'smooth_val' : res.smooth_val,
+    'smooth_include_central' : res.smooth_include_central,
+    'local_gradient' : res.local_gradient,
+    'is_symm' : res.is_symm,
+    'maprad' : res.maprad,
+    'shear' : res.shear,
+    'redshift_lens' : res.redshift_lens,
+    'redshift_source' : res.redshift_source,
+    'n_sources' : res.n_sources,
+    'n_images' : res.n_images,
     'json_str': res.json_str
     }
   data = sjson.dumps(d)

@@ -28,5 +28,5 @@ urlpatterns = patterns('',
 
     url(r'^api', 'ModellerApp.views.api'),
     
-    
+    url(r'^tools/', include('tools.urls')),
 )
