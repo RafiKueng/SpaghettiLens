@@ -837,6 +837,19 @@ svg.bg = {
       bg.orgimg = imgs[0];
       bg.canv.width = bg.orgimg.width;
       bg.canv.height = bg.orgimg.height;
+      LMT.modelData.orgImgSize = {w:bg.orgimg.width, h:bg.orgimg.height, _:Math.max(bg.orgimg.width, bg.orgimg.height)};
+      LMT.modelData.svgViewportSize = {w:500, h:500, _:500};
+      
+      LMT.model.Parameters.orgImgSize = LMT.modelData.orgImgSize._
+      LMT.model.Parameters.svgViewportSize = LMT.modelData.svgViewportSize._
+      
+      if (LMT.model.Parameters.orgPxScale) {
+        LMT.model.Parameters.pxScale = 1.0 * LMT.model.Parameters.orgPxScale * LMT.model.Parameters.orgImgSize / LMT.model.Parameters.svgViewportSize;
+      }
+      else {
+        LMT.model.Parameters.pxScale = 0.01; //default value
+      }
+      
       bg.ctx.drawImage(bg.orgimg, 0, 0);
       LMT.ui.html.LoadProgressDialog.close();
       $.event.trigger("RefreshBackgroundImage");

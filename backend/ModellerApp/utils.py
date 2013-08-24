@@ -180,8 +180,8 @@ class EvalAndSaveJSON:
     
     self.viewport = 500   # viewport size default in <GLSv3, LMTv1.6
     self.imgSize  = 440   # default for spacewarps
-    self.pxScale  = 0.01  # default [LMT] pixel coordinates factor -> [glass] arcsec; 1px = pxScale arcsec
-    
+    self.pxScale  = 0.01  # default [LMT] viewport pixel coordinates -> [glass] arcsec; [arcsec / px]
+    self.orgPxScale = 0   # orgImg: arcsex / px
 
     #self.points = [Pnt(2,3), Pnt(2,1), Pnt(5,2)]  
 
@@ -255,9 +255,10 @@ class EvalAndSaveJSON:
                       'z_src': float,
                       'n_models': int,
                       
-                      'viewport': int, # viewport size of svg window in pixel, needed for px - arcsec conversion
-                      'imgSize': int,  # original image size, same here
-                      'pxScale': float}  # viewport pixel -> arcsec
+                      'svgViewportSize': int, # viewport size of svg window in pixel, needed for px - arcsec conversion
+                      'orgImgSize': int,  # original image size, same here
+                      'orgPxScale': float,  # orgImg arcsec / px
+                      'pxScale': float}  # viewport arcsec / px
     
     for attr, type in glassParameter.iteritems():
       #print "trying ", attr, ":",  attr in r
@@ -470,9 +471,10 @@ class EvalAndSaveJSON:
     # append LMT data object
     gls.extend([
       "LMT={",
-      " 'viewport'    : %i,"     % _.viewport,
-      " 'imgSize'     : %i,"     % _.imgSize,
+      " 'svgViewport' : %i,"     % _.svgViewportSize,
+      " 'orgImgSize'  : %i,"     % _.orgImgSize,
       " 'pxScale'     : %.5f,"   % _.pxScale,
+      " 'orgPxScale'  : %.5f,"   % _.orgPxScale,
       " 'gls_version' : '%s',"   % settings.GLS_VERSION ,
       " 'lmt_version' : '%s',"   % settings.LMT_VERSION ,
       "}"
