@@ -101,9 +101,11 @@ com.getModelData = function(evt, model_ids, catalog, action) {
     LMT.modelData.nextAvail = obj[1].next_avail;
     LMT.modelData.prevAvail = obj[1].prev_avail;
     
+    LMT.modelData.add_data = JSON.parse(obj[0].fields.add_data)
+    
     LMT.model.Parameters.z_src = LMT.modelData.z_source || 1;
     LMT.model.Parameters.z_lens = LMT.modelData.z_lens || 0.5;
-    LMT.model.Parameters.pxScale = LMT.modelData.pxScale || 0.01;  
+    LMT.model.Parameters.orgPxScale = LMT.modelData.add_data.orgPxScale || null;
     
     LMT.modelData.ch = [];
     

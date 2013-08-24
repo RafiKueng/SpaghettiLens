@@ -91,8 +91,17 @@ def _createObj(lenses):
     )
     if qs.count()==1:
       print "object already in db:", qs[0].pk
-      gID = qs[0].pk
 
+      # retro update the pxScale
+      ldo = qs[0]
+      adddata = sjson.loads(ldo.add_data)
+      adddata['orgPxScale'] = 0.187
+      ldo.add_data = sjson.dumps(adddata)
+      ldo.save()
+      print 'retrofitting pxscale', ldo
+      
+      gID = qs[0].pk
+      
     #if not, fetch new data
     else:
       r1 = s.get("https://api.zooniverse.org/projects/spacewarp/talk/subjects/"+lensid)
@@ -118,7 +127,7 @@ def _createObj(lenses):
         add_data = sjson.dumps({
           'metaid': metaid,
           'id2': id2,
-          
+          'orgPxScale': 0.187 #http://www.cfht.hawaii.edu/Instruments/Imaging/Megacam/index.html
         })
       )
       ld.save()
