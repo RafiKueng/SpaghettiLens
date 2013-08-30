@@ -625,6 +625,8 @@ def srcdiff_plot_adv(env, model, **kwargs):
     else:
       pl.xlabel(xlabel)
       pl.ylabel(ylabel)
+      
+    overlayInputPoints(obj)
 
 
 @command
@@ -1519,3 +1521,74 @@ def _hist(env, data_key, **kwargs):
 
     pl.xlim(xmax=pl.xlim()[1] + 0.01*(pl.xlim()[1] - pl.xlim()[0]))
     pl.ylim(ymax=pl.ylim()[1] + 0.01*(pl.ylim()[1] - pl.ylim()[0]))
+    
+    
+
+def iterPrint(val, key='', maxrec=10, d=0, maxlistitems=5):
+  '''recusivly prints the attributes of any type 'val' '''
+
+  import types
+  if d>=maxrec:
+    #print ' |'*d, ' (MAX RECURSION)'
+    return
+  if d==0: print '---------------------'
+  s = ' |'*d + '--> '
+  tp = type(val).__name__
+  try:
+    tp += ' [%i]'%len(val)
+  except (TypeError, AttributeError):
+    pass
+  try:
+    tp1 = val.__class__.__name__
+    if not type(val).__name__==tp1:
+      tp += ' (%s)' % tp1
+  except AttributeError:
+    pass
+  tp = tp if len(tp)<47 else tp[0:47]+'...'
+  
+  vl = str(val)
+  vl = vl if len(vl)<67 else vl[0:67]+'...'
+  
+  print '%-40s: %-50s %-70s' % (s + key, tp, vl)
+  
+  if d>maxrec:
+    print ' |'*(d+1) + '--> ... (reached max recursion depth)'
+  
+  elif isinstance(val, (list, tuple)) and len(vl)>67:
+    for i in range(len(val) if len(val)<maxlistitems else maxlistitems): #only print the first 20
+      iterPrint(val[i], '%s_%03i' % (key,i),maxrec, d+1, maxlistitems)
+    if len(val)>=maxlistitems:
+      print ' |'*(d+1) + '--> ... (cut of rest of items)'
+    
+  elif isinstance(val, (type, types.ClassType, types.InstanceType)):
+    for nkey, nval in vars(val).items():
+      iterPrint(nval, nkey, maxrec, d+1, maxlistitems)
+
+  elif isinstance(val, (dict)):
+    for nkey, nval in val.items():
+      try:
+        iterPrint(nval, nkey, maxrec, d+1, maxlistitems)
+      except TypeError: #if key is not a string
+        iterPrint(nval, str(nkey), maxrec, d+1, maxlistitems)
+        
+        
+        
+def overlayInputPoints(obj):
+  '''adds the input points (min, max, sad, pmass) ontop of existing plot'''
+  for img in obj.sources[0].images:
+    print img, img.parity
+    
+    #['min', 'sad', 'max', 'unk'].index(parity)
+    tp = ['c', 'g', 'r', 'm'][img.parity]
+    pl.plot([img.pos.real], [img.pos.imag], 'o'+tp)
+  #mark origin
+  pl.plot([0], [0], 'or')
+  
+  for epot in obj.extra_potentials:
+    if isinstance(epot, glass.exmass.PointMass):
+      #epot.r #coordinatess as complex
+      #epot.name
+      #pms.append(epot)
+      pl.plot([epot.r.real], [epot.r.imag], 'xy')
+    
+
