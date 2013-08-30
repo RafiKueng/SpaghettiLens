@@ -26,6 +26,8 @@ import scipy.interpolate as interp
 import scipy.optimize as optimize
 from matplotlib import colors as mplcolors
 
+import glass.exmass
+
 rc('text', usetex=True)
 #rc('text', dvipnghack=True)
 rc('font',**{'family':'serif','serif':['Computer Modern Roman']})
