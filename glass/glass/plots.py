@@ -26,6 +26,8 @@ import scipy.interpolate as interp
 import scipy.optimize as optimize
 from matplotlib import colors as mplcolors
 
+import glass.exmass
+
 rc('text', usetex=True)
 #rc('text', dvipnghack=True)
 rc('font',**{'family':'serif','serif':['Computer Modern Roman']})
@@ -625,8 +627,6 @@ def srcdiff_plot_adv(env, model, **kwargs):
     else:
       pl.xlabel(xlabel)
       pl.ylabel(ylabel)
-      
-    overlayInputPoints(obj)
 
 
 @command
@@ -1572,11 +1572,26 @@ def iterPrint(val, key='', maxrec=10, d=0, maxlistitems=5):
         iterPrint(nval, str(nkey), maxrec, d+1, maxlistitems)
         
         
-        
-def overlayInputPoints(obj):
+@command
+def overlay_input_points(env, model, **kwargs):
   '''adds the input points (min, max, sad, pmass) ontop of existing plot'''
+  
+  obj_index       = kwargs.pop('obj_index', 0)
+  src_index       = kwargs.pop('src_index', 0)
+  overlay_ext_pot = kwargs.pop('overlay_ext_pot', True)
+
+  obj, data = model['obj,data'][obj_index]
+
+  if overlay_ext_pot:
+    for epot in obj.extra_potentials:
+      if isinstance(epot, glass.exmass.PointMass):
+        #epot.r #coordinatess as complex
+        #epot.name
+        #pms.append(epot)
+        pl.plot([epot.r.real], [epot.r.imag], 'sy')
+  
   for img in obj.sources[0].images:
-    print img, img.parity
+    #print img, img.parity
     
     #['min', 'sad', 'max', 'unk'].index(parity)
     tp = ['c', 'g', 'r', 'm'][img.parity]
@@ -1584,11 +1599,5 @@ def overlayInputPoints(obj):
   #mark origin
   pl.plot([0], [0], 'or')
   
-  for epot in obj.extra_potentials:
-    if isinstance(epot, glass.exmass.PointMass):
-      #epot.r #coordinatess as complex
-      #epot.name
-      #pms.append(epot)
-      pl.plot([epot.r.real], [epot.r.imag], 'xy')
     
 

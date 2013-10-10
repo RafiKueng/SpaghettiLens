@@ -265,8 +265,11 @@ class EvalAndSaveJSON:
       if attr in gs:
         if type == bool:
           value = gs[attr] in ["True", "true", True, 1]
-        else:
-          value = type(gs[attr])
+        else: #TODO: check for null values
+          try:
+            value = type(gs[attr])
+          except TypeError:
+            value = 0
         print "found attr:", attr, str(type), ":", value, gs[attr] 
         self[attr] = value
         
@@ -449,21 +452,27 @@ class EvalAndSaveJSON:
       "savestate('%s')" % _.statefilepath                                   ,
       "env().make_ensemble_average()"                                       ,
       "env().arrival_plot(env().ensemble_average, only_contours=True, colors='magenta', clevels=40)"      ,
+      "env().overlay_input_points(env().ensemble_average)"      ,
       "pl.gca().axes.get_xaxis().set_visible(False)",
       "pl.gca().axes.get_yaxis().set_visible(False)",
       "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%1))                    ,
       "pl.close()"                                                          ,
+
       "env().kappa_plot(env().ensemble_average, 0, with_contours=True, clevels=20, vmax=1, with_colorbar=False)",
       "pl.gca().axes.get_xaxis().set_visible(False)",
       "pl.gca().axes.get_yaxis().set_visible(False)",
       "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%2))                    ,
       "pl.close()"                                                          ,
+
       "env().srcdiff_plot(env().ensemble_average)"                    ,
+      "env().overlay_input_points(env().ensemble_average)"      ,
       "pl.gca().axes.get_xaxis().set_visible(False)",
       "pl.gca().axes.get_yaxis().set_visible(False)",
       "pl.savefig('%s%s')" % (_.imgpath, (_.img_name%3))                    ,
       "pl.close()"                                                          ,
+
       "env().srcdiff_plot_adv(env().ensemble_average, night=True, upsample=8)"      ,
+      "env().overlay_input_points(env().ensemble_average)"      ,
       "pl.savefig('%s%s', facecolor='black', edgecolor='none')" % (_.imgpath, ('img%i_ipol.png'%3))    ,
       "pl.close()"                                                          ,
     ])

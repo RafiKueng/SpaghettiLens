@@ -27,14 +27,14 @@ Z[2] = sin(R)**2 - log(h)*0.3
 Z[3] = sin(R*1.5)**2 - log(g)*0.3
 Z[4] = (S1*S2)**0.5
 
-#doplot = range(len(Z))
-doplot = [3]
+doplot = range(len(Z))
+#doplot = [3]
 
 for i in doplot:
 
   print "figure", i
 
-  fig = figure(figsize=(12.8, 7.2)) #go for 1200x720 with 100dpi
+  fig = figure(figsize=(10.24, 7.2)) #go for 1200x720 with 100dpi
   fig.patch.set_facecolor('black')
   ax = fig.gca(projection='3d')
   ax.patch.set_facecolor('black')
@@ -54,8 +54,8 @@ for i in doplot:
   ax.tick_params(axis='z', colors=col2)
   
   surf = ax.plot_surface(X, Y, Z[i], rstride=1, cstride=1, 
-    #cmap=cm.coolwarm,
-    color="cyan",
+    cmap=cm.coolwarm,
+    #color="cyan",
     linewidth=0, antialiased=True)
    
   cset = ax.contour(X, Y, Z[i], 50, zdir='z', offset=zmin, cmap=cm.coolwarm)
@@ -75,6 +75,7 @@ for i in doplot:
 
   ax.set_zlim(zmin, zmax)
   #fig.colorbar(surf, shrink=0.5, aspect=5)
-  show()
+  #show()
   #savefig('fig'+str(i)+'.png', dpi=100)
+  savefig('fig'+str(i)+'.eps')
 
