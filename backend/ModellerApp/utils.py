@@ -265,8 +265,11 @@ class EvalAndSaveJSON:
       if attr in gs:
         if type == bool:
           value = gs[attr] in ["True", "true", True, 1]
-        else:
-          value = type(gs[attr])
+        else: #TODO: check for null values
+          try:
+            value = type(gs[attr])
+          except TypeError:
+            value = 0
         print "found attr:", attr, str(type), ":", value, gs[attr] 
         self[attr] = value
         

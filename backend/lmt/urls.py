@@ -30,3 +30,7 @@ urlpatterns = patterns('',
     
     url(r'^tools/', include('tools.urls')),
 )
+
+
+# if settings.role == 'standalone_app':
+#   (r'^(?P<path>.*)$', 'django.views.static.serve', {'document_root': '/path/to/static_html'}),
