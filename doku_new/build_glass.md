@@ -15,16 +15,18 @@
 
 ###Get the science stuff
 
-    sudo zypper install numpy
+    sudo zypper install python-numpy
 
 The scipy in repro has a bug (import error _fblas), we use pip to compile the latest:
 
     sudo zypper install python-pip
     sudo pip install scipy
 
-(takes a few minutes. If you already have scipy use `sudo pip install scipy --upgrade`)
+(takes a few minutes. If you already have scipy, test if this is working:
+`python> import scipy.linalg.fblas`. If no error, you're version is fine, otherwise upgrade: `sudo pip install scipy --upgrade`)
 
 ... and the plotting.. There is still a missing backend used by default.
+
     sudo zypper install python-matplotlib
     sudo zypper install python-matplotlib-tk
 
@@ -43,12 +45,12 @@ For the rendering of the plot labels, you'll need latex. There are two options:
 * install everything huge and easy:
 this will give you the full package including docs, but uses up 1GB of diskspace..
 
-    sudo zypper install texlive-latex
+        sudo zypper install texlive-latex
 
 * small and handpicked:
 This gives you a smaller package (150mb; you can further squeeze it if you like..):
 
-    sudo zypper install --no-recommends texlive-latex texlive-type1cm texlive-psnfss texlive-dvips
+        sudo zypper install --no-recommends texlive-latex texlive-type1cm texlive-psnfss texlive-dvips
 
 
 
