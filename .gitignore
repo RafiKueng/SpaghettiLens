@@ -29,26 +29,13 @@ Icon?
 ehthumbs.db
 Thumbs.db
 ~
+.directory
+.kateproject*
 
 # Compiled files #
 ##################
 *.pyc
 
-# only save wiki data files #
-#############################
-!wiki/
-
-wiki/*
-!wiki/data/
-!wiki/INFO.txt
-
-/wiki/data/*
-!/wiki/data/pages/
-
-# glass is already on svn.physik. no need to add it here
-# or only add changed files, to keep track of changes
-##########################################################
-glass*/
 
 # allow for individual starter page
 ##########################################################
