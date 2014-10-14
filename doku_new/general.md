@@ -78,13 +78,24 @@ It could look something like this: (not tested nor used atm...)
 
 ## Install NoSQL database: CouchDB
 
-    sudo zypper in couchdb # the default repro version is broken!
+> OLD STUFF
+>    sudo zypper in couchdb # the default repro version is broken!
+>    
+>    http://software.opensuse.org/download.html?project=home%3AZaWertun%3Adb&package=couchdb
+>    
+>    zypper addrepo http://download.opensuse.org/repositories/home:ZaWertun:db/openSUSE_13.1/home:ZaWertun:db.repo
+>    zypper refresh
+>    zypper install couchdb erlang
+ 
+The versions in the repro of couchdb (1.3) and erlang (16) are NOT compatible! Thats why you should use:
+
+    rpm -i http://download.opensuse.org/repositories/server:/database/openSUSE_13.1/x86_64/erlang-17.3-3.1.x86_64.rpm http://download.opensuse.org/repositories/server:/database/openSUSE_13.1/x86_64/erlang-epmd-17.3-3.1.x86_64.rpm
+    rpm -i http://download.opensuse.org/repositories/server:/database/openSUSE_13.1/x86_64/couchdb-1.6.1-45.1.x86_64.rpm 
     
-    http://software.opensuse.org/download.html?project=home%3AZaWertun%3Adb&package=couchdb
+DONT start the command line version as root: `couchdb`. This will mess up all the rights.. After install, directly start:
     
-    zypper addrepo http://download.opensuse.org/repositories/home:ZaWertun:db/openSUSE_13.1/home:ZaWertun:db.repo
-    zypper refresh
-    zypper install couchdb erlang
+    systemctl enable couchdb
+    systemctl start couchdb
     
 make sure to install the erlang version from the repro, not from opensuse.
 

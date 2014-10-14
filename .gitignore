@@ -50,3 +50,4 @@ py_env/*
 /backend/static/*
 
 /tmp_media/*
+*.kate-swp
