@@ -30,7 +30,6 @@ role_specific = {
     
     # for the role of a worker (there might be many, but only one setup needed usually)
     'worker' : {
-        'foo'           : 'bar_worker',
         'code_dir'      : '/home/ara/rafik/src/SpaghettiLens'
     },
 }
