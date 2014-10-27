@@ -7,15 +7,15 @@ Created on Mon Oct 27 13:43:52 2014
 
 from fabric.api import *
 
-#def runc(s):
-#    return run(s, capture=True)
+def localc(s):
+    return local(s, capture=True)
 
 
-def exists(path, is_dir=False, is_file=False):
-    with settings(warn_only=True):
-        if is_dir:
-            return run("test -d %s" % path).succeeded
-        elif is_file:
-            return run("test -f %s" % path).succeeded
-        else:
-            return run("test -e %s" % path).succeeded
+#def exists(path, is_dir=False, is_file=False):
+#    with settings(warn_only=True):
+#        if is_dir:
+#            return run("test -d %s" % path).succeeded
+#        elif is_file:
+#            return run("test -f %s" % path).succeeded
+#        else:
+#            return run("test -e %s" % path).succeeded
