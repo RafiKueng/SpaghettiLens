@@ -26,8 +26,12 @@ env.roledefs = {
         'hosts': ['swlabs.physik.uzh.ch'],
     },
     
-    'worker': {
+    'worker': {   # the main worker node, where the install and updates should happen
         'hosts': ['taurus.physik.uzh.ch'],
+    },
+    
+    'slave': {   # the other worker nodes, that access the same files as 'worker' due to shared file system
+        'hosts': ['cetus.physik.uzh.ch'],
     },
     
 

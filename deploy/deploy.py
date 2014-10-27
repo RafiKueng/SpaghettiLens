@@ -9,20 +9,27 @@ Created on Thu Oct 16 15:51:20 2014
 from fabric.api import *
 from fabric.utils import *
 from fabric.contrib.console import confirm
+from fabric.colors import *
+
+from fab_tools import *
+
 from pprint import pprint
-import datetime as dt
+from datetime import datetime as dt
 import os
 
-def runc(s):
-    return run(s, capture=True)
+
+
+
+
 
 
 @task(default=True)
 def deploy_server():
     print "instll"
-    _check_or_create_dirs()
+    _check_or_create_dirs([env.code_dir,])
     _install_pip()
     pass
+
 
 
 @task()
@@ -47,39 +54,54 @@ def deploy_worker():
     
     '''
     
-    src_dir  = '/home/ara/rafik/tmp/src/spaghettilens' #TODO don't use remote src folder!
+    curr_branch = local("git symbolic-ref --short -q HEAD", capture=True)
+
+    if curr_branch != 'master':
+        warn(yellow("""
+You're not on the master branch (but on `%s`), but you try to update the live workers.
+Thats probably not what you want to do...
+Check commit your changes and merge with master, then test, then update the worker nodes."""%curr_branch))
+        if not confirm("Continue anyways?", default=False):
+            abort("Aborted due to wrong local branch")
+        
+        
+    
+    #src_dir  = '/home/ara/rafik/tmp/src/spaghettilens' #TODO don't use remote src folder!
     inst_dir = '/home/ara/rafik/tmp/apps/spaghettilens'
     bin_dir  = '/home/ara/rafik/tmp/local/bin'
     
     pyenv_dir = 'py_env'
     
-    _check_or_create_dirs([src_dir, inst_dir, bin_dir])
+    _check_or_create_dirs([inst_dir, bin_dir])
 
-    if exists(src_dir + '/.git'):
-        with cd(src_dir):
+    with cd(src_dir):
+        if exists(src_dir + '/.git'):
             run('git pull origin master')
-    else:
-        with cd(src_dir):
+        else:
             run('git clone --branch master --depth 1 https://github.com/RafiKueng/SpaghettiLens.git .')
 
     with cd(src_dir):
-        run('git fetch --tags', capture=True)
-        lmt_version = runc('git describe --abbrev=6 --tags --match "lmt\.v[0-9]*"')
-        gls_version = runc('git describe --abbrev=0 --tags --match "gls\.v[0-9]*"')
+        run('git fetch --tags')
+        #lmt_version = run('git describe --abbrev=6 --tags --match "lmt\.v[0-9]*"')
+        lmt_version = run('git describe --abbrev=6 --tags --match "v[0-9]*"') #TODO delete this once switched to new naming schema
+        gls_version = run('git describe --abbrev=0 --tags --match "gls\.v[0-9]*"')
         
         t = lmt_version.split('-')
         if len(t)==3:
             version, ahead, hashstr = t
         else:
-            version = t
-            ahead = ""
+            version = t[0]
+            ahead = "0"
             hashstr = ""
         major, minor, revis = version[1:].split('.')
         
-        dt.now().strftime("%Y%m%d%H%M")
+        timestamp = dt.now().strftime("%Y%m%d%H%M")
         
         lmt_version = (int(major), int(minor), int(revis), int(ahead), hashstr, timestamp)
         gls_version = int(gls_version[5:])
+        
+        pprint(lmt_version)
+        pprint(gls_version)
         
 
     #get glass
@@ -87,14 +109,26 @@ def deploy_worker():
 
 
     # copy files:
-    dirlist = ['backend']
+    dirlist = ['backend', 'tmp_media']
+    
+    # which dirs and files to copy from src to inst_dir
+    paths_to_copy = ['backend']
+
+    full_dirlist = [inst_dir + d for d in dirlist]
+
+    _check_or_create_dirs(full_dirlist)
+    
+    for p in paths_to_copy:
+        pass
+
     
     
     # setup virtualenv
     with cd(src_dir):
+
         pydir = os.path.join(src_dir, pyenv_dir)
-        
-        if not exists(pydir, 'bin/activate'):
+            
+        if not exists(os.path.join(pydir, 'bin/activate'), is_file=True):
             run('virtualenv $s' % pyenv_dir)
             
             with prefix('source %s' % (os.path.join(pyenv_dir, 'bin/activate'))):
@@ -114,14 +148,10 @@ def deploy_worker():
 
 def _check_or_create_dirs(dirs=None):
     
-    if dirs==None:
-        dirs = [
-            env.code_dir,
-        ]
     
-    pprint(env)
+    #pprint(env)
     
-    puts("cocd with %s"%env.foo)
+    #puts("cocd with %s"%env.foo)
 
     with settings(warn_only=True):
         for d in dirs:
