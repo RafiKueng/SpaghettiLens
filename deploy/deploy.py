@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+
+
 Created on Thu Oct 16 15:51:20 2014
 
 @author: rafik
@@ -21,9 +23,13 @@ from fabric.contrib import console, files, project
 
 from fab_tools import *
 
+from settings import _ as _S
+
+
 from pprint import pprint
 from datetime import datetime as dt
 import os
+from attrdict import AttrDict
 
 
 
@@ -31,10 +37,10 @@ import os
 
 
 
-@task(default=True)
+@task()
 def deploy_server():
     print "instll"
-    _check_or_create_dirs([env.code_dir,])
+    _check_or_create_dirs([_S.env.code_dir,])
     _install_pip()
     pass
 
@@ -43,12 +49,10 @@ def deploy_server():
 @task()
 def deploy_worker():
     
-    
     curr_branch = local("git symbolic-ref --short -q HEAD", capture=True)
 
     if curr_branch != 'master':
-        warn(colors.yellow("""
-You're not on the master branch (but on `%s`), but you try to update the live workers.
+        warn(colors.yellow("""You're not on the master branch (but on `%s`), but you try to update the workers.
 Thats probably not what you want to do...
 Check commit your changes and merge with master, then test, then update the worker nodes."""%curr_branch))
         if not console.confirm("Continue anyways?", default=False):
@@ -56,11 +60,10 @@ Check commit your changes and merge with master, then test, then update the work
         
         
     
-    #src_dir  = '/home/ara/rafik/tmp/src/spaghettilens'
-    inst_dir = '/home/ara/rafik/tmp/apps/spaghettilens'
-    bin_dir  = '/home/ara/rafik/tmp/local/bin'
+    inst_dir = _S.BASE_DIR  #'/home/ara/rafik/tmp/apps/spaghettilens'
+    bin_dir  = _S.BIN_DIR   #'/home/ara/rafik/tmp/local/bin'
     
-    pyenv_dir = 'py_env'
+    pyenv_dir = _S.PYENV_DIR # 'py_env'
     
     _check_or_create_dirs([inst_dir, bin_dir])
 
@@ -98,14 +101,19 @@ Check commit your changes and merge with master, then test, then update the work
     _check_or_create_dirs([rinst_dir])
 
     dirlist = [
-        'backend',
+        'apps',
         'tmp_media',
         'deploy',
     ]
+    
     paths_to_copy = [
-        'backend',
-        'deploy/pip_requirements_worker.txt'
+        'apps',
     ]
+
+    files_to_copy = [
+        PIP_REQ_FILE,
+    ]
+
 
 
     with cd(rinst_dir):
@@ -114,8 +122,9 @@ Check commit your changes and merge with master, then test, then update the work
         _check_or_create_dirs(full_dirlist)
         
         for loc in paths_to_copy:
-            #project.rsync_project(local_dir=loc, remote_dir=rinst_dir, exclude='.git')
-            put(local_path=loc, remote_path=loc)
+            put(local_path=loc, remote_path=rinst_dir)
+        for fil in files_to_copy:
+            put(local_path=fil, remote_path=os.path.join(rinst_dir, fil))
         
         # setup python, pip and virtualenv
         # assumption: we have  python, but nothing else
@@ -140,8 +149,62 @@ Check commit your changes and merge with master, then test, then update the work
         run('virtualenv %s' %pyenv_dir)
         
         with prefix('source %s' % os.path.join(pyenv_dir, 'bin/activate')):
-            run('pip install -r deploy/pip_requirements_worker.txt')
             
+            # instal python packages into virtualenv
+            run('pip install -r {PIP_REQ_FILE}'.format(**_S))
+            
+        # set up the config files
+        sett = _S.django_celery_worker_config
+        sett.update({'ROLE': 'production_worker'}) # or use env.django_role
+
+        #pprint(sett)
+        
+        cstr = _generate_django_config_file_str(sett)
+
+        pprint(cstr)
+        
+        run('mkdir -p {APPS_SETTINGS_PATH}'.format(**_S))        #TODO remove this, it should be in the main tree by now
+        run('touch {APPS_MACHINE_SETTINGS_FILE}'.format(**_S))
+        files.append(_S.APPS_MACHINE_SETTINGS_FILE, cstr, escape=False)
+
+        puts(colors.magenta("Getting Secrets from file or console..."))
+        # set up the secrets in the config file
+        required_secrets = [
+            'DATABASE_USER',
+            'DATABASE_PASSWORD',
+            'BROKER_USER',
+            'BROKER_PASSWORD'
+        ]
+        secrets = {}
+        
+        try:
+            import secret_settings
+        except ImportError:
+            secret_settings = None
+            warn(colors.yellow('No predefined secrets found in secret_settings.py!\nPlease enter the secrets manually:'))
+        for sec in required_secrets:
+            try:
+                val = secret_settings._[sec]
+            except (KeyError, AttributeError):
+                val = ''
+            val = console.prompt('%s: ' % sec, default=val)
+            secrets[sec] = val
+            
+        cstr = _generate_django_config_file_str(secrets)
+        files.append(_S.APPS_SECRET_SETTINGS_FILE, cstr, escape=False)
+            
+            
+            # set up the start scripts
+            
+            
+            # run the tests
+
+
+
+
+
+
+
     
     with cd(inst_dir):
         if files.exists('_current'):
@@ -176,19 +239,22 @@ Check commit your changes and merge with master, then test, then update the work
 
 def _check_or_create_dirs(dirs=None):
     
+    for d in dirs:
+        run("mkdir -p %s" % d)
+    
     
     #pprint(env)
     
     #puts("cocd with %s"%env.foo)
 
-    with settings(warn_only=True):
-        for d in dirs:
-            if run("test -d %s" % d).failed:
-                if run("mkdir -p %s" % d).failed:
-                    print "using sudo to create dir!"                
-                    sudo("mkdir -p %s" % d)
-                    sudo("chmod 777 -r %s" % s) #TODO test this line
-                    #sudo("chown %s %s" % (user, d)) #TODO test this line
+#    with settings(warn_only=True):
+#        for d in dirs:
+#            if run("test -d %s" % d).failed:
+#                if .failed:
+#                    print "using sudo to create dir!"                
+#                    sudo("mkdir -p %s" % d)
+#                    sudo("chmod 777 -r %s" % s) #TODO test this line
+#                    #sudo("chown %s %s" % (user, d)) #TODO test this line
 
 
 def _install_pip():
@@ -206,5 +272,49 @@ def _init_or_update_git():
         #run("touch app.wsgi")
         
         
+        
+        
+def _generate_django_config_file_str(settings_dic):
+    
+    sett = {
+        'DATABASE' : {
+            'NAME'  : 'blabla',
+            'CONN'  : {'H':12, 'P':154}
+        },
+        'USER' : 'Bla'
+    }
+    
+
+    def d_eval(val, prefix=''):
+        #print val, prefix
+
+        if isinstance(val,dict) or isinstance(val, AttrDict):
+            if len(prefix)>0:
+                prefix += '_'
+            s = []
+            for k, v in val.items():
+                s.extend(d_eval(v, prefix+k))
+            return s
+        else:
+            if len(prefix) > 24:
+                assert "error in creating config file.. string too lnag, adjust script"
+            return ['%-24s = "%s"' % (prefix, str(val))]
+    
+    return '\n'.join(sorted(d_eval(settings_dic)))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
         
