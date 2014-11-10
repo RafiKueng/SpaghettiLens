@@ -23,7 +23,7 @@ from fabric.contrib import console, files, project
 
 from fab_tools import *
 
-from settings import _ as _S
+from settings import settings as _S
 
 
 from pprint import pprint
@@ -46,6 +46,8 @@ def deploy_server():
 
 
 
+
+
 @task()
 def deploy_worker():
     
@@ -60,7 +62,7 @@ Check commit your changes and merge with master, then test, then update the work
         
         
     
-    inst_dir = _S.BASE_DIR  #'/home/ara/rafik/tmp/apps/spaghettilens'
+    inst_dir = _S.ROOT_PATH  #'/home/ara/rafik/tmp/apps/spaghettilens'
     bin_dir  = _S.BIN_DIR   #'/home/ara/rafik/tmp/local/bin'
     
     pyenv_dir = _S.PYENV_DIR # 'py_env'
@@ -100,18 +102,33 @@ Check commit your changes and merge with master, then test, then update the work
     rinst_dir = os.path.join(inst_dir, version_str) #'real' install dir
     _check_or_create_dirs([rinst_dir])
 
-    dirlist = [
-        'apps',
-        'tmp_media',
-        'deploy',
-    ]
+#    dirlist = [
+#        'apps',
+#        'tmp_media',
+#        'deploy',
+#    ]
+#    
+#    paths_to_copy = [
+#        'apps',
+#    ]
+#
+#    files_to_copy = [
+#        _S.PIP_REQ_FILE,
+#    ]
+
     
-    paths_to_copy = [
-        'apps',
+    dirlist = [
+        _S.APPS.DIR,
+        _S.APPS.MEDIA_DIR,
+        _S.TMPDIR,
+    ]
+    dirsss = [
+        (_S.SRC.DJANGODIR, _S.APPS.DIR)  
     ]
 
-    files_to_copy = [
-        PIP_REQ_FILE,
+    
+    filesss = [
+        (_S.SRC.PIP_REQ_RPATH, os.path.join(_S.TMPDIR, _S.SRC.PIP_REQ_FILE))    
     ]
 
 
@@ -121,10 +138,14 @@ Check commit your changes and merge with master, then test, then update the work
         full_dirlist = [os.path.join(rinst_dir, d) for d in dirlist]
         _check_or_create_dirs(full_dirlist)
         
-        for loc in paths_to_copy:
-            put(local_path=loc, remote_path=rinst_dir)
-        for fil in files_to_copy:
-            put(local_path=fil, remote_path=os.path.join(rinst_dir, fil))
+#        for loc in paths_to_copy:
+#            put(local_path=loc, remote_path=rinst_dir)
+#        for fil in files_to_copy:
+#            put(local_path=fil, remote_path=os.path.join(rinst_dir, fil))
+        for srcdir, destdir in dirsss:
+            put(local_path=srcdir, remote_path=os.path.join(rinst_dir, destdir))
+        for srcfile, destdir in filesss:
+            put(local_path=srcfile, remote_path=os.path.join(rinst_dir, destdir))
         
         # setup python, pip and virtualenv
         # assumption: we have  python, but nothing else
@@ -151,7 +172,7 @@ Check commit your changes and merge with master, then test, then update the work
         with prefix('source %s' % os.path.join(pyenv_dir, 'bin/activate')):
             
             # instal python packages into virtualenv
-            run('pip install -r {PIP_REQ_FILE}'.format(**_S))
+            run('pip install -r {TMPDIR}/{SRC.PIP_REQ_FILE}'.format(**_S))
             
         # set up the config files
         sett = _S.django_celery_worker_config
@@ -163,9 +184,9 @@ Check commit your changes and merge with master, then test, then update the work
 
         pprint(cstr)
         
-        run('mkdir -p {APPS_SETTINGS_PATH}'.format(**_S))        #TODO remove this, it should be in the main tree by now
-        run('touch {APPS_MACHINE_SETTINGS_FILE}'.format(**_S))
-        files.append(_S.APPS_MACHINE_SETTINGS_FILE, cstr, escape=False)
+        run('mkdir -p {APPS.SETTINGS_RPATH}'.format(**_S))        #TODO remove this, it should be in the main tree by now
+        run('touch {APPS.SETTINGS_MACHINE}'.format(**_S))
+        files.append(_S.APPS.SETTINGS_MACHINE, cstr, escape=False)
 
         puts(colors.magenta("Getting Secrets from file or console..."))
         # set up the secrets in the config file
@@ -191,7 +212,7 @@ Check commit your changes and merge with master, then test, then update the work
             secrets[sec] = val
             
         cstr = _generate_django_config_file_str(secrets)
-        files.append(_S.APPS_SECRET_SETTINGS_FILE, cstr, escape=False)
+        files.append(_S.APPS.SETTINGS_SECRETS, cstr, escape=False)
             
             
             # set up the start scripts

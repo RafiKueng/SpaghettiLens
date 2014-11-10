@@ -1,5 +1,15 @@
 # -*- coding: utf-8 -*-
 """
+
+note the use of lambda functions that get evauated if needed
+(so default values could be changed on the fly, and depending values change..)
+
+definitions:
+- dir: single folder
+- path full path
+- URL = HOST + RESSLOC + FILE
+
+
 Created on Fri Oct 17 14:11:04 2014
 
 @author: rafik
@@ -25,15 +35,64 @@ _.WORKER_TEST_HOSTS = ['192.168.100.2']
 _.WORKER_PROD_HOSTS = ['taurus.physik.uzh.ch']
 
 
-_.PYENV_DIR = 'py_env'
+_.PYENV_DIR                     = 'py_env'
 
 
-_.APPS_BASE_PATH              = 'apps'
-_.APPS_SETTINGS_PATH          = 'apps/apps/settings'
-_.APPS_BASE_SETTINGS_FILE     = join(_.APPS_SETTINGS_PATH, 'base.py')
-_.APPS_MACHINE_SETTINGS_FILE  = join(_.APPS_SETTINGS_PATH, 'machine.py')
-_.APPS_SECRET_SETTINGS_FILE   = join(_.APPS_SETTINGS_PATH, 'secrets.py')
 
+
+_.ROOT_PATH                     = '/data/labs.spacewarps.org'
+_.HOST                          = 'labs.spacewarps.org'
+
+_.HTDOCS_DIR                    = 'htdocs'
+_.HTDOCS_PATH_                  = lambda: join(_.ROOT_PATH, _.HTDOCS_DIR)
+
+
+'''
+_.                              = ''
+_.                              = ''
+_.                              = ''
+_.                              = ''
+_.                              = ''
+'''
+
+# where is stuff in the dev repro
+_.SRC                           = AttrDict()
+_.SRC.DJANGODIR                 = 'apps'
+_.SRC.HTMLDIR                   = 'html'
+_.SRC.TEMPLATES                 = 'deploy/files'
+_.SRC.PIP_REQ_FILE              = 'pip_requirements_worker.txt'
+_.SRC.PIP_REQ_RPATH_            = lambda: join(_.SRC.TEMPLATES, _.SRC.PIP_REQ_FILE)
+
+_.TMPDIR                        = 'ttemp'
+
+_.APPS                          = AttrDict()
+_.APPS.DIR                      = 'django_app'                                  # the root of the django project (manage.py is in here)
+_.APPS.PATH_                    = lambda: join(_.ROOT_PATH, _.APPS.DIR)
+_.APPS.PROJECTNAME              = 'apps'                                        # the name of the django project
+
+#_.APPS.SETTINGS                 = AttrDict()
+_.APPS.SETTINGS_RPATH_          = lambda: join(_.APPS.DIR, _.APPS.PROJECTNAME)
+_.APPS.SETTINGS_BASE_           = lambda: join(_.APPS.SETTINGS_RPATH_(), 'base.py')
+_.APPS.SETTINGS_MACHINE_        = lambda: join(_.APPS.SETTINGS_RPATH_(), 'machine.py')
+_.APPS.SETTINGS_SECRETS_        = lambda: join(_.APPS.SETTINGS_RPATH_(), 'secrets.py')
+
+_.APPS.MEDIA_DIR                = 'tmp_media'
+
+#
+#_.APPS_BASE_PATH              = 'apps'
+#_.APPS_SETTINGS_PATH          = 'apps/apps/settings'
+#_.APPS_BASE_SETTINGS_FILE     = join(_.APPS_SETTINGS_PATH, 'base.py')
+#_.APPS_MACHINE_SETTINGS_FILE  = join(_.APPS_SETTINGS_PATH, 'machine.py')
+#_.APPS_SECRET_SETTINGS_FILE   = join(_.APPS_SETTINGS_PATH, 'secrets.py')
+
+
+
+_.SPAGHETTI                     = AttrDict()
+_.SPAGHETTI.HTMLFILES_DIR       = 'spaghetti'
+_.SPAGHETTI.HTMLFILES_PATH_     = lambda: join(_.HTDOCS_PATH_(), _.SPAGHETTI.HTMLFILES_DIR)
+
+_.SPAGHETTI.RESSLOC             = 'spaghetti'                                   # the part in the url...
+_.SPAGHETTI.URL_                = lambda: _.HOST + _.SPAGHETTI.RESSLOC
 
 
 
@@ -83,7 +142,7 @@ elif len(env.roles)==0:
         abort("User abort")
 
 if len(env.tasks)>1:
-    warn("More than one task specified (or none), Go slowly, young padawan..\nUse fab --list")
+    abort("More than one task specified (or none), Go slowly, young padawan..\nUse fab --list")
     
 
 if len(env.tasks)==1 and len(env.roles)==1:
@@ -101,12 +160,14 @@ if len(env.tasks)==1 and len(env.roles)==1:
         }
         
         if role == 'dev':
-            _.BASE_DIR = '/tmp/app/spaghetti'
-            _.BIN_DIR  = '/tmp/app/bin_spaghetti'
+            _.ROOT_PATH = '/tmp/app/swlabs_worker'
+            _.BIN_DIR   = '/tmp/app/swlabs_worker_bin'
+            
+            _.TMPDIR    = 'worker_tmp'
             
         elif role in ['test', 'prod']:
-            _.BASE_DIR = '/home/ara/rafik/tmp/apps/spaghetti'
-            _.BIN_DIR  = '/home/ara/rafik/tmp/local/bin'
+            _.ROOT_PATH = '/home/ara/rafik/tmp/apps/swlabs_worker'
+            _.BIN_DIR   = '/home/ara/rafik/tmp/local/bin'
             
             
 
@@ -117,3 +178,34 @@ if len(env.tasks)==1 and len(env.roles)==1:
             'test'  : [''],
             'prod'  : ['']        
         }
+
+
+#
+# WRITE DOWN THE ACTUAL CONFIG
+#
+
+def config_r(_):
+    for k, v in _.items():
+        if isinstance(v, AttrDict):
+            v = config_r(v)
+
+        else:
+            #new =  AttrDict()
+            if k.endswith('_'):
+                k = k[:-1]
+                try:
+                    v = v()
+                except TypeError:
+                    pass
+
+        #new[k] = v
+        _[k] = v
+        #print k, v
+    return _
+    
+    
+
+settings = config_r(_)
+
+
+
