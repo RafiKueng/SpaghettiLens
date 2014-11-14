@@ -37,11 +37,17 @@ _.WORKER_PROD_HOSTS = ['taurus.physik.uzh.ch']
 
 _.PYENV_DIR                     = 'py_env'
 
+_.TMPDIR                        = 'ttemp'
+_.TMPPATH_                      = lambda: join(_.ROOT_PATH, _.TMPDIR)
+
 
 
 
 _.ROOT_PATH                     = '/data/labs.spacewarps.org'
 _.HOST                          = 'labs.spacewarps.org'
+
+
+
 
 _.HTDOCS_DIR                    = 'htdocs'
 _.HTDOCS_PATH_                  = lambda: join(_.ROOT_PATH, _.HTDOCS_DIR)
@@ -63,7 +69,6 @@ _.SRC.TEMPLATES                 = 'deploy/files'
 _.SRC.PIP_REQ_FILE              = 'pip_requirements_worker.txt'
 _.SRC.PIP_REQ_RPATH_            = lambda: join(_.SRC.TEMPLATES, _.SRC.PIP_REQ_FILE)
 
-_.TMPDIR                        = 'ttemp'
 
 _.APPS                          = AttrDict()
 _.APPS.DIR                      = 'django_app'                                  # the root of the django project (manage.py is in here)
@@ -75,6 +80,7 @@ _.APPS.SETTINGS_RPATH_          = lambda: join(_.APPS.DIR, _.APPS.PROJECTNAME)
 _.APPS.SETTINGS_BASE_           = lambda: join(_.APPS.SETTINGS_RPATH_(), 'base.py')
 _.APPS.SETTINGS_MACHINE_        = lambda: join(_.APPS.SETTINGS_RPATH_(), 'machine.py')
 _.APPS.SETTINGS_SECRETS_        = lambda: join(_.APPS.SETTINGS_RPATH_(), 'secrets.py')
+_.APPS.SETTINGS_VERSION_        = lambda: join(_.APPS.SETTINGS_RPATH_(), 'version.py')
 
 _.APPS.MEDIA_DIR                = 'tmp_media'
 
@@ -85,7 +91,8 @@ _.APPS.MEDIA_DIR                = 'tmp_media'
 #_.APPS_MACHINE_SETTINGS_FILE  = join(_.APPS_SETTINGS_PATH, 'machine.py')
 #_.APPS_SECRET_SETTINGS_FILE   = join(_.APPS_SETTINGS_PATH, 'secrets.py')
 
-
+_.EXTAPPS                       = AttrDict()
+_.EXTAPPS.DIR                   = 'ext_apps'
 
 _.SPAGHETTI                     = AttrDict()
 _.SPAGHETTI.HTMLFILES_DIR       = 'spaghetti'
@@ -94,7 +101,10 @@ _.SPAGHETTI.HTMLFILES_PATH_     = lambda: join(_.HTDOCS_PATH_(), _.SPAGHETTI.HTM
 _.SPAGHETTI.RESSLOC             = 'spaghetti'                                   # the part in the url...
 _.SPAGHETTI.URL_                = lambda: _.HOST + _.SPAGHETTI.RESSLOC
 
-
+_.GLASS                         = AttrDict()
+_.GLASS.TMPBUILDDIR             = 'tmp_glass'
+_.GLASS.REPROURL                = 'https://github.com/RafiKueng/glass.git'
+_.GLASS.COMMIT                  = '7d8413280b'
 
 
 # NOT TUE ANYMORE.. I HOPE PORTNUMERSS ECT WORK AS STRINGS AS WELL

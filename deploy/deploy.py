@@ -30,9 +30,12 @@ from pprint import pprint
 from datetime import datetime as dt
 import os
 from attrdict import AttrDict
+import tempfile
+import shutil
 
 
 
+DEBUG = True
 
 
 
@@ -95,6 +98,19 @@ Check commit your changes and merge with master, then test, then update the work
     gls_version = int(gls_version[5:])
     
     version_str = '%s__%s__%s.%s.%s_%s' % (timestamp, hashstr, major, minor, revis, ahead)
+
+    version = {
+        'major': major,
+        'minor': minor,
+        'revis': revis,
+        'ahead': ahead,
+        'hash' : hashstr,
+        'timestamp': timestamp,
+        'gls_file' : gls_version,
+        'glass': '',
+        'version_str' : version_str,
+    }
+
     
     #pprint(lmt_version)
     #pprint(gls_version)
@@ -143,7 +159,13 @@ Check commit your changes and merge with master, then test, then update the work
 #        for fil in files_to_copy:
 #            put(local_path=fil, remote_path=os.path.join(rinst_dir, fil))
         for srcdir, destdir in dirsss:
-            put(local_path=srcdir, remote_path=os.path.join(rinst_dir, destdir))
+            #put(local_path=srcdir, remote_path=os.path.join(rinst_dir, destdir))
+            project.rsync_project(
+                remote_dir=os.path.join(rinst_dir, destdir),
+                local_dir=os.path.join(srcdir, '') #appends trialing slash
+                )
+            print srcdir, rinst_dir, destdir
+            
         for srcfile, destdir in filesss:
             put(local_path=srcfile, remote_path=os.path.join(rinst_dir, destdir))
         
@@ -214,15 +236,82 @@ Check commit your changes and merge with master, then test, then update the work
         cstr = _generate_django_config_file_str(secrets)
         files.append(_S.APPS.SETTINGS_SECRETS, cstr, escape=False)
             
+        
+        # get and setup glass
+
+        
+        #we compile glass and its libraries with the make file in a temp dir and then rearrange things
+        
+#            tmpglass = os.path.join(_S.TMPPATH, 'glasstmp')
+        tmpglass = _S.GLASS.TMPBUILDDIR
+        
+        run('mkdir -p %s' % tmpglass)
+        
+#            with cd(_S.TMPPATH):
+        run('git clone %s %s' % (_S.GLASS.REPROURL, tmpglass))
+        
+        with cd(tmpglass):
+            run('git checkout %s' % _S.GLASS.COMMIT)
+
+        with cd(tmpglass):
+            with prefix('source %s' % os.path.join('..', pyenv_dir, 'bin/activate')):
+                with settings(warn_only=True):
+                    run('make -j4')
+                    run('make')
+                
+        
+        # which dirs / files to copy where..
+        dirss  = (
+            ('build/lib.linux-x86_64-2.7/',                 '%s/' % _S.EXTAPPS.DIR ),
+            ('build/glpk_build/lib/',                       '%s/lib/' % _S.PYENV_DIR ),
+            ('build/python-glpk/lib.linux-x86_64-2.7/glpk', '%s/' % _S.EXTAPPS.DIR ),
+#            ('/tmp/glass/build/lib.linux-x86_64-2.7/glass/', '/tmp/app/swlabs_worker/_current/ext_apps/glass/'),
+#            ('/tmp/glass/build/glpk_build/lib/', '/tmp/app/swlabs_worker/_current/py_env/lib/'),
+#            ('/tmp/glass/build/python-glpk/lib.linux-x86_64-2.7/glpk/','/tmp/app/swlabs_worker/_current/ext_apps/')
+        )
+
+        for srcdir, destdir in dirss:
+            run('mkdir -p %s' % destdir)
+            run('rsync -pthrvz {src} {dest}'.format(**{
+                'src'  : os.path.join(tmpglass, srcdir),
+                'dest' : os.path.join(rinst_dir, destdir),
+            }))
             
-            # set up the start scripts
+        with cd(os.path.join(rinst_dir, _S.PYENV_DIR, 'lib')):
+            run('ln -s libglpk.so.0.32.0 libglpk.so.0')
+                
+        
+        # path the env for glass ext libs
+        sstr  = 'LD_LIBRARY_PATH="$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH"\nexport LD_LIBRARY_PATH\n\n'
+        sstr += 'PYTHONPATH="$PYTHONPATH:{ROOT_PATH}/_current/{EXTAPPS.DIR}/glpk"\nexport PYTHONPATH\n'.format(**_S)
+        files.append(os.path.join(_S.PYENV_DIR, 'bin','setenv'), sstr)
+        files.append(os.path.join(_S.PYENV_DIR, 'bin','activate'), 'source setenv')
+        
+        
+
+        #shutil.rmtree(tmpdir)
+        version['glass'] = _S.GLASS.COMMIT
+        
+        
+        # create versions file to keeep track of version numbers
+        cstr = '# version numbers\n\nversion = '
+#        for k, v in version.items():
+#            cstr += '%s = \'%s\'\n' % (str(k), str(v))
+        cstr += repr(version).replace(',', ',\n   ').replace('{', '{\n    ').replace('}', '\n}')
+        files.append(_S.APPS.SETTINGS_VERSION, cstr, escape=False)
+
+
+            
+        # set up the start scripts
             
             
-            # run the tests
+        # run the tests
 
 
 
-
+        # FOR DEBUG ONLY, make site pagackes available, so no need to compile numpy ect
+        if DEBUG:
+            run('rm %s' % (os.path.join(rinst_dir, _S.PYENV_DIR, 'lib', 'python2.7','no-global-site-packages.txt')))
 
 
 
