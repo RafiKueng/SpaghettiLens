@@ -23,6 +23,8 @@ from fabric.api import env, abort, warn
 from fabric.contrib.console import confirm
 from fabric import colors
 
+from fab_tools import *
+
 _ = AttrDict()
 
 #
@@ -146,7 +148,8 @@ _.ROLEDEFS = {'dev':'',}
 if len(env.roles)>1: # or len(env.roles)==0:
     abort("More than one role specified, Go slowly, young padawan..")
 elif len(env.roles)==0:
-    if confirm(colors.yellow("no role selected!\nUse default [dev]? (N to abort)"), default=True):
+    warnn("no role selected!")
+    if confirm("Use default [dev]? (N to abort)", default=True):
         env.roles = ['dev']
     else:
         abort("User abort")

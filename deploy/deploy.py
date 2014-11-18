@@ -10,16 +10,11 @@ Created on Thu Oct 16 15:51:20 2014
 
 from fabric.api import *
 from fabric.utils import *
+
 from fabric import operations as ops
-
 from fabric import colors
-
 from fabric.contrib import console, files, project
 
-#from fabric.contrib.console import confirm
-#from fabric.contrib.files import *
-#from fabric.contrib.project import *
-#from fabric.colors import *
 
 from fab_tools import *
 
@@ -35,15 +30,18 @@ import shutil
 
 
 
-DEBUG = True
+DEBUG = False
 
+# _S are the static settings (not to be updated)
+# _E are the current settings
+_E = env
 
 
 
 @task()
 def deploy_server():
     print "instll"
-    _check_or_create_dirs([_S.env.code_dir,])
+    check_or_create_dirs([_S.env.code_dir,])
     _install_pip()
     pass
 
@@ -54,32 +52,188 @@ def deploy_server():
 @task()
 def deploy_worker():
     
-    curr_branch = local("git symbolic-ref --short -q HEAD", capture=True)
+    _check_if_local_branch_is_master()
+    _generate_version_information()
+    _setup_dirs_and_copy_files_worker()
 
-    if curr_branch != 'master':
-        warn(colors.yellow("""You're not on the master branch (but on `%s`), but you try to update the workers.
-Thats probably not what you want to do...
-Check commit your changes and merge with master, then test, then update the worker nodes."""%curr_branch))
-        if not console.confirm("Continue anyways?", default=False):
-            abort("Aborted due to wrong local branch")
+        
+    with cd(_E.INSTALL_DIR):
+
+        _setup_py_pip_venv()
+        _setup_django_config_files()            
+        _build_and_setup_glass()        
+        
+        # set up the start scripts
+            
+        # run the tests
+
+        # FOR DEBUG ONLY, make site pagackes available, so no need to compile numpy ect
+        if DEBUG:
+            #run('rm %s' % (os.path.join(_E.INSTALL_DIR, _S.PYENV_DIR, 'lib', 'python2.7','no-global-site-packages.txt')))
+            pass # we already enabled site packages, because no need to build numpy..
+
+
+
+    
+    with cd(_S.ROOT_PATH):
+        if files.exists('_current'):
+            run('rm _current')
+        run('ln -s %s _current' % _E.VERSION.version_str)
+
+        
+        if not DEBUG:
+            run('rm -rf _current/{TMPDIR}'.format(**_S))
+        else:
+            debugmsg("Skipping cleanup")
         
         
+        
+    # create startup scripts
     
-    inst_dir = _S.ROOT_PATH  #'/home/ara/rafik/tmp/apps/spaghettilens'
-    bin_dir  = _S.BIN_DIR   #'/home/ara/rafik/tmp/local/bin'
-    
-    pyenv_dir = _S.PYENV_DIR # 'py_env'
-    
-    _check_or_create_dirs([inst_dir, bin_dir])
+        
 
-#    with cd(src_dir):
-#        if exists(src_dir + '/.git'):
-#            run('git pull origin master')
-#        else:
-#            run('git clone --branch master --depth 1 https://github.com/RafiKueng/SpaghettiLens.git .')
+
+
+
+
+
+
+def _generate_django_config_file_str(settings_dic):
+
+# FOR TESTING _generate...
+#    sett = AttrDict({
+#        'DATABASE' : {
+#            'NAME'  : 'blabla',
+#            'CONN'  : {'H':12, 'P':154}
+#        },
+#        'USER' : 'Bla'
+#    })
+    
+    def d_eval(val, prefix=''):
+        #print val, prefix
+
+        if isinstance(val,dict) or isinstance(val, AttrDict):
+            if len(prefix)>0:
+                prefix += '_'
+            s = []
+            for k, v in val.items():
+                s.extend(d_eval(v, prefix+k))
+            return s
+        else:
+            if len(prefix) > 24:
+                assert "error in creating config file.. string too long, adjust script"
+            v = ("'%s'"%str(val)) if type(val)==str else str(val) # only put string in '..'
+            #print prefix, v
+            return ['%-24s = %s' % (prefix, v)]
+    
+    return '\n'.join(sorted(d_eval(settings_dic)))
+
+
+
+
+
+
+def _setup_py_pip_venv():
+    '''setup python, pip and virtualenv
+    
+    assumption:
+    * we have  python, but nothing else
+    * will be installed in the current dir
+    solution: create a local python (~~/.local/bin)
+    which is used to create a virtualenv
+    
+    http://forcecarrier.wordpress.com/2013/07/26/installing-pip-virutalenv-in-sudo-free-way/
+    '''
+    
+    inform("Setup Python, Pip and the VirtualEnv")
+
+    with settings(warn_only=True):
+        if run('python --version').failed:
+            abort('No python available remote... aborting')
+        if run('pip -V').failed:
+            warnn('no pip found remote. getting and installing a remote version into ~/.local/bin')
+            run('curl -O https://bootstrap.pypa.io/get-pip.py')
+            run('python get-pip.py --user')
+            warnn('Make sure the local pip is on path "~/.local/bin" (~/.bashrc)')
+            if not console.confirm('Finished putting it on path?'):
+                abort('then do it now!!')
+
+    run('pip install --user virtualenv')
+    
+    run('virtualenv --system-site-packages %s' %_S.PYENV_DIR) #using numpy from system..
+    
+    # instal python packages into virtualenv
+    with prefix('source %s' % os.path.join(_S.PYENV_DIR, 'bin/activate')):
+        if not DEBUG:
+            run('pip install -Ir {TMPDIR}/{SRC.PIP_REQ_FILE}'.format(**_S))
+        else:
+            debugmsg('skipping local installation of python modules') # because build of numpy take some time..
+
+
+
+
+
+
+def _setup_django_config_files():
+    ''' set up the config files
+    Assumptions:
+    * we are currently in the install dir..
+    '''
+
+    inform('Setup Django Configuration Files')
+
+    sett = _S.django_celery_worker_config
+    sett.update({'ROLE': 'production_worker'}) # or use env.django_role
+
+    cstr = _generate_django_config_file_str(sett)
+
+    run('mkdir -p {APPS.SETTINGS_RPATH}'.format(**_S))        #TODO remove this, it should be in the main tree by now
+    run('touch {APPS.SETTINGS_MACHINE}'.format(**_S))
+    files.append(_S.APPS.SETTINGS_MACHINE, cstr) #, escape=False)
+
+    puts(colors.magenta("Getting Secrets from file or console..."))
+    # set up the secrets in the config file
+    required_secrets = [
+        'DATABASE_USER',
+        'DATABASE_PASSWORD',
+        'BROKER_USER',
+        'BROKER_PASSWORD'
+    ]
+    secrets = {}
+    
+    try:
+        import secret_settings
+    except ImportError:
+        secret_settings = None
+        warnn('No predefined secrets found in secret_settings.py!\nPlease enter the secrets manually:')
+    for sec in required_secrets:
+        try:
+            val = secret_settings._[sec]
+        except (KeyError, AttributeError):
+            val = ''
+        if not DEBUG:
+            val = console.prompt('%s: ' % sec, default=val)
+        else:
+            debugmsg('skipping confirmation of secret settings (%s)'%sec)
+        secrets[sec] = val
+        
+    cstr = _generate_django_config_file_str(secrets)
+    files.append(_S.APPS.SETTINGS_SECRETS, cstr)
+
+
+    # create versions file to keep track of version numbers
+    cstr = '# version numbers\n\nversion = '
+    cstr += repr(_E.VERSION)[1:].replace(',', ',\n   ').replace('{', '{\n    ').replace('}', '\n}') # convert to real python code with nice format
+    files.append(_S.APPS.SETTINGS_VERSION, cstr)
+
+
+  
+def _generate_version_information():
+
+    inform('Gathering version information')
 
     local('git fetch --tags')
-    #lmt_version = run('git describe --abbrev=6 --tags --match "lmt\.v[0-9]*"')
+
     lmt_version = localc('git describe --abbrev=6 --tags --match "v[0-9]*"') #TODO delete this once switched to new naming schema
     gls_version = localc('git describe --abbrev=0 --tags --match "gls\.v[0-9]*"')
     
@@ -99,7 +253,7 @@ Check commit your changes and merge with master, then test, then update the work
     
     version_str = '%s__%s__%s.%s.%s_%s' % (timestamp, hashstr, major, minor, revis, ahead)
 
-    version = {
+    _E.VERSION = AttrDict({
         'major': major,
         'minor': minor,
         'revis': revis,
@@ -107,310 +261,144 @@ Check commit your changes and merge with master, then test, then update the work
         'hash' : hashstr,
         'timestamp': timestamp,
         'gls_file' : gls_version,
-        'glass': '',
+        'glass': _S.GLASS.COMMIT,
         'version_str' : version_str,
-    }
+    })
+
+
+
+
+def _check_if_local_branch_is_master():
+    
+    inform('Check the local git repro')
+    
+    curr_branch = local("git symbolic-ref --short -q HEAD", capture=True)
+
+    if curr_branch != 'master':
+        warnn("""You're not on the master branch (but on `%s`), but you try to update the workers.
+Thats probably not what you want to do...
+Check commit your changes and merge with master, then test, then update the worker nodes."""%curr_branch)
+
+        if not DEBUG:
+            if not console.confirm("Continue anyways?", default=False):
+                abort("Aborted due to wrong local branch")
+        else:
+            debugmsg("warning because working on non master branch '%s' cancleled" % curr_branch)
+            
+            
+            
+            
+            
+            
+def _build_and_setup_glass():
+    '''compile glass and its libraries with the make file in a temp dir and then rearrange things'''
+    
+    inform('Building and setting up glass')
 
     
-    #pprint(lmt_version)
-    #pprint(gls_version)
+    
+    run('mkdir -p %s' % _S.GLASS.TMPBUILDDIR)
+    
+    run('git clone %s %s' % (_S.GLASS.REPROURL, _S.GLASS.TMPBUILDDIR))
+    
+    with cd(_S.GLASS.TMPBUILDDIR):
+
+        run('git checkout %s' % _S.GLASS.COMMIT)
+
+        with prefix('source %s' % os.path.join('..', _S.PYENV_DIR, 'bin/activate')):
+            if not DEBUG:
+                with settings(warn_only=True):
+                    run('make -j4')
+                    run('make')
+            else:
+                debugmsg('skipping building, because DEBUG is on..')
+                run('cp -R ../../tmp_dev/build build')
+            
+    
+    # which dirs / files to copy where..
+    dirss  = (
+        ('build/lib.linux-x86_64-2.7/',                 '%s/' % _S.EXTAPPS.DIR ),
+        ('build/glpk_build/lib/',                       '%s/lib/' % _S.PYENV_DIR ),
+        ('build/python-glpk/lib.linux-x86_64-2.7/glpk', '%s/' % _S.EXTAPPS.DIR ),
+    )
+
+    for srcdir, destdir in dirss:
+        run('mkdir -p %s' % destdir)
+        run('rsync -pthrvz {src} {dest}'.format(**{
+            'src'  : os.path.join(_S.GLASS.TMPBUILDDIR, srcdir),
+            'dest' : os.path.join(_E.INSTALL_DIR, destdir),
+        }))
         
-    rinst_dir = os.path.join(inst_dir, version_str) #'real' install dir
-    _check_or_create_dirs([rinst_dir])
-
-#    dirlist = [
-#        'apps',
-#        'tmp_media',
-#        'deploy',
-#    ]
-#    
-#    paths_to_copy = [
-#        'apps',
-#    ]
-#
-#    files_to_copy = [
-#        _S.PIP_REQ_FILE,
-#    ]
-
+    with cd(os.path.join(_E.INSTALL_DIR, _S.PYENV_DIR, 'lib')):
+        run('ln -s libglpk.so.0.32.0 libglpk.so.0')
+            
     
+    # path the env for glass ext libs
+    sstr  = 'LD_LIBRARY_PATH="$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH"\nexport LD_LIBRARY_PATH\n\n'
+    sstr += 'PYTHONPATH="$PYTHONPATH:{ROOT_PATH}/_current/{EXTAPPS.DIR}/glpk"\nexport PYTHONPATH\n'.format(**_S)
+    files.append(os.path.join(_S.PYENV_DIR, 'bin','setenv'), sstr)
+    files.append(os.path.join(_S.PYENV_DIR, 'bin','activate'), 'source setenv')
+
+    #clean up
+    if not DEBUG:
+        run('rm -rf %s' % _S.GLASS.TMPBUILDDIR)
+    else:
+        debugmsg("Skipping cleanup")
+
+
+
+
+
+def _setup_dirs_and_copy_files_worker():
+    '''(insert functionname)
+
+    assumes:
+    * existing _E.VERSION version strings    
+    '''
+    
+    inform('Setup the Dirs and copy the files for worker config')
+    assert(_E.VERSION.version_str)
+
+
+    _E.INSTALL_DIR = os.path.join(_S.ROOT_PATH, _E.VERSION.version_str) #'real' install dir
+
+    check_or_create_dirs([
+        _S.ROOT_PATH,
+        _S.BIN_DIR,
+        _E.INSTALL_DIR,
+    ])
+
+    # dirs to create    
     dirlist = [
         _S.APPS.DIR,
         _S.APPS.MEDIA_DIR,
         _S.TMPDIR,
     ]
+
+    # dirs to copy (src, dest)
     dirsss = [
         (_S.SRC.DJANGODIR, _S.APPS.DIR)  
     ]
 
-    
+    # single files to copy (src, dest)
     filesss = [
         (_S.SRC.PIP_REQ_RPATH, os.path.join(_S.TMPDIR, _S.SRC.PIP_REQ_FILE))    
     ]
 
 
-
-    with cd(rinst_dir):
+    with cd(_E.INSTALL_DIR):
         
-        full_dirlist = [os.path.join(rinst_dir, d) for d in dirlist]
-        _check_or_create_dirs(full_dirlist)
+        full_dirlist = [os.path.join(_E.INSTALL_DIR, d) for d in dirlist]
+        check_or_create_dirs(full_dirlist)
         
-#        for loc in paths_to_copy:
-#            put(local_path=loc, remote_path=rinst_dir)
-#        for fil in files_to_copy:
-#            put(local_path=fil, remote_path=os.path.join(rinst_dir, fil))
         for srcdir, destdir in dirsss:
-            #put(local_path=srcdir, remote_path=os.path.join(rinst_dir, destdir))
             project.rsync_project(
-                remote_dir=os.path.join(rinst_dir, destdir),
+                remote_dir=os.path.join(_E.INSTALL_DIR, destdir),
                 local_dir=os.path.join(srcdir, '') #appends trialing slash
                 )
-            print srcdir, rinst_dir, destdir
             
         for srcfile, destdir in filesss:
-            put(local_path=srcfile, remote_path=os.path.join(rinst_dir, destdir))
-        
-        # setup python, pip and virtualenv
-        # assumption: we have  python, but nothing else
-        # solution: create a local python (~~/.local/bin)
-        # which is used to create a virtualenv
-        
-        #http://forcecarrier.wordpress.com/2013/07/26/installing-pip-virutalenv-in-sudo-free-way/
-
-        with settings(warn_only=True):
-            if run('python --version').failed:
-                abort('No python available remote... aborting')
-            if run('pip -V').failed:
-                warn('no pip found remote. getting and installing a remote version into ~/.local/bin')
-                run('curl -O https://bootstrap.pypa.io/get-pip.py')
-                run('python get-pip.py --user')
-                warn(colors.yellow('Make sure the local pip is on path "~/.local/bin" (~/.bashrc)'))
-                if not console.confirm('Finished putting it on path?'):
-                    abort('then do it now!!')
-
-        run('pip install --user virtualenv')
-        
-        run('virtualenv %s' %pyenv_dir)
-        
-        with prefix('source %s' % os.path.join(pyenv_dir, 'bin/activate')):
-            
-            # instal python packages into virtualenv
-            run('pip install -r {TMPDIR}/{SRC.PIP_REQ_FILE}'.format(**_S))
-            
-        # set up the config files
-        sett = _S.django_celery_worker_config
-        sett.update({'ROLE': 'production_worker'}) # or use env.django_role
-
-        #pprint(sett)
-        
-        cstr = _generate_django_config_file_str(sett)
-
-        pprint(cstr)
-        
-        run('mkdir -p {APPS.SETTINGS_RPATH}'.format(**_S))        #TODO remove this, it should be in the main tree by now
-        run('touch {APPS.SETTINGS_MACHINE}'.format(**_S))
-        files.append(_S.APPS.SETTINGS_MACHINE, cstr, escape=False)
-
-        puts(colors.magenta("Getting Secrets from file or console..."))
-        # set up the secrets in the config file
-        required_secrets = [
-            'DATABASE_USER',
-            'DATABASE_PASSWORD',
-            'BROKER_USER',
-            'BROKER_PASSWORD'
-        ]
-        secrets = {}
-        
-        try:
-            import secret_settings
-        except ImportError:
-            secret_settings = None
-            warn(colors.yellow('No predefined secrets found in secret_settings.py!\nPlease enter the secrets manually:'))
-        for sec in required_secrets:
-            try:
-                val = secret_settings._[sec]
-            except (KeyError, AttributeError):
-                val = ''
-            val = console.prompt('%s: ' % sec, default=val)
-            secrets[sec] = val
-            
-        cstr = _generate_django_config_file_str(secrets)
-        files.append(_S.APPS.SETTINGS_SECRETS, cstr, escape=False)
-            
-        
-        # get and setup glass
-
-        
-        #we compile glass and its libraries with the make file in a temp dir and then rearrange things
-        
-#            tmpglass = os.path.join(_S.TMPPATH, 'glasstmp')
-        tmpglass = _S.GLASS.TMPBUILDDIR
-        
-        run('mkdir -p %s' % tmpglass)
-        
-#            with cd(_S.TMPPATH):
-        run('git clone %s %s' % (_S.GLASS.REPROURL, tmpglass))
-        
-        with cd(tmpglass):
-            run('git checkout %s' % _S.GLASS.COMMIT)
-
-        with cd(tmpglass):
-            with prefix('source %s' % os.path.join('..', pyenv_dir, 'bin/activate')):
-                with settings(warn_only=True):
-                    run('make -j4')
-                    run('make')
-                
-        
-        # which dirs / files to copy where..
-        dirss  = (
-            ('build/lib.linux-x86_64-2.7/',                 '%s/' % _S.EXTAPPS.DIR ),
-            ('build/glpk_build/lib/',                       '%s/lib/' % _S.PYENV_DIR ),
-            ('build/python-glpk/lib.linux-x86_64-2.7/glpk', '%s/' % _S.EXTAPPS.DIR ),
-#            ('/tmp/glass/build/lib.linux-x86_64-2.7/glass/', '/tmp/app/swlabs_worker/_current/ext_apps/glass/'),
-#            ('/tmp/glass/build/glpk_build/lib/', '/tmp/app/swlabs_worker/_current/py_env/lib/'),
-#            ('/tmp/glass/build/python-glpk/lib.linux-x86_64-2.7/glpk/','/tmp/app/swlabs_worker/_current/ext_apps/')
-        )
-
-        for srcdir, destdir in dirss:
-            run('mkdir -p %s' % destdir)
-            run('rsync -pthrvz {src} {dest}'.format(**{
-                'src'  : os.path.join(tmpglass, srcdir),
-                'dest' : os.path.join(rinst_dir, destdir),
-            }))
-            
-        with cd(os.path.join(rinst_dir, _S.PYENV_DIR, 'lib')):
-            run('ln -s libglpk.so.0.32.0 libglpk.so.0')
-                
-        
-        # path the env for glass ext libs
-        sstr  = 'LD_LIBRARY_PATH="$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH"\nexport LD_LIBRARY_PATH\n\n'
-        sstr += 'PYTHONPATH="$PYTHONPATH:{ROOT_PATH}/_current/{EXTAPPS.DIR}/glpk"\nexport PYTHONPATH\n'.format(**_S)
-        files.append(os.path.join(_S.PYENV_DIR, 'bin','setenv'), sstr)
-        files.append(os.path.join(_S.PYENV_DIR, 'bin','activate'), 'source setenv')
-        
-        
-
-        #shutil.rmtree(tmpdir)
-        version['glass'] = _S.GLASS.COMMIT
-        
-        
-        # create versions file to keeep track of version numbers
-        cstr = '# version numbers\n\nversion = '
-#        for k, v in version.items():
-#            cstr += '%s = \'%s\'\n' % (str(k), str(v))
-        cstr += repr(version).replace(',', ',\n   ').replace('{', '{\n    ').replace('}', '\n}')
-        files.append(_S.APPS.SETTINGS_VERSION, cstr, escape=False)
-
-
-            
-        # set up the start scripts
-            
-            
-        # run the tests
-
-
-
-        # FOR DEBUG ONLY, make site pagackes available, so no need to compile numpy ect
-        if DEBUG:
-            run('rm %s' % (os.path.join(rinst_dir, _S.PYENV_DIR, 'lib', 'python2.7','no-global-site-packages.txt')))
-
-
-
-    
-    with cd(inst_dir):
-        if files.exists('_current'):
-            run('rm _current')
-        run('ln -s %s _current' % version_str)
-    
-    
-    
-    
-    # setup virtualenv
-#    with cd(src_dir):
-#
-#        pydir = os.path.join(src_dir, pyenv_dir)
-#            
-#        if not exists(os.path.join(pydir, 'bin/activate'), is_file=True):
-#            run('virtualenv $s' % pyenv_dir)
-#            
-#            with prefix('source %s' % (os.path.join(pyenv_dir, 'bin/activate'))):
-#                run('pip install -r deploy/requirements.txt')
-                
-
-    # create startup scripts
-    
-        
-
-
-
-
-
-
-
-
-def _check_or_create_dirs(dirs=None):
-    
-    for d in dirs:
-        run("mkdir -p %s" % d)
-    
-    
-    #pprint(env)
-    
-    #puts("cocd with %s"%env.foo)
-
-#    with settings(warn_only=True):
-#        for d in dirs:
-#            if run("test -d %s" % d).failed:
-#                if .failed:
-#                    print "using sudo to create dir!"                
-#                    sudo("mkdir -p %s" % d)
-#                    sudo("chmod 777 -r %s" % s) #TODO test this line
-#                    #sudo("chown %s %s" % (user, d)) #TODO test this line
-
-
-def _install_pip():
-    with cd(code_dir):
-        pass
-    
-    
-def _init_or_update_git():
-
-    with settings(warn_only=True):
-        if run("test -d %s" % code_dir).failed:
-            run("git clone user@vcshost:/path/to/repo/.git %s" % code_dir)
-    with cd(code_dir):
-        run("git pull")
-        #run("touch app.wsgi")
-        
-        
-        
-        
-def _generate_django_config_file_str(settings_dic):
-    
-    sett = {
-        'DATABASE' : {
-            'NAME'  : 'blabla',
-            'CONN'  : {'H':12, 'P':154}
-        },
-        'USER' : 'Bla'
-    }
-    
-
-    def d_eval(val, prefix=''):
-        #print val, prefix
-
-        if isinstance(val,dict) or isinstance(val, AttrDict):
-            if len(prefix)>0:
-                prefix += '_'
-            s = []
-            for k, v in val.items():
-                s.extend(d_eval(v, prefix+k))
-            return s
-        else:
-            if len(prefix) > 24:
-                assert "error in creating config file.. string too lnag, adjust script"
-            return ['%-24s = "%s"' % (prefix, str(val))]
-    
-    return '\n'.join(sorted(d_eval(settings_dic)))
+            put(local_path=srcfile, remote_path=os.path.join(_E.INSTALL_DIR, destdir))
 
 
 
@@ -421,10 +409,3 @@ def _generate_django_config_file_str(settings_dic):
 
 
 
-
-
-
-
-
-        
-        

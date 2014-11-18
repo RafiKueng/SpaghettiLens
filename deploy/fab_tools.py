@@ -6,6 +6,7 @@ Created on Mon Oct 27 13:43:52 2014
 """
 
 from fabric.api import *
+from fabric import colors
 
 def localc(s):
     return local(s, capture=True)
@@ -19,3 +20,19 @@ def localc(s):
 #            return run("test -f %s" % path).succeeded
 #        else:
 #            return run("test -e %s" % path).succeeded
+
+def inform(s):
+    puts(colors.green('\n> '+s+'\n'+'-'*80), show_prefix=False)
+    
+
+def warnn(s):
+    warn(colors.yellow(s))
+    
+
+def debugmsg(s):
+    puts(colors.red('DEBUG> '+s), show_prefix=False)
+    
+
+def check_or_create_dirs(dirs=None):
+    for d in dirs:
+        run("mkdir -p %s" % d)
