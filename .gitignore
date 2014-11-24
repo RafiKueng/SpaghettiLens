@@ -45,3 +45,4 @@ py_env/*
 # static files generated on server
 #/backend/static/*
 #/tmp_media/*
+apps/.coverage

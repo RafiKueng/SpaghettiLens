@@ -47,6 +47,10 @@ def deploy_server():
 
 
 
+@task()
+def test_sourcecode():
+    pass
+
 
 
 @task()
@@ -165,7 +169,7 @@ def _setup_py_pip_venv():
     # instal python packages into virtualenv
     with prefix('source %s' % os.path.join(_S.PYENV_DIR, 'bin/activate')):
         if not DEBUG:
-            run('pip install -Ir {TMPDIR}/{SRC.PIP_REQ_FILE}'.format(**_S))
+            run('pip install -r {TMPDIR}/{SRC.PIP_REQ_FILE}'.format(**_S))
         else:
             debugmsg('skipping local installation of python modules') # because build of numpy take some time..
 
@@ -309,6 +313,8 @@ def _build_and_setup_glass():
             if not DEBUG:
                 with settings(warn_only=True):
                     run('make -j4')
+                    #if not files.exists('build/glpk_build/lib'):
+                    #    run('mv build/glpk_build/lib64 build/glpk_build/lib') # bugfix
                     run('make')
             else:
                 debugmsg('skipping building, because DEBUG is on..')
@@ -319,15 +325,17 @@ def _build_and_setup_glass():
     dirss  = (
         ('build/lib.linux-x86_64-2.7/',                 '%s/' % _S.EXTAPPS.DIR ),
         ('build/glpk_build/lib/',                       '%s/lib/' % _S.PYENV_DIR ),
+        ('build/glpk_build/lib64/',                     '%s/lib/' % _S.PYENV_DIR ),
         ('build/python-glpk/lib.linux-x86_64-2.7/glpk', '%s/' % _S.EXTAPPS.DIR ),
     )
 
     for srcdir, destdir in dirss:
         run('mkdir -p %s' % destdir)
-        run('rsync -pthrvz {src} {dest}'.format(**{
-            'src'  : os.path.join(_S.GLASS.TMPBUILDDIR, srcdir),
-            'dest' : os.path.join(_E.INSTALL_DIR, destdir),
-        }))
+        with settings(warn_only=True): #prevent abort because lib or lib64
+            run('rsync -pthrvz {src} {dest}'.format(**{
+                'src'  : os.path.join(_S.GLASS.TMPBUILDDIR, srcdir),
+                'dest' : os.path.join(_E.INSTALL_DIR, destdir),
+            }))
         
     with cd(os.path.join(_E.INSTALL_DIR, _S.PYENV_DIR, 'lib')):
         run('ln -s libglpk.so.0.32.0 libglpk.so.0')

@@ -67,6 +67,7 @@ _.                              = ''
 _.SRC                           = AttrDict()
 _.SRC.DJANGODIR                 = 'apps'
 _.SRC.HTMLDIR                   = 'html'
+_.SRC.DEPLOYDIR                 = 'deploy'
 _.SRC.TEMPLATES                 = 'deploy/files'
 _.SRC.PIP_REQ_FILE              = 'pip_requirements_worker.txt'
 _.SRC.PIP_REQ_RPATH_            = lambda: join(_.SRC.TEMPLATES, _.SRC.PIP_REQ_FILE)
@@ -106,7 +107,7 @@ _.SPAGHETTI.URL_                = lambda: _.HOST + _.SPAGHETTI.RESSLOC
 _.GLASS                         = AttrDict()
 _.GLASS.TMPBUILDDIR             = 'tmp_glass'
 _.GLASS.REPROURL                = 'https://github.com/RafiKueng/glass.git'
-_.GLASS.COMMIT                  = '7d8413280b'
+_.GLASS.COMMIT                  = '64b2be69'
 
 
 # NOT TUE ANYMORE.. I HOPE PORTNUMERSS ECT WORK AS STRINGS AS WELL
@@ -141,22 +142,7 @@ _.django_celery_worker_config.update({
 #
 # ROLE / TASK SPECIFIC SETTINGS
 #
-
-
-_.ROLEDEFS = {'dev':'',}
-
-if len(env.roles)>1: # or len(env.roles)==0:
-    abort("More than one role specified, Go slowly, young padawan..")
-elif len(env.roles)==0:
-    warnn("no role selected!")
-    if confirm("Use default [dev]? (N to abort)", default=True):
-        env.roles = ['dev']
-    else:
-        abort("User abort")
-
-if len(env.tasks)>1:
-    abort("More than one task specified (or none), Go slowly, young padawan..\nUse fab --list")
-    
+print 'found role: %s taks:%s' % (env.roles, env.tasks)
 
 if len(env.tasks)==1 and len(env.roles)==1:
     
@@ -179,8 +165,8 @@ if len(env.tasks)==1 and len(env.roles)==1:
             _.TMPDIR    = 'worker_tmp'
             
         elif role in ['test', 'prod']:
-            _.ROOT_PATH = '/home/ara/rafik/tmp/apps/swlabs_worker'
-            _.BIN_DIR   = '/home/ara/rafik/tmp/local/bin'
+            _.ROOT_PATH = '/home/ara/rafik/tmp/swl_test/apps/swlabs_worker'
+            _.BIN_DIR   = '/home/ara/rafik/tmp/swl_test/local/bin'
             
             
 
@@ -191,6 +177,9 @@ if len(env.tasks)==1 and len(env.roles)==1:
             'test'  : [''],
             'prod'  : ['']        
         }
+
+else:
+    _.ROLEDEFS = {'dev':None}
 
 
 #
