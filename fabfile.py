@@ -29,6 +29,7 @@ from fabric.contrib.console import confirm
 #from fabric import colors
 
 
+
 if len(env.roles)>1: # or len(env.roles)==0:
     abort("More than one role specified, Go slowly, young padawan..")
 elif len(env.roles)==0:

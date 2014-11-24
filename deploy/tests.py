@@ -55,7 +55,7 @@ class LocalSourceCodeTestCase(ut.TestCase):
         self.assertTrue(os.system('prospector -0 %s' % self.files[1]))
 
     def test_django(self):
-        self.assertTrue(os.system('%s/manage.py test' % _S.SRC.DJANGODIR))
+        self.assertTrue(os.system('cd %s && manage.py test' % _S.SRC.DJANGODIR))
 
         
 def main():
