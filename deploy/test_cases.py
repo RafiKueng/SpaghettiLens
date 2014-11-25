@@ -1,12 +1,9 @@
- # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
-This tests the basic setup of the server
-
-Created on Thu Oct 16 15:51:20 2014
+Created on Tue Nov 25 15:01:43 2014
 
 @author: rafik
 """
-
 
 import unittest as ut
 import os
@@ -70,15 +67,25 @@ class LocalSourceCodeTestCase(ut.TestCase):
         self.assertTrue(os.system('cd %s && manage.py test' % _S.SRC.DJANGODIR))
 
         
-def main():
-    unittest.main()
+#
+#
+#def runSuiteTestCode():
+#    suite = ut.TestLoader().loadTestsFromTestCase(LocalSourceCodeTestCase)
+#    ut.TextTestRunner(verbosity=0).run(suite)
 
 
-def runSuiteTestCode():
-    suite = ut.TestLoader().loadTestsFromTestCase(LocalSourceCodeTestCase)
+
+def runSuite_DjangoUnittest():
+    suite1 = ut.TestLoader().loadTestsFromTestCase(LocalSourceCodeTestCase)
+#    suite2 = ut.TestLoader().loadTestsFromTestCase(LocalSourceCodeTestCase)
+#    suite3 = ut.TestLoader().loadTestsFromTestCase(LocalSourceCodeTestCase)
+
+    #return ut.TestSuite([suite1, suite2])
+    suite = ut.TestSuite([suite1])
     ut.TextTestRunner(verbosity=0).run(suite)
     
 
 
+
 if __name__ == '__main__':
-    main()
+    ut.main()

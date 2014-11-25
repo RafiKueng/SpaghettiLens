@@ -10,6 +10,9 @@ Created on Mon Nov 24 15:16:57 2014
 """
 
 import argparse
+import os
+
+from deploy.settings import settings as _S
 
 #suites = [_[8:] for _ in tests.__dict__ if _.startswith('runSuite')]
 #others = ['django']
@@ -41,11 +44,25 @@ def static_analysis():
     print("in static")
     pass
 
+
+
 def django_unittest():
+    print "bash && source %s && cd %s && ./manage.py test" % (
+        os.path.join(_S.SRC.PYENV, 'bin', 'activate'),
+        _S.SRC.DJANGODIR,
+    )
+    os.system("bash && source %s && cd %s && ./manage.py test" % (
+        os.path.join(_S.SRC.PYENV, 'bin', 'activate'),
+        _S.SRC.DJANGODIR,
+    ))
     pass
+
+
 
 def django_functional():
     pass
+
+
 
 def global_functional():
     pass

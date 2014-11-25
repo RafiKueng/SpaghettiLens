@@ -29,30 +29,42 @@ from fabric.contrib.console import confirm
 #from fabric import colors
 
 
+tasks_that_need_role = {
+    'deploy_worker',
+    'deploy_server',
+}
 
-if len(env.roles)>1: # or len(env.roles)==0:
-    abort("More than one role specified, Go slowly, young padawan..")
-elif len(env.roles)==0:
-    warnn("no role selected!")
-    if confirm("Use default [dev]? (N to abort)", default=True):
-        env.roles = ['dev']
-    else:
-        abort("User abort")
+
 
 if len(env.tasks)>1:
     abort("More than one task specified (or none), Go slowly, young padawan..\nUse fab --list")
 
 
+if len(env.tasks)==1 and env.tasks[0] in tasks_that_need_role:
+
+    if len(env.roles)>1: # or len(env.roles)==0:
+        abort("More than one role specified, Go slowly, young padawan..")
+    elif len(env.roles)==0:
+        warnn("no role selected!")
+        if confirm("Use default [dev]? (N to abort)", default=True):
+            env.roles = ['dev']
+        else:
+            abort("User abort")
 
 
 
 
-from deploy.deploy import *
+
+
+
+from deploy.deploy_tasks import *
+from deploy.test_tasks import *
+
 from deploy.settings import settings as _S
 
 env.roledefs = _S.ROLEDEFS
 
 
-@task()
-def _help():
-    warn('Specify what to do, and how as role..\nfab -R <role> <task>\n\nUse \'fab --list\' for more help / options')
+#@task()
+#def _help():
+#    warn('Specify what to do, and how as role..\nfab -R <role> <task>\n\nUse \'fab --list\' for more help / options')

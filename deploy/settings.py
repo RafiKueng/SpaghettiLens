@@ -67,6 +67,7 @@ _.                              = ''
 _.SRC                           = AttrDict()
 _.SRC.DJANGODIR                 = 'apps'
 _.SRC.HTMLDIR                   = 'html'
+_.SRC.PYENV_DIR                 = 'py_env'
 _.SRC.DEPLOYDIR                 = 'deploy'
 _.SRC.TEMPLATES                 = 'deploy/files'
 _.SRC.PIP_REQ_FILE              = 'pip_requirements_worker.txt'
@@ -142,7 +143,7 @@ _.django_celery_worker_config.update({
 #
 # ROLE / TASK SPECIFIC SETTINGS
 #
-print 'found role: %s taks:%s' % (env.roles, env.tasks)
+#print 'found role: %s taks:%s' % (env.roles, env.tasks)
 
 if len(env.tasks)==1 and len(env.roles)==1:
     
@@ -179,7 +180,7 @@ if len(env.tasks)==1 and len(env.roles)==1:
         }
 
 else:
-    _.ROLEDEFS = {'dev':None}
+    _.ROLEDEFS = {'dev': ''}
 
 
 #

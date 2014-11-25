@@ -48,12 +48,6 @@ def deploy_server():
 
 
 @task()
-def test_sourcecode():
-    pass
-
-
-
-@task()
 def deploy_worker():
     
     _check_if_local_branch_is_master()
