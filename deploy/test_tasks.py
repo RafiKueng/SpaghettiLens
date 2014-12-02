@@ -6,23 +6,22 @@ Created on Tue Nov 25 15:02:18 2014
 """
 
 
-from fabric.api import *
-from fabric.utils import *
+from fabric.api import settings, local, task
+#from fabric.utils import *
 
-from fabric import operations as ops
-from fabric import colors
-from fabric.contrib import console, files, project
+#from fabric import operations as ops
+#from fabric.contrib import console, files, project
 
 
-from fab_tools import *
+from fab_tools import GetOutOfLoop
+from fab_tools import inform, warnn, lmanagepy, errorr, confirm, choose
 
 from settings import settings as _S
 
-#import unittest 
+#import unittest as ut
+#import test_cases as tcs
 
-import test_cases as tcs
-
-import os
+#import os
 
 
 @task
@@ -34,16 +33,24 @@ def utest():
     while True:
         inform("STARTING DJANGO UNITTESTS")
         with settings(warn_only=True):
-            lmanagepy('test -v 2 --failfast')
-        inform("RUN FINISHED")
-        if not console.confirm('\nAnother run?'):
-            warn('abort')
+            rc = lmanagepy('test -v 2 --failfast')
+
+        if not rc.failed:
+            inform("RUN SUCCESSFUL FINISHED - QUITTING")
+            break
+
+        if not confirm('Another run?'):
+            errorr('ABORTING')
             break
     
 
 
 @task
 def static_analysis():
+    '''runs the static code analysis tools on selected files
+    
+    prospector is used, make sure to pip install it
+    '''
     
     dirs = [
         _S.SRC.DJANGODIR,
@@ -52,11 +59,64 @@ def static_analysis():
     
     files   = [
         './fabfile.py',
-        './tests.py',            
+        './deploy/test_tasks.py',
     ]
     
-    for d in dirs:
-        local('prospector %s' % d)
-    for f in files:
-        os.system('prospector -0 %s' % f)
+    paths = dirs + files
+    
+    try:
+        inform("STARTING STATIC CODE ANALYSIS")
+        for p in paths:
+            while True:
+                inform("- checking %s" % p)
+                with settings(warn_only=True):
+                    rc = local('prospector %s' % p)
+                
+                if rc.failed:
+                    txt = 'Rcq'
+                    c = choose('[%s]erun current test, [%s]ontinue, [%s]uit' % tuple(txt), ''.join(sorted(txt)))
+                    if c=='c':
+                        break
+                    elif c=='q':
+                        raise GetOutOfLoop
+                else:
+                    inform("- successful, continuing")
+                    break
+                
+
+#        if not confirm('Another run?', default=False):
+#            raise GetOutOfLoop
+
+        inform("STATIC CODE ANALYSIS FINISHED")
+
+    except GetOutOfLoop:
+        errorr('abort')
+
+
+@task
+def testtt():
+    print choose('choose from', 'ynr')
+
+@task
+def serversetup_test():
+    pass
+#    suite1 = ut.TestLoader().loadTestsFromTestCase(tcs.LocalSourceCodeTestCase)
+#    suite = ut.TestSuite([suite1])
+#    ut.TextTestRunner(verbosity=0).run(suite)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

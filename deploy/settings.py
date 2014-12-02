@@ -19,11 +19,10 @@ from copy import deepcopy
 from os.path import join
 from attrdict import AttrDict
 
-from fabric.api import env, abort, warn
-from fabric.contrib.console import confirm
-from fabric import colors
+from fabric.api import env  #, abort, warn
+#from fabric.contrib.console import confirm
 
-from fab_tools import *
+#from fab_tools import *
 
 _ = AttrDict()
 

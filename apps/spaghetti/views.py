@@ -26,7 +26,7 @@ def api(request):
         if len(request.POST) == 0:
             return JsonResponse({'status':"FAILED", 'error': "no_arguments"}, status=400)
 
-        elif not 'action' in request.POST.keys():
+        elif 'action' not in request.POST.keys():
             return JsonResponse({'status':"FAILED", 'error':"no_action_key"}, status=400)
 
 

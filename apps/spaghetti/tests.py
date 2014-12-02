@@ -1,14 +1,16 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 
-from pprint import pprint
+#from pprint import pprint
 
 
 
 
 class ApiTests(TestCase):
     
-    def _post(self, data = {}):
+    def _post(self, data = None):
+        if data is None:
+            data={}
         return self.client.post(reverse('spaghetti:api'), data=data)
         
         

@@ -8,25 +8,30 @@ from __future__ import absolute_import
 
 import os
 
-from fabric.api import *
+from fabric import api
 from fabric import colors
+from fabric.contrib import console
 
-from deploy.settings import settings as _S
+from .settings import settings as _S
+
+
+class GetOutOfLoop( Exception ):
+    pass
 
 
 def localc(s):
-    return local(s, capture=True)
+    return api.local(s, capture=True)
 
 
 def lvenv(c):
     '''executes a command using venv locally'''
     venv = 'source %s' % os.path.join(_S.SRC.PYENV_DIR, 'bin', 'activate')
-    local(venv + ' && '+c,shell='/bin/bash')
+    return api.local(venv + ' && '+c,shell='/bin/bash')
     
 def lmanagepy(c):
     '''locally executes a command for manage.py using venv'''
     cds = 'cd %s && ./manage.py ' % _S.SRC.DJANGODIR
-    lvenv(cds + c)
+    return lvenv(cds + c)
 
 
 #def exists(path, is_dir=False, is_file=False):
@@ -39,17 +44,41 @@ def lmanagepy(c):
 #            return run("test -e %s" % path).succeeded
 
 def inform(s):
-    puts(colors.green('\n> '+s+'\n'+'-'*80), show_prefix=False)
+    api.puts(colors.green('\n> '+s+'\n'+'-'*80), show_prefix=False)
     
 
 def warnn(s):
-    warn(colors.yellow(s))
+    api.warn(colors.yellow('\n> '+s))
     
 
 def debugmsg(s):
-    puts(colors.red('DEBUG> '+s), show_prefix=False)
+    api.puts(colors.red('DEBUG> '+s), show_prefix=False)
+
+def confirm(s, default=True):
+    return console.confirm(colors.yellow('\n> '+s), default)
+        
+def errorr(s):
+    api.puts(colors.red('\n> '+s))
+    
+def choose(s, opts, list_options=False):
+    '''choose one char out of given options
+
+    choose('[R]etry, [Q]uit', 'rq')
+    the first one is the default value
+    doesn't care about upper/lower space, returns chosen option in lower case
+    '''
+    #optslow = [_.lower() for _ in opts]
+    #val = lambda s: s.lower() in optslow
+    val = '^[%s]$' % '|'.join(opts.lower() + opts.upper())    
+    if list_options:
+        lo=' [%s]' % '|'.join(opts)
+    else:
+        lo=''
+    return api.prompt(colors.magenta(s + lo), default=opts[0].upper(), validate=val).lower()
+    
+        
     
 
 def check_or_create_dirs(dirs=None):
     for d in dirs:
-        run("mkdir -p %s" % d)
+        api.run("mkdir -p %s" % d)

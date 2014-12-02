@@ -6,31 +6,32 @@ Created on Thu Oct 16 15:51:20 2014
 
 @author: rafik
 """
+from __future__ import absolute_import
 
 
-from fabric.api import *
-from fabric.utils import *
+from fabric.api import cd, prefix, local, put, puts, settings, run, abort, env, task  #*
+#from fabric.utils import *
 
-from fabric import operations as ops
+#from fabric import operations as ops
 from fabric import colors
 from fabric.contrib import console, files, project
 
 
-from fab_tools import *
+from .fab_tools import check_or_create_dirs, inform, warnn, debugmsg, localc
 
-from settings import settings as _S
+from .settings import settings as _S
 
 
-from pprint import pprint
+#from pprint import pprint
 from datetime import datetime as dt
 import os
 from attrdict import AttrDict
-import tempfile
-import shutil
+#import tempfile
+#import shutil
 
 
 
-DEBUG = False
+DEBUG = True
 
 # _S are the static settings (not to be updated)
 # _E are the current settings
@@ -41,9 +42,8 @@ _E = env
 @task()
 def deploy_server():
     print "instll"
-    check_or_create_dirs([_S.env.code_dir,])
-    _install_pip()
-    pass
+    #check_or_create_dirs([_S.env.code_dir,])
+    #_install_pip()
 
 
 
