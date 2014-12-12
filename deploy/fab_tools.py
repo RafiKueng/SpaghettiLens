@@ -34,6 +34,17 @@ def lmanagepy(c):
     return lvenv(cds + c)
 
 
+def rvenv(c):
+    '''executes a command using venv remotely'''
+    venv = 'source %s' % os.path.join(_S.PYENV_DIR, 'bin', 'activate')
+    return api.local(venv + ' && '+c,shell='/bin/bash')
+    
+def lmanagepy(c):
+    '''locally executes a command for manage.py using venv'''
+    cds = 'cd %s && ./manage.py ' % _S.SRC.DJANGODIR
+    return lvenv(cds + c)
+
+
 #def exists(path, is_dir=False, is_file=False):
 #    with settings(warn_only=True):
 #        if is_dir:

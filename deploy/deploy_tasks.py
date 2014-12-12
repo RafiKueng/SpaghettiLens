@@ -41,10 +41,63 @@ _E = env
 
 @task()
 def deploy_server():
-    print "instll"
-    #check_or_create_dirs([_S.env.code_dir,])
-    #_install_pip()
+    '''Deploys the server
+    
+    tests if all required daemons are running, if not, installs them
+    '''
 
+    inform("install of server")
+    
+    
+    newsubdirs = [
+        _S.APPS.DIR,
+        _S.APPS.MEDIA_DIR,
+        _S.TMPDIR,
+        'deploy',
+    ]
+
+    # dirs to copy (src, dest)
+    dirstocopy = [
+        (_S.SRC.DJANGODIR, _S.APPS.DIR),
+        ('deploy', 'deploy'),
+    ]
+
+    # single files to copy (src, dest, destname)
+    filestocopy = [
+        (_S.SRC.PIP_REQ_RPATH_SRV, _S.TMPDIR, 'pip_requirements.txt')
+    ]
+
+
+
+    _check_if_local_branch_is_master()
+    _generate_version_information()
+
+    _E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
+
+    _setup_dirs_and_copy_files(filestocopy, dirstocopy, newsubdirs)
+
+    with cd(_E.INSTALL_DIR):
+
+        _setup_py_pip_venv()
+        _setup_django_config_files()
+
+
+    _test_server_setup()
+    
+
+    if not _E.serversetup['apache']:
+        _install_couchdb()
+    
+#    apache
+#    php
+#    couchdb
+#    rabbitmq
+#    django
+#    celery
+#    flower
+
+#    worker    
+    
 
 
 @task()
@@ -139,6 +192,7 @@ def _setup_py_pip_venv():
     * will be installed in the current dir
     solution: create a local python (~~/.local/bin)
     which is used to create a virtualenv
+    Make sure the local pip is on path "~/.local/bin"
     
     http://forcecarrier.wordpress.com/2013/07/26/installing-pip-virutalenv-in-sudo-free-way/
     '''
@@ -156,16 +210,19 @@ def _setup_py_pip_venv():
             if not console.confirm('Finished putting it on path?'):
                 abort('then do it now!!')
 
-    run('pip install --user virtualenv')
+    with settings(warn_only=True):
+        if run('virtualenv --version').failed:
+            warnn('no virtualenv found, installing a local (--user) one using pip')
+            run('pip install --user virtualenv')
     
     run('virtualenv --system-site-packages %s' %_S.PYENV_DIR) #using numpy from system..
     
     # instal python packages into virtualenv
     with prefix('source %s' % os.path.join(_S.PYENV_DIR, 'bin/activate')):
-        if not DEBUG:
-            run('pip install -r {TMPDIR}/{SRC.PIP_REQ_FILE}'.format(**_S))
-        else:
-            debugmsg('skipping local installation of python modules') # because build of numpy take some time..
+#        if not DEBUG:
+        run('pip install -r {TMPDIR}/{SRC.PIP_REQ_FILE}'.format(**_S))
+#        else:
+#            debugmsg('skipping local installation of python modules') # because build of numpy take some time..
 
 
 
@@ -355,7 +412,9 @@ def _setup_dirs_and_copy_files_worker():
     '''(insert functionname)
 
     assumes:
-    * existing _E.VERSION version strings    
+    * existing _E.VERSION version strings   
+    
+    #TODO: replace this with the more general version...
     '''
     
     inform('Setup the Dirs and copy the files for worker config')
@@ -397,13 +456,117 @@ def _setup_dirs_and_copy_files_worker():
             project.rsync_project(
                 remote_dir=os.path.join(_E.INSTALL_DIR, destdir),
                 local_dir=os.path.join(srcdir, '') #appends trialing slash
-                )
+            )
             
         for srcfile, destdir in filesss:
             put(local_path=srcfile, remote_path=os.path.join(_E.INSTALL_DIR, destdir))
 
 
 
+
+
+
+def _setup_dirs_and_copy_files(filestocopy=[], dirstocopy=[], newsubdirs=[]):
+    '''copies a list of files and dirs; and creates a few empty folders'''    
+    
+    inform('Setup the dirs and copy the files for the server')
+    assert(_E.INSTALL_DIR)
+    
+    run('mkdir -p %s' % _E.INSTALL_DIR)
+    
+#    check_or_create_dirs([
+#        _S.ROOT_PATH,
+#        _S.BIN_DIR,
+#        _E.INSTALL_DIR,
+#        'deploy',
+#    ])
+#
+#    # dirs to create    
+#    dirlist = [
+#        _S.APPS.DIR,
+#        _S.APPS.MEDIA_DIR,
+#        _S.TMPDIR,
+#        'deploy',
+#    ]
+#
+#    # dirs to copy (src, dest)
+#    dirsss = [
+#        (_S.SRC.DJANGODIR, _S.APPS.DIR),
+#        ('deploy', 'deploy'),
+#    ]
+#
+#    # single files to copy (src, dest)
+#    filesss = [
+#        (_S.SRC.PIP_REQ_RPATH_SRV, os.path.join(_S.TMPDIR, _S.SRC.PIP_REQ_FILE_SRV))    
+#    ]
+
+
+    with cd(_E.INSTALL_DIR):
+        
+        full_dirlist = [os.path.join(_E.INSTALL_DIR, d) for d in newsubdirs]
+        check_or_create_dirs(full_dirlist)
+        
+        for srcdir, destdir in dirstocopy:
+            fulldestdir = os.path.join(_E.INSTALL_DIR, destdir)
+            run('mkdir -p %s' % fulldestdir)
+            project.rsync_project(
+                remote_dir=fulldestdir,
+                local_dir=os.path.join(srcdir, '') #appends trialing slash
+            )
+            
+
+        for srcfile, destdir, destfname in filestocopy:
+            fulldestdir = os.path.join(_E.INSTALL_DIR, destdir)
+            run('mkdir -p %s' % fulldestdir)
+            if destfname is not None:
+                fdestpath = os.path.join(fulldestdir, destfname)
+            else:
+                fdestpath = fulldestdir
+            put(local_path=srcfile, remote_path=fdestpath)
+            
+            
+#        run('touch %s'%os.path.join(_S.TMPDIR, _S.SRC.PIP_REQ_FILE))
+
+
+
+def _test_server_setup():
+    '''tests the server setup prior to install from remote
+    
+    expects the repro to be uploaded to the working dir already
+    '''
+    inform('Testing the server setup')
+    assert(_E.VERSION.version_str)
+    
+
+    tests = {
+        'redis': [
+            'ServerRedisTestCase',
+#            'ServerRedisTestCase.test_01_connection',
+            ],
+        'pipdjango': [],
+    }
+    
+    results = {}
+    
+    
+    with cd(_E.INSTALL_DIR):
+        
+        for sw, tests in tests.items():
+            
+            failed = False
+            
+            for test in tests:
+                c = run('python -m unittest -v deploy.test_cases.%s' % test,
+                        warn_only=True, quiet=False)
+                lines = c.split('\n')
+                if not 'OK' == c.split('\n')[-1]:
+                    failed = True
+                    break
+                
+            if not failed:
+                results[sw] = 'OK'
+    
+    return results
 
 
 

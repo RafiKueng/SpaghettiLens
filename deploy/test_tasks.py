@@ -4,6 +4,8 @@ Created on Tue Nov 25 15:02:18 2014
 
 @author: rafik
 """
+from __future__ import absolute_import
+
 
 
 from fabric.api import settings, local, task
@@ -13,13 +15,14 @@ from fabric.api import settings, local, task
 #from fabric.contrib import console, files, project
 
 
-from fab_tools import GetOutOfLoop
-from fab_tools import inform, warnn, lmanagepy, errorr, confirm, choose
+from .fab_tools import GetOutOfLoop
+from .fab_tools import inform, warnn, errorr, confirm, choose
+from .fab_tools import lmanagepy
 
-from settings import settings as _S
+from .settings import settings as _S
 
 #import unittest as ut
-#import test_cases as tcs
+from . import test_cases as tcs
 
 #import os
 
@@ -97,13 +100,11 @@ def static_analysis():
 def testtt():
     print choose('choose from', 'ynr')
 
-@task
-def serversetup_test():
-    pass
-#    suite1 = ut.TestLoader().loadTestsFromTestCase(tcs.LocalSourceCodeTestCase)
-#    suite = ut.TestSuite([suite1])
-#    ut.TextTestRunner(verbosity=0).run(suite)
 
+@task
+def test_serversetup():
+    
+    tcs.runTestSuite_ServerAll()
 
 
 

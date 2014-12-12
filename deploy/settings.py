@@ -35,6 +35,12 @@ _.WORKER_DEV_HOSTS  = ['localhost']
 _.WORKER_TEST_HOSTS = ['192.168.100.2']
 _.WORKER_PROD_HOSTS = ['taurus.physik.uzh.ch']
 
+_.SERVER_TEST_HOST  = ['192.168.100.10']
+_.SERVER_PROD_HOST  = ['swlabs.physik.uzh.ch']
+
+
+
+
 
 _.PYENV_DIR                     = 'py_env'
 
@@ -69,8 +75,11 @@ _.SRC.HTMLDIR                   = 'html'
 _.SRC.PYENV_DIR                 = 'py_env'
 _.SRC.DEPLOYDIR                 = 'deploy'
 _.SRC.TEMPLATES                 = 'deploy/files'
-_.SRC.PIP_REQ_FILE              = 'pip_requirements_worker.txt'
-_.SRC.PIP_REQ_RPATH_            = lambda: join(_.SRC.TEMPLATES, _.SRC.PIP_REQ_FILE)
+_.SRC.PIP_REQ_FILE              = 'pip_requirements.txt'                        # filename on remote machine
+_.SRC.PIP_REQ_FILE_WRK          = 'pip_requirements_worker.txt'
+_.SRC.PIP_REQ_RPATH_WRK_        = lambda: join(_.SRC.TEMPLATES, _.SRC.PIP_REQ_FILE_WRK)
+_.SRC.PIP_REQ_FILE_SRV          = 'pip_requirements_server.txt'
+_.SRC.PIP_REQ_RPATH_SRV_        = lambda: join(_.SRC.TEMPLATES, _.SRC.PIP_REQ_FILE_SRV)
 
 
 _.APPS                          = AttrDict()
@@ -171,12 +180,23 @@ if len(env.tasks)==1 and len(env.roles)==1:
             
 
     # SERVER related tasks            
-    elif task in ['testtask']:
+    elif task in ['deploy_server']:
         
         _.ROLEDEFS = {
-            'test'  : [''],
-            'prod'  : ['']        
+            'test'  : {'hosts': _.SERVER_TEST_HOST},
+            'prod'  : {'hosts': _.SERVER_PROD_HOST},        
         }
+
+        if role == 'dev':
+            _.ROOT_PATH = '/tmp/swlabs'
+            _.TMPDIR    = 'srv_tmp'
+            
+        elif role in ['test', 'prod']:
+            _.ROOT_PATH = '/tmp/swlabs'
+            _.TMPDIR    = 'srv_tmp'
+            _.BIN_DIR   = '/tmp/swlabs/_bin'
+        
+        
 
 else:
     _.ROLEDEFS = {'dev': ''}
