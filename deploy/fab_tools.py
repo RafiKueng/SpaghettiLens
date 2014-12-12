@@ -34,10 +34,10 @@ def lmanagepy(c):
     return lvenv(cds + c)
 
 
-def rvenv(c):
+def rvenv(c, warn_only=False, quiet=False):
     '''executes a command using venv remotely'''
     venv = 'source %s' % os.path.join(_S.PYENV_DIR, 'bin', 'activate')
-    return api.local(venv + ' && '+c,shell='/bin/bash')
+    return api.run(venv + ' && '+c, shell='/bin/bash', warn_only=warn_only, quiet=quiet)
     
 def lmanagepy(c):
     '''locally executes a command for manage.py using venv'''

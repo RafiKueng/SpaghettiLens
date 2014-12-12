@@ -86,12 +86,19 @@ class ServerRedisTestCase(ut.TestCase):
     
     def setUp(self):
         import redis
+        try:
+            self.r = redis.StrictRedis(host='localhost', port=6379, db=0)
+        except:
+            raise
         
     def test_01_connection(self):
         try:
-            self.r = redis.StrictRedis(host='localhost', port=6379, db=0)
-        except Error:
+            self.r.info()
+        except ConnectionError:  #TODO CONTINUE: ConnectionError is not defined, maybe import?
             self.fail("Connection to redis failed")
+        except:
+            raise
+            
         
     def test_02_save_and_retrieve(self):
         val = 'blablabla'

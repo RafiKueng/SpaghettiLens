@@ -17,7 +17,7 @@ from fabric import colors
 from fabric.contrib import console, files, project
 
 
-from .fab_tools import check_or_create_dirs, inform, warnn, debugmsg, localc
+from .fab_tools import check_or_create_dirs, inform, warnn, debugmsg, localc, rvenv
 
 from .settings import settings as _S
 
@@ -188,7 +188,7 @@ def _setup_py_pip_venv():
     '''setup python, pip and virtualenv
     
     assumption:
-    * we have  python, but nothing else
+    * we have  python, but nothing else (should work with python2 and 3, but will get venv with py2)
     * will be installed in the current dir
     solution: create a local python (~~/.local/bin)
     which is used to create a virtualenv
@@ -200,12 +200,12 @@ def _setup_py_pip_venv():
     inform("Setup Python, Pip and the VirtualEnv")
 
     with settings(warn_only=True):
-        if run('python --version').failed:
+        if run('python2 --version').failed:
             abort('No python available remote... aborting')
-        if run('pip -V').failed:
+        if run('pip2 -V').failed:
             warnn('no pip found remote. getting and installing a remote version into ~/.local/bin')
             run('curl -O https://bootstrap.pypa.io/get-pip.py')
-            run('python get-pip.py --user')
+            run('python2 get-pip.py --user')
             warnn('Make sure the local pip is on path "~/.local/bin" (~/.bashrc)')
             if not console.confirm('Finished putting it on path?'):
                 abort('then do it now!!')
@@ -213,9 +213,9 @@ def _setup_py_pip_venv():
     with settings(warn_only=True):
         if run('virtualenv --version').failed:
             warnn('no virtualenv found, installing a local (--user) one using pip')
-            run('pip install --user virtualenv')
+            run('pip2 install --user virtualenv')
     
-    run('virtualenv --system-site-packages %s' %_S.PYENV_DIR) #using numpy from system..
+    run('virtualenv -p python2 --system-site-packages %s' %_S.PYENV_DIR) #using numpy from system..
     
     # instal python packages into virtualenv
     with prefix('source %s' % os.path.join(_S.PYENV_DIR, 'bin/activate')):
@@ -556,7 +556,7 @@ def _test_server_setup():
             failed = False
             
             for test in tests:
-                c = run('python -m unittest -v deploy.test_cases.%s' % test,
+                c = rvenv('python -m unittest -v deploy.test_cases.%s' % test,
                         warn_only=True, quiet=False)
                 lines = c.split('\n')
                 if not 'OK' == c.split('\n')[-1]:
