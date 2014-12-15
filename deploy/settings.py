@@ -122,7 +122,7 @@ _.RABBITMQ                      = AttrDict()
 _.RABBITMQ.USER                 = 'rabbituser' #TODO change these values...
 _.RABBITMQ.PASSWORD             = 'rabbitpsw'
 _.RABBITMQ.VHOST                = 'swlabs'
-
+_.RABBITMQ.PORT                 = 5672
 
 
 # NOT TUE ANYMORE.. I HOPE PORTNUMERSS ECT WORK AS STRINGS AS WELL

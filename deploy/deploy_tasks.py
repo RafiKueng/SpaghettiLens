@@ -603,14 +603,23 @@ def _install_missing_server_software(tests_passed):
     
                     run('wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/rabbitmq-server-3.1.5-2.2.2.x86_64.rpm')
                     sudo('rpm -Uihv rabbitmq-server-3.1.5-2.2.2.x86_64.rpm', warn_only=True)
-                    
+
+                    sudo("SuSEfirewall2 open EXT TCP {PORT}".format(**_S.RABBITMQ))
+                    sudo("SuSEfirewall2 stop")
+                    sudo("SuSEfirewall2 start")
+
                     run("chkconfig rabbitmq-server")
-                    sudo("chkconfig rabbitmq-server on")
+                    sudo("chkconfig rabbitmq-server on") #TODO needed?
+                    
+                    sudo("systemctl enable rabbitmq-server")
+                    sudo("systemctl start rabbitmq-server")
                     
                     sudo("rabbitmqctl add_user {USER} {PASSWORD}".format(**_S.RABBITMQ))
                     sudo("rabbitmqctl add_vhost {VHOST}".format(**_S.RABBITMQ))
                     sudo('rabbitmqctl set_permissions -p {VHOST} {USER} ".*" ".*" ".*"'.format(**_S.RABBITMQ))
 
+                    sudo('rabbitmqctl change_password guest guest111')
+                    sudo('rabbitmqctl set_permissions -p {VHOST} guest ".*" ".*" ".*"'.format(**_S.RABBITMQ))
 
                 
             else:
