@@ -9,7 +9,7 @@ Created on Thu Oct 16 15:51:20 2014
 from __future__ import absolute_import
 
 
-from fabric.api import cd, prefix, local, put, puts, settings, run, abort, env, task  #*
+from fabric.api import cd, prefix, local, put, puts, settings, run, abort, env, task, sudo  #*
 #from fabric.utils import *
 
 #from fabric import operations as ops
@@ -82,21 +82,12 @@ def deploy_server():
         _setup_django_config_files()
 
 
-    _test_server_setup()
+    _E.SERVERSETUPTEST_PASSED = _test_server_setup()
+    
+    _install_missing_server_software(_E.SERVERSETUPTEST_PASSED)
+    
     
 
-    if not _E.serversetup['apache']:
-        _install_couchdb()
-    
-#    apache
-#    php
-#    couchdb
-#    rabbitmq
-#    django
-#    celery
-#    flower
-
-#    worker    
     
 
 
@@ -533,30 +524,40 @@ def _test_server_setup():
     '''tests the server setup prior to install from remote
     
     expects the repro to be uploaded to the working dir already
+    
+    returns if a certain testin case suite has succeded
+    passed[redis] == True
     '''
     inform('Testing the server setup')
     assert(_E.VERSION.version_str)
     
 
     tests = {
-        'redis': [
-            'ServerRedisTestCase',
-#            'ServerRedisTestCase.test_01_connection',
-            ],
-        'pipdjango': [],
+#        'redis': [
+#            'ServerRedisTestCase',
+##            'ServerRedisTestCase.test_01_connection',
+#            ],
+        'pipdjango':    ['ServerDjangoTestCase',],
+        'rabbitmq' :    ['ServerRabbitMQTestCase']
+        
     }
     
-    results = {}
+    passed = {}
     
     
     with cd(_E.INSTALL_DIR):
+        
+        if DEBUG:
+            args = "-v"
+        else:
+            args = "-v --failfast"
         
         for sw, tests in tests.items():
             
             failed = False
             
             for test in tests:
-                c = rvenv('python -m unittest -v deploy.test_cases.%s' % test,
+                c = rvenv('python -m unittest %s deploy.test_cases.%s' % (args, test),
                         warn_only=True, quiet=False)
                 lines = c.split('\n')
                 if not 'OK' == c.split('\n')[-1]:
@@ -564,13 +565,55 @@ def _test_server_setup():
                     break
                 
             if not failed:
-                results[sw] = 'OK'
+                passed[sw] = True
+            else:
+                passed[sw] = False
     
-    return results
+    return passed
 
 
 
 
+def _install_missing_server_software(tests_passed):
+    '''if ceratin server software is not installed, then do it and set it up properly
+    
+    #TODO: for now only breaks the flow if failed    
+    '''
+
+    
+#    apache
+#    php
+#    couchdb
+#    rabbitmq
+#    django
+#    celery
+#    flower
+
+#    worker    
+
+    for test, result in tests_passed.items():
+        
+        if not result:
+            warnn("server hasn't installed: %s" % test)
+                
+            if test == "rabbitmq":
+                with cd(_S.TMPPATH):
+                    run('wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/erlang-R16B01-2.1.3.x86_64.rpm')
+                    sudo( 'zypper in erlang-R16B01-2.1.3.x86_64.rpm')
+    
+                    run('wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/rabbitmq-server-3.1.5-2.2.2.x86_64.rpm')
+                    sudo('rpm -Uihv rabbitmq-server-3.1.5-2.2.2.x86_64.rpm', warn_only=True)
+                    
+                    run("chkconfig rabbitmq-server")
+                    sudo("chkconfig rabbitmq-server on")
+                    
+                    sudo("rabbitmqctl add_user {USER} {PASSWORD}".format(**_S.RABBITMQ))
+                    sudo("rabbitmqctl add_vhost {VHOST}".format(**_S.RABBITMQ))
+                    sudo('rabbitmqctl set_permissions -p {VHOST} {USER} ".*" ".*" ".*"'.format(**_S.RABBITMQ))
 
 
+                
+            else:
+                if not DEBUG:           
+                    abort("breaking because '%s' is missing" % test)
 

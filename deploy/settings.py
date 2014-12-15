@@ -118,6 +118,12 @@ _.GLASS.TMPBUILDDIR             = 'tmp_glass'
 _.GLASS.REPROURL                = 'https://github.com/RafiKueng/glass.git'
 _.GLASS.COMMIT                  = '64b2be69'
 
+_.RABBITMQ                      = AttrDict()
+_.RABBITMQ.USER                 = 'rabbituser' #TODO change these values...
+_.RABBITMQ.PASSWORD             = 'rabbitpsw'
+_.RABBITMQ.VHOST                = 'swlabs'
+
+
 
 # NOT TUE ANYMORE.. I HOPE PORTNUMERSS ECT WORK AS STRINGS AS WELL
 # Attention: in the final config file (which is a python file) strings have

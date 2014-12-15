@@ -51,10 +51,22 @@ class ServerDjangoTestCase(ut.TestCase):
     """
     
     runns locally on server
+    should be valid, due to the pip req file, but ceck anyways
     """
     
 
     def setUp(self):
+
+        self.mod_vers = {
+            'numpy':        [(1,9),(1,10)], #[>=(), <()]
+            'scipy':        [(0,14),(0,15)],
+            'matplotlib':   [(1,4),(1,5)],
+
+            'django':       [(1,7), (1,8)],
+            'Celery':       [(3,1,17), (3,2)],
+            
+        }
+        
         self.py_req_version = (2,7)
         self.py_max_version = (3,0) # dont allow python3
         self.django_req_ver = (1,7)
@@ -68,46 +80,115 @@ class ServerDjangoTestCase(ut.TestCase):
         
     
     def test_01_python_version(self):
+        '''test version of python'''
         self.assertGreaterEqual(sys.version_info, self.py_req_version)
         self.assertLess(sys.version_info, self.py_max_version)
         
         
-    def test_02_django_version(self):
-        import django as d
-        self.assertGreaterEqual(d.VERSION, self.django_req_ver)
-        cmd = self.local("apps/manage.py --version")
+    def test_managepy_version(self):
+        '''test the local manage.py reported version'''
+        
+        cmd = self.local("python %s/manage.py --version" % _S.APPS.DIR)
         self.assertTrue(cmd.succeeded)
-        self.assertGreaterEqual(tuple(map(int, cmd.stdout.split('.'))), self.django_req_ver)
+        ver = tuple(map(int, cmd.stdout.split('.')))
+        self.assertGreaterEqual(ver, self.mod_vers['django'][0])
+        self.assertLess(ver, self.mod_vers['django'][1])
 
 
+    def test_module_versions(self):
+        '''test all required modules for >=min and <max version'''
+        import importlib as imp
+        
+        for name, verrange in self.mod_vers.items():
+            min_v, max_v = verrange
+            mod = imp.import_module(name)
+            if hasattr(mod, '__version__'):
+                ver = tuple(map(int, mod.__version__.split('.')))
+            elif hasattr(mod, 'VERSION'):
+                ver = mod.VERSION
+            else:
+                self.fail('No versoin string for %s' % name)
+                
+            self.assertGreaterEqual(ver, min_v)
+            self.assertLess(ver, max_v)
+            
+            
+
+#    def test_numpy_version(self):
+#        import numpy as np
+#        v = np.__version__.split('.')
+#        self.assertGreaterEqual(v, self.numpy_req_ver)
+#
+#    def test_scipy_version(self):
+#        import scipy as sp
+#        v = sp.__version__.split('.')
+#        self.assertGreaterEqual(v, self.scipy_req_ver)
+#
+#    def test_matplotlib_version(self):
+#        import matplotlib as mpl
+#        v = mpl.__version__.split('.')
+#        self.assertGreaterEqual(v, self.mpl_req_ver)
 
 
-class ServerRedisTestCase(ut.TestCase):
+# we use rabbitmq
+#class ServerRedisTestCase(ut.TestCase):
+#    
+#    def setUp(self):
+#        import redis
+#        self.r = redis
+#        try:
+#            self.conn = redis.StrictRedis(host='localhost', port=6379, db=0)
+#        except:
+#            raise
+#        
+#    def test_01_connection(self):
+#        try:
+#            self.conn.info()
+#        except self.r.ConnectionError:
+#            self.fail("Connection to redis failed")
+#        except:
+#            raise
+#            
+#        
+#    def test_02_save_and_retrieve(self):
+#        val = 'blablabla'
+#        self.conn.set('foo', val)
+#        self.assertEqual(self.conn.get('foo'), val)
+    
+class ServerRabbitMQTestCase(ut.TestCase):
     
     def setUp(self):
-        import redis
-        try:
-            self.r = redis.StrictRedis(host='localhost', port=6379, db=0)
-        except:
-            raise
+        import pika
+        self.pika = pika
         
     def test_01_connection(self):
-        try:
-            self.r.info()
-        except ConnectionError:  #TODO CONTINUE: ConnectionError is not defined, maybe import?
-            self.fail("Connection to redis failed")
-        except:
-            raise
-            
+        pass
+
+    def test_02_basic_com_send(self):
         
-    def test_02_save_and_retrieve(self):
-        val = 'blablabla'
-        self.r.set('foo', val)
-        self.assertEqual(self.r.get('foo'), val)
-    
-    
+        connection = self.pika.BlockingConnection(pika.ConnectionParameters(
+                host='localhost'))
+        channel = connection.channel()
         
-    
+        channel.queue_declare(queue='hello')
+        
+        channel.basic_publish(exchange='',
+                              routing_key='hello',
+                              body='Hello World!')
+        print " [x] Sent 'Hello World!'"
+        connection.close()
+
+    def test_03_basic_com_recv(self):
+        
+        connection = self.pika.BlockingConnection()
+        channel = connection.channel()
+        method_frame, header_frame, body = channel.basic_get('test')
+        if method_frame:
+            print method_frame, header_frame, body
+            channel.basic_ack(method_frame.delivery_tag)
+        else:
+            print 'No message returned'
+
 
 
 
