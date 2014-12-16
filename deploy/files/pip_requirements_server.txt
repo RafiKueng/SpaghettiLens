@@ -2,7 +2,6 @@ pycrypto
 ecdsa
 fabric
 attrdict
-#redis>=2.10,<2.11
 django>=1.7,<1.8
 
 numpy>=1.9
@@ -11,4 +10,4 @@ matplotlib>=1.4.0
 
 Celery>=3.1.17,<3.2
 
-pika #for rabbitmq connection during testing
+puka #for rabbitmq connection during testing

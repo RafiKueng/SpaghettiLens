@@ -32,6 +32,7 @@ from fabric.contrib.console import confirm
 tasks_that_need_role = {
     'deploy_worker',
     'deploy_server',
+    'update_files',
 }
 
 
@@ -61,7 +62,7 @@ from deploy.test_tasks import *                                                #
 
 from deploy.settings import settings as _S
 
-env.roledefs = _S.ROLEDEFS
+env.roledefs = _S.ROLEDEFS   # if error here: check settings file "if task in [...]" and tasks_that_need_role above
 
 
 #@task()

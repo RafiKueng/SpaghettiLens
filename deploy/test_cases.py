@@ -12,7 +12,7 @@ import sys
 
 import unittest as ut
 
-from fabric.api import run, env, cd, local, hide
+from fabric.api import run, env, cd, local, hide, warn_only
 #from .fab_tools import GetOutOfLoop
 #from .fab_tools import inform, warnn, lmanagepy, errorr, confirm, choose
 
@@ -25,6 +25,11 @@ _E = env
 
 
 
+    
+def _local(cmd):
+    #print 'hiding'
+    with hide('running', 'output', 'warnings'), warn_only():
+        return local(cmd, capture=True)
 
 
 
@@ -63,19 +68,13 @@ class ServerDjangoTestCase(ut.TestCase):
             'matplotlib':   [(1,4),(1,5)],
 
             'django':       [(1,7), (1,8)],
-            'Celery':       [(3,1,17), (3,2)],
+            'celery':       [(3,1,17), (3,2)],
             
         }
         
         self.py_req_version = (2,7)
         self.py_max_version = (3,0) # dont allow python3
         self.django_req_ver = (1,7)
-        
-        
-    def local(self, cmd):
-        #print 'hiding'
-        with hide('running', 'output'):
-            return local(cmd, capture=True)
         
         
     
@@ -88,7 +87,7 @@ class ServerDjangoTestCase(ut.TestCase):
     def test_managepy_version(self):
         '''test the local manage.py reported version'''
         
-        cmd = self.local("python %s/manage.py --version" % _S.APPS.DIR)
+        cmd = _local("python %s/manage.py --version" % _S.APPS.DIR)
         self.assertTrue(cmd.succeeded)
         ver = tuple(map(int, cmd.stdout.split('.')))
         self.assertGreaterEqual(ver, self.mod_vers['django'][0])
@@ -112,92 +111,176 @@ class ServerDjangoTestCase(ut.TestCase):
             self.assertGreaterEqual(ver, min_v)
             self.assertLess(ver, max_v)
             
-            
+class ServerErlangTestCase(ut.TestCase):
 
-#    def test_numpy_version(self):
-#        import numpy as np
-#        v = np.__version__.split('.')
-#        self.assertGreaterEqual(v, self.numpy_req_ver)
-#
-#    def test_scipy_version(self):
-#        import scipy as sp
-#        v = sp.__version__.split('.')
-#        self.assertGreaterEqual(v, self.scipy_req_ver)
-#
-#    def test_matplotlib_version(self):
-#        import matplotlib as mpl
-#        v = mpl.__version__.split('.')
-#        self.assertGreaterEqual(v, self.mpl_req_ver)
-
-
-# we use rabbitmq
-#class ServerRedisTestCase(ut.TestCase):
-#    
-#    def setUp(self):
-#        import redis
-#        self.r = redis
-#        try:
-#            self.conn = redis.StrictRedis(host='localhost', port=6379, db=0)
-#        except:
-#            raise
-#        
-#    def test_01_connection(self):
-#        try:
-#            self.conn.info()
-#        except self.r.ConnectionError:
-#            self.fail("Connection to redis failed")
-#        except:
-#            raise
-#            
-#        
-#    def test_02_save_and_retrieve(self):
-#        val = 'blablabla'
-#        self.conn.set('foo', val)
-#        self.assertEqual(self.conn.get('foo'), val)
+    def setUp(self):
+        self.ver_min = (16,1)
+        self.ver_max = (99,99)
     
+
+    def test_available(self):
+        cmd = _local("erl -noshell -eval 'io:fwrite(\"~s\n\", [erlang:system_info(otp_release)]).' -s erlang halt")
+        
+        self.assertTrue(cmd.succeeded, "'erl command not available'")
+        
+        try:
+            v = cmd.stdout[1:].split('B')
+        except:
+            v = cmd.stdout.split('.')
+        v = tuple(map(int, v))
+            
+        self.assertGreaterEqual(v, self.ver_min, 'erlang version too old')
+        self.assertLess(v, self.ver_max, 'erlang version too recent')
+
+ 
 class ServerRabbitMQTestCase(ut.TestCase):
     
     def setUp(self):
-        import pika
-        self.pika = pika
+        import puka
+
+        self.Client = puka.Client
+        
+        #amqpurl = 'amqp://guest:guest1@192.168.100.10:5672/'
+        self.amqpurl = 'amqp://guest:guest1@192.168.100.10:5672/'
+        self.msg = "test msg\nmumumumultiline"
+        self.queue = 'testing'
+        self.exchange = ''
+        
+        #self.producer = puka.Client(amqpurl)
+        #self.consumer = puka.Client(amqpurl)
+
+    def test_00_service_available(self):
+        stdout = _local('systemctl | grep rabbitmq')
+        #print c
+        self.assertIn('rabbitmq-server.service', stdout)
+        self.assertIn('loaded', stdout)
+        self.assertIn('active', stdout)
+        self.assertIn('running', stdout)
+        
         
     def test_01_connection(self):
-        pika = self.pika        
-        
-        creds = p.credentials.PlainCredentials('guest','guest111')
-        params = p.ConnectionParameters(host='localhost', virtual_host='swlabs', credentials=creds)
 
+        client = self.Client(self.amqpurl)
         try:
-            c1 = pika.BlockingConnection(params)
+            # connect client
+            promise = client.connect()
+            client.wait(promise)
+            client.wait(client.close())
+
         except:
-            raise
+#            raise
             self.fail("connection error")
+            
+        
+    def test_02_create_queue(self):
+
+        client = self.Client(self.amqpurl)
+
+        client.wait(client.connect())
+
+        # declare queue (queue must exist before it is being used - otherwise messages sent to that queue will be discarded)
+        client.wait(client.queue_declare(queue=self.queue))
+        client.wait(client.queue_purge(queue=self.queue))
+        
+        client.wait(client.close())
         
 
-    def test_02_basic_com_send(self):
-        
-        connection = self.pika.BlockingConnection(self.pika.ConnectionParameters(
-                host='localhost'))
-        channel = connection.channel()
-        
-        channel.queue_declare(queue='testqueue')
-        
-        channel.basic_publish(exchange='',
-                              routing_key='hello',
-                              body='Hello World!')
-        print " [x] Sent 'Hello World!'"
-        connection.close()
 
-    def test_03_basic_com_recv(self):
+    def test_03_send_msg_to_queue(self):
+        # send message to the queue named rabbit
+
+        producer = self.Client(self.amqpurl)
+        producer.wait(producer.connect())
+
+        send_promise = producer.basic_publish(exchange=self.exchange, routing_key=self.queue, body=self.msg)
+        producer.wait(send_promise)
+
+        producer.wait(producer.close())
+
+
+    def test_04_recv_msg_from_queue(self):
+        # start waiting for messages, also those sent before (!), on the queue named rabbit
+
+        consumer = self.Client(self.amqpurl)
+        consumer.wait(consumer.connect())
+
+        receive_promise = consumer.basic_consume(queue=self.queue, no_ack=True)
+        received_message = consumer.wait(receive_promise, timeout=0.1)
         
-        connection = self.pika.BlockingConnection()
-        channel = connection.channel()
-        method_frame, header_frame, body = channel.basic_get('testqueue')
-        if method_frame:
-            print method_frame, header_frame, body
-            channel.basic_ack(method_frame.delivery_tag)
-        else:
-            print 'No message returned'
+        self.assertEqual(received_message['body'], self.msg)
+        self.assertEqual(received_message['exchange'], self.exchange)
+        self.assertEqual(received_message['routing_key'], self.queue)
+        
+        consumer.wait(consumer.close())
+
+        
+    def test_complex_send_and_receive(self):
+
+        import random
+        nmsg = 10
+        rng = range(nmsg)
+        rnd = random.randint(0,100)
+        
+        #self.queue = 'rab'
+
+        producer = self.Client(self.amqpurl)
+        consumer = self.Client(self.amqpurl)
+        
+        # connect
+        producer.wait(producer.connect())
+        consumer.wait(consumer.connect())
+        
+        # declare queue (queue must exist before it is being used - otherwise messages sent to that queue will be discarded)
+        producer.wait(producer.queue_declare(queue=self.queue))
+        producer.wait(producer.queue_purge(queue=self.queue))
+        
+        # send message to the queue named rabbit
+        for i in rng:
+            producer.wait(producer.basic_publish(exchange='', routing_key=self.queue, body='%i;%i'%(i,i*rnd)))
+        producer.wait(producer.basic_publish(exchange='', routing_key=self.queue, body='/END'))
+        
+        # start waiting for messages, also those sent before (!), on the queue named rabbit
+        receive_promise = consumer.basic_consume(queue=self.queue, no_ack=True)
+        
+        msgnr = 0
+        
+        while True:
+            
+            msg = consumer.wait(receive_promise, timeout=0.1)
+            #print msg
+            try:
+                msg = msg['body']
+            except:
+                self.fail("Bad (empty) message received / timeout: " + str(msg))
+
+            msgnr += 1
+            
+            if msg == '/END':
+                self.assertEqual(msgnr, nmsg+1, "Not same amount of msg recv than sended") #+1 because of additional /END tag
+                # check if /END is last msg in queue:
+                msg = consumer.wait(receive_promise, timeout=0.1)
+                self.assertIsNone(msg)
+                break
+            
+            elif msgnr > nmsg + 1:
+                self.fail("Too many messages received")
+
+            elif msg is None: #this should actually never happen
+                self.assertEqual(msgnr, nmsg+1, "Not same amount of msg recv than sended") #+1 because of additional /END tag
+                break
+
+            
+            try:
+                i, j = map(int, msg.split(';'))
+                self.assertTrue(i * rnd == j)
+            except:
+                self.fail("strage msg received: %s" % msg)
+
+
+        producer.wait(producer.close())
+        consumer.wait(consumer.close())
+
+
 
 
 

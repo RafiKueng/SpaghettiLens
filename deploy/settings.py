@@ -19,10 +19,10 @@ from copy import deepcopy
 from os.path import join
 from attrdict import AttrDict
 
-from fabric.api import env  #, abort, warn
+from fabric.api import env, abort#, abort, warn
 #from fabric.contrib.console import confirm
 
-#from fab_tools import *
+#from fab_tools import abort
 
 _ = AttrDict()
 
@@ -123,6 +123,7 @@ _.RABBITMQ.USER                 = 'rabbituser' #TODO change these values...
 _.RABBITMQ.PASSWORD             = 'rabbitpsw'
 _.RABBITMQ.VHOST                = 'swlabs'
 _.RABBITMQ.PORT                 = 5672
+_.RABBITMQ.GUESTPSW             = 'guest1'
 
 
 # NOT TUE ANYMORE.. I HOPE PORTNUMERSS ECT WORK AS STRINGS AS WELL
@@ -165,6 +166,7 @@ if len(env.tasks)==1 and len(env.roles)==1:
     role = env.roles[0]
     
     # WORKER related tasks
+#    print '>%s<' % task
     if task in ['deploy_worker',]:
         
         _.ROLEDEFS = {
@@ -186,7 +188,7 @@ if len(env.tasks)==1 and len(env.roles)==1:
             
 
     # SERVER related tasks            
-    elif task in ['deploy_server']:
+    elif task in ['deploy_server', 'update_files']:
         
         _.ROLEDEFS = {
             'test'  : {'hosts': _.SERVER_TEST_HOST},
@@ -201,6 +203,9 @@ if len(env.tasks)==1 and len(env.roles)==1:
             _.ROOT_PATH = '/tmp/swlabs'
             _.TMPDIR    = 'srv_tmp'
             _.BIN_DIR   = '/tmp/swlabs/_bin'
+            
+    else:
+        abort("task not found: ROLEDEF inclomplete")
         
         
 
@@ -234,6 +239,7 @@ def config_r(_):
     
 
 settings = config_r(_)
-
+#for k, v in settings.items():
+#    print k, v
 
 

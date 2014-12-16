@@ -38,6 +38,16 @@ DEBUG = True
 _E = env
 
 
+@task()
+def update_files():
+    '''just uploads the files, usefull for testing the unittests on tmp server
+
+    only works after one successful deploy_server    
+    '''
+    _E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
+    _copy_files_server()
+    
+
 
 @task()
 def deploy_server():
@@ -48,33 +58,12 @@ def deploy_server():
 
     inform("install of server")
     
+    _E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
     
-    newsubdirs = [
-        _S.APPS.DIR,
-        _S.APPS.MEDIA_DIR,
-        _S.TMPDIR,
-        'deploy',
-    ]
-
-    # dirs to copy (src, dest)
-    dirstocopy = [
-        (_S.SRC.DJANGODIR, _S.APPS.DIR),
-        ('deploy', 'deploy'),
-    ]
-
-    # single files to copy (src, dest, destname)
-    filestocopy = [
-        (_S.SRC.PIP_REQ_RPATH_SRV, _S.TMPDIR, 'pip_requirements.txt')
-    ]
-
-
-
     _check_if_local_branch_is_master()
     _generate_version_information()
 
-    _E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
-
-    _setup_dirs_and_copy_files(filestocopy, dirstocopy, newsubdirs)
+    _copy_files_server()
 
     with cd(_E.INSTALL_DIR):
 
@@ -135,6 +124,28 @@ def deploy_worker():
         
 
 
+
+def _copy_files_server():
+
+    newsubdirs = [
+        _S.APPS.DIR,
+        _S.APPS.MEDIA_DIR,
+        _S.TMPDIR,
+        'deploy',
+    ]
+
+    # dirs to copy (src, dest)
+    dirstocopy = [
+        (_S.SRC.DJANGODIR, _S.APPS.DIR),
+        ('deploy', 'deploy'),
+    ]
+
+    # single files to copy (src, dest, destname)
+    filestocopy = [
+        (_S.SRC.PIP_REQ_RPATH_SRV, _S.TMPDIR, 'pip_requirements.txt')
+    ]
+
+    _setup_dirs_and_copy_files(filestocopy, dirstocopy, newsubdirs)
 
 
 
@@ -526,23 +537,26 @@ def _test_server_setup():
     expects the repro to be uploaded to the working dir already
     
     returns if a certain testin case suite has succeded
-    passed[redis] == True
+    passed[0] = (redis, True)...
+    passed is an ORDERED list
     '''
     inform('Testing the server setup')
     assert(_E.VERSION.version_str)
     
 
-    tests = {
+    #ordering is important
+    tests = [
 #        'redis': [
 #            'ServerRedisTestCase',
 ##            'ServerRedisTestCase.test_01_connection',
 #            ],
-        'pipdjango':    ['ServerDjangoTestCase',],
-        'rabbitmq' :    ['ServerRabbitMQTestCase']
+        ('pipdjango',    ['ServerDjangoTestCase',]),
+        ('erlang',       ['ServerErlangTestCase']),
+        ('rabbitmq',     ['ServerRabbitMQTestCase']),
         
-    }
+    ]
     
-    passed = {}
+    passed = []
     
     
     with cd(_E.INSTALL_DIR):
@@ -552,7 +566,7 @@ def _test_server_setup():
         else:
             args = "-v --failfast"
         
-        for sw, tests in tests.items():
+        for sw, tests in tests:
             
             failed = False
             
@@ -565,9 +579,9 @@ def _test_server_setup():
                     break
                 
             if not failed:
-                passed[sw] = True
+                passed.append((sw, True))
             else:
-                passed[sw] = False
+                passed.append((sw, False))
     
     return passed
 
@@ -591,38 +605,80 @@ def _install_missing_server_software(tests_passed):
 
 #    worker    
 
-    for test, result in tests_passed.items():
+    for test, result in tests_passed:
         
         if not result:
             warnn("server hasn't installed: %s" % test)
+            
+            # PAY ATTENTION: ordering IS important (not here, but in the generation of the passed file..)
+            
+            if test == 'erlang':
+                _server_erlang_install()
+                # no config needed
                 
-            if test == "rabbitmq":
-                with cd(_S.TMPPATH):
-                    run('wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/erlang-R16B01-2.1.3.x86_64.rpm')
-                    sudo( 'zypper in erlang-R16B01-2.1.3.x86_64.rpm')
-    
-                    run('wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/rabbitmq-server-3.1.5-2.2.2.x86_64.rpm')
-                    sudo('rpm -Uihv rabbitmq-server-3.1.5-2.2.2.x86_64.rpm', warn_only=True)
+            elif test == "rabbitmq":
+                _server_rabbitmq_install()
+                _server_rabbitmq_configure()
+                
+            elif test == "php":
+                pass
 
-                    sudo("SuSEfirewall2 open EXT TCP {PORT}".format(**_S.RABBITMQ))
-                    sudo("SuSEfirewall2 stop")
-                    sudo("SuSEfirewall2 start")
+            elif test == "apache":
+                pass
 
-                    run("chkconfig rabbitmq-server")
-                    sudo("chkconfig rabbitmq-server on") #TODO needed?
-                    
-                    sudo("systemctl enable rabbitmq-server")
-                    sudo("systemctl start rabbitmq-server")
-                    
-                    sudo("rabbitmqctl add_user {USER} {PASSWORD}".format(**_S.RABBITMQ))
-                    sudo("rabbitmqctl add_vhost {VHOST}".format(**_S.RABBITMQ))
-                    sudo('rabbitmqctl set_permissions -p {VHOST} {USER} ".*" ".*" ".*"'.format(**_S.RABBITMQ))
-
-                    sudo('rabbitmqctl change_password guest guest111')
-                    sudo('rabbitmqctl set_permissions -p {VHOST} guest ".*" ".*" ".*"'.format(**_S.RABBITMQ))
+            elif test == "couchdb":
+                _server_couchdb_install()
+                _server_couchdb_configure()
 
                 
             else:
                 if not DEBUG:           
                     abort("breaking because '%s' is missing" % test)
 
+
+
+
+
+
+def _server_erlang_install():
+    with cd(_S.TMPPATH):
+        run('wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/erlang-R16B01-2.1.3.x86_64.rpm')
+        sudo( 'zypper in erlang-R16B01-2.1.3.x86_64.rpm')
+
+
+def _server_rabbitmq_install():
+    with cd(_S.TMPPATH):
+        run('wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/rabbitmq-server-3.1.5-2.2.2.x86_64.rpm')
+        sudo('rpm -Uihv rabbitmq-server-3.1.5-2.2.2.x86_64.rpm', warn_only=True)
+
+
+
+
+def _server_rabbitmq_configure():
+    with cd(_S.TMPPATH):
+        sudo("SuSEfirewall2 open EXT TCP {PORT}".format(**_S.RABBITMQ))
+        sudo("SuSEfirewall2 stop")
+        sudo("SuSEfirewall2 start")
+
+        #run("chkconfig rabbitmq-server")
+        #sudo("chkconfig rabbitmq-server on") #TODO needed?
+        
+        sudo("systemctl enable rabbitmq-server")
+        sudo("systemctl start rabbitmq-server")
+        sudo("systemctl restart rabbitmq-server") #for some reason, an additional nrestart is needed
+        
+        sudo("rabbitmqctl add_user {USER} {PASSWORD}".format(**_S.RABBITMQ))
+        sudo("rabbitmqctl add_vhost {VHOST}".format(**_S.RABBITMQ))
+        sudo('rabbitmqctl set_permissions -p {VHOST} {USER} ".*" ".*" ".*"'.format(**_S.RABBITMQ))
+
+        sudo('rabbitmqctl change_password guest {GUESTPSW}'.format(**_S.RABBITMQ))
+        sudo('rabbitmqctl set_permissions -p {VHOST} guest ".*" ".*" ".*"'.format(**_S.RABBITMQ))
+
+
+
+def _server_couchdb_install():
+    sudo("wget http://download.opensuse.org/repositories/server:/database/openSUSE_13.1/x86_64/couchdb-1.6.1-47.1.x86_64.rpm")
+    sudo("rpm -Uihv couchdb-1.6.1-47.1.x86_64.rpm")
+    
+def _server_couchdb_configure():
+    pass
