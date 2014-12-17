@@ -12,7 +12,7 @@ import sys
 
 import unittest as ut
 
-from fabric.api import run, env, cd, local, hide, warn_only
+from fabric.api import run, env, cd, local, hide, warn_only, sudo
 #from .fab_tools import GetOutOfLoop
 #from .fab_tools import inform, warnn, lmanagepy, errorr, confirm, choose
 
@@ -30,6 +30,11 @@ def _local(cmd):
     #print 'hiding'
     with hide('running', 'output', 'warnings'), warn_only():
         return local(cmd, capture=True)
+
+def _lsudo(cmd):
+    #print 'hiding'
+    with hide('running', 'output', 'warnings'), warn_only():
+        return local('sudo '+cmd, capture=True)
 
 
 
@@ -110,35 +115,52 @@ class ServerDjangoTestCase(ut.TestCase):
                 
             self.assertGreaterEqual(ver, min_v)
             self.assertLess(ver, max_v)
+
+
+
+
+
             
 class ServerErlangTestCase(ut.TestCase):
 
     def setUp(self):
-        self.ver_min = (16,1)
+        self.ver_min = (17,)
         self.ver_max = (99,99)
     
 
-    def test_available(self):
+    def test_0_availability(self):
         cmd = _local("erl -noshell -eval 'io:fwrite(\"~s\n\", [erlang:system_info(otp_release)]).' -s erlang halt")
         
         self.assertTrue(cmd.succeeded, "'erl command not available'")
-        
-        try:
-            v = cmd.stdout[1:].split('B')
-        except:
-            v = cmd.stdout.split('.')
+
+
+    def test_0_version(self):
+        cmd = _local("erl -noshell -eval 'io:fwrite(\"~s\n\", [erlang:system_info(otp_release)]).' -s erlang halt")
+#        try:
+#            v = cmd.stdout[1:].split('B')
+#        except:
+#            v = cmd.stdout.split('.')
+        v = cmd.stdout.split('.')
         v = tuple(map(int, v))
             
-        self.assertGreaterEqual(v, self.ver_min, 'erlang version too old')
-        self.assertLess(v, self.ver_max, 'erlang version too recent')
+        self.assertGreaterEqual(v, self.ver_min)#, 'erlang version too old')
+        self.assertLess(v, self.ver_max)#, 'erlang version too recent')
+
+
+
 
  
 class ServerRabbitMQTestCase(ut.TestCase):
     
     def setUp(self):
-        import puka
+        self.svcname = 'rabbitmq-server.service'
 
+        import puka
         self.Client = puka.Client
+
+        self.min_ver = (3,1,5)
+        self.max_ver = (99,0)
+
         
         #amqpurl = 'amqp://guest:guest1@192.168.100.10:5672/'
         self.amqpurl = 'amqp://guest:guest1@192.168.100.10:5672/'
@@ -149,16 +171,47 @@ class ServerRabbitMQTestCase(ut.TestCase):
         #self.producer = puka.Client(amqpurl)
         #self.consumer = puka.Client(amqpurl)
 
-    def test_00_service_available(self):
-        stdout = _local('systemctl | grep rabbitmq')
-        #print c
-        self.assertIn('rabbitmq-server.service', stdout)
-        self.assertIn('loaded', stdout)
-        self.assertIn('active', stdout)
-        self.assertIn('running', stdout)
+
+    def test_0_avalability(self):
+        cmd = _lsudo("rabbitmqctl status")
+        self.assertTrue(cmd.succeeded, "rabbitmqctl command not available")
+
+    def test_0_service_availability(self):
+        cmd = _local('systemctl | grep %s' % self.svcname)
+        self.assertTrue(cmd.succeeded)
+
+    def test_0_service_loaded(self):
+        cmd = _local('systemctl | grep %s' % self.svcname)
+        self.assertIn('loaded', cmd)
+        
+    def test_0_service_active(self):
+        cmd = _local('systemctl | grep %s' % self.svcname)
+        self.assertIn('active', cmd)
+
+    def test_0_service_running(self):
+        cmd = _local('systemctl | grep %s' % self.svcname)
+        self.assertIn('running', cmd)
+
+    def test_0_version(self):
+        cmd = _lsudo("rabbitmqctl status| grep -Eow -e '{rabbit.*}' | grep -Eow '[0-9]+.[0-9]+.[0-9]+'")
+
+        v = cmd.stdout.split('.')
+        v = tuple(map(int, v))
+            
+        self.assertGreaterEqual(v, self.min_ver, 'rabbitmq version too old')
+        self.assertLess(v, self.max_ver, 'rabbitmq version too recent')
+
+
+#    def test_00_service_available(self):
+#        stdout = _local('systemctl | grep rabbitmq')
+#        #print c
+#        self.assertIn('rabbitmq-server.service', stdout)
+#        self.assertIn('loaded', stdout)
+#        self.assertIn('active', stdout)
+#        self.assertIn('running', stdout)
         
         
-    def test_01_connection(self):
+    def test_A0_connection(self):
 
         client = self.Client(self.amqpurl)
         try:
@@ -172,7 +225,7 @@ class ServerRabbitMQTestCase(ut.TestCase):
             self.fail("connection error")
             
         
-    def test_02_create_queue(self):
+    def test_A1_create_queue(self):
 
         client = self.Client(self.amqpurl)
 
@@ -186,7 +239,7 @@ class ServerRabbitMQTestCase(ut.TestCase):
         
 
 
-    def test_03_send_msg_to_queue(self):
+    def test_A2_send_msg_to_queue(self):
         # send message to the queue named rabbit
 
         producer = self.Client(self.amqpurl)
@@ -198,7 +251,7 @@ class ServerRabbitMQTestCase(ut.TestCase):
         producer.wait(producer.close())
 
 
-    def test_04_recv_msg_from_queue(self):
+    def test_A3_recv_msg_from_queue(self):
         # start waiting for messages, also those sent before (!), on the queue named rabbit
 
         consumer = self.Client(self.amqpurl)
@@ -280,6 +333,48 @@ class ServerRabbitMQTestCase(ut.TestCase):
         producer.wait(producer.close())
         consumer.wait(consumer.close())
 
+
+
+
+class ServerCouchDBTestCase(ut.TestCase):
+
+    def setUp(self):
+        self.svcname = 'couchdb.service'
+        self.min_ver = (1,6,1)
+        self.max_ver = (99,0)
+
+    
+
+    def test_0_availability(self):
+        cmd = _local("couchdb -V")
+        self.assertTrue(cmd.succeeded, "'couchdb command not available'")
+
+
+    def test_0_version(self):
+        cmd = _local("couchdb -V")
+        
+        v = cmd.stdout.split('\n')[0].split()[-1].split('.')
+        v = tuple(map(int,v))
+            
+        self.assertGreaterEqual(v, self.min_ver)#, 'couchdb version too old')
+        self.assertLess(v, self.max_ver)#, 'couchdb version too recent')
+
+
+    def test_0_service_availability(self):
+        cmd = _local('systemctl | grep %s' % self.svcname)
+        self.assertTrue(cmd.succeeded)
+
+    def test_0_service_loaded(self):
+        cmd = _local('systemctl | grep %s' % self.svcname)
+        self.assertIn('loaded', cmd)
+        
+    def test_0_service_active(self):
+        cmd = _local('systemctl | grep %s' % self.svcname)
+        self.assertIn('active', cmd)
+
+    def test_0_service_running(self):
+        cmd = _local('systemctl | grep %s' % self.svcname)
+        self.assertIn('running', cmd)
 
 
 

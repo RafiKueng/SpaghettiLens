@@ -47,6 +47,15 @@ def update_files():
     _E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
     _copy_files_server()
     
+    
+    
+@task()
+def test_srv():
+    _generate_version_information()
+    _E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
+    _test_server_setup()
+
+
 
 
 @task()
@@ -553,6 +562,7 @@ def _test_server_setup():
         ('pipdjango',    ['ServerDjangoTestCase',]),
         ('erlang',       ['ServerErlangTestCase']),
         ('rabbitmq',     ['ServerRabbitMQTestCase']),
+        ('couchdb',      ['ServerCouchDBTestCase']),
         
     ]
     
@@ -642,8 +652,23 @@ def _install_missing_server_software(tests_passed):
 
 def _server_erlang_install():
     with cd(_S.TMPPATH):
-        run('wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/erlang-R16B01-2.1.3.x86_64.rpm')
-        sudo( 'zypper in erlang-R16B01-2.1.3.x86_64.rpm')
+
+        #old version..        
+        #run('wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/erlang-R16B01-2.1.3.x86_64.rpm')
+        #sudo( 'zypper in erlang-R16B01-2.1.3.x86_64.rpm')
+        
+        sudo("zypper in unixODBC")
+
+        # this works on opensuse 13.2
+        run("wget http://download.opensuse.org/repositories/openSUSE:/13.2/standard/x86_64/erlang-17.1-3.1.11.x86_64.rpm")
+        run("wget http://download.opensuse.org/repositories/openSUSE:/13.2/standard/x86_64/erlang-epmd-17.1-3.1.11.x86_64.rpm")
+        sudo("rpm -Uihv erlang-epmd-17.1-1.1.x86_64.rpm erlang-17.1-1.1.x86_64.rpm")
+        
+        #this works on opensuse 13.1?
+#        run("wget http://download.opensuse.org/repositories/devel:/languages:/erlang:/Factory/openSUSE_13.1/x86_64/erlang-epmd-17.4-1.1.x86_64.rpm")
+#        run("wget http://download.opensuse.org/repositories/devel:/languages:/erlang:/Factory/openSUSE_13.1/x86_64/erlang-17.4-1.1.x86_64.rpm")
+#        sudo("rpm -Uihv erlang-epmd-17.4-1.1.x86_64.rpm erlang-17.4-1.1.x86_64.rpm")
+
 
 
 def _server_rabbitmq_install():
@@ -651,6 +676,8 @@ def _server_rabbitmq_install():
         run('wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/rabbitmq-server-3.1.5-2.2.2.x86_64.rpm')
         sudo('rpm -Uihv rabbitmq-server-3.1.5-2.2.2.x86_64.rpm', warn_only=True)
 
+        run("wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/rabbitmq-server-plugins-3.1.5-2.2.2.x86_64.rpm")
+        sudo("rpm -Uhiv rabbitmq-server-plugins-3.1.5-2.2.2.x86_64.rpm")
 
 
 
@@ -674,11 +701,22 @@ def _server_rabbitmq_configure():
         sudo('rabbitmqctl change_password guest {GUESTPSW}'.format(**_S.RABBITMQ))
         sudo('rabbitmqctl set_permissions -p {VHOST} guest ".*" ".*" ".*"'.format(**_S.RABBITMQ))
 
+        #sudo("rabbitmq-plugins enable rabbitmq_management")
 
 
 def _server_couchdb_install():
-    sudo("wget http://download.opensuse.org/repositories/server:/database/openSUSE_13.1/x86_64/couchdb-1.6.1-47.1.x86_64.rpm")
-    sudo("rpm -Uihv couchdb-1.6.1-47.1.x86_64.rpm")
+
+    with cd(_S.TMPPATH):
+
+        sudo("zypper in libmozjs185-1_0 libopenssl-devel")
+    
+    #sudo("wget http://download.opensuse.org/repositories/server:/database/openSUSE_13.1/x86_64/couchdb-1.6.1-47.1.x86_64.rpm")
+    #sudo("rpm -Uihv couchdb-1.6.1-47.1.x86_64.rpm")
+
+#    sudo("wget http://download.opensuse.org/repositories/server:/database/openSUSE_13.2/x86_64/couchdb-1.6.1-47.1.x86_64.rpm")
+#    sudo("rpm -Uihv couchdb-1.6.1-47.1.x86_64.rpm")
+
+    
     
 def _server_couchdb_configure():
     pass

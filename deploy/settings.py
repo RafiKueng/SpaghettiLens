@@ -188,7 +188,7 @@ if len(env.tasks)==1 and len(env.roles)==1:
             
 
     # SERVER related tasks            
-    elif task in ['deploy_server', 'update_files']:
+    elif task in ['deploy_server', 'update_files', 'test_srv']:
         
         _.ROLEDEFS = {
             'test'  : {'hosts': _.SERVER_TEST_HOST},
