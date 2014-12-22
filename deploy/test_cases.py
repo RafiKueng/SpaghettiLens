@@ -68,7 +68,7 @@ class ServerDjangoTestCase(ut.TestCase):
     def setUp(self):
 
         self.mod_vers = {
-            'numpy':        [(1,9),(1,10)], #[>=(), <()]
+            'numpy':        [(1,7),(1,10)], #[>=(), <()]
             'scipy':        [(0,14),(0,15)],
             'matplotlib':   [(1,4),(1,5)],
 
@@ -136,6 +136,9 @@ class ServerErlangTestCase(ut.TestCase):
 
     def test_0_version(self):
         cmd = _local("erl -noshell -eval 'io:fwrite(\"~s\n\", [erlang:system_info(otp_release)]).' -s erlang halt")
+
+        self.assertGreater(len(cmd),0, msg='Got empty version string (prog not isntalled?)')
+        
 #        try:
 #            v = cmd.stdout[1:].split('B')
 #        except:
@@ -172,7 +175,7 @@ class ServerRabbitMQTestCase(ut.TestCase):
         #self.consumer = puka.Client(amqpurl)
 
 
-    def test_0_avalability(self):
+    def test_0_availability(self):
         cmd = _lsudo("rabbitmqctl status")
         self.assertTrue(cmd.succeeded, "rabbitmqctl command not available")
 
@@ -194,6 +197,8 @@ class ServerRabbitMQTestCase(ut.TestCase):
 
     def test_0_version(self):
         cmd = _lsudo("rabbitmqctl status| grep -Eow -e '{rabbit.*}' | grep -Eow '[0-9]+.[0-9]+.[0-9]+'")
+
+        self.assertGreater(len(cmd),0, msg='Got empty version string (prog not isntalled?)')
 
         v = cmd.stdout.split('.')
         v = tuple(map(int, v))
@@ -339,9 +344,20 @@ class ServerRabbitMQTestCase(ut.TestCase):
 class ServerCouchDBTestCase(ut.TestCase):
 
     def setUp(self):
+
+        import requests
+
+        self.get    = requests.get        
+        self.post   = requests.post
+        self.delete = requests.delete
+        
         self.svcname = 'couchdb.service'
         self.min_ver = (1,6,1)
         self.max_ver = (99,0)
+        
+        self.addr = 'http://127.0.0.1:5984'
+        
+        self.rqaddr = lambda x: self.addr + '?' + x
 
     
 
@@ -353,6 +369,8 @@ class ServerCouchDBTestCase(ut.TestCase):
     def test_0_version(self):
         cmd = _local("couchdb -V")
         
+        self.assertGreater(len(cmd),0, msg='Got empty version string (prog not isntalled?)')
+        
         v = cmd.stdout.split('\n')[0].split()[-1].split('.')
         v = tuple(map(int,v))
             
@@ -361,20 +379,30 @@ class ServerCouchDBTestCase(ut.TestCase):
 
 
     def test_0_service_availability(self):
-        cmd = _local('systemctl | grep %s' % self.svcname)
+        cmd = _local('systemctl status %s' % self.svcname)
         self.assertTrue(cmd.succeeded)
+        self.assertNotIn('not-found', cmd)
 
     def test_0_service_loaded(self):
-        cmd = _local('systemctl | grep %s' % self.svcname)
+        cmd = _local('systemctl status %s' % self.svcname)
         self.assertIn('loaded', cmd)
         
     def test_0_service_active(self):
-        cmd = _local('systemctl | grep %s' % self.svcname)
-        self.assertIn('active', cmd)
+        cmd = _local('systemctl status %s' % self.svcname)
+        self.assertIn(' active', cmd)
+        self.assertNotIn('inactive', cmd)
 
     def test_0_service_running(self):
-        cmd = _local('systemctl | grep %s' % self.svcname)
-        self.assertIn('running', cmd)
+        cmd = _local('systemctl status %s' % self.svcname)
+        self.assertIn('active (running)', cmd)
+
+    def test_A0_connection(self):
+        resp = self.get(self.addr)
+        self.assertEqual(resp.status_code, 200)
+        rspjson = resp.json()
+        self.assertEqual(rspjson['couchdb'], u'Welcome')
+
+
 
 
 

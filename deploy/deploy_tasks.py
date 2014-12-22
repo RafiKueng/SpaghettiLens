@@ -9,7 +9,7 @@ Created on Thu Oct 16 15:51:20 2014
 from __future__ import absolute_import
 
 
-from fabric.api import cd, prefix, local, put, puts, settings, run, abort, env, task, sudo  #*
+from fabric.api import cd, prefix, local, put, puts, settings, run, abort, env, task, sudo, prompt  #*
 #from fabric.utils import *
 
 #from fabric import operations as ops
@@ -53,6 +53,7 @@ def update_files():
 def test_srv():
     _generate_version_information()
     _E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
+    _copy_files_server()
     _test_server_setup()
 
 
@@ -80,10 +81,14 @@ def deploy_server():
         _setup_django_config_files()
 
 
-    _E.SERVERSETUPTEST_PASSED = _test_server_setup()
+    _E.SERVERSETUPTEST_PASSED = _test_server_setup_in_adv()
     
     _install_missing_server_software(_E.SERVERSETUPTEST_PASSED)
     
+    tests_passed = _test_server_setup()
+    for test, result in tests_passed:
+        puts('%-20s: %s' % (test, str(result)))
+   
     
 
     
@@ -211,12 +216,14 @@ def _setup_py_pip_venv():
     inform("Setup Python, Pip and the VirtualEnv")
 
     with settings(warn_only=True):
-        if run('python2 --version').failed:
-            abort('No python available remote... aborting')
-        if run('pip2 -V').failed:
+        cmd = run('python --version')        
+        if cmd.failed or '2.7' not in cmd:
+            abort('No python 2.7 available remote... aborting')
+        cmd = run('pip -V')
+        if cmd.failed or 'python 2.7' not in cmd:
             warnn('no pip found remote. getting and installing a remote version into ~/.local/bin')
             run('curl -O https://bootstrap.pypa.io/get-pip.py')
-            run('python2 get-pip.py --user')
+            run('python get-pip.py --user')
             warnn('Make sure the local pip is on path "~/.local/bin" (~/.bashrc)')
             if not console.confirm('Finished putting it on path?'):
                 abort('then do it now!!')
@@ -224,9 +231,9 @@ def _setup_py_pip_venv():
     with settings(warn_only=True):
         if run('virtualenv --version').failed:
             warnn('no virtualenv found, installing a local (--user) one using pip')
-            run('pip2 install --user virtualenv')
+            run('pip install --user virtualenv')
     
-    run('virtualenv -p python2 --system-site-packages %s' %_S.PYENV_DIR) #using numpy from system..
+    run('virtualenv -p python --system-site-packages %s' %_S.PYENV_DIR) #using numpy from system..
     
     # instal python packages into virtualenv
     with prefix('source %s' % os.path.join(_S.PYENV_DIR, 'bin/activate')):
@@ -235,8 +242,10 @@ def _setup_py_pip_venv():
 #        else:
 #            debugmsg('skipping local installation of python modules') # because build of numpy take some time..
 
-
-
+# make sure to have on opensuse: (sudo zypper)
+# - python-numpy-devel
+# - python-scipy-devel
+# - python-matplotlib-devel
 
 
 
@@ -540,7 +549,7 @@ def _setup_dirs_and_copy_files(filestocopy=[], dirstocopy=[], newsubdirs=[]):
 
 
 
-def _test_server_setup():
+def _test_server_setup_in_adv():
     '''tests the server setup prior to install from remote
     
     expects the repro to be uploaded to the working dir already
@@ -559,10 +568,17 @@ def _test_server_setup():
 #            'ServerRedisTestCase',
 ##            'ServerRedisTestCase.test_01_connection',
 #            ],
-        ('pipdjango',    ['ServerDjangoTestCase',]),
-        ('erlang',       ['ServerErlangTestCase']),
-        ('rabbitmq',     ['ServerRabbitMQTestCase']),
-        ('couchdb',      ['ServerCouchDBTestCase']),
+        ('pipdjango',    ['ServerDjangoTestCase',
+                          ]),
+        ('erlang',       ['ServerErlangTestCase.test_0_availability',
+                          'ServerErlangTestCase.test_0_version',
+                          ]),
+        ('rabbitmq',     ['ServerRabbitMQTestCase.test_0_availability',
+                          'ServerRabbitMQTestCase.test_0_version',
+                          ]),
+        ('couchdb',      ['ServerCouchDBTestCase.test_0_availability',
+                          'ServerCouchDBTestCase.test_0_version',
+                          ]),
         
     ]
     
@@ -594,6 +610,68 @@ def _test_server_setup():
                 passed.append((sw, False))
     
     return passed
+
+
+
+
+
+
+
+def _test_server_setup():
+    '''tests the server setup, are all services running and functioning?    
+    
+    expects the repro to be uploaded to the working dir already
+    
+    returns if a certain testin case suite has succeded
+    passed[0] = (redis, True)...
+    passed is an ORDERED list
+    '''
+    inform('Testing the server setup')
+    assert(_E.VERSION.version_str)
+    
+
+    #ordering is important
+    tests = [
+#        'redis': [
+#            'ServerRedisTestCase',
+##            'ServerRedisTestCase.test_01_connection',
+#            ],
+        ('pipdjango',    ['ServerDjangoTestCase',
+                          ]),
+        ('erlang',       ['ServerErlangTestCase',]),
+        ('rabbitmq',     ['ServerRabbitMQTestCase']),
+        ('couchdb',      ['ServerCouchDBTestCase']),
+    ]
+    
+    passed = []
+    
+    
+    with cd(_E.INSTALL_DIR):
+        
+        if DEBUG:
+            args = "-v"
+        else:
+            args = "-v --failfast"
+        
+        for sw, tests in tests:
+            
+            failed = False
+            
+            for test in tests:
+                c = rvenv('python -m unittest %s deploy.test_cases.%s' % (args, test),
+                        warn_only=True, quiet=False)
+                lines = c.split('\n')
+                if not 'OK' == c.split('\n')[-1]:
+                    failed = True
+                    break
+                
+            if not failed:
+                passed.append((sw, True))
+            else:
+                passed.append((sw, False))
+    
+    return passed
+
 
 
 
@@ -660,15 +738,17 @@ def _server_erlang_install():
         sudo("zypper in unixODBC")
 
         # this works on opensuse 13.2
-        run("wget http://download.opensuse.org/repositories/openSUSE:/13.2/standard/x86_64/erlang-17.1-3.1.11.x86_64.rpm")
-        run("wget http://download.opensuse.org/repositories/openSUSE:/13.2/standard/x86_64/erlang-epmd-17.1-3.1.11.x86_64.rpm")
-        sudo("rpm -Uihv erlang-epmd-17.1-1.1.x86_64.rpm erlang-17.1-1.1.x86_64.rpm")
+#        run("wget http://download.opensuse.org/repositories/openSUSE:/13.2/standard/x86_64/erlang-17.1-3.1.11.x86_64.rpm")
+#        run("wget http://download.opensuse.org/repositories/openSUSE:/13.2/standard/x86_64/erlang-epmd-17.1-3.1.11.x86_64.rpm")
+#        sudo("rpm -Uihv erlang-epmd-17.1-1.1.x86_64.rpm erlang-17.1-1.1.x86_64.rpm")
         
         #this works on opensuse 13.1?
 #        run("wget http://download.opensuse.org/repositories/devel:/languages:/erlang:/Factory/openSUSE_13.1/x86_64/erlang-epmd-17.4-1.1.x86_64.rpm")
 #        run("wget http://download.opensuse.org/repositories/devel:/languages:/erlang:/Factory/openSUSE_13.1/x86_64/erlang-17.4-1.1.x86_64.rpm")
 #        sudo("rpm -Uihv erlang-epmd-17.4-1.1.x86_64.rpm erlang-17.4-1.1.x86_64.rpm")
-
+        run("wget http://download.opensuse.org/repositories/server:/database/openSUSE_13.1/x86_64/erlang-epmd-17.4-3.1.x86_64.rpm")
+        run("wget http://download.opensuse.org/repositories/server:/database/openSUSE_13.1/x86_64/erlang-17.4-3.1.x86_64.rpm")
+        sudo("rpm -Uihv erlang-17.4-3.1.x86_64.rpm erlang-epmd-17.4-3.1.x86_64.rpm")
 
 
 def _server_rabbitmq_install():
@@ -692,7 +772,13 @@ def _server_rabbitmq_configure():
         
         sudo("systemctl enable rabbitmq-server")
         sudo("systemctl start rabbitmq-server")
-        sudo("systemctl restart rabbitmq-server") #for some reason, an additional nrestart is needed
+        sudo("rabbitmqctl status", warn_only=True)
+        sudo("systemctl stop rabbitmq-server") #for some reason, an additional nrestart is needed
+        sudo("rabbitmqctl status", warn_only=True)
+        prompt('wait')
+        sudo("systemctl start rabbitmq-server") #for some reason, an additional nrestart is needed
+        sudo("rabbitmqctl status", warn_only=True)
+        prompt('wait')
         
         sudo("rabbitmqctl add_user {USER} {PASSWORD}".format(**_S.RABBITMQ))
         sudo("rabbitmqctl add_vhost {VHOST}".format(**_S.RABBITMQ))
@@ -702,6 +788,10 @@ def _server_rabbitmq_configure():
         sudo('rabbitmqctl set_permissions -p {VHOST} guest ".*" ".*" ".*"'.format(**_S.RABBITMQ))
 
         #sudo("rabbitmq-plugins enable rabbitmq_management")
+
+
+    sudo("systemctl restart rabbitmq-server")
+    
 
 
 def _server_couchdb_install():
@@ -716,7 +806,20 @@ def _server_couchdb_install():
 #    sudo("wget http://download.opensuse.org/repositories/server:/database/openSUSE_13.2/x86_64/couchdb-1.6.1-47.1.x86_64.rpm")
 #    sudo("rpm -Uihv couchdb-1.6.1-47.1.x86_64.rpm")
 
+        run("wget http://download.opensuse.org/repositories/server:/database/openSUSE_13.1/x86_64/couchdb-1.6.1-47.1.x86_64.rpm")
+        sudo("rpm -Uihv couchdb-1.6.1-47.1.x86_64.rpm")
+    
+        sudo("chown -R couchdb:couchdb /etc/couchdb")
+        sudo("chown -R couchdb:couchdb /var/lib/couchdb")
+        sudo("chown -R couchdb:couchdb /var/log/couchdb")
+        sudo("chown -R couchdb:couchdb /var/run/couchdb")
+        
+        sudo("chown -R couchdb:couchdb /etc/couchdb")
+        sudo("chown -R couchdb:couchdb /var/lib/couchdb")
+        sudo("chown -R couchdb:couchdb /var/log/couchdb")
+        sudo("chown -R couchdb:couchdb /var/run/couchdb")
+    
     
     
 def _server_couchdb_configure():
-    pass
+    sudo("systemctl restart couchdb.service")
