@@ -6,14 +6,12 @@ Created on Sun Nov 23 17:39:19 2014
 """
 
 
-#from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse#, Http404
+# from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse  # , Http404
 from django.views.decorators.csrf import csrf_exempt
 
 
-
 # Create your views here.
-
 
 @csrf_exempt
 def api(request):
@@ -24,11 +22,10 @@ def api(request):
     elif request.method == 'POST':
 
         if len(request.POST) == 0:
-            return JsonResponse({'status':"FAILED", 'error': "no_arguments"}, status=400)
+            return JsonResponse({'status': "FAILED", 'error': "no_arguments"}, status=400)
 
         elif 'action' not in request.POST.keys():
-            return JsonResponse({'status':"FAILED", 'error':"no_action_key"}, status=400)
-
+            return JsonResponse({'status': "FAILED", 'error': "no_action_key"}, status=400)
 
         action = request.POST['action']
 
@@ -36,13 +33,12 @@ def api(request):
             pass
 
         elif action == 'GET_DATASOURCES':
-            return JsonResponse({'status':"SUCCESS"}, status=200)
+            return JsonResponse({'status': "SUCCESS"}, status=200)
 
-
-
+        # Enter more
 
         else:
-            return JsonResponse({'status':"FAILED", 'error':"invalid_action"}, status=400)
+            return JsonResponse({'status': "FAILED", 'error': "invalid_action"}, status=400)
 
     elif request.method == 'OPTIONS':
         response = HttpResponse("")
@@ -56,3 +52,8 @@ def api(request):
     else:
         return HttpResponse("only POST (and OPTIONS) interface allowed", status=400)
 
+
+#
+#
+#
+# END

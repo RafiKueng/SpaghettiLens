@@ -57,6 +57,82 @@ def _lsudo(cmd):
 
 
 
+class ServiceTestCase(ut.TestCase):
+    '''abstract class for tests of services'''
+    
+    def setUp(self):
+        """demo implementaion, OVERRIDE this"""
+        self.name = 'servicename'
+        self.pkgname = 'servicename'
+        self.svcname = 'servicename.service'
+
+        self.min_ver = (0,0,0)
+        self.max_ver = (0,0,0)
+        
+        raise NotImplementedError
+        
+    def _versionParser(self, vstr):
+        """demo implementaion, OVERRIDE this"""
+        raise NotImplementedError
+
+        v = vstr.split('.')
+        return tuple(map(int,v))
+        
+
+   
+    def test_0_pkg_installed(self):
+        cmd = _local("rpm -q %s" % self.pkgname)
+        self.assertTrue(cmd.succeeded, "%s not installed" % self.name)
+
+
+    def test_0_version(self):
+        cmd = _local("rpm -q %s" % self.pkgname)
+        self.assertGreater(len(cmd),0, msg='Got empty version string (prog not isntalled?)')
+
+        v = self._versionParser(cmd)
+        self.assertGreaterEqual(v, self.min_ver)
+        self.assertLess(v, self.max_ver)
+
+
+    def test_0_service_availabe(self):
+        cmd = _local('systemctl status %s' % self.svcname)
+        #self.assertTrue(cmd.succeeded)
+        self.assertNotIn('not-found', cmd, "not available")
+
+    def test_0_service_loaded(self):
+        cmd = _local('systemctl status %s' % self.svcname)
+        #self.assertTrue(cmd.succeeded)
+        self.assertIn('Loaded: loaded', cmd, "not loaded")
+
+    def test_0_service_enabled(self):
+        cmd = _local('systemctl status %s' % self.svcname)
+        #self.assertTrue(cmd.succeeded)
+        self.assertIn('; enabled)', cmd, "not enabled")
+        self.assertNotIn('; disabled)', cmd, "not enabled")
+        
+    def test_0_service_active(self): # aka running
+        cmd = _local('systemctl status %s' % self.svcname)
+        #self.assertTrue(cmd.succeeded)
+        self.assertIn('Active: active (running)', cmd, "not active/running")
+        self.assertNotIn('Active: inactive', cmd, "not active/running")
+
+
+
+#class ServerSERVICETestCase(ServiceTestCase):
+#    def setUp(self):
+#        self.name = 'servicename'
+#        self.svcname = 'servicename.service'
+#
+#        self.min_ver = (0,0,0)
+#        self.max_ver = (0,0,0)
+#        
+#    def _versionParser(self, vstr):
+#        v = vstr.split('.')
+#        return tuple(map(int,v))
+        
+
+
+
 class ServerDjangoTestCase(ut.TestCase):
     """
     
@@ -129,9 +205,10 @@ class ServerErlangTestCase(ut.TestCase):
     
 
     def test_0_availability(self):
-        cmd = _local("erl -noshell -eval 'io:fwrite(\"~s\n\", [erlang:system_info(otp_release)]).' -s erlang halt")
+        # cmd = _local("erl -noshell -eval 'io:fwrite(\"~s\n\", [erlang:system_info(otp_release)]).' -s erlang halt")
+        cmd = _local("rpm -q erlang")
         
-        self.assertTrue(cmd.succeeded, "'erl command not available'")
+        self.assertTrue(cmd.succeeded, "erlang not available")
 
 
     def test_0_version(self):
@@ -152,59 +229,91 @@ class ServerErlangTestCase(ut.TestCase):
 
 
 
- 
-class ServerRabbitMQTestCase(ut.TestCase):
-    
-    def setUp(self):
-        self.svcname = 'rabbitmq-server.service'
 
+
+
+
+
+
+class ServerRabbitMQTestCase(ServiceTestCase):
+    def setUp(self):
+        self.name = 'RabbitMQ'
+        self.pkgname = 'rabbitmq-server'
+        self.svcname = 'rabbitmq-server.service'
+        self.min_ver = (3,1,5)
+        self.max_ver = (99,0)
+        
         import puka
         self.Client = puka.Client
 
-        self.min_ver = (3,1,5)
-        self.max_ver = (99,0)
-
-        
-        #amqpurl = 'amqp://guest:guest1@192.168.100.10:5672/'
         self.amqpurl = 'amqp://guest:guest1@192.168.100.10:5672/'
         self.msg = "test msg\nmumumumultiline"
         self.queue = 'testing'
         self.exchange = ''
+
         
-        #self.producer = puka.Client(amqpurl)
-        #self.consumer = puka.Client(amqpurl)
+    def _versionParser(self, vstr):
+        v = vstr.split('-')[2].split('.')
+        return tuple(map(int,v))
 
 
-    def test_0_availability(self):
-        cmd = _lsudo("rabbitmqctl status")
-        self.assertTrue(cmd.succeeded, "rabbitmqctl command not available")
-
-    def test_0_service_availability(self):
-        cmd = _local('systemctl | grep %s' % self.svcname)
-        self.assertTrue(cmd.succeeded)
-
-    def test_0_service_loaded(self):
-        cmd = _local('systemctl | grep %s' % self.svcname)
-        self.assertIn('loaded', cmd)
-        
-    def test_0_service_active(self):
-        cmd = _local('systemctl | grep %s' % self.svcname)
-        self.assertIn('active', cmd)
-
-    def test_0_service_running(self):
-        cmd = _local('systemctl | grep %s' % self.svcname)
-        self.assertIn('running', cmd)
-
-    def test_0_version(self):
-        cmd = _lsudo("rabbitmqctl status| grep -Eow -e '{rabbit.*}' | grep -Eow '[0-9]+.[0-9]+.[0-9]+'")
-
-        self.assertGreater(len(cmd),0, msg='Got empty version string (prog not isntalled?)')
-
-        v = cmd.stdout.split('.')
-        v = tuple(map(int, v))
-            
-        self.assertGreaterEqual(v, self.min_ver, 'rabbitmq version too old')
-        self.assertLess(v, self.max_ver, 'rabbitmq version too recent')
+# 
+#class ServerRabbitMQTestCase(ut.TestCase):
+#    
+#    def setUp(self):
+#        self.svcname = 'rabbitmq-server.service'
+#
+#        import puka
+#        self.Client = puka.Client
+#
+#        self.min_ver = (3,1,5)
+#        self.max_ver = (99,0)
+#
+#        
+#        #amqpurl = 'amqp://guest:guest1@192.168.100.10:5672/'
+#        self.amqpurl = 'amqp://guest:guest1@192.168.100.10:5672/'
+#        self.msg = "test msg\nmumumumultiline"
+#        self.queue = 'testing'
+#        self.exchange = ''
+#        
+#        #self.producer = puka.Client(amqpurl)
+#        #self.consumer = puka.Client(amqpurl)
+#
+#
+#    def test_0_availability(self):
+#        cmd = _local("rpm -q rabbitmq-server")
+#        # cmd = _lsudo("rabbitmqctl status")
+#        self.assertTrue(cmd.succeeded, "rabbitmq command not available")
+#
+#    def test_0_service_availability(self):
+#        cmd = _local('systemctl | grep %s' % self.svcname)
+#        self.assertTrue(cmd.succeeded)
+#
+#    def test_0_service_loaded(self):
+#        cmd = _local('systemctl | grep %s' % self.svcname)
+#        self.assertIn('loaded', cmd)
+#        
+#    def test_0_service_active(self):
+#        cmd = _local('systemctl | grep %s' % self.svcname)
+#        self.assertIn('active', cmd)
+#
+#    def test_0_service_running(self):
+#        cmd = _local('systemctl | grep %s' % self.svcname)
+#        self.assertIn('running', cmd)
+#
+#    def test_0_version(self):
+##        cmd = _lsudo("rabbitmqctl status| grep -Eow -e '{rabbit.*}' | grep -Eow '[0-9]+.[0-9]+.[0-9]+'")
+##
+##        self.assertGreater(len(cmd),0, msg='Got empty version string (prog not isntalled?)')
+##
+##        v = cmd.stdout.split('.')
+#
+#        cmd = _local("rpm -q rabbitmq-server")
+#        v = cmd.stdout.split('-')[2].split('.')
+#        v = tuple(map(int, v))
+#            
+#        self.assertGreaterEqual(v, self.min_ver, 'rabbitmq version too old')
+#        self.assertLess(v, self.max_ver, 'rabbitmq version too recent')
 
 
 #    def test_00_service_available(self):
@@ -341,60 +450,64 @@ class ServerRabbitMQTestCase(ut.TestCase):
 
 
 
-class ServerCouchDBTestCase(ut.TestCase):
+class ServerCouchDBTestCase(ServiceTestCase):
 
     def setUp(self):
-
-        import requests
-
-        self.get    = requests.get        
-        self.post   = requests.post
-        self.delete = requests.delete
-        
+        self.name = 'CouchDB'
+        self.pkgname = 'couchdb'
         self.svcname = 'couchdb.service'
         self.min_ver = (1,6,1)
         self.max_ver = (99,0)
         
-        self.addr = 'http://127.0.0.1:5984'
-        
-        self.rqaddr = lambda x: self.addr + '?' + x
+        import requests
+        self.r = requests
+        self.get    = requests.get        
+        self.post   = requests.post
+        self.delete = requests.delete
 
+        self.addr = 'http://127.0.0.1:5984'
+        self.rqaddr = lambda x: self.addr + '?' + x
+        
+
+    def _versionParser(self, vstr):
+        v = vstr.split('-')[1].split('.')
+        return tuple(map(int,v))
     
 
-    def test_0_availability(self):
-        cmd = _local("couchdb -V")
-        self.assertTrue(cmd.succeeded, "'couchdb command not available'")
-
-
-    def test_0_version(self):
-        cmd = _local("couchdb -V")
-        
-        self.assertGreater(len(cmd),0, msg='Got empty version string (prog not isntalled?)')
-        
-        v = cmd.stdout.split('\n')[0].split()[-1].split('.')
-        v = tuple(map(int,v))
-            
-        self.assertGreaterEqual(v, self.min_ver)#, 'couchdb version too old')
-        self.assertLess(v, self.max_ver)#, 'couchdb version too recent')
-
-
-    def test_0_service_availability(self):
-        cmd = _local('systemctl status %s' % self.svcname)
-        self.assertTrue(cmd.succeeded)
-        self.assertNotIn('not-found', cmd)
-
-    def test_0_service_loaded(self):
-        cmd = _local('systemctl status %s' % self.svcname)
-        self.assertIn('loaded', cmd)
-        
-    def test_0_service_active(self):
-        cmd = _local('systemctl status %s' % self.svcname)
-        self.assertIn(' active', cmd)
-        self.assertNotIn('inactive', cmd)
-
-    def test_0_service_running(self):
-        cmd = _local('systemctl status %s' % self.svcname)
-        self.assertIn('active (running)', cmd)
+#    def test_0_availability(self):
+#        cmd = _local("rpm -q couchdb")
+#        self.assertTrue(cmd.succeeded, "'couchdb command not available'")
+#
+#
+#    def test_0_version(self):
+#        cmd = _local("couchdb -V")
+#        
+#        self.assertGreater(len(cmd),0, msg='Got empty version string (prog not isntalled?)')
+#        
+#        v = cmd.stdout.split('\n')[0].split()[-1].split('.')
+#        v = tuple(map(int,v))
+#            
+#        self.assertGreaterEqual(v, self.min_ver)#, 'couchdb version too old')
+#        self.assertLess(v, self.max_ver)#, 'couchdb version too recent')
+#
+#
+#    def test_0_service_availability(self):
+#        cmd = _local('systemctl status %s' % self.svcname)
+#        self.assertTrue(cmd.succeeded)
+#        self.assertNotIn('not-found', cmd)
+#
+#    def test_0_service_loaded(self):
+#        cmd = _local('systemctl status %s' % self.svcname)
+#        self.assertIn('loaded', cmd)
+#        
+#    def test_0_service_active(self):
+#        cmd = _local('systemctl status %s' % self.svcname)
+#        self.assertIn(' active', cmd)
+#        self.assertNotIn('inactive', cmd)
+#
+#    def test_0_service_running(self):
+#        cmd = _local('systemctl status %s' % self.svcname)
+#        self.assertIn('active (running)', cmd)
 
     def test_A0_connection(self):
         resp = self.get(self.addr)
@@ -405,6 +518,28 @@ class ServerCouchDBTestCase(ut.TestCase):
 
 
 
+class ServerApache2TestCase(ServiceTestCase):
+    def setUp(self):
+        self.name = 'apache'
+        self.pkgname = 'apache2'
+        self.svcname = 'apache2.service'
+        self.min_ver = (2,4,0)
+        self.max_ver = (99,0)
+        
+        import requests
+        self.r = requests
+        self.addr = 'http://127.0.0.1:80'
+
+        
+    def _versionParser(self, vstr):
+        v = vstr.split('-')[1].split('.')
+        return tuple(map(int,v))
+
+    def test_A0_connection(self):
+        try:
+            self.r.get(self.addr)
+        except self.r.ConnectionError:
+            self.assertTrue(False, "no response")
 
 
 

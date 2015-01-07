@@ -641,6 +641,7 @@ def _test_server_setup():
         ('erlang',       ['ServerErlangTestCase',]),
         ('rabbitmq',     ['ServerRabbitMQTestCase']),
         ('couchdb',      ['ServerCouchDBTestCase']),
+        ('apache2',      ['ServerApache2TestCase']),
     ]
     
     passed = []
