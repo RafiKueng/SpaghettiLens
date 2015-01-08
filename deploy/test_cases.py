@@ -94,7 +94,7 @@ class ServiceTestCase(ut.TestCase):
         self.assertLess(v, self.max_ver)
 
 
-    def test_0_service_availabe(self):
+    def test_0_service_available(self):
         cmd = _local('systemctl status %s' % self.svcname)
         #self.assertTrue(cmd.succeeded)
         self.assertNotIn('not-found', cmd, "not available")
@@ -204,7 +204,7 @@ class ServerErlangTestCase(ut.TestCase):
         self.ver_max = (99,99)
     
 
-    def test_0_availability(self):
+    def test_0_pkg_installed(self):
         # cmd = _local("erl -noshell -eval 'io:fwrite(\"~s\n\", [erlang:system_info(otp_release)]).' -s erlang halt")
         cmd = _local("rpm -q erlang")
         

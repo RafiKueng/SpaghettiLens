@@ -9,7 +9,7 @@ Created on Thu Oct 16 15:51:20 2014
 from __future__ import absolute_import
 
 
-from fabric.api import cd, prefix, local, put, puts, settings, run, abort, env, task, sudo, prompt  #*
+from fabric.api import cd, prefix, local, put, puts, settings, run, abort, env, task, sudo #, prompt  #*
 #from fabric.utils import *
 
 #from fabric import operations as ops
@@ -20,22 +20,29 @@ from fabric.contrib import console, files, project
 from .fab_tools import check_or_create_dirs, inform, warnn, debugmsg, localc, rvenv
 
 from .settings import settings as _S
+from deploy import configfiles as _CF
 
 
 #from pprint import pprint
 from datetime import datetime as dt
 import os
 from attrdict import AttrDict
+import time
+from StringIO import StringIO
 #import tempfile
 #import shutil
 
 
 
 DEBUG = True
+env.INSTALL_DIR = _S.ROOT_PATH
+
+
 
 # _S are the static settings (not to be updated)
 # _E are the current settings
 _E = env
+
 
 
 @task()
@@ -52,11 +59,19 @@ def update_files():
 @task()
 def test_srv():
     _generate_version_information()
-    _E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
+    #_E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
     _copy_files_server()
     _test_server_setup()
 
 
+
+@task()
+def dbg_run():
+    _generate_version_information()
+    #_E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
+    _copy_files_server()
+    
+    _server_apache2_configure()
 
 
 @task()
@@ -68,7 +83,7 @@ def deploy_server():
 
     inform("install of server")
     
-    _E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
+    #_E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
     
     _check_if_local_branch_is_master()
     _generate_version_information()
@@ -570,15 +585,19 @@ def _test_server_setup_in_adv():
 #            ],
         ('pipdjango',    ['ServerDjangoTestCase',
                           ]),
-        ('erlang',       ['ServerErlangTestCase.test_0_availability',
+        ('erlang',       ['ServerErlangTestCase.test_0_pkg_installed',
                           'ServerErlangTestCase.test_0_version',
                           ]),
-        ('rabbitmq',     ['ServerRabbitMQTestCase.test_0_availability',
+        ('rabbitmq',     ['ServerRabbitMQTestCase.test_0_pkg_installed',
                           'ServerRabbitMQTestCase.test_0_version',
                           ]),
-        ('couchdb',      ['ServerCouchDBTestCase.test_0_availability',
+        ('couchdb',      ['ServerCouchDBTestCase.test_0_pkg_installed',
                           'ServerCouchDBTestCase.test_0_version',
                           ]),
+        ('apache',       ['ServerApache2TestCase.test_0_pkg_installed',
+                          'ServerApache2TestCase.test_0_version',
+                          ]),
+                          
         
     ]
     
@@ -600,7 +619,7 @@ def _test_server_setup_in_adv():
                 c = rvenv('python -m unittest %s deploy.test_cases.%s' % (args, test),
                         warn_only=True, quiet=False)
                 lines = c.split('\n')
-                if not 'OK' == c.split('\n')[-1]:
+                if not 'OK' == lines[-1]:
                     failed = True
                     break
                 
@@ -662,7 +681,7 @@ def _test_server_setup():
                 c = rvenv('python -m unittest %s deploy.test_cases.%s' % (args, test),
                         warn_only=True, quiet=False)
                 lines = c.split('\n')
-                if not 'OK' == c.split('\n')[-1]:
+                if not 'OK' == lines[-1]:
                     failed = True
                     break
                 
@@ -713,7 +732,8 @@ def _install_missing_server_software(tests_passed):
                 pass
 
             elif test == "apache":
-                pass
+                _server_apache2_install()
+                _server_apache2_configure()
 
             elif test == "couchdb":
                 _server_couchdb_install()
@@ -736,7 +756,7 @@ def _server_erlang_install():
         #run('wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/erlang-R16B01-2.1.3.x86_64.rpm')
         #sudo( 'zypper in erlang-R16B01-2.1.3.x86_64.rpm')
         
-        sudo("zypper in unixODBC")
+        sudo("zypper -n in unixODBC")
 
         # this works on opensuse 13.2
 #        run("wget http://download.opensuse.org/repositories/openSUSE:/13.2/standard/x86_64/erlang-17.1-3.1.11.x86_64.rpm")
@@ -763,34 +783,41 @@ def _server_rabbitmq_install():
 
 
 def _server_rabbitmq_configure():
-    with cd(_S.TMPPATH):
-        sudo("SuSEfirewall2 open EXT TCP {PORT}".format(**_S.RABBITMQ))
-        sudo("SuSEfirewall2 stop")
-        sudo("SuSEfirewall2 start")
 
-        #run("chkconfig rabbitmq-server")
-        #sudo("chkconfig rabbitmq-server on") #TODO needed?
-        
-        sudo("systemctl enable rabbitmq-server")
-        sudo("systemctl start rabbitmq-server")
-        sudo("rabbitmqctl status", warn_only=True)
-        sudo("systemctl stop rabbitmq-server") #for some reason, an additional nrestart is needed
-        sudo("rabbitmqctl status", warn_only=True)
-        prompt('wait')
-        sudo("systemctl start rabbitmq-server") #for some reason, an additional nrestart is needed
-        sudo("rabbitmqctl status", warn_only=True)
-        prompt('wait')
-        
-        sudo("rabbitmqctl add_user {USER} {PASSWORD}".format(**_S.RABBITMQ))
-        sudo("rabbitmqctl add_vhost {VHOST}".format(**_S.RABBITMQ))
-        sudo('rabbitmqctl set_permissions -p {VHOST} {USER} ".*" ".*" ".*"'.format(**_S.RABBITMQ))
+    sudo("SuSEfirewall2 open EXT TCP {PORT}".format(**_S.RABBITMQ))
+    sudo("SuSEfirewall2 stop")
+    sudo("SuSEfirewall2 start")
 
-        sudo('rabbitmqctl change_password guest {GUESTPSW}'.format(**_S.RABBITMQ))
-        sudo('rabbitmqctl set_permissions -p {VHOST} guest ".*" ".*" ".*"'.format(**_S.RABBITMQ))
+    #run("chkconfig rabbitmq-server")
+    #sudo("chkconfig rabbitmq-server on") #TODO needed?
+    
+    sudo("systemctl stop rabbitmq-server")
+    sudo("systemctl enable rabbitmq-server")
+    sudo("systemctl restart rabbitmq-server")
+    sudo("rabbitmqctl status", warn_only=True)
+    time.sleep(5)
+    sudo("systemctl restart rabbitmq-server")
+    sudo("rabbitmqctl status")
+#    prompt('OK?')
+    
+#    sudo("systemctl stop rabbitmq-server") #for some reason, an additional nrestart is needed
+#    sudo("rabbitmqctl status", warn_only=True)
+#    prompt('wait')
+#    sudo("systemctl start rabbitmq-server") #for some reason, an additional nrestart is needed
+#    sudo("rabbitmqctl status", warn_only=True)
+#    prompt('wait')
+    
+    sudo("rabbitmqctl add_user {USER} {PASSWORD}".format(**_S.RABBITMQ))
+    sudo("rabbitmqctl add_vhost {VHOST}".format(**_S.RABBITMQ))
+    sudo('rabbitmqctl set_permissions -p {VHOST} {USER} ".*" ".*" ".*"'.format(**_S.RABBITMQ))
+
+    sudo('rabbitmqctl change_password guest {GUESTPSW}'.format(**_S.RABBITMQ))
+    sudo('rabbitmqctl set_permissions -p {VHOST} guest ".*" ".*" ".*"'.format(**_S.RABBITMQ))
 
         #sudo("rabbitmq-plugins enable rabbitmq_management")
 
 
+    sudo("systemctl enable rabbitmq-server")
     sudo("systemctl restart rabbitmq-server")
     
 
@@ -799,7 +826,7 @@ def _server_couchdb_install():
 
     with cd(_S.TMPPATH):
 
-        sudo("zypper in libmozjs185-1_0 libopenssl-devel")
+        sudo("zypper -n in libmozjs185-1_0 libopenssl-devel")
     
     #sudo("wget http://download.opensuse.org/repositories/server:/database/openSUSE_13.1/x86_64/couchdb-1.6.1-47.1.x86_64.rpm")
     #sudo("rpm -Uihv couchdb-1.6.1-47.1.x86_64.rpm")
@@ -823,4 +850,46 @@ def _server_couchdb_install():
     
     
 def _server_couchdb_configure():
+    sudo("systemctl enable couchdb.service")
     sudo("systemctl restart couchdb.service")
+    
+    
+    
+    
+def _server_apache2_install():
+    with cd(_S.TMPPATH):
+        sudo("zypper -n in apache2")
+    
+    
+def _server_apache2_configure():
+    sudo("systemctl stop apache2.service")
+    sudo("systemctl enable apache2.service")
+
+    if not files.exists(_S.APACHE.VHOSTSFILE_PATH) or True:
+        f = StringIO(_CF.apache_ect_vhost_conf.format(**_S.APACHE))
+        put(f, _S.APACHE.VHOSTSFILE_PATH, use_sudo=True)
+    else:
+        warnn("not updating apache file in /etc/apache2")
+
+    if not files.exists(_S.APACHE.CONFFILE_PATH):
+        run("mkdir -p %s" % _S.SVCCONFIG.PATH)
+
+    f = StringIO(_CF.apache_conf.format(**_S.APACHE))
+    put(f, _S.APACHE.CONFFILE_PATH, use_sudo=True)
+
+#    else:
+#        warnn("not updating apache file in %s" % _S.APACHE.CONFFILE_PATH)
+        
+    
+
+    sudo("systemctl start apache2.service")
+
+
+
+
+
+
+
+
+
+

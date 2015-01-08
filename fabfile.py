@@ -34,6 +34,7 @@ tasks_that_need_role = {
     'deploy_server',
     'update_files',
     'test_srv',
+    'dbg_run',
 }
 
 

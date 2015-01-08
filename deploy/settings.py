@@ -103,6 +103,9 @@ _.APPS.MEDIA_DIR                = 'tmp_media'
 #_.APPS_MACHINE_SETTINGS_FILE  = join(_.APPS_SETTINGS_PATH, 'machine.py')
 #_.APPS_SECRET_SETTINGS_FILE   = join(_.APPS_SETTINGS_PATH, 'secrets.py')
 
+
+
+
 _.EXTAPPS                       = AttrDict()
 _.EXTAPPS.DIR                   = 'ext_apps'
 
@@ -112,6 +115,12 @@ _.SPAGHETTI.HTMLFILES_PATH_     = lambda: join(_.HTDOCS_PATH_(), _.SPAGHETTI.HTM
 
 _.SPAGHETTI.RESSLOC             = 'spaghetti'                                   # the part in the url...
 _.SPAGHETTI.URL_                = lambda: _.HOST + _.SPAGHETTI.RESSLOC
+
+
+# SERVER SERVICES CONFIG
+_.SVCCONFIG                     = AttrDict()
+_.SVCCONFIG.DIR                 = 'config'  # dir in root 
+_.SVCCONFIG.PATH_               = lambda: join(_.ROOT_PATH, _.SVCCONFIG.DIR) # dir in root 
 
 _.GLASS                         = AttrDict()
 _.GLASS.TMPBUILDDIR             = 'tmp_glass'
@@ -124,6 +133,14 @@ _.RABBITMQ.PASSWORD             = 'rabbitpsw'
 _.RABBITMQ.VHOST                = 'swlabs'
 _.RABBITMQ.PORT                 = 5672
 _.RABBITMQ.GUESTPSW             = 'guest1'
+
+_.APACHE                        = AttrDict()
+_.APACHE.VHOSTSFILE_PATH        = '/etc/apache2/vhosts.d/swlabs.conf'
+_.APACHE.CONFFILE_PATH_         = lambda: join(_.SVCCONFIG.PATH_(), 'apache_swlabs.conf')
+#_.APACHE.CONFFILE_PATH          = '/data/swlabs_real.conf'
+#_.APACHE.B                       = ''
+
+
 
 
 # NOT TUE ANYMORE.. I HOPE PORTNUMERSS ECT WORK AS STRINGS AS WELL
@@ -188,7 +205,7 @@ if len(env.tasks)==1 and len(env.roles)==1:
             
 
     # SERVER related tasks            
-    elif task in ['deploy_server', 'update_files', 'test_srv']:
+    elif task in ['deploy_server', 'update_files', 'test_srv', 'dbg_run']:
         
         _.ROLEDEFS = {
             'test'  : {'hosts': _.SERVER_TEST_HOST},
@@ -200,9 +217,12 @@ if len(env.tasks)==1 and len(env.roles)==1:
             _.TMPDIR    = 'srv_tmp'
             
         elif role in ['test', 'prod']:
-            _.ROOT_PATH = '/tmp/swlabs'
+            _.ROOT_PATH = '/data/swlabs'
             _.TMPDIR    = 'srv_tmp'
-            _.BIN_DIR   = '/tmp/swlabs/_bin'
+            _.BIN_DIR   = '/data/swlabs/_bin'
+            
+        else:
+            abort("role not found")
             
     else:
         abort("task not found: ROLEDEF inclomplete")
