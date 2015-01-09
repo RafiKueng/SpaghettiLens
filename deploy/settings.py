@@ -294,7 +294,8 @@ def config_r(_):
 
     
 def add_timestamp(_):
-    for k, v in _.items():
+#    for k, v in _.items():
+    for v in _.values():
         if isinstance(v, AttrDict):
             v.TIMESTAMP = env.TIMESTAMP
     return _

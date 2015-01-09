@@ -20,16 +20,14 @@ from fabric.contrib import console, files, project
 from .fab_tools import check_or_create_dirs, inform, warnn, debugmsg, localc, rvenv
 
 from .settings import settings as _S
-from deploy import configfiles as _CF
 
 
 #from pprint import pprint
-from datetime import datetime as dt
+#from datetime import datetime as dt
 import os
 from os.path import join
 from attrdict import AttrDict
 import time
-from StringIO import StringIO
 #import tempfile
 #import shutil
 
@@ -519,7 +517,7 @@ def _setup_dirs_and_copy_files_worker():
 
 
 
-def _setup_dirs_and_copy_files(filestocopy=[], dirstocopy=[], newsubdirs=[]):
+def _setup_dirs_and_copy_files(filestocopy=None, dirstocopy=None, newsubdirs=None):
     '''copies a list of files and dirs; and creates a few empty folders'''    
     
     inform('Setup the dirs and copy the files for the server')
