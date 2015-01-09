@@ -17,6 +17,7 @@ Created on Fri Oct 17 14:11:04 2014
 
 from copy import deepcopy
 from os.path import join
+from datetime import datetime as dt
 from attrdict import AttrDict
 
 from fabric.api import env, abort#, abort, warn
@@ -25,6 +26,8 @@ from fabric.api import env, abort#, abort, warn
 #from fab_tools import abort
 
 _ = AttrDict()
+
+env.TIMESTAMP = dt.now().strftime("%Y%m%d%H%M")
 
 #
 # GENERAL SETTINGS
@@ -82,6 +85,7 @@ _.SRC.PIP_REQ_FILE_SRV          = 'pip_requirements_server.txt'
 _.SRC.PIP_REQ_RPATH_SRV_        = lambda: join(_.SRC.TEMPLATES, _.SRC.PIP_REQ_FILE_SRV)
 
 
+# SETTINGS FOR DJANGO APPS
 _.APPS                          = AttrDict()
 _.APPS.DIR                      = 'django_app'                                  # the root of the django project (manage.py is in here)
 _.APPS.PATH_                    = lambda: join(_.ROOT_PATH, _.APPS.DIR)
@@ -104,10 +108,19 @@ _.APPS.MEDIA_DIR                = 'tmp_media'
 #_.APPS_SECRET_SETTINGS_FILE   = join(_.APPS_SETTINGS_PATH, 'secrets.py')
 
 
-
-
+# FOLDER FOR EXTERNAL APPS
 _.EXTAPPS                       = AttrDict()
 _.EXTAPPS.DIR                   = 'ext_apps'
+
+
+#SETTING UP EXTERNAL APPS
+_.GLASS                         = AttrDict()
+_.GLASS.TMPBUILDDIR             = 'tmp_glass'
+_.GLASS.REPROURL                = 'https://github.com/RafiKueng/glass.git'
+_.GLASS.COMMIT                  = '64b2be69'
+
+
+
 
 _.SPAGHETTI                     = AttrDict()
 _.SPAGHETTI.HTMLFILES_DIR       = 'spaghetti'
@@ -122,11 +135,12 @@ _.SVCCONFIG                     = AttrDict()
 _.SVCCONFIG.DIR                 = 'config'  # dir in root 
 _.SVCCONFIG.PATH_               = lambda: join(_.ROOT_PATH, _.SVCCONFIG.DIR) # dir in root 
 
-_.GLASS                         = AttrDict()
-_.GLASS.TMPBUILDDIR             = 'tmp_glass'
-_.GLASS.REPROURL                = 'https://github.com/RafiKueng/glass.git'
-_.GLASS.COMMIT                  = '64b2be69'
+# SERVER SERVICES DATA
+_.SVCDATA                       = AttrDict()
+_.SVCDATA.DIR                   = 'data'  # dir in root 
+_.SVCDATA.PATH_                 = lambda: join(_.ROOT_PATH, _.SVCDATA.DIR) # dir in root 
 
+# SERVER SERVICES CONFIGURATIONS
 _.RABBITMQ                      = AttrDict()
 _.RABBITMQ.USER                 = 'rabbituser' #TODO change these values...
 _.RABBITMQ.PASSWORD             = 'rabbitpsw'
@@ -134,16 +148,38 @@ _.RABBITMQ.VHOST                = 'swlabs'
 _.RABBITMQ.PORT                 = 5672
 _.RABBITMQ.GUESTPSW             = 'guest1'
 
+_.COUCHDB                       = AttrDict()
+_.COUCHDB.CONF_NAME             = 'couchdb_swlabs.ini' # name on target server system
+_.COUCHDB.CONF_TMPL             = 'couchdb_swlabs.ini' # name of template in local repro
+_.COUCHDB.ORGCONF_DIR           = '/etc/couchdb/local.d' # here comes the symlink
+_.COUCHDB.ORGCONF_PATH_         = lambda: join(_.COUCHDB.ORGCONF_DIR, _.COUCHDB.CONF_NAME)
+_.COUCHDB.CONF_PATH_            = lambda: join(_.SVCCONFIG.PATH_(), _.COUCHDB.CONF_NAME)
+
+_.COUCHDB.DATA_DIR              = 'couchdb_data'
+_.COUCHDB.DATA_PATH_            = lambda: join(_.SVCDATA.PATH_(), _.COUCHDB.DATA_DIR)
+
+_.COUCHDB.ADDRESS               = '127.0.0.1'
+_.COUCHDB.PORT                  = 5984
+_.COUCHDB.AUTH                  = "{couch_httpd_auth, default_authentication_handler}"
+
+
+
+
 _.APACHE                        = AttrDict()
-_.APACHE.VHOSTSFILE_PATH        = '/etc/apache2/vhosts.d/swlabs.conf'
-_.APACHE.CONFFILE_PATH_         = lambda: join(_.SVCCONFIG.PATH_(), 'apache_swlabs.conf')
-#_.APACHE.CONFFILE_PATH          = '/data/swlabs_real.conf'
+_.APACHE.CONF_NAME              = 'apache_swlabs.conf' # filename on server
+_.APACHE.CONF_TMPL              = 'apache_swlabs.conf' # filename in repro
+
+_.APACHE.ORGCONF_DIR            = '/etc/apache2/vhosts.d'
+_.APACHE.ORGCONF_PATH_         = lambda: join(_.APACHE.ORGCONF_DIR, _.APACHE.CONF_NAME)
+_.APACHE.CONF_PATH_            = lambda: join(_.SVCCONFIG.PATH_(), _.APACHE.CONF_NAME)
+
 #_.APACHE.B                       = ''
 
 
 
 
-# NOT TUE ANYMORE.. I HOPE PORTNUMERSS ECT WORK AS STRINGS AS WELL
+
+# NOT TRUE ANYMORE.. I HOPE PORTNUMERSS ECT WORK AS STRINGS AS WELL
 # Attention: in the final config file (which is a python file) strings have
 # to be escaped!! So use:
 # {'key' : '"str"',}
@@ -255,11 +291,17 @@ def config_r(_):
         _[k] = v
         #print k, v
     return _
+
     
+def add_timestamp(_):
+    for k, v in _.items():
+        if isinstance(v, AttrDict):
+            v.TIMESTAMP = env.TIMESTAMP
+    return _
     
 
-settings = config_r(_)
+settings = add_timestamp(config_r(_))
+
+
 #for k, v in settings.items():
 #    print k, v
-
-

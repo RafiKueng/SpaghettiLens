@@ -26,6 +26,7 @@ from deploy import configfiles as _CF
 #from pprint import pprint
 from datetime import datetime as dt
 import os
+from os.path import join
 from attrdict import AttrDict
 import time
 from StringIO import StringIO
@@ -69,8 +70,14 @@ def test_srv():
 def dbg_run():
     _generate_version_information()
     #_E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
-    _copy_files_server()
+    #_copy_files_server()
     
+    #_server_rabbitmq_setup()
+    #_server_couchdb_setup()
+    _server_apache2_setup()
+
+    #_server_rabbitmq_configure()
+    #_server_couchdb_configure()
     _server_apache2_configure()
 
 
@@ -99,6 +106,16 @@ def deploy_server():
     _E.SERVERSETUPTEST_PASSED = _test_server_setup_in_adv()
     
     _install_missing_server_software(_E.SERVERSETUPTEST_PASSED)
+    
+
+#    _server_rabbitmq_setup()
+    _server_rabbitmq_configure()
+    _server_couchdb_setup()
+    _server_couchdb_configure()
+    _server_apache2_setup()
+    _server_apache2_configure()
+    
+    
     
     tests_passed = _test_server_setup()
     for test, result in tests_passed:
@@ -336,7 +353,8 @@ def _generate_version_information():
         hashstr = ""
     major, minor, revis = version[1:].split('.')
     
-    timestamp = dt.now().strftime("%Y%m%d%H%M")
+#    timestamp = dt.now().strftime("%Y%m%d%H%M")
+    timestamp = env.TIMESTAMP
     
     lmt_version = (int(major), int(minor), int(revis), int(ahead), hashstr, timestamp)
     gls_version = int(gls_version[5:])
@@ -355,7 +373,7 @@ def _generate_version_information():
         'version_str' : version_str,
     })
 
-
+    _E.VERSTR = version_str
 
 
 def _check_if_local_branch_is_master():
@@ -726,18 +744,21 @@ def _install_missing_server_software(tests_passed):
                 
             elif test == "rabbitmq":
                 _server_rabbitmq_install()
-                _server_rabbitmq_configure()
+#                _server_rabbitmq_setup()
+#                _server_rabbitmq_configure()
                 
             elif test == "php":
                 pass
 
             elif test == "apache":
                 _server_apache2_install()
-                _server_apache2_configure()
+#                _server_apache2_setup()
+#                _server_apache2_configure()
 
             elif test == "couchdb":
                 _server_couchdb_install()
-                _server_couchdb_configure()
+#                _server_couchdb_setup()
+#                _server_couchdb_configure()
 
                 
             else:
@@ -782,7 +803,7 @@ def _server_rabbitmq_install():
 
 
 
-def _server_rabbitmq_configure():
+def _server_rabbitmq_setup():
 
     sudo("SuSEfirewall2 open EXT TCP {PORT}".format(**_S.RABBITMQ))
     sudo("SuSEfirewall2 stop")
@@ -821,6 +842,10 @@ def _server_rabbitmq_configure():
     sudo("systemctl restart rabbitmq-server")
     
 
+def _server_rabbitmq_configure():
+    pass
+
+
 
 def _server_couchdb_install():
 
@@ -837,52 +862,129 @@ def _server_couchdb_install():
         run("wget http://download.opensuse.org/repositories/server:/database/openSUSE_13.1/x86_64/couchdb-1.6.1-47.1.x86_64.rpm")
         sudo("rpm -Uihv couchdb-1.6.1-47.1.x86_64.rpm")
     
-        sudo("chown -R couchdb:couchdb /etc/couchdb")
-        sudo("chown -R couchdb:couchdb /var/lib/couchdb")
-        sudo("chown -R couchdb:couchdb /var/log/couchdb")
-        sudo("chown -R couchdb:couchdb /var/run/couchdb")
-        
-        sudo("chown -R couchdb:couchdb /etc/couchdb")
-        sudo("chown -R couchdb:couchdb /var/lib/couchdb")
-        sudo("chown -R couchdb:couchdb /var/log/couchdb")
-        sudo("chown -R couchdb:couchdb /var/run/couchdb")
+    # setup initial dirs
+    sudo("chown -R couchdb:couchdb /etc/couchdb")
+    sudo("chown -R couchdb:couchdb /var/lib/couchdb") # this location will be changed
+    sudo("chown -R couchdb:couchdb /var/log/couchdb")
+    sudo("chown -R couchdb:couchdb /var/run/couchdb")
+    sudo("chmod 0770 /etc/couchdb")
+    sudo("chmod 0770 /var/lib/couchdb")
+    sudo("chmod 0770 /var/log/couchdb")
+    sudo("chmod 0770 /var/run/couchdb")
     
+
+def _server_couchdb_setup():
+
+    _DB = _S.COUCHDB    
+    sudo("systemctl stop couchdb.service")
+    sudo("systemctl enable couchdb.service")
     
+    print _DB.ORGCONF_PATH
+    print files.exists(_DB.ORGCONF_PATH)
+
+    # make ln in /etc/couchdb/local.d/ to config in prog dir
+    if files.exists(_DB.ORGCONF_PATH, use_sudo=True):
+        warnn('Overwriting couchdb config file %s' % _DB.ORGCONF_PATH)
+        sudo('rm {ORGCONF_PATH}'.format(**_DB))
+    with cd(_DB.ORGCONF_DIR):
+        sudo('echo ln -s {CONF_PATH} {CONF_NAME}'.format(**_DB))
+        sudo('ln -sf {CONF_PATH} {CONF_NAME}'.format(**_DB))
+    
+
+    # initialize database in progdir                               
+    run('mkdir -p {DATA_PATH}'.format(**_DB))
+    sudo('chown -R couchdb:couchdb {DATA_PATH}'.format(**_DB))
+    sudo('chmod 0775 {DATA_PATH}'.format(**_DB))
+
+
     
 def _server_couchdb_configure():
-    sudo("systemctl enable couchdb.service")
-    sudo("systemctl restart couchdb.service")
+
+    _DB = _S.COUCHDB    
+    sudo("systemctl stop couchdb.service")
+
+
+    # create/upload config in progdir
+    run('mkdir -p {PATH}'.format(**_S.SVCCONFIG))
+    if files.exists(_DB.CONF_PATH):
+        warnn('Overwriting couchdb config file (check .bak file)')
+        #run('rm {CONF_PATH}'.format(**_DB))
+    files.upload_template(join(_S.SRC.TEMPLATES, _DB.CONF_TMPL),
+                               _DB.CONF_PATH,
+                               context = _DB)
+
+    #restart
+    sudo("systemctl start couchdb.service")
     
     
     
     
 def _server_apache2_install():
-    with cd(_S.TMPPATH):
-        sudo("zypper -n in apache2")
-    
-    
-def _server_apache2_configure():
+
+    sudo("zypper -n in apache2")
+    sudo("zypper -n in apache2-mod_wsgi")
+
+#    with cd(_S.TMPPATH):
+#        run("wget http://download.opensuse.org/repositories/openSUSE:/13.1:/Update/standard/x86_64/apache2-mod_wsgi-3.4-2.28.1.x86_64.rpm")
+#        sudo("rpm -Uihv apache2-mod_wsgi-3.4-2.28.1.x86_64.rpm")
+
+
+        
+
+
+def _server_apache2_setup():
+    _AP = _S.APACHE
     sudo("systemctl stop apache2.service")
     sudo("systemctl enable apache2.service")
 
-    if not files.exists(_S.APACHE.VHOSTSFILE_PATH) or True:
-        f = StringIO(_CF.apache_ect_vhost_conf.format(**_S.APACHE))
-        put(f, _S.APACHE.VHOSTSFILE_PATH, use_sudo=True)
-    else:
-        warnn("not updating apache file in /etc/apache2")
+    sudo("SuSEfirewall2 open EXT TCP 80")
+    sudo("SuSEfirewall2 open EXT TCP 8080")
+    sudo("SuSEfirewall2 stop")
+    sudo("SuSEfirewall2 start")
 
-    if not files.exists(_S.APACHE.CONFFILE_PATH):
-        run("mkdir -p %s" % _S.SVCCONFIG.PATH)
+    sudo("a2enmod mod_proxy")
+    sudo("a2enmod mod_proxy_http")
+    sudo("a2enmod mod_wsgi")
 
-    f = StringIO(_CF.apache_conf.format(**_S.APACHE))
-    put(f, _S.APACHE.CONFFILE_PATH, use_sudo=True)
+    # make ln in /etc/apache2/vhosts.d/ to config in prog dir
+    if files.exists(_AP.ORGCONF_PATH, use_sudo=True): # this will be false, if the link exists, but not the target!
+        warnn('Overwriting apache vhosts config file %s' % _AP.ORGCONF_PATH)
+        sudo('rm {ORGCONF_PATH}'.format(**_AP))
+    with cd(_AP.ORGCONF_DIR):
+        sudo('ln -sf {CONF_PATH} {CONF_NAME}'.format(**_AP))
+        #
+        # -sf is used if the link already exists, but not the target
 
+
+    
+def _server_apache2_configure():
+    _AP = _S.APACHE
+    sudo("systemctl stop apache2.service")
+
+    # create/upload config in progdir
+    run('mkdir -p {PATH}'.format(**_S.SVCCONFIG))
+    if files.exists(_AP.CONF_PATH):
+        warnn('Overwriting apache config file in prog dir (check .bak file)')
+        #run('rm {CONF_PATH}'.format(**_DB))
+    files.upload_template(join(_S.SRC.TEMPLATES, _AP.CONF_TMPL),
+                               _AP.CONF_PATH,
+                               context = _AP)
+    
+    sudo("systemctl start apache2.service")
+
+
+
+#    if not files.exists(_S.APACHE.CONFFILE_PATH):
+#        run("mkdir -p %s" % _S.SVCCONFIG.PATH)
+#
+#    f = StringIO(_CF.apache_conf.format(**_S.APACHE))
+#    put(f, _S.APACHE.CONFFILE_PATH, use_sudo=True)
+#
 #    else:
 #        warnn("not updating apache file in %s" % _S.APACHE.CONFFILE_PATH)
         
     
 
-    sudo("systemctl start apache2.service")
 
 
 

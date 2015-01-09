@@ -535,12 +535,40 @@ class ServerApache2TestCase(ServiceTestCase):
         v = vstr.split('-')[1].split('.')
         return tuple(map(int,v))
 
-    def test_A0_connection(self):
+    def test_A0_connection_port_invalid(self):
         try:
-            self.r.get(self.addr)
+            res = self.r.get('http://127.0.0.1:81')
+        except self.r.ConnectionError:
+            return
+        self.assertLess(res.status_code, 400)
+
+    def test_A0_connection_url_invalid(self):
+        try:
+            res = self.r.get('http://127.0.0.1:80/blablablablabla')
         except self.r.ConnectionError:
             self.assertTrue(False, "no response")
+        self.assertEqual(res.status_code, 404)
 
+    def test_A0_connection_external(self):
+        try:
+            res = self.r.get(self.addr)
+        except self.r.ConnectionError:
+            self.assertTrue(False, "no response")
+        self.assertLess(res.status_code, 400)
+
+    def test_A0_connection_localhost(self):
+        try:
+            res = self.r.get('http://localhost:80')
+        except self.r.ConnectionError:
+            self.assertTrue(False, "no response")
+        self.assertLess(res.status_code, 400)
+
+    def test_A0_connection_internal(self):
+        try:
+            res = self.r.get('http://127.0.0.1:80')
+        except self.r.ConnectionError:
+            self.assertTrue(False, "no response")
+        self.assertLess(res.status_code, 400)
 
 
 def runTestSuite_ServerAll():
