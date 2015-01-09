@@ -74,8 +74,8 @@ _.                              = ''
 # where is stuff in the dev repro
 _.SRC                           = AttrDict()
 _.SRC.DJANGODIR                 = 'apps'
-_.SRC.HTMLDIR                   = 'html'
-_.SRC.PYENV_DIR                 = 'py_env'
+#_.SRC.HTMLDIR                   = 'html'
+#_.SRC.PYENV_DIR                 = 'py_env'
 _.SRC.DEPLOYDIR                 = 'deploy'
 _.SRC.TEMPLATES                 = 'deploy/files'
 _.SRC.PIP_REQ_FILE              = 'pip_requirements.txt'                        # filename on remote machine
@@ -85,7 +85,7 @@ _.SRC.PIP_REQ_FILE_SRV          = 'pip_requirements_server.txt'
 _.SRC.PIP_REQ_RPATH_SRV_        = lambda: join(_.SRC.TEMPLATES, _.SRC.PIP_REQ_FILE_SRV)
 
 
-# SETTINGS FOR DJANGO APPS
+# SETTINGS FOR DJANGO APPS  # TODO remove this and replace all by the _.DJANGO
 _.APPS                          = AttrDict()
 _.APPS.DIR                      = 'django_app'                                  # the root of the django project (manage.py is in here)
 _.APPS.PATH_                    = lambda: join(_.ROOT_PATH, _.APPS.DIR)
@@ -106,6 +106,7 @@ _.APPS.MEDIA_DIR                = 'tmp_media'
 #_.APPS_BASE_SETTINGS_FILE     = join(_.APPS_SETTINGS_PATH, 'base.py')
 #_.APPS_MACHINE_SETTINGS_FILE  = join(_.APPS_SETTINGS_PATH, 'machine.py')
 #_.APPS_SECRET_SETTINGS_FILE   = join(_.APPS_SETTINGS_PATH, 'secrets.py')
+
 
 
 # FOLDER FOR EXTERNAL APPS
@@ -140,13 +141,16 @@ _.SVCDATA                       = AttrDict()
 _.SVCDATA.DIR                   = 'data'  # dir in root 
 _.SVCDATA.PATH_                 = lambda: join(_.ROOT_PATH, _.SVCDATA.DIR) # dir in root 
 
+
 # SERVER SERVICES CONFIGURATIONS
+
 _.RABBITMQ                      = AttrDict()
 _.RABBITMQ.USER                 = 'rabbituser' #TODO change these values...
 _.RABBITMQ.PASSWORD             = 'rabbitpsw'
 _.RABBITMQ.VHOST                = 'swlabs'
 _.RABBITMQ.PORT                 = 5672
 _.RABBITMQ.GUESTPSW             = 'guest1'
+
 
 _.COUCHDB                       = AttrDict()
 _.COUCHDB.CONF_NAME             = 'couchdb_swlabs.ini' # name on target server system
@@ -173,9 +177,23 @@ _.APACHE.ORGCONF_DIR            = '/etc/apache2/vhosts.d'
 _.APACHE.ORGCONF_PATH_         = lambda: join(_.APACHE.ORGCONF_DIR, _.APACHE.CONF_NAME)
 _.APACHE.CONF_PATH_            = lambda: join(_.SVCCONFIG.PATH_(), _.APACHE.CONF_NAME)
 
-#_.APACHE.B                       = ''
 
+_.DJANGOAPP                     = AttrDict()
+_.DJANGOAPP.SRCDIR              = _.SRC.DJANGODIR    # how is the folder with the django project named in the repro
+#_.DJANGOAPP.SRCPATH_            = _.SRC.DJANGODIR
+_.DJANGOAPP.PROJNAME            = 'django_apps' # the name of the djjango project remote, eg the folder name on the server
+_.DJANGOAPP.CONF_TMPL           = 'django_machine_settings.py' # the name of the template in the repro
+_.DJANGOAPP.CONF_NAME           = 'machine_settings.py' # the name of the final config file on srv
+_.DJANGOAPP.LINK_DIR_           = lambda: join(_.DJANGOAPP.PROJNAME, 'apps')
 
+_.DJANGOAPP.SETTINGS            = AttrDict()
+das = _.DJANGOAPP.SETTINGS
+das.STATICFOLDER                = 'static'
+das.STATICURL                   = '/static'
+das.MEDIAFOLDER                 = 'media'
+das.MEDIAURL                    = '/media'
+
+_.DJANGOAPP.REQ_FOLDERS         = [das.STATICFOLDER, das.MEDIAFOLDER]
 
 
 
@@ -271,7 +289,7 @@ else:
 
 #
 # WRITE DOWN THE ACTUAL CONFIG
-#
+# evaluates all the lambda funcion of keys with trailing _
 
 def config_r(_):
     for k, v in _.items():
@@ -299,10 +317,24 @@ def add_timestamp(_):
         if isinstance(v, AttrDict):
             v.TIMESTAMP = env.TIMESTAMP
     return _
+
+def flatten(_):
+    __ = AttrDict()
+    for k1, v1 in _.items():
+        if isinstance(v1, AttrDict):
+            for k2, v2 in v1.items():
+                __[k1+'_'+k2] = v2
+        else:
+            __[k1] = v1
+    return __
+        
     
 
 settings = add_timestamp(config_r(_))
-
+flat_settings = flatten(settings)
 
 #for k, v in settings.items():
+#    print k, v
+
+#for k, v in sorted(flat_settings.items()):
 #    print k, v

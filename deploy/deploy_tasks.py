@@ -34,7 +34,7 @@ import time
 
 
 DEBUG = True
-env.INSTALL_DIR = _S.ROOT_PATH
+env.INSTALLPATH = _S.ROOT_PATH
 
 
 
@@ -50,16 +50,15 @@ def update_files():
 
     only works after one successful deploy_server    
     '''
-    _E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
+    _E.INSTALLPATH = '/tmp/swlabs' #'real' install dir
     _copy_files_server()
     
     
     
 @task()
 def test_srv():
-    _generate_version_information()
-    #_E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
-    _copy_files_server()
+    #_generate_version_information()
+    _upload_tests()
     _test_server_setup()
 
 
@@ -67,17 +66,21 @@ def test_srv():
 @task()
 def dbg_run():
     _generate_version_information()
-    #_E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
+    #_E.INSTALLPATH = '/tmp/swlabs' #'real' install dir
     #_copy_files_server()
+    
+    #_server_djangoapp_setup()
+    #_server_djangoapp_configure()
     
     #_server_rabbitmq_setup()
     #_server_couchdb_setup()
-    _server_apache2_setup()
+    #_server_apache2_setup()
 
     #_server_rabbitmq_configure()
     #_server_couchdb_configure()
-    _server_apache2_configure()
+    #_server_apache2_configure()
 
+    _upload_tests()
 
 @task()
 def deploy_server():
@@ -88,30 +91,34 @@ def deploy_server():
 
     inform("install of server")
     
-    #_E.INSTALL_DIR = '/tmp/swlabs' #'real' install dir
+    _E.INSTALLPATH = _S.ROOT_PATH   # 'real' install dir
     
     _check_if_local_branch_is_master()
     _generate_version_information()
 
-    _copy_files_server()
+    #_copy_files_server()
 
-    with cd(_E.INSTALL_DIR):
+    #with cd(_E.INSTALLPATH):
 
-        _setup_py_pip_venv()
-        _setup_django_config_files()
+        #_setup_py_pip_venv()
+        #_setup_django_config_files()
 
-
+    _upload_tests()
+    
     _E.SERVERSETUPTEST_PASSED = _test_server_setup_in_adv()
     
     _install_missing_server_software(_E.SERVERSETUPTEST_PASSED)
-    
+    _pypipvenv_install(_S.SRC.PIP_REQ_FILE_SRV)
 
-#    _server_rabbitmq_setup()
+    _server_rabbitmq_setup()
     _server_rabbitmq_configure()
     _server_couchdb_setup()
     _server_couchdb_configure()
     _server_apache2_setup()
     _server_apache2_configure()
+
+    _server_djangoapp_setup()
+    _server_djangoapp_configure()
     
     
     
@@ -132,7 +139,7 @@ def deploy_worker():
     _setup_dirs_and_copy_files_worker()
 
         
-    with cd(_E.INSTALL_DIR):
+    with cd(_E.INSTALLPATH):
 
         _setup_py_pip_venv()
         _setup_django_config_files()            
@@ -144,7 +151,7 @@ def deploy_worker():
 
         # FOR DEBUG ONLY, make site pagackes available, so no need to compile numpy ect
         if DEBUG:
-            #run('rm %s' % (os.path.join(_E.INSTALL_DIR, _S.PYENV_DIR, 'lib', 'python2.7','no-global-site-packages.txt')))
+            #run('rm %s' % (os.path.join(_E.INSTALLPATH, _S.PYENV_DIR, 'lib', 'python2.7','no-global-site-packages.txt')))
             pass # we already enabled site packages, because no need to build numpy..
 
 
@@ -230,7 +237,7 @@ def _generate_django_config_file_str(settings_dic):
 
 
 
-def _setup_py_pip_venv():
+def _setup_py_pip_venv(src_piprq_filename):
     '''setup python, pip and virtualenv
     
     assumption:
@@ -264,7 +271,20 @@ def _setup_py_pip_venv():
             run('pip install --user virtualenv')
     
     run('virtualenv -p python --system-site-packages %s' %_S.PYENV_DIR) #using numpy from system..
-    
+
+
+    # upload pip requirements file
+    tmp_path = join(_E.INSTALLPATH, _S.TMPDIR)
+    piprq_fqfn = join(tmp_path, _S.SRC.PIP_REQ_FILE)
+    piprq_template = join(_S.SRC.TEMPLATES, src_piprq_filename)
+
+    # create/upload config in progdir
+    run('mkdir -p %s' % tmp_path)
+    files.upload_template(piprq_template,
+                          piprq_fqfn)
+#                          context = _DA)
+
+
     # instal python packages into virtualenv
     with prefix('source %s' % os.path.join(_S.PYENV_DIR, 'bin/activate')):
 #        if not DEBUG:
@@ -279,7 +299,7 @@ def _setup_py_pip_venv():
 
 
 
-def _setup_django_config_files():
+def _setup_django_config_files(): #TODO remove this function
     ''' set up the config files
     Assumptions:
     * we are currently in the install dir..
@@ -436,10 +456,10 @@ def _build_and_setup_glass():
         with settings(warn_only=True): #prevent abort because lib or lib64
             run('rsync -pthrvz {src} {dest}'.format(**{
                 'src'  : os.path.join(_S.GLASS.TMPBUILDDIR, srcdir),
-                'dest' : os.path.join(_E.INSTALL_DIR, destdir),
+                'dest' : os.path.join(_E.INSTALLPATH, destdir),
             }))
         
-    with cd(os.path.join(_E.INSTALL_DIR, _S.PYENV_DIR, 'lib')):
+    with cd(os.path.join(_E.INSTALLPATH, _S.PYENV_DIR, 'lib')):
         run('ln -s libglpk.so.0.32.0 libglpk.so.0')
             
     
@@ -472,12 +492,12 @@ def _setup_dirs_and_copy_files_worker():
     assert(_E.VERSION.version_str)
 
 
-    _E.INSTALL_DIR = os.path.join(_S.ROOT_PATH, _E.VERSION.version_str) #'real' install dir
+    _E.INSTALLPATH = os.path.join(_S.ROOT_PATH, _E.VERSION.version_str) #'real' install dir
 
     check_or_create_dirs([
         _S.ROOT_PATH,
         _S.BIN_DIR,
-        _E.INSTALL_DIR,
+        _E.INSTALLPATH,
     ])
 
     # dirs to create    
@@ -498,19 +518,19 @@ def _setup_dirs_and_copy_files_worker():
     ]
 
 
-    with cd(_E.INSTALL_DIR):
+    with cd(_E.INSTALLPATH):
         
-        full_dirlist = [os.path.join(_E.INSTALL_DIR, d) for d in dirlist]
+        full_dirlist = [os.path.join(_E.INSTALLPATH, d) for d in dirlist]
         check_or_create_dirs(full_dirlist)
         
         for srcdir, destdir in dirsss:
             project.rsync_project(
-                remote_dir=os.path.join(_E.INSTALL_DIR, destdir),
+                remote_dir=os.path.join(_E.INSTALLPATH, destdir),
                 local_dir=os.path.join(srcdir, '') #appends trialing slash
             )
             
         for srcfile, destdir in filesss:
-            put(local_path=srcfile, remote_path=os.path.join(_E.INSTALL_DIR, destdir))
+            put(local_path=srcfile, remote_path=os.path.join(_E.INSTALLPATH, destdir))
 
 
 
@@ -521,14 +541,14 @@ def _setup_dirs_and_copy_files(filestocopy=None, dirstocopy=None, newsubdirs=Non
     '''copies a list of files and dirs; and creates a few empty folders'''    
     
     inform('Setup the dirs and copy the files for the server')
-    assert(_E.INSTALL_DIR)
+    assert(_E.INSTALLPATH)
     
-    run('mkdir -p %s' % _E.INSTALL_DIR)
+    run('mkdir -p %s' % _E.INSTALLPATH)
     
 #    check_or_create_dirs([
 #        _S.ROOT_PATH,
 #        _S.BIN_DIR,
-#        _E.INSTALL_DIR,
+#        _E.INSTALLPATH,
 #        'deploy',
 #    ])
 #
@@ -552,13 +572,13 @@ def _setup_dirs_and_copy_files(filestocopy=None, dirstocopy=None, newsubdirs=Non
 #    ]
 
 
-    with cd(_E.INSTALL_DIR):
+    with cd(_E.INSTALLPATH):
         
-        full_dirlist = [os.path.join(_E.INSTALL_DIR, d) for d in newsubdirs]
+        full_dirlist = [os.path.join(_E.INSTALLPATH, d) for d in newsubdirs]
         check_or_create_dirs(full_dirlist)
         
         for srcdir, destdir in dirstocopy:
-            fulldestdir = os.path.join(_E.INSTALL_DIR, destdir)
+            fulldestdir = os.path.join(_E.INSTALLPATH, destdir)
             run('mkdir -p %s' % fulldestdir)
             project.rsync_project(
                 remote_dir=fulldestdir,
@@ -567,7 +587,7 @@ def _setup_dirs_and_copy_files(filestocopy=None, dirstocopy=None, newsubdirs=Non
             
 
         for srcfile, destdir, destfname in filestocopy:
-            fulldestdir = os.path.join(_E.INSTALL_DIR, destdir)
+            fulldestdir = os.path.join(_E.INSTALLPATH, destdir)
             run('mkdir -p %s' % fulldestdir)
             if destfname is not None:
                 fdestpath = os.path.join(fulldestdir, destfname)
@@ -620,7 +640,7 @@ def _test_server_setup_in_adv():
     passed = []
     
     
-    with cd(_E.INSTALL_DIR):
+    with cd(_E.INSTALLPATH):
         
         if DEBUG:
             args = "-v"
@@ -662,7 +682,7 @@ def _test_server_setup():
     passed is an ORDERED list
     '''
     inform('Testing the server setup')
-    assert(_E.VERSION.version_str)
+    #assert(_E.VERSION.version_str)
     
 
     #ordering is important
@@ -682,7 +702,7 @@ def _test_server_setup():
     passed = []
     
     
-    with cd(_E.INSTALL_DIR):
+    with cd(_E.INSTALLPATH):
         
         if DEBUG:
             args = "-v"
@@ -769,6 +789,8 @@ def _install_missing_server_software(tests_passed):
 
 
 def _server_erlang_install():
+    
+    run('mkdir -p %s' % _S.TMPPATH)
     with cd(_S.TMPPATH):
 
         #old version..        
@@ -836,12 +858,12 @@ def _server_rabbitmq_setup():
         #sudo("rabbitmq-plugins enable rabbitmq_management")
 
 
+    sudo("systemctl stop rabbitmq-server")
     sudo("systemctl enable rabbitmq-server")
-    sudo("systemctl restart rabbitmq-server")
     
 
 def _server_rabbitmq_configure():
-    pass
+    sudo("systemctl start rabbitmq-server")
 
 
 
@@ -982,14 +1004,141 @@ def _server_apache2_configure():
 #        warnn("not updating apache file in %s" % _S.APACHE.CONFFILE_PATH)
         
     
+def _server_djangoapp_install():
+    
+
+    pass
+        
+
+def _server_djangoapp_setup():
+    _DA = _S.DJANGOAPP
+    
+    install_path    = join(_E.INSTALLPATH, _DA.PROJNAME)    #subfolder of root dir that contains the django project
+    link_path       = join(_E.INSTALLPATH, _DA.LINK_DIR)
+    link_fqfn       = join(link_path, _DA.CONF_NAME)
+    configfile_path = join(_E.INSTALLPATH, _S.SVCCONFIG.DIR)
+    configfile_fqfn = join(configfile_path, _DA.CONF_NAME)
+    source_dir      = join(_DA.SRCDIR, '') # add trailing slash
+    
+    
+    # create folders
+    run('mkdir -p %s' % install_path)
+    for f in _DA.REQ_FOLDERS:
+        ff = join(install_path)
+        run('mkdir -p %s' % ff)
+
+    # upload files
+    project.rsync_project(
+        remote_dir=install_path,
+        local_dir=source_dir
+    )
+
+    # link the config file
+    if files.exists(link_fqfn): # this will be false, if the link exists, but not the target!
+        warnn('Overwriting config file in %s' % link_fqfn)
+        run('rm %s' % link_fqfn)
+    with cd(link_path):
+        run('ln -sf %s %s' % (configfile_fqfn, _DA.CONF_NAME))
+
+
+
+def _server_djangoapp_configure():
+    _DA = _S.DJANGOAPP
+
+    configfile_path = join(_E.INSTALLPATH, _S.SVCCONFIG.DIR)
+    configfile_fqfn = join(configfile_path, _DA.CONF_NAME)
+    config_template = join(_S.SRC.TEMPLATES, _DA.CONF_TMPL)
+
+    # create/upload config in progdir
+    run('mkdir -p %s' % configfile_path)
+    
+    
+    if files.exists(configfile_fqfn):
+        warnn('Overwriting django config file in prog dir (check .bak file)')
+    files.upload_template(config_template,
+                          configfile_fqfn,
+                          context = _DA)
+    
+
+
+def _pypipvenv_install(src_piprq_filename):
+    '''install python, pip and virtualenv
+    
+    assumption:
+    * we have  python, but nothing else (should work with python2 and 3, but will get venv with py2)
+    * will be installed in the current dir
+    solution: create a local python (~~/.local/bin)
+    which is used to create a virtualenv
+    Make sure the local pip is on path "~/.local/bin"
+    
+    http://forcecarrier.wordpress.com/2013/07/26/installing-pip-virutalenv-in-sudo-free-way/
+    '''
+
+    inform("Setup Python, Pip and the VirtualEnv")
+
+    with cd(_E.INSTALLPATH):
+        with settings(warn_only=True):
+            cmd = run('python --version')        
+            if cmd.failed or '2.7' not in cmd:
+                abort('No python 2.7 available remote... aborting')
+            cmd = run('pip -V')
+            if cmd.failed or 'python 2.7' not in cmd:
+                warnn('no pip found remote. getting and installing a remote version into ~/.local/bin')
+                run('curl -O https://bootstrap.pypa.io/get-pip.py')
+                run('python get-pip.py --user')
+                warnn('Make sure the local pip is on path "~/.local/bin" (~/.bashrc)')
+                if not console.confirm('Finished putting it on path?'):
+                    abort('then do it now!!')
+    
+        with settings(warn_only=True):
+            if run('virtualenv --version').failed:
+                warnn('no virtualenv found, installing a local (--user) one using pip')
+                run('pip install --user virtualenv')
+        
+        run('virtualenv -p python --system-site-packages %s' %_S.PYENV_DIR) #using numpy from system..
+    
+    
+        # upload pip requirements file
+        tmp_path = join(_E.INSTALLPATH, _S.TMPDIR)
+        piprq_fqfn = join(tmp_path, _S.SRC.PIP_REQ_FILE)
+        piprq_template = join(_S.SRC.TEMPLATES, src_piprq_filename)
+    
+        # create/upload config in progdir
+        run('mkdir -p %s' % tmp_path)
+        files.upload_template(piprq_template,
+                              piprq_fqfn)
+    #                          context = _DA)
+    
+    
+        # instal python packages into virtualenv
+        with prefix('source %s' % os.path.join(_S.PYENV_DIR, 'bin/activate')):
+    #        if not DEBUG:
+            run('pip install -r {TMPDIR}/{SRC.PIP_REQ_FILE}'.format(**_S))
+    #        else:
+    #            debugmsg('skipping local installation of python modules') # because build of numpy take some time..
+
+# make sure to have on opensuse: (sudo zypper)
+# - python-numpy-devel
+# - python-scipy-devel
+# - python-matplotlib-devel
 
 
 
 
+def _upload_tests():
 
+    inform('uploading test files')
+    
+    install_path    = join(_E.INSTALLPATH, _S.SRC.DEPLOYDIR)
+    source_dir      = join(_S.SRC.DEPLOYDIR, '')
+    
+    
+    # create folders
+    run('mkdir -p %s' % install_path)
 
-
-
-
-
+    # upload files
+    project.rsync_project(
+        remote_dir=install_path,
+        local_dir=source_dir
+    )
 
