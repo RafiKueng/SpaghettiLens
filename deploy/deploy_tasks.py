@@ -13,7 +13,7 @@ from fabric.api import cd, prefix, local, put, puts, settings, run, abort, env, 
 #from fabric.utils import *
 
 #from fabric import operations as ops
-from fabric import colors
+#from fabric import colors
 from fabric.contrib import console, files, project
 
 
@@ -45,13 +45,13 @@ _E = env
 
 
 @task()
-def update_files():
+def update_files(): #TODO this is broken after major cleanup.. but was unreliable on the fristplace
     '''just uploads the files, usefull for testing the unittests on tmp server
 
     only works after one successful deploy_server    
     '''
-    _E.INSTALLPATH = '/tmp/swlabs' #'real' install dir
-    _copy_files_server()
+    #_E.INSTALLPATH = '/tmp/swlabs' #'real' install dir
+    #_copy_files_server()
     
     
     
@@ -172,6 +172,7 @@ def deploy_worker():
 #
 
 
+    _upload_tests()
     
     with cd(_S.ROOT_PATH):
         if files.exists('_current'):
@@ -453,7 +454,8 @@ def _build_and_setup_glass(doBuild = True):
         warnn("git encountered an error. probably it's simply because the repro already exists, so i'm continuing")
     
     with cd(tmp_build_dir):
-
+        
+        debugmsg('if this fails, make sure to have swig installed: zypper in swig')
         run('git checkout %s' % _GL.COMMIT)
         
         if doBuild:
@@ -1168,6 +1170,8 @@ def _upload_tests():
     install_path    = join(_E.INSTALLPATH, _S.SRC.DEPLOYDIR)
     source_dir      = join(_S.SRC.DEPLOYDIR, '')
     
+    print install_path
+    print source_dir
     
     # create folders
     run('mkdir -p %s' % install_path)

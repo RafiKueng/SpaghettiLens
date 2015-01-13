@@ -63,3 +63,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Celery Settings
+CELERY_TASK_SERIALIZER      = 'json'
+CELERY_ACCEPT_CONTENT       = ['json']  # Ignore other content
+CELERY_RESULT_SERIALIZER    = 'json'
+CELERY_TIMEZONE             = 'Europe/Bern'
+CELERY_ENABLE_UTC           = True
+
+CELERY_TASK_RESULT_EXPIRES = 3600

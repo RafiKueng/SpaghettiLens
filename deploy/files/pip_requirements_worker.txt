@@ -1,3 +1,5 @@
 #numpy
 scipy>=0.13.0 # there a import _fblas bug for earlier versions (2490)
 #matplotlib>=1.4.1
+
+Celery>=3.1.17,<3.2

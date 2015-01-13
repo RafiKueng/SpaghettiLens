@@ -4,14 +4,54 @@ Created on Sun Nov 23 17:39:19 2014
 
 @author: rafik
 """
+from __future__ import absolute_import
 
+import time
+import pprint
+import json
 
 # from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse  # , Http404
 from django.views.decorators.csrf import csrf_exempt
 
+#from celery.result import AsyncResult
+
+from .tasks import add
 
 # Create your views here.
+
+@csrf_exempt
+def test(request):
+    x=int(request.GET['x'])
+    y=int(request.GET['y'])
+
+    task = add.delay(x,y)
+
+    pprint.pprint(task.__dict__)
+    
+    res1 = task.info
+    print '1', task.status
+
+    time.sleep(1)    
+    
+    res2 = task.info
+    print 2, task.status
+
+    time.sleep(1)    
+    
+    res3 = task.info
+    print 3, task.status
+    
+    s0 = task.get()
+    res4 = task.info
+    print 4, task.status
+    
+    txt  = "we're testing\n"
+    txt += "%s + %s = %s\n" % (x,y,s0)
+    txt += "%s; %s; %s; %s \n" % (res1, res2, res3, res4)
+    return HttpResponse(txt)
+    
+
 
 @csrf_exempt
 def api(request):
