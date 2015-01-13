@@ -136,12 +136,68 @@ def deploy_worker():
     
     _check_if_local_branch_is_master()
     _generate_version_information()
-    _setup_dirs_and_copy_files_worker()
+    
+    _E.INSTALLPATH = os.path.join(_S.ROOT_PATH, _E.VERSION.version_str) #'real' install dir
+
+    # check for developpment / vm machine
+    if not files.exists('/home/ara/rafik'):
+        sudo('mkdir -p /home/ara/rafik')
+        sudo('chown rafik:users /home/ara/rafik')
+        
+        
+    run('mkdir -p %s' % _E.INSTALLPATH)
+
+    _pypipvenv_install(_S.SRC.PIP_REQ_FILE_WRK)
+
+
+    _server_djangoapp_install()
+    _server_djangoapp_setup()
+    _server_djangoapp_configure()
+
+    _build_and_setup_glass(doBuild=True)
+
+#    with cd(_E.INSTALLPATH):
+#
+#        _setup_django_config_files()            
+#        _build_and_setup_glass()        
+#        
+#        # set up the start scripts
+#            
+#        # run the tests
+#
+#        # FOR DEBUG ONLY, make site pagackes available, so no need to compile numpy ect
+#        if DEBUG:
+#            #run('rm %s' % (os.path.join(_E.INSTALLPATH, _S.PYENV_DIR, 'lib', 'python2.7','no-global-site-packages.txt')))
+#            pass # we already enabled site packages, because no need to build numpy..
+#
+
+
+    
+    with cd(_S.ROOT_PATH):
+        if files.exists('_current'):
+            run('rm _current')
+        run('ln -s %s _current' % _E.VERSION.version_str)
 
         
+        if not DEBUG:
+            run('rm -rf _current/{TMPDIR}'.format(**_S))
+        else:
+            debugmsg("Skipping cleanup")
+        
+        
+        
+    # create startup scripts
+    
+        
+@task()
+def deploy_worker_bkup():
+    
+    _check_if_local_branch_is_master()
+    _generate_version_information()
+    _setup_dirs_and_copy_files_worker()
+
     with cd(_E.INSTALLPATH):
 
-        _setup_py_pip_venv()
         _setup_django_config_files()            
         _build_and_setup_glass()        
         
@@ -171,8 +227,6 @@ def deploy_worker():
         
         
     # create startup scripts
-    
-        
 
 
 
@@ -416,64 +470,83 @@ Check commit your changes and merge with master, then test, then update the work
             
             
             
-def _build_and_setup_glass():
+def _build_and_setup_glass(doBuild = True):
     '''compile glass and its libraries with the make file in a temp dir and then rearrange things'''
     
     inform('Building and setting up glass')
+    
+    _GL = _S.GLASS
+    
+    tmp_build_dir       = join(_S.TMPDIR ,_GL.TMPBUILDDIR)
+    venv_activate_path  = join(_E.INSTALLPATH, _S.PYENV_DIR, 'bin','activate')
+    venv_setenv_path    = join(_E.INSTALLPATH, _S.PYENV_DIR, 'bin','setenv')
+    venv_lib_path       = join(_E.INSTALLPATH, _S.PYENV_DIR, 'lib')
+    extapp_path         = join(_E.INSTALLPATH, _S.EXTAPPS.DIR)
 
     
+    run('mkdir -p %s' % tmp_build_dir)
     
-    run('mkdir -p %s' % _S.GLASS.TMPBUILDDIR)
+    cmd = run('git clone %s %s' % (_GL.REPROURL, tmp_build_dir), warn_only=True)
+    if not cmd.return_code == 0:
+        warnn("git encountered an error. probably it's simply because the repro already exists, so i'm continuing")
     
-    run('git clone %s %s' % (_S.GLASS.REPROURL, _S.GLASS.TMPBUILDDIR))
-    
-    with cd(_S.GLASS.TMPBUILDDIR):
+    with cd(tmp_build_dir):
 
-        run('git checkout %s' % _S.GLASS.COMMIT)
+        run('git checkout %s' % _GL.COMMIT)
+        
+        if doBuild:
+            with settings(warn_only=True):
+                run('make -j4')
+            run('make')
+        else:
+            debugmsg('skipping building, because DEBUG is on..')
 
-        with prefix('source %s' % os.path.join('..', _S.PYENV_DIR, 'bin/activate')):
-            if not DEBUG:
-                with settings(warn_only=True):
-                    run('make -j4')
-                    #if not files.exists('build/glpk_build/lib'):
-                    #    run('mv build/glpk_build/lib64 build/glpk_build/lib') # bugfix
-                    run('make')
-            else:
-                debugmsg('skipping building, because DEBUG is on..')
-                run('cp -R ../../tmp_dev/build build')
+# IT DOESN"T WORK IF DONE INSTIDE OF VENV.. prob because we use system numpy. (import error on numpy/..something...h)
+#
+#        with prefix('source %s' % venv_activate_path):
+#            if doBuild:
+#                with settings(warn_only=True):
+#                    run('make -j4')
+#                    #if not files.exists('build/glpk_build/lib'):
+#                    #    run('mv build/glpk_build/lib64 build/glpk_build/lib') # bugfix
+#                run('make')
+#            else:
+#                debugmsg('skipping building, because DEBUG is on..')
+#                #run('cp -R ../../tmp_dev/build build')
             
     
     # which dirs / files to copy where..
     dirss  = (
-        ('build/lib.linux-x86_64-2.7/',                 '%s/' % _S.EXTAPPS.DIR ),
-        ('build/glpk_build/lib/',                       '%s/lib/' % _S.PYENV_DIR ),
-        ('build/glpk_build/lib64/',                     '%s/lib/' % _S.PYENV_DIR ),
-        ('build/python-glpk/lib.linux-x86_64-2.7/glpk', '%s/' % _S.EXTAPPS.DIR ),
+        ('build/lib.linux-x86_64-2.7/',                 join(extapp_path,'')     ),
+        ('build/glpk_build/lib/',                       join(venv_lib_path,'')   ),
+        ('build/glpk_build/lib64/',                     join(venv_lib_path,'')   ),
+        ('build/python-glpk/lib.linux-x86_64-2.7/glpk', join(extapp_path,'')     ),
     )
 
     for srcdir, destdir in dirss:
         run('mkdir -p %s' % destdir)
-        with settings(warn_only=True): #prevent abort because lib or lib64
+        with settings(warn_only=True): #prevent abort because lib or lib64, will always warn 
             run('rsync -pthrvz {src} {dest}'.format(**{
-                'src'  : os.path.join(_S.GLASS.TMPBUILDDIR, srcdir),
-                'dest' : os.path.join(_E.INSTALLPATH, destdir),
+                'src'  : join(tmp_build_dir, srcdir),
+                'dest' : destdir,
             }))
         
-    with cd(os.path.join(_E.INSTALLPATH, _S.PYENV_DIR, 'lib')):
+    with cd(venv_lib_path):
         run('ln -s libglpk.so.0.32.0 libglpk.so.0')
             
     
     # path the env for glass ext libs
     sstr  = 'LD_LIBRARY_PATH="$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH"\nexport LD_LIBRARY_PATH\n\n'
     sstr += 'PYTHONPATH="$PYTHONPATH:{ROOT_PATH}/_current/{EXTAPPS.DIR}/glpk"\nexport PYTHONPATH\n'.format(**_S)
-    files.append(os.path.join(_S.PYENV_DIR, 'bin','setenv'), sstr)
-    files.append(os.path.join(_S.PYENV_DIR, 'bin','activate'), 'source setenv')
+    files.append(venv_setenv_path, sstr)
+    files.append(venv_activate_path, 'source setenv')
 
     #clean up
     if not DEBUG:
-        run('rm -rf %s' % _S.GLASS.TMPBUILDDIR)
+        run('rm -rf %s' % tmp_build_dir)
     else:
         debugmsg("Skipping cleanup")
+        run('cp %s %s' % (join(tmp_build_dir,'Examples','B1115.gls'), extapp_path))
 
 
 
@@ -514,7 +587,7 @@ def _setup_dirs_and_copy_files_worker():
 
     # single files to copy (src, dest)
     filesss = [
-        (_S.SRC.PIP_REQ_RPATH, os.path.join(_S.TMPDIR, _S.SRC.PIP_REQ_FILE))    
+        (_S.SRC.PIP_REQ_RPATH_WRK, os.path.join(_S.TMPDIR, _S.SRC.PIP_REQ_FILE))    
     ]
 
 

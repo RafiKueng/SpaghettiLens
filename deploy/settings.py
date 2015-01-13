@@ -35,7 +35,7 @@ env.TIMESTAMP = dt.now().strftime("%Y%m%d%H%M")
 
 
 _.WORKER_DEV_HOSTS  = ['localhost']
-_.WORKER_TEST_HOSTS = ['192.168.100.2']
+_.WORKER_TEST_HOSTS = ['192.168.100.10']
 _.WORKER_PROD_HOSTS = ['taurus.physik.uzh.ch']
 
 _.SERVER_TEST_HOST  = ['192.168.100.10']
@@ -80,9 +80,9 @@ _.SRC.DEPLOYDIR                 = 'deploy'
 _.SRC.TEMPLATES                 = 'deploy/files'
 _.SRC.PIP_REQ_FILE              = 'pip_requirements.txt'                        # filename on remote machine
 _.SRC.PIP_REQ_FILE_WRK          = 'pip_requirements_worker.txt'
-_.SRC.PIP_REQ_RPATH_WRK_        = lambda: join(_.SRC.TEMPLATES, _.SRC.PIP_REQ_FILE_WRK)
+#_.SRC.PIP_REQ_RPATH_WRK_        = lambda: join(_.SRC.TEMPLATES, _.SRC.PIP_REQ_FILE_WRK)
 _.SRC.PIP_REQ_FILE_SRV          = 'pip_requirements_server.txt'
-_.SRC.PIP_REQ_RPATH_SRV_        = lambda: join(_.SRC.TEMPLATES, _.SRC.PIP_REQ_FILE_SRV)
+#_.SRC.PIP_REQ_RPATH_SRV_        = lambda: join(_.SRC.TEMPLATES, _.SRC.PIP_REQ_FILE_SRV)
 
 
 # SETTINGS FOR DJANGO APPS  # TODO remove this and replace all by the _.DJANGO
@@ -247,14 +247,14 @@ if len(env.tasks)==1 and len(env.roles)==1:
         }
         
         if role == 'dev':
-            _.ROOT_PATH = '/tmp/app/swlabs_worker'
-            _.BIN_DIR   = '/tmp/app/swlabs_worker_bin'
-            
-            _.TMPDIR    = 'worker_tmp'
+            _.ROOT_PATH = '/tmp/app/swl_worker'
+            _.BIN_DIR   = '/tmp/app/swl_worker_bin'
+            _.TMPDIR    = '/tmp/app/swl_worker_tmp'
             
         elif role in ['test', 'prod']:
-            _.ROOT_PATH = '/home/ara/rafik/tmp/swl_test/apps/swlabs_worker'
-            _.BIN_DIR   = '/home/ara/rafik/tmp/swl_test/local/bin'
+            _.ROOT_PATH = '/home/ara/rafik/swlabs_worker'
+            _.BIN_DIR   = '/home/ara/rafik/local_bins'
+            _.TMPDIR    = '/home/ara/rafik/worker_tmp'
             
             
 
