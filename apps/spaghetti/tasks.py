@@ -10,7 +10,7 @@ from __future__ import absolute_import
 import time
 
 #from celery import shared_task
-from apps.celery import app
+from _app.celery import app
 
 #@shared_task
 @app.task(bind=True)
