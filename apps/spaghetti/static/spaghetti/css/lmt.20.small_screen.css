@@ -1,0 +1,119 @@
+@media screen and (max-width: 980px) {
+
+html, body {
+  min-width: 560px;
+}
+
+body {
+  margin: 0px;
+  padding: 0px;
+}
+
+
+/*only have rounded edges in big screen*/
+.rounded_top {
+  border-top-left-radius: 0px; 
+  border-top-right-radius: 0px; 
+}
+
+.rounded_bottom {
+  border-bottom-left-radius: 0px; 
+  border-bottom-right-radius: 0px; 
+}
+
+#headtitle {
+  display: table-row;
+  height: 50px;
+  font-size: 0.9em;
+
+}
+
+#toolbarTop {
+  display: table-row;
+  height: 60px;
+  font-size: 1em;
+}
+
+
+#toolbarInp {
+  width:100%;
+  z-index: 21;
+}
+
+#toolbarOut {
+  width:100%;
+  z-index: 20;
+}
+
+#inp {
+  left: 0px;
+  right: 50px;
+  z-index: 21;
+  width: auto;
+}
+
+#bigslider {
+  display: block;
+  width: 50px;
+  z-index: 22;
+  background-color: white;
+  font-size: 3em;
+  color: #fff;
+  vertical-align: middle;
+}
+
+
+#bigslider.left {
+  left: 0px;
+  
+  -webkit-transition: background 500ms ;
+  -moz-transition: background 500ms ;
+  -ms-transition: background 500ms ;
+  -o-transition: background 500ms ;
+  transition: background 500ms ;
+  background: #333333;
+  background: -moz-linear-gradient(right,  #000 0%, #333 100%);
+  background: -webkit-linear-gradient(right,  #000 0%,#333 100%);
+  background: -o-linear-gradient(right,  #000 0%,#333 100%);
+  background: -ms-linear-gradient(right,  #000 0%,#333 100%);
+  background: linear-gradient(right,  #000 0%,#333 100%);
+}
+
+#bigslider.right {
+  right: 0px;
+  
+  -webkit-transition: background 500ms ;
+  -moz-transition: background 500ms ;
+  -ms-transition: background 500ms ;
+  -o-transition: background 500ms ;
+  transition: background 500ms ;
+  background: #333333;
+  background: -moz-linear-gradient(left,  #000 0%, #333 100%);
+  background: -webkit-linear-gradient(left,  #000 0%,#333 100%);
+  background: -o-linear-gradient(left,  #000 0%,#333 100%);
+  background: -ms-linear-gradient(left,  #000 0%,#333 100%);
+  background: linear-gradient(left,  #000 0%,#333 100%);
+
+}
+
+#help {
+  z-index: 30;
+}
+
+#footer {
+  z-index: 30;
+}
+
+#out {
+  left: 50px;
+  right: 0px;
+  z-index: 20;
+  width: auto;
+}
+
+#log {
+  left: 0px;
+  right: 0px;
+}
+
+}
