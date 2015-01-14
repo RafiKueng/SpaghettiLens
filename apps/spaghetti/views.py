@@ -21,7 +21,7 @@ from .tasks import add
 # Create your views here.
 
 @csrf_exempt
-def test(request):
+def celery_test(request):
     x=int(request.GET['x'])
     y=int(request.GET['y'])
 
@@ -50,7 +50,13 @@ def test(request):
     txt += "%s + %s = %s\n" % (x,y,s0)
     txt += "%s; %s; %s; %s \n" % (res1, res2, res3, res4)
     return HttpResponse(txt)
-    
+
+
+@csrf_exempt
+def couch_test(request):
+    txt = ''
+    return HttpResponse(txt)
+
 
 
 @csrf_exempt

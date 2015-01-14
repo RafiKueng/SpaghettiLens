@@ -2,7 +2,7 @@
 """
 This file gets modified and automatically uploaded by the deploy script.
 Make any changes there and re deploy!!! Don't do any manual changes here..
-
+(esp. the settings.py file)
 
 Created on Fri Jan  9 16:25:31 2015
 @author: rafik
@@ -23,5 +23,11 @@ DATABASES = {
     }
 }
 
+STATIC_ROOT = ''
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = ')ir@&^cmbu$e+btd&dske8h&u+u8dy9=mmho*tc171*0f!q@xn'
+
+# Celery / Broker Configuration
+BROKER_URL = 'amqp://guest:guest@192.168.100.3:5672/swlabs'
+CELERY_RESULT_BACKEND = 'amqp://guest:guest@192.168.100.3:5672/swlabs/'

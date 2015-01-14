@@ -4,5 +4,8 @@ from spaghetti import views
 
 urlpatterns = patterns('',
     url(r'^api$', views.api, name='api'),
-    url(r'.*', views.test, name='test'),
+
+
+    url(r'^celery_test$', views.celery_test, name='celery_test'),
+    url(r'^couch_test$', views.couch_test, name='couch_test'),
 )

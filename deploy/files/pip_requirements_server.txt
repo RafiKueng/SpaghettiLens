@@ -2,13 +2,16 @@ pycrypto
 ecdsa
 fabric
 attrdict
-django>=1.7,<1.8
 requests
 
 numpy>=1.7
 scipy>=0.14
 matplotlib>=1.4.0
 
+django>=1.7,<1.8
+-e git+https://github.com/RafiKueng/couchdbkit.git@master#egg=couchdbkit  # need patched couchdbkit because of issue https://github.com/benoitc/couchdbkit/issues/180
+
 Celery>=3.1.17,<3.2
+flower
 
 puka #for rabbitmq connection during testing

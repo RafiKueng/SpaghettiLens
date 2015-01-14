@@ -30,6 +30,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'couchdbkit.ext.django',    
+    
     'spaghetti',
 )
 
@@ -63,7 +66,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
-
+#STATIC_ROOT = '' # defined in machine_settings
 
 # Celery Settings
 CELERY_TASK_SERIALIZER      = 'json'
