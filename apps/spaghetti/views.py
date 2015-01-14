@@ -10,9 +10,10 @@ import time
 import pprint
 import json
 
-# from django.shortcuts import render
+from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse  # , Http404
 from django.views.decorators.csrf import csrf_exempt
+
 
 from couchdbkit.ext.django.loading import get_db
  
@@ -22,6 +23,18 @@ from .tasks import add
 from .models import TestDoc
 
 # Create your views here.
+
+
+@csrf_exempt
+def getIndex(request):
+    context = {}
+    return render(request, 'spaghetti/index.html', context)
+
+
+
+
+
+
 
 @csrf_exempt
 def celery_test(request):
