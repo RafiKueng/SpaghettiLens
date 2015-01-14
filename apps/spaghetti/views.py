@@ -14,6 +14,8 @@ import json
 from django.http import HttpResponse, JsonResponse  # , Http404
 from django.views.decorators.csrf import csrf_exempt
 
+from couchdbkit.ext.django.loading import get_db
+ 
 #from celery.result import AsyncResult
 
 from .tasks import add
@@ -62,6 +64,9 @@ def couch_test(request):
     for t in tests:
         txt += str(t.blaa) + '<br>'
         print t
+        
+    db = get_db('spaghetti')
+    
     return HttpResponse(txt)
 
 
