@@ -17,6 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 #from celery.result import AsyncResult
 
 from .tasks import add
+from .models import TestDoc
 
 # Create your views here.
 
@@ -54,7 +55,13 @@ def celery_test(request):
 
 @csrf_exempt
 def couch_test(request):
-    txt = ''
+    
+    tests = TestDoc.view("spaghetti/all")
+    
+    txt = 'Start:<br>'
+    for t in tests:
+        txt += str(t.blaa) + '<br>'
+        print t
     return HttpResponse(txt)
 
 

@@ -8,3 +8,4 @@ import couchdbkit.ext.django.schema as cdb
 
 class TestDoc(cdb.Document):
     name = cdb.StringProperty()
+    blaa = cdb.StringProperty()
