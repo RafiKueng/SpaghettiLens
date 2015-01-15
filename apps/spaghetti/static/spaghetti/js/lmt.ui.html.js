@@ -251,7 +251,7 @@ html.WaitForResultDialog = {
   
 };
 
-
+//v2 this is outdated
 html.SelectDatasourceDialog = {
   init: function(){
     $('#select_datasource_dialog').dialog({
@@ -332,6 +332,68 @@ html.SelectDatasourceDialog = {
     $selectObj.trigger("liszt:updated");
   }
 }
+
+
+
+
+html.SelectDatasourceDialog = {
+//    call: function(evt){
+//        $.event.trigger("GetSelectDatasourceDialog");
+//    },
+    
+    show: function(evt, html) {
+        var self = $(html).dialog({
+            autoOpen: false,
+            minWidth: 550,
+            minHeight: 550,
+            modal: true,
+            open: function(){
+                var uname = $.cookie('username');
+                if (uname){
+                    $("#username").val(uname);
+                    $('.ui-dialog-buttonpane button:last').focus();
+                }
+                var ds = $.cookie('ds');
+                if (ds){$("#sel_datasource").val(ds).trigger("liszt:updated");}
+            },
+            buttons: [
+                {
+                    text: "Delete defaults",
+                    click: function(){
+                        $("#username").val('');
+                        $.removeCookie('username');
+                        $.removeCookie('ds');
+                    }
+                },
+                {
+                    text: "Save defaults",
+                    click: function(){
+                        $.cookie('username', $("#username").val(), { expires: 365 });
+                        $.cookie('ds', $("#sel_datasource").val(), { expires: 365 });
+                    }
+                },
+                {
+                    text: "Ok",
+                    click: function(evt){
+                        var val = $("#sel_datasource").val();
+                        if (!val){
+                            alert("Please choose one datasource to continue");
+                            return;
+                        }
+                        else {
+                            var uname = $("#username").val();
+                            LMT.settings.username = uname;
+                            self.dialog("close");
+                            $.event.trigger("GetDatasourceDialog", [id = val, uname = uname]);
+                        }
+                    }
+
+                },
+            ]
+        }).dialog("open")
+    }
+}
+
 
 
 

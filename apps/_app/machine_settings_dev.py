@@ -29,6 +29,7 @@ DATABASES = {
 
 COUCHDB_DATABASES = (
     ('djangoapp.spaghetti', 'http://192.168.100.3:5984/spaghetti'),
+    ('djangoapp.lenses',    'http://192.168.100.3:5984/lenses'),
 )
 
 

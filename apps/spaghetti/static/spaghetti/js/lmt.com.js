@@ -5,7 +5,9 @@
 
 
 
-
+/**
+ * This is the old config.. slowly replace it with the new one below
+ */
 var com = {
   getCataloguesUrl: "/get_initdata",
   getModelDataUrl: "/get_modeldata",
@@ -15,6 +17,10 @@ var com = {
   refreshCounter: 0,
 };
 
+
+com.config = {
+    lensesAPI: "/lenses/api",
+};
 
 
 
@@ -425,7 +431,7 @@ com.GetSimulation = function(){
 
 
 
-
+/* v2 replaced
 com.getDatasourcesList = function(evt) {
   
   var success = function(jsonObj, b, c){
@@ -449,6 +455,36 @@ com.getDatasourcesList = function(evt) {
   });
   
 }
+*/
+
+com.getSelectDatasourceDialog = function(evt) {
+  
+  var success = function(jsonObj, b, c){
+    log('com.getDatasourceSelectionDialog | success');
+    //$.event.trigger("RcvDatasourcesList", [jsonObj]);
+    $.event.trigger("GotSelectDatasourceDialog", [jsonObj.html]);
+  }
+  
+  var fail = function(a, b, c){
+    log('com.getDatasourceSelectionDialog | fail');
+    log(a,b,c)
+    alert("Server api down! I'm sorry! Please drop a mail to rafael about this");
+  }  
+  
+  var data = {action: 'get_datasource_dialog'};
+  
+  $.ajax(com.config.lensesAPI, {
+      type:"GET",
+      data: data,
+      success: success,
+      error: fail,
+      dataType:"json", //data type expected from server
+  });
+  
+}
+
+
+
 
 
 com.getDatasourceDialog = function(evt, id, uname) {

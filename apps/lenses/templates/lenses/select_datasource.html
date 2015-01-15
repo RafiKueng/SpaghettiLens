@@ -1,0 +1,18 @@
+{% load helper_tags %}
+<div id="select_datasource_dialog" class="dialog" title="Select Datasource">
+    <p>Please enter your name:<br/>
+        <label for="username">Name:</label>
+        <input type="text" name="username" id="username" class="text ui-widget-content ui-corner-all" />
+    </p>
+    <p>Select Datasource:<br/>
+        <select id="sel_datasource"
+            data-placeholder="Choose a datasource"
+            style="width:500px;"
+            class="chzn-select-deselect"
+            tabindex="7">
+{% for datasource in datasources %}
+            <option value="{{ datasource|getID }}">{{ datasource.name }}</option>
+{% endfor %}
+        </select>
+    </p>
+</div>

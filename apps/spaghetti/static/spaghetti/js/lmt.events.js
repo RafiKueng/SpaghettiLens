@@ -50,13 +50,14 @@ var events = {
     LMT.ui.svg.initCanvas();
 
 
-    LMT.ui.html.SelectDatasourceDialog.init();
+//v2    LMT.ui.html.SelectDatasourceDialog.init();
     LMT.ui.html.LoadProgressDialog.init();
 
     /*
     $.event.trigger("ShowSelectDatasourceDialog");
     */
 
+      
     if (LMT.GET.hasOwnProperty("mid")){
       var mid = parseInt(LMT.GET["mid"]);
       $.event.trigger("GetModelData", [[mid],'','init']);
@@ -77,7 +78,8 @@ var events = {
       $.event.trigger("SetUsername");
     }
     else {
-      $.event.trigger("ShowSelectDatasourceDialog");
+//v2      $.event.trigger("ShowSelectDatasourceDialog");
+        $.event.trigger("GetSelectDatasourceDialog");
     }
   },
   
@@ -89,9 +91,12 @@ var events = {
     
     $(document).on('ToggleLog', logger.toggle);
     
-    $(document).on('ShowSelectDatasourceDialog', LMT.ui.html.SelectDatasourceDialog.show);    
-    $(document).on('GetDatasourcesList', LMT.com.getDatasourcesList);
-    $(document).on('RcvDatasourcesList', LMT.ui.html.SelectDatasourceDialog.onRcvDatasourcesList);
+//v2    $(document).on('ShowSelectDatasourceDialog', LMT.ui.html.SelectDatasourceDialog.show);
+//v2    $(document).on('GetDatasourcesList', LMT.com.getDatasourcesList);
+//v2    $(document).on('RcvDatasourcesList', LMT.ui.html.SelectDatasourceDialog.onRcvDatasourcesList);
+    //$(document).on('ShowSelectDatasourceDialog', LMT.ui.html.SelectDatasourceDialog.call);
+    $(document).on('GetSelectDatasourceDialog', LMT.com.getSelectDatasourceDialog);
+    $(document).on('GotSelectDatasourceDialog', LMT.ui.html.SelectDatasourceDialog.show);
     
     $(document).on('GetDatasourceDialog', LMT.com.getDatasourceDialog);
     $(document).on('RcvDatasourceDialog', LMT.ui.html.GenericDatasourceDialog.init);

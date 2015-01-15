@@ -34,6 +34,7 @@ INSTALLED_APPS = (
     'couchdbkit.ext.django',    
     
     'spaghetti',
+    'lenses',
 )
 
 MIDDLEWARE_CLASSES = (
