@@ -252,6 +252,7 @@ html.WaitForResultDialog = {
 };
 
 //v2 this is outdated
+/*
 html.SelectDatasourceDialog = {
   init: function(){
     $('#select_datasource_dialog').dialog({
@@ -332,7 +333,7 @@ html.SelectDatasourceDialog = {
     $selectObj.trigger("liszt:updated");
   }
 }
-
+*/
 
 
 

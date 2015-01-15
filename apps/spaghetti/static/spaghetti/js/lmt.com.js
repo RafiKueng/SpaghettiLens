@@ -486,7 +486,7 @@ com.getSelectDatasourceDialog = function(evt) {
 
 
 
-
+/* v2 replaced
 com.getDatasourceDialog = function(evt, id, uname) {
   
   var success = function(jsonObj, b, c){
@@ -507,6 +507,35 @@ com.getDatasourceDialog = function(evt, id, uname) {
   
   $.ajax(LMT.com.serverUrl + "/api", {
       type:"POST",
+      success: success,
+      error: fail,
+      data: data,
+      dataType:"json", //data type expected from server
+  });
+  
+}
+*/
+
+com.getDatasourceDialog = function(evt, id, uname) {
+  
+  var success = function(jsonObj, b, c){
+    log('com.getDatasourceDialog | success');
+    $.event.trigger("RcvDatasourceDialog", [jsonObj]);
+  }
+  
+  var fail = function(a, b, c){
+    log('com.getDatasourceDialog | fail');
+    alert("Server api down. I'm sorry! Please drop a mail to rafael about this");
+  }  
+  
+  var data = {
+    action: 'selectSource',
+    id: id,
+    uname: uname
+  };
+  
+  $.ajax(com.config.lensesAPI, {
+      type:"GET",
       success: success,
       error: fail,
       data: data,
