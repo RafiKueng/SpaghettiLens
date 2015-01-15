@@ -1,0 +1,34 @@
+{% load helper_tags %}
+<div id="select_lens_dialog" class="dialog" title="Select Lens">
+    <div>
+        <p>
+            Please enter your name:<br/>
+            <label for="username">Name:</label>
+            <input type="text" name="username" id="username" class="text ui-widget-content ui-corner-all" />
+        </p>
+    </div>
+    <div>
+        <p>
+            Select Lens<br/>
+            <label for="sel_lens">Lens:</label>
+            <input type="text" name="sel_lens" id="sel_lens" class="text ui-widget-content ui-corner-all" />
+        </p>
+    </div>
+    <div id="select_lens_datasource" style="display:hidden;">
+        <p>Lens was not found in spaghettilens<br />
+            Select Datasource to download from:<br/>
+            <select id="sel_datasource"
+                data-placeholder="Choose a datasource"
+                style="width:500px;"
+                class="chzn-select-deselect"
+                tabindex="7">
+{% for datasource in datasources %}
+                <option value="{{ datasource|getID }}">{{ datasource.name }}</option>
+{% endfor %}
+            </select>
+        </p>
+    </div>
+    <div>
+        <p id="select_lens_status_text"></p>
+    </div>
+</div>

@@ -462,7 +462,8 @@ com.getSelectDatasourceDialog = function(evt) {
   var success = function(jsonObj, b, c){
     log('com.getDatasourceSelectionDialog | success');
     //$.event.trigger("RcvDatasourcesList", [jsonObj]);
-    $.event.trigger("GotSelectDatasourceDialog", [jsonObj.html]);
+    f = new Function(jsonObj.jsobj);
+    $.event.trigger("GotSelectDatasourceDialog", [jsonObj.html, f()]);
   }
   
   var fail = function(a, b, c){
@@ -471,7 +472,7 @@ com.getSelectDatasourceDialog = function(evt) {
     alert("Server api down! I'm sorry! Please drop a mail to rafael about this");
   }  
   
-  var data = {action: 'get_datasource_dialog'};
+  var data = {action: 'get_select_lens_dialog'};
   
   $.ajax(com.config.lensesAPI, {
       type:"GET",

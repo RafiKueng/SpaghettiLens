@@ -1,10 +1,9 @@
-
-
-
 from __future__ import absolute_import
 
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse  # , Http404
+import re
+
+#from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest  # , Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext, loader
 
@@ -20,8 +19,11 @@ def getGui(request):
 
 def getApiDef():
     return {
-        'get_datasource_dialog': _getDataSourceDialog
+#        'get_datasource_dialog': _getDataSourceDialog,
+        'get_list_of_lenses': _getListOfLenses,
+        'get_select_lens_dialog': _getSelectLensDialog,
     }
+
 
 @csrf_exempt
 def api(request):
@@ -58,16 +60,62 @@ def api(request):
 
 
 
-def _getDataSourceDialog(request):
+#def _getDataSourceDialog(request):
+#
+#    datasources = Datasource.view("lenses/Datasources")
+#
+#
+##    htmltemplate = loader.get_template('lenses/select_datasource.html')
+#    htmltemplate = loader.get_template('lenses/select_datasource.html')
+#    htmltemplate = loader.get_template('lenses/select_datasource.html')
+#
+#    context = RequestContext(request, {
+#        'datasources': datasources,
+#    })
+#
+#    html  = htmltemplate.render(context)
+#    jsobj = jstemplate.render(context)
+#    
+#    return JsonResponse({'status': "SUCCESS", 'html': html, 'jsobj': jsobj})
+    
+def _getSelectLensDialog(request):
 
     datasources = Datasource.view("lenses/Datasources")
 
 
-    template = loader.get_template('lenses/select_datasource.html')
+#    htmltemplate = loader.get_template('lenses/select_datasource.html')
+    htmltemplate = loader.get_template('lenses/select_lens.html')
+    jstemplate = loader.get_template('lenses/select_lens.js')
 
     context = RequestContext(request, {
         'datasources': datasources,
     })
 
-    html = template.render(context)
-    return JsonResponse({'status': "SUCCESS", 'html': html})
+    html  = htmltemplate.render(context)
+    jsobj = jstemplate.render(context)
+    
+    return JsonResponse({'status': "SUCCESS", 'html': html, 'jsobj': jsobj})
+    
+    
+    
+def _getListOfLenses(request):
+    
+    term = request.GET.get('term')
+    if term is None:
+        return JsonResponse({'status': "FAILED", 'error': "term_missing"}, status=400)
+        
+    lenses = Datasource.view("lenses/Lenses__by_name")
+    
+#    lyst = [{'label':lens['key'], 'value': lens['id']} for lens in lenses if term in lens['key']]
+    lyst = [lens['key'] for lens in lenses if term in lens['key']]
+    
+    #regex = re.compile('.*('+term+').*')
+    #lyst = [m.group(0) for l in lenses for m in [regex.search(l['key'])] if m]
+    
+    return JsonResponse({'status': "SUCCESS", 'data': lyst})
+            
+        
+        
+        
+        
+        

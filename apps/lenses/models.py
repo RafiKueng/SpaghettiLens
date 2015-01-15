@@ -15,3 +15,8 @@ class Datasource(cdb.Document):
     def __repr__(self):
         return self.__unicode__()
         
+
+class Lens(cdb.Document):
+    
+    names = cdb.ListProperty()
+    
