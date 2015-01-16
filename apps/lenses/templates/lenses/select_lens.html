@@ -16,11 +16,11 @@
     </div>
     <div id="select_lens_datasource" style="display:hidden;">
         <p>Lens was not found in spaghettilens<br />
-            Select Datasource to download from:<br/>
+            Select external datasource to download from:<br/>
             <select id="sel_datasource"
                 data-placeholder="Choose a datasource"
-                style="width:500px;"
-                class="chzn-select-deselect"
+                style="min-width:500px; width:100%;"
+                class="chosen-select"
                 tabindex="7">
 {% for datasource in datasources %}
                 <option value="{{ datasource|getID }}">{{ datasource.name }}</option>

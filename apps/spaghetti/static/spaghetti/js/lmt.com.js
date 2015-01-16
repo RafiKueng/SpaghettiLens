@@ -431,119 +431,37 @@ com.GetSimulation = function(){
 
 
 
-/* v2 replaced
-com.getDatasourcesList = function(evt) {
-  
-  var success = function(jsonObj, b, c){
-    log('com.getDatasourcesList | success');
-    $.event.trigger("RcvDatasourcesList", [jsonObj]);
-  }
-  
-  var fail = function(a, b, c){
-    log('getDatasourcesList | fail');
-    alert("Server api down! I'm sorry! Please drop a mail to rafael about this");
-  }  
-  
-  var data = {action: 'getSrcList'};
-  
-  $.ajax(LMT.com.serverUrl + "/api", {
-      type:"POST",
-      success: success,
-      error: fail,
-      data: data,
-      dataType:"json", //data type expected from server
-  });
-  
-}
-*/
-
+//v2 new version
 com.getSelectDatasourceDialog = function(evt) {
+    
+    var success = function(json, b, c){
+        if (json.success) {
+            log('com.getDatasourceSelectionDialog | success');
+            //$.event.trigger("RcvDatasourcesList", [jsonObj]);
+            f = new Function(json.jsobj);
+            $.event.trigger("GotSelectDatasourceDialog", [json.html, f()]);
+        } else {alert("APIError: "+json.error);}
+    }
   
-  var success = function(jsonObj, b, c){
-    log('com.getDatasourceSelectionDialog | success');
-    //$.event.trigger("RcvDatasourcesList", [jsonObj]);
-    f = new Function(jsonObj.jsobj);
-    $.event.trigger("GotSelectDatasourceDialog", [jsonObj.html, f()]);
-  }
+    var fail = function(a, b, c){
+        log('com.getDatasourceSelectionDialog | fail');
+        alert("Server api down! I'm sorry! Please drop a mail to rafael about this");
+    }  
   
-  var fail = function(a, b, c){
-    log('com.getDatasourceSelectionDialog | fail');
-    log(a,b,c)
-    alert("Server api down! I'm sorry! Please drop a mail to rafael about this");
-  }  
+    var data = {action: 'get_select_lens_dialog'};
   
-  var data = {action: 'get_select_lens_dialog'};
-  
-  $.ajax(com.config.lensesAPI, {
-      type:"GET",
-      data: data,
-      success: success,
-      error: fail,
-      dataType:"json", //data type expected from server
-  });
-  
+    $.ajax(com.config.lensesAPI, {
+        type: "GET",
+        data: data,
+        success: success,
+        error: fail,
+        dataType: "json", //data type expected from server
+    });
+
 }
 
 
 
-
-/* v2 replaced
-com.getDatasourceDialog = function(evt, id, uname) {
-  
-  var success = function(jsonObj, b, c){
-    log('com.getDatasourceDialog | success');
-    $.event.trigger("RcvDatasourceDialog", [jsonObj]);
-  }
-  
-  var fail = function(a, b, c){
-    log('com.getDatasourceDialog | fail');
-    alert("Server api down. I'm sorry! Please drop a mail to rafael about this");
-  }  
-  
-  var data = {
-    action: 'selectSource',
-    id: id,
-    uname: uname
-  };
-  
-  $.ajax(LMT.com.serverUrl + "/api", {
-      type:"POST",
-      success: success,
-      error: fail,
-      data: data,
-      dataType:"json", //data type expected from server
-  });
-  
-}
-*/
-
-com.getDatasourceDialog = function(evt, id, uname) {
-  
-  var success = function(jsonObj, b, c){
-    log('com.getDatasourceDialog | success');
-    $.event.trigger("RcvDatasourceDialog", [jsonObj]);
-  }
-  
-  var fail = function(a, b, c){
-    log('com.getDatasourceDialog | fail');
-    alert("Server api down. I'm sorry! Please drop a mail to rafael about this");
-  }  
-  
-  var data = {
-    action: 'selectSource',
-    id: id,
-    uname: uname
-  };
-  
-  $.ajax(com.config.lensesAPI, {
-      type:"GET",
-      success: success,
-      error: fail,
-      data: data,
-      dataType:"json", //data type expected from server
-  });
-  
-}
 
 
 LMT.com = com;

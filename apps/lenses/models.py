@@ -1,5 +1,6 @@
 #from django.db import models
 import couchdbkit.ext.django.schema as cdb
+import datetime
 
 
 
@@ -17,6 +18,14 @@ class Datasource(cdb.Document):
         
 
 class Lens(cdb.Document):
+    '''This is one single lens
+    '''
     
     names = cdb.ListProperty()
+    metadata = cdb.DictProperty()
+    data = cdb.DictProperty()
     
+    created_at = cdb.DateTimeProperty(default=datetime.datetime.utcnow())
+    updated_at = cdb.DateTimeProperty(default=datetime.datetime.utcnow(), auto_now=True)
+    
+    created_by = cdb.StringProperty(default="")

@@ -7,7 +7,9 @@ from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest  # , 
 from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext, loader
 
-from .models import Datasource
+from .models import Datasource, Lens
+
+from . import datasources as pyDatasources
 
 # Create your views here.
 
@@ -18,10 +20,14 @@ def getGui(request):
 
 
 def getApiDef():
+#  'api_call: (_apiCallback, [req_keyword0, ...])' 
+#   -> GET /api_call?req_keyword=val0&req...   -> python _apiCallback(request)
     return {
 #        'get_datasource_dialog': _getDataSourceDialog,
-        'get_list_of_lenses': _getListOfLenses,
-        'get_select_lens_dialog': _getSelectLensDialog,
+        'get_list_of_lenses': (_getListOfLenses, ['term']),
+        'get_select_lens_dialog': (_getSelectLensDialog, []),
+        'check_lensname_pattern': (_checkLensNamePatternAgainstDatasource, ['lensname', 'datasource']),
+        'fetch_lens': (_fetchRemoteLens, ['lensname', 'datasource']),
     }
 
 
@@ -31,19 +37,23 @@ def api(request):
     
     if request.method == 'GET':
         if len(request.GET) == 0:
-            return JsonResponse({'status': "FAILED", 'error': "no_arguments"}, status=400)
+            return JsonResponse({'success': False, 'error': "no_arguments"})
 
         elif 'action' not in request.GET.keys():
-            return JsonResponse({'status': "FAILED", 'error': "no_action_key"}, status=400)
+            return JsonResponse({'success': False, 'error': "no_action_key"})
 
         action = request.GET['action']
         APIDEF = getApiDef()
         
         if action in APIDEF.keys():
-            return APIDEF[action](request)
+            fn, kwargs = APIDEF[action]
+            for kwarg in kwargs:
+                if request.GET.get(kwarg) is None:
+                    return JsonResponse({'success': False, 'error': "get_param_missing", 'details':kwarg})
+            return fn(request)
             
         else:
-            return JsonResponse({'status': "FAILED", 'error': "invalid_action"}, status=400)
+            return JsonResponse({'success': False, 'error': "invalid_action"})
             
     elif request.method == 'OPTIONS':
         response = HttpResponse("")
@@ -54,7 +64,7 @@ def api(request):
         return response
 
     else:
-        return HttpResponse("only GET (and OPTIONS) interface allowed", status=400)
+        return HttpResponse("only GET (and OPTIONS) interface allowed. and this will be using json", status=400)
 
 
 
@@ -94,7 +104,7 @@ def _getSelectLensDialog(request):
     html  = htmltemplate.render(context)
     jsobj = jstemplate.render(context)
     
-    return JsonResponse({'status': "SUCCESS", 'html': html, 'jsobj': jsobj})
+    return JsonResponse({'success': True, 'html': html, 'jsobj': jsobj})
     
     
     
@@ -102,7 +112,7 @@ def _getListOfLenses(request):
     
     term = request.GET.get('term')
     if term is None:
-        return JsonResponse({'status': "FAILED", 'error': "term_missing"}, status=400)
+        return JsonResponse({'success': False, 'error': "term_missing"}, status=400)
         
     lenses = Datasource.view("lenses/Lenses__by_name")
     
@@ -112,10 +122,47 @@ def _getListOfLenses(request):
     #regex = re.compile('.*('+term+').*')
     #lyst = [m.group(0) for l in lenses for m in [regex.search(l['key'])] if m]
     
-    return JsonResponse({'status': "SUCCESS", 'data': lyst})
+    return JsonResponse({'success': True, 'data': lyst})
             
         
+def _checkLensNamePatternAgainstDatasource(rq):
+    ds = Datasource.get(rq.GET['datasource'])
+    py_mod = ds['py_module_name']
+    mod = pyDatasources.__dict__[py_mod]
+    val = mod.validate
+    r = val(rq.GET['lensname']) if val is not None else True
+    
+    return JsonResponse({'success': True, 'data': r})
         
         
+def _fetchRemoteLens(rq):
+    dsid = rq.GET['datasource']
+    ds = Datasource.get(dsid)
+    lensname = rq.GET['lensname']
+    py_mod = ds['py_module_name']
+    mod = pyDatasources.__dict__[py_mod]
+    rvals = mod.fetch(lensname) # rvals = successful, lensid, lensname
+    
+    if rvals[0] == False:
+        return JsonResponse({'success': False, 'error': rvals[1]})
         
+    _, data, metadata, i = rvals
+    
+    ndata = {}
+    
+    for typ, dat in data:
+        ndata[typ] = {dsid: dat}
+    
+    lens = Lens(
+        names = [lensname],
+        data = ndata,
+        metadata = metadata
+    )
+    
+    lens.save()
+    
+#    keys = ['successful', 'lensid', 'lensname']        
+#    data = dict(zip(keys, rvals))
+#    return JsonResponse({'status': "SUCCESS", 'data': data})
+    return JsonResponse({'success': True, 'data': []})
         

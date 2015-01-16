@@ -20,17 +20,16 @@ return {
                     term: request.term
                 };
 
-                var success = function (data, status, xhr) {
-                    response(data.data);
-                };
-
-                var fail = function (data, status, xhr) {
+                var success = function (json, status, xhr) {
+                    if (json.success) {
+                        response(json.data);
+                    } else { alert("APIError: " + json.error); }
                 };
 
                 $.ajax('/lenses/api', {
                     type: "GET",
                     success: success,
-                    error: fail,
+                    error: function () { alert("api not available"); },
                     data: data,
                     dataType: "json" //data type expected from server
                 });
@@ -49,65 +48,145 @@ return {
 */
 
             response: function (event, ui) {
-                if (ui.content.length == 0) {
+                if (ui.content.length === 0) {
                     $("#select_lens_datasource").show();
-                    $("#sele_ok").button("disable") ;
-                    $("#sele_fetch").button("enable") ;
-                }
-                else {
+                    $("#sele_ok").button("disable");
+                    
+                    // so the enered name doen't already exist in the database..
+                    // check if its pattern is a valid one given the current datasource
+                    // (update of datasource should trigger a search 
+                    // $(#datasource).autocomplete("search");)
+                    // if it is, enable the fetch button
+                    
+                    var data = {
+                        action: "check_lensname_pattern",
+                        lensname: $("#sel_lens").val(),
+                        datasource: $("#sel_datasource").val()
+                    };
+
+                    var success = function (json, status, xhr) {
+                        if (json.success) {
+                            if (json.data === true) {
+                                $("#sele_fetch").button("enable");
+                                $("#select_lens_status_text").html(
+                                    "this name looks valid.<br />" +
+                                    "try to fetch it to the database"
+                                );
+                            } else {
+                                $("#sele_fetch").button("disable");
+                                $("#select_lens_status_text").html("this name looks not valid.");
+                            }
+                        } else { alert("APIError: " + json.error); }
+                    };
+
+                    $.ajax('/lenses/api', {
+                        type: "GET",
+                        success: success,
+                        error: function () { alert("api not available"); },
+                        data: data,
+                        dataType: "json" //data type expected from server
+                    });
+                } else {
                     $("#select_lens_datasource").hide();
-                    $("#sele_ok").button("enable") ;
-                    $("#sele_fetch").button("disable") ;
+                    $("#sele_ok").button("enable");
+                    $("#sele_fetch").button("disable");
+                    $("#select_lens_status_text").html("found maching entries in the database");
                 }
-            },
+            }
         });
 
+        $("#sel_datasource").change(function () {
+            $("#sel_lens").autocomplete("search"); //trigger an update
+            //alert('selds changed');
+        });
+        
         $("#select_lens_datasource").hide();
         $("#select_lens_status_text").html("");
+        
+        var uname = $.cookie('username');
+        if (uname) {
+            $("#username").val(uname);
+//            $('.ui-dialog-buttonpane button:last').focus();
+        }
+        var ds = $.cookie('datasource');
+        if (ds) { $("#sel_datasource").val(ds).trigger("liszt:updated"); }
+        
+        
     },
 
     buttons: [
         {
             text: "DC",
-            click: function(){
+            click: function () {
                 $("#username").val('');
                 $.removeCookie('username');
-                $.removeCookie('ds');
+                $.removeCookie('datasource');
             }
         },
         {
             text: "SC",
-            click: function(){
+            click: function () {
                 $.cookie('username', $("#username").val(), { expires: 365 });
-                $.cookie('ds', $("#sel_datasource").val(), { expires: 365 });
+                $.cookie('datasource', $("#sel_datasource").val(), { expires: 365 });
             }
         },
         {
             id: "sele_fetch",
             text: "Fetch",
-            click: function(){
-                $.cookie('username', $("#username").val(), { expires: 365 });
-                $.cookie('ds', $("#sel_datasource").val(), { expires: 365 });
+            click: function (evt, ui) {
+                
+                var data = {
+                    action: "fetch_lens",
+                    lensname: $("#sel_lens").val(),
+                    datasource: $("#sel_datasource").val()
+                };
+
+                var success = function (json, status, xhr) {
+                    if (json.success === true) {
+                        $("#sele_ok").button("enable");
+                        $("#sele_fetch").button("disable");
+                        $("#select_lens_status_text").html("sucessfully added lens to database.<br/>click ok to continue.");
+                    } else {
+                        $("#select_lens_status_text").html(
+                            "Something went wrong!<br>" +
+                            "( " + json.error + " )<br>" +
+                            "If you are sure that the entered ID correct is, " +
+                            "please drop me a mail with the error, datasource and the ID!"
+                        );
+                        alert("APIError: " + json.error); }
+                };
+
+                $.ajax('/lenses/api', {
+                    type: "GET",
+                    success: success,
+                    error: function () { alert("api not available"); },
+                    data: data,
+                    dataType: "json" //data type expected from server
+                });
+                
+                $("#select_lens_status_text").html(
+                    "...fetching data...<br>" +
+                    "please be patient..."
+                );
+                
             }
         },
         {
             id: "sele_edit",
             text: "Edit",
-            click: function(){
-                $.cookie('username', $("#username").val(), { expires: 365 });
-                $.cookie('ds', $("#sel_datasource").val(), { expires: 365 });
+            click: function () {
+                alert("noop: not implemented"); //TODO
             }
         },
         {
             id: "sele_ok",
             text: "Ok",
-            click: function(evt){
+            click: function (evt) {
                 var val = $("#sel_datasource").val();
-                if (!val){
+                if (!val) {
                     alert("Please choose one datasource to continue");
                     return;
-                }
-                else {
+                } else {
                     var uname = $("#username").val();
                     LMT.settings.username = uname;
                     self.dialog("close");
@@ -115,11 +194,8 @@ return {
                 }
             }
 
-        },
-        ]
-
-
-
+        }
+    ]
 };
     
     
