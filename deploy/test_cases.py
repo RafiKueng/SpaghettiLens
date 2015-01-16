@@ -168,7 +168,7 @@ class ServerDjangoTestCase(ut.TestCase):
     def test_managepy_version(self):
         '''test the local manage.py reported version'''
         
-        cmd = _local("python %s/manage.py --version" % _S.DJANGOAPP.PROJNAME )
+        cmd = _local("python %s/manage.py --version" % _S.DJANGOAPP.ROOT_DIR )
         self.assertTrue(cmd.succeeded)
         ver = tuple(map(int, cmd.stdout.split('.')))
         self.assertGreaterEqual(ver, self.mod_vers['django'][0])

@@ -181,10 +181,11 @@ _.APACHE.CONF_PATH_            = lambda: join(_.SVCCONFIG.PATH_(), _.APACHE.CONF
 _.DJANGOAPP                     = AttrDict()
 _.DJANGOAPP.SRCDIR              = _.SRC.DJANGODIR    # how is the folder with the django project named in the repro
 #_.DJANGOAPP.SRCPATH_            = _.SRC.DJANGODIR
-_.DJANGOAPP.PROJNAME            = 'django_apps' # the name of the djjango project remote, eg the folder name on the server
+_.DJANGOAPP.ROOT_DIR            = 'django_apps' # the name of the root django project on remote, eg the folder name on the server, doesn't depend on local dir (thats SRC_DIR)
 _.DJANGOAPP.CONF_TMPL           = 'django_machine_settings.py' # the name of the template in the repro
 _.DJANGOAPP.CONF_NAME           = 'machine_settings.py' # the name of the final config file on srv
-_.DJANGOAPP.LINK_DIR_           = lambda: join(_.DJANGOAPP.PROJNAME, 'apps')
+_.DJANGOAPP.PROJ_DIR            = '_app'    # the main folder / project name (where settings.py and wsgi.py are) local and remote
+_.DJANGOAPP.LINK_DIR_           = lambda: join(_.DJANGOAPP.ROOT_DIR, _.DJANGOAPP.PROJ_DIR)
 
 _.DJANGOAPP.SETTINGS            = AttrDict()
 das = _.DJANGOAPP.SETTINGS

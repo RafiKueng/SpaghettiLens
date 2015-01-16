@@ -3,6 +3,7 @@ ecdsa
 fabric
 attrdict
 requests
+pillow>=2.0
 
 numpy>=1.7
 scipy>=0.14

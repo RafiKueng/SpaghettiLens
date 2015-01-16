@@ -9,7 +9,7 @@ Created on Thu Oct 16 15:51:20 2014
 from __future__ import absolute_import
 
 
-from fabric.api import cd, prefix, local, put, puts, settings, run, abort, env, task, sudo #, prompt  #*
+from fabric.api import cd, prefix, local, put, puts, settings, run, abort, env, task, sudo, prompt  #*
 #from fabric.utils import *
 
 #from fabric import operations as ops
@@ -886,13 +886,17 @@ def _server_rabbitmq_setup():
 #    sudo("rabbitmqctl status", warn_only=True)
 #    prompt('wait')
     
-    sudo("rabbitmqctl add_user {USER} {PASSWORD}".format(**_S.RABBITMQ))
-    sudo("rabbitmqctl add_vhost {VHOST}".format(**_S.RABBITMQ))
+    c1 = sudo("rabbitmqctl add_user {USER} {PASSWORD}".format(**_S.RABBITMQ), warn_only=True)
+    c2 = sudo("rabbitmqctl add_vhost {VHOST}".format(**_S.RABBITMQ), warn_only=True)
     sudo('rabbitmqctl set_permissions -p {VHOST} {USER} ".*" ".*" ".*"'.format(**_S.RABBITMQ))
 
     sudo('rabbitmqctl change_password guest {GUESTPSW}'.format(**_S.RABBITMQ))
     sudo('rabbitmqctl set_permissions -p {VHOST} guest ".*" ".*" ".*"'.format(**_S.RABBITMQ))
 
+    if c1.failed or c2.failed:
+        warnn("one of the rabbits failed. check the reason and abort if severe")
+        prompt('Any key to continue, ctrl-c to abort')
+        
         #sudo("rabbitmq-plugins enable rabbitmq_management")
 
 
@@ -1051,11 +1055,11 @@ def _server_djangoapp_install():
 def _server_djangoapp_setup():
     _DA = _S.DJANGOAPP
     
-    install_path    = join(_E.INSTALLPATH, _DA.PROJNAME)    #subfolder of root dir that contains the django project
-    link_path       = join(_E.INSTALLPATH, _DA.LINK_DIR)
-    link_fqfn       = join(link_path, _DA.CONF_NAME)
-    configfile_path = join(_E.INSTALLPATH, _S.SVCCONFIG.DIR)
-    configfile_fqfn = join(configfile_path, _DA.CONF_NAME)
+    install_path    = join(_E.INSTALLPATH, _DA.ROOT_DIR)    #subfolder of root dir that contains the django project
+    link_path       = join(_E.INSTALLPATH, _DA.LINK_DIR)    # should be called project dir (the main project dir, where wsgi.py and settings are)
+    link_fqfn       = join(link_path, _DA.CONF_NAME)  # where django expects the config file, but a link to the actual config file location here
+    configfile_path = join(_E.INSTALLPATH, _S.SVCCONFIG.DIR) # this is the actual config file location
+    configfile_fqfn = join(configfile_path, _DA.CONF_NAME) # ... and its fqfn
     source_dir      = join(_DA.SRCDIR, '') # add trailing slash
     
     
