@@ -660,148 +660,6 @@ svg.coordTrans = function(evt) {
 
 
 
-/**
- * Loads & Blends the background imgage(s) for the input canvas
- * using a svg filter chain
- * 
- * outdated, see next version right below
- */
-svg.bg = {
-  init: function() {
-  
-    //var url = LMT.modelData.url;
-    var ch = LMT.modelData.ch;
-    
-  	var filter = document.createElementNS(svg.ns, "filter");
-  	filter.setAttribute("id","fBG");
-  
-  	// the black background
-  	var floodfilter = document.createElementNS(svg.ns, "feFlood");
-  	floodfilter.setAttribute("flood-color","#000000");
-  	floodfilter.setAttribute("flood-opacity","1");
-  	floodfilter.setAttribute("result","comp");
-  	filter.appendChild(floodfilter);
-  	svg.bgCmatrix = [];
-  	svg.compFilter = [];
-  
-  
-    /* comment out because it's reallz laggy when yooming in, and not used so far
-      also note that the datastructre has changed, this one is not yet updated
-      
-  	//for each background image...
-  	for (var i = 0; i<ch.length; i++){
-  		
-  		//.. load the image
-  		var img = document.createElementNS(svg.ns, "feImage");
-  		img.setAttributeNS(svg.xlinkns,"href", ch[i].url);
-  		img.setAttribute("x","0");
-  		img.setAttribute("y","0");
-  		img.setAttribute("width","100%");
-  		img.setAttribute("height","100%");
-  		img.setAttribute("result","img"+i);
-  		filter.appendChild(img);
-  		
-  		if (LMT.modelData.img_type == "BW"){
-    		//apply the color matrix transform
-    		var cmatrix = document.createElementNS(svg.ns, "feColorMatrix");
-    		cmatrix.setAttribute("type", "matrix");
-    		cmatrix.setAttribute("in", "img"+i);
-    		cmatrix.setAttribute("result", "cimg"+i);
-    		cmatrix.setAttribute("values", svg.generateColorMatrix(ch[i]));
-    		filter.appendChild(cmatrix);
-    		svg.bgCmatrix.push(cmatrix);
-  		}
-  		
-  		//blend to others using porter-diff
-  		var comp = document.createElementNS(svg.ns, "feComposite");
-  		comp.setAttribute("in", "comp");
-      if (LMT.modelData.img_type == "BW"){comp.setAttribute("in2", "cimg"+i);}
-  		else {comp.setAttribute("in2", "img"+i);}
-  		comp.setAttribute("result", "comp");
-  		comp.setAttribute("operator", "arithmetic");
-  		comp.setAttribute("k1", "0");
-  		comp.setAttribute("k2", "1");
-  		comp.setAttribute("k3", "1");
-  		comp.setAttribute("k4", "0");
-  		svg.compFilter.push(comp)
-  		filter.appendChild(comp);
-  	}
-  	
-  	*/
-  	// instead simpy add the image
-    var img = document.createElementNS(svg.ns, "feImage");
-    img.setAttributeNS(svg.xlinkns,"href", LMT.modelData.imgurl);
-    img.setAttribute("x","0");
-    img.setAttribute("y","0");
-    img.setAttribute("width","100%");
-    img.setAttribute("height","100%");
-    img.setAttribute("result","img0");
-    filter.appendChild(img);
-    //\\ end of simplification
-  	
-  
-  	var bgrect = document.createElementNS(svg.ns, "rect");
-  	bgrect.setAttribute("x","0");
-  	bgrect.setAttribute("y","0");
-  	bgrect.setAttribute("width","100%");
-  	bgrect.setAttribute("height","100%");
-  	bgrect.setAttribute("filter","url(#fBG)");
-  	
-  	
-  	svg.layer.defs.appendChild(filter);
-  	svg.layer.bg.appendChild(bgrect);
-  },
-  
-  updateColor: function(evt, i){
-    if (LMT.modelData.img_type == "BW"){
-    	svg.bgCmatrix[i].setAttribute("values", svg.generateColorMatrix(LMT.modelData.ch[i]));
-  	}
-  	else {
-      svg.compFilter[i].setAttribute("k3", LMT.modelData.ch[i].co);
-      svg.compFilter[i].setAttribute("k4", LMT.modelData.ch[i].br);
-  	}
-  },
-  
-  
-  /**
-   * sets the model view zoom and pan status
-   * if state: to this coord and zoom factor, otherwise to the settings 
-   */
-  updateZoomPan: function(evt, state){
-    var s;
-    if (state){
-      s = "translate(" + (state.x) + "," +
-                             (state.y) + ") " + 
-              "scale(" + state.scale + ")";
-    }
-    else {
-      s = "translate(" + (LMT.settings.display.zoompan.x) + "," +
-                         (LMT.settings.display.zoompan.y) + ") " + 
-              "scale(" + LMT.settings.display.zoompan.scale + ")";
-    }
-    svg.layer.zoompan.setAttribute("transform", s);
-    //no RepaintModel should be needed, only in zoom case, whats already taken care of below
-  },
-  
-  zoom: function(evt, delta, coord){
-    var d = delta*0.1;
-    LMT.settings.display.zoompan.scale *= 1 + d;
-    /*
-    LMT.settings.display.zoompan.x = LMT.settings.display.zoompan.x + coord.x*d;
-    LMT.settings.display.zoompan.y = LMT.settings.display.zoompan.y + coord.y*d;
-    */
-    LMT.ui.svg.bg.updateZoomPan();
-    $.event.trigger("RepaintModel"); //is needed to change the radii of the masses, rulers ect..
-  },
-  
-  zoomPanReset: function() {
-    LMT.settings.display.zoompan.x = 0;
-    LMT.settings.display.zoompan.y = 0;
-    LMT.settings.display.zoompan.scale = 1;
-    LMT.ui.svg.bg.updateZoomPan();
-    $.event.trigger("RepaintModel"); //is needed to change the radii of the masses, rulers ect..
-  }
-}
 
 
 
@@ -809,85 +667,110 @@ svg.bg = {
 
 
 
-/**
- * 2nd version of background image handling
- * this version gets the image data from a canvas, that is used to mix the colors
+
+
+
+
+
+
+
+/** V2 NEW WIP
+ * this gets the image data from a canvas, that is used to mix the colors
  * / adjust brightness ect. and then loads the result into the svg
  */
 svg.bg = {
   
-  /*
-   * creates the hidden canvas where the background image is composed on
-   * and imports it to the svg
-   */
-  init: function() {
-    //alert('bg init');
+    /* V2 NEW
+     * creates the hidden canvas where the background image is composed on
+     * and imports it to the svg
+     */
+    init: function() {
     
-    svg.bg.canv = document.createElement('canvas');
-    svg.bg.ctx = svg.bg.canv.getContext('2d');
-    
-    var urls = [LMT.modelData.imgurl + '?v=lmt']; //?v=1 to prevent to get cached image with wrong access origin settings
-    LMT.ui.html.LoadProgressDialog.show(urls.length);
+        log("ui.svg.bg.init /");
 
-    var onEach = function(status){
-      LMT.ui.html.LoadProgressDialog.update(status);
-    }
-    var onAll = function(imgs){
-      var bg = LMT.ui.svg.bg;
-      bg.orgimg = imgs[0];
-      bg.canv.width = bg.orgimg.width;
-      bg.canv.height = bg.orgimg.height;
-      LMT.modelData.orgImgSize = {w:bg.orgimg.width, h:bg.orgimg.height, _:Math.max(bg.orgimg.width, bg.orgimg.height)};
-      LMT.modelData.svgViewportSize = {w:500, h:500, _:500};
-      
-      LMT.model.Parameters.orgImgSize = LMT.modelData.orgImgSize._
-      LMT.model.Parameters.svgViewportSize = LMT.modelData.svgViewportSize._
-      
-      if (LMT.model.Parameters.orgPxScale) {
-        LMT.model.Parameters.pxScale = 1.0 * LMT.model.Parameters.orgPxScale * LMT.model.Parameters.orgImgSize / LMT.model.Parameters.svgViewportSize;
-      }
-      else {
-        LMT.model.Parameters.pxScale = 0.01; //default value
-      }
-      
-      bg.ctx.drawImage(bg.orgimg, 0, 0);
-      LMT.ui.html.LoadProgressDialog.close();
-      $.event.trigger("RefreshBackgroundImage");
-    };
-    
-    LMT.utils.ImageLoader(urls, onEach, onAll, true);
-    
-    // the black background (needed for the svg to be clickable!!)
-    var bgrect = document.createElementNS(svg.ns, "rect");
-    bgrect.setAttribute("x","-10000");
-    bgrect.setAttribute("y","-10000");
-    bgrect.setAttribute("width","20000");
-    bgrect.setAttribute("height","20000");
-    bgrect.setAttribute("fill", "black");
-    bgrect.setAttribute("stroke", "none");
-  
+        svg.bg.canv = document.createElement('canvas');
+        svg.bg.ctx = svg.bg.canv.getContext('2d');
 
-    // the image, created from the canvas.toDataURL
-    var svgimg = document.createElementNS(svg.ns, "image");
-    //svgimg.setAttributeNS(svg.xlinkns,"xlink:href", svg.bg.canv.toDataURL());
-    svgimg.setAttribute("x","0");
-    svgimg.setAttribute("y","0");
-    svgimg.setAttribute("width","100%");
-    svgimg.setAttribute("height","100%");
-    
-    svg.bg.svgimg = svgimg;
-    
-    svg.layer.bg.appendChild(bgrect);
-    svg.layer.bg.appendChild(svgimg);
-    
-  },
+        //?v=1 to prevent to get cached image with wrong access origin settings
+        var urls = [LMT.lensData.imgurl + '?v=lmt'];
+        
+        LMT.ui.html.LoadProgressDialog.show(urls.length);
+
+        var onEach = function (status) {
+            LMT.ui.html.LoadProgressDialog.update(status);
+        };
+
+        var onAll = function (imgs) {
+            var bg = LMT.ui.svg.bg;
+            bg.orgimg = imgs[0];
+            bg.canv.width = bg.orgimg.width;
+            bg.canv.height = bg.orgimg.height;
+            LMT.lensData.orgImgSize = {
+                w: bg.orgimg.width,
+                h: bg.orgimg.height,
+                _: Math.max(bg.orgimg.width, bg.orgimg.height)
+            };
+
+            LMT.lensData.svgViewportSize = {w:500, h:500, _:500};
+            //TODO check if viewport should be adjusted
+
+            LMT.model.Parameters.orgImgSize = LMT.lensData.orgImgSize._
+            LMT.model.Parameters.svgViewportSize = LMT.lensData.svgViewportSize._
+
+            if (LMT.model.Parameters.orgPxScale) {
+                LMT.model.Parameters.pxScale = 
+                    1.0 * LMT.model.Parameters.orgPxScale *
+                    LMT.model.Parameters.orgImgSize /
+                    LMT.model.Parameters.svgViewportSize;
+
+            } else {
+                LMT.model.Parameters.pxScale = 0.01; //default value
+            }
+
+            bg.ctx.drawImage(bg.orgimg, 0, 0);
+            LMT.ui.html.LoadProgressDialog.close();
+
+            $.event.trigger("RefreshBackgroundImage");
+        };
+
+        LMT.utils.ImageLoader(urls, onEach, onAll, true);
+
+        // the black background (needed for the svg to be clickable!!)
+        var bgrect = document.createElementNS(svg.ns, "rect");
+        bgrect.setAttribute("x","-10000"); //TODO make sure its big enouth by check!
+        bgrect.setAttribute("y","-10000");
+        bgrect.setAttribute("width","20000");
+        bgrect.setAttribute("height","20000");
+        bgrect.setAttribute("fill", "black");
+        bgrect.setAttribute("stroke", "none");
+
+        // the image, created from the canvas.toDataURL
+        var svgimg = document.createElementNS(svg.ns, "image");
+        //svgimg.setAttributeNS(svg.xlinkns,"xlink:href", svg.bg.canv.toDataURL());
+        svgimg.setAttribute("x","0");
+        svgimg.setAttribute("y","0");
+        svgimg.setAttribute("width","100%");
+        svgimg.setAttribute("height","100%");
+
+        svg.bg.svgimg = svgimg;
+
+        svg.layer.bg.appendChild(bgrect);
+        svg.layer.bg.appendChild(svgimg);
+
+        log("ui.svg.bg.init \\");
+    },
   
-  
-  refreshBackgroundImage: function(evt) {
-    //alert('refresh');
-    svg.bg.svgimg.setAttributeNS(svg.xlinkns,"xlink:href", svg.bg.canv.toDataURL());
-  },
-  
+    /** V2 NEW
+     * Updates the background image
+     */
+    refreshBackgroundImage: function(evt) {
+        log("ui.svg.bg.refreshBackgroundImage ==");
+        svg.bg.svgimg.setAttributeNS(
+            svg.xlinkns,"xlink:href", svg.bg.canv.toDataURL()
+        );
+    },
+
+    
   /*
   updateColor: function(evt, i){
     if (LMT.modelData.img_type == "BW"){
@@ -939,6 +822,140 @@ svg.bg = {
     $.event.trigger("RepaintModel"); //is needed to change the radii of the masses, rulers ect..
   }
 }
+
+
+
+
+// OLD Version, new above
+///**
+// * this version gets the image data from a canvas, that is used to mix the colors
+// * / adjust brightness ect. and then loads the result into the svg
+// */
+//svg.bg = {
+//  
+//  /*
+//   * creates the hidden canvas where the background image is composed on
+//   * and imports it to the svg
+//   */
+//  init: function() {
+//    //alert('bg init');
+//    
+//    svg.bg.canv = document.createElement('canvas');
+//    svg.bg.ctx = svg.bg.canv.getContext('2d');
+//    
+//    var urls = [LMT.modelData.imgurl + '?v=lmt']; //?v=1 to prevent to get cached image with wrong access origin settings
+//    LMT.ui.html.LoadProgressDialog.show(urls.length);
+//
+//    var onEach = function(status){
+//      LMT.ui.html.LoadProgressDialog.update(status);
+//    }
+//    var onAll = function(imgs){
+//      var bg = LMT.ui.svg.bg;
+//      bg.orgimg = imgs[0];
+//      bg.canv.width = bg.orgimg.width;
+//      bg.canv.height = bg.orgimg.height;
+//      LMT.modelData.orgImgSize = {w:bg.orgimg.width, h:bg.orgimg.height, _:Math.max(bg.orgimg.width, bg.orgimg.height)};
+//      LMT.modelData.svgViewportSize = {w:500, h:500, _:500};
+//      
+//      LMT.model.Parameters.orgImgSize = LMT.modelData.orgImgSize._
+//      LMT.model.Parameters.svgViewportSize = LMT.modelData.svgViewportSize._
+//      
+//      if (LMT.model.Parameters.orgPxScale) {
+//        LMT.model.Parameters.pxScale = 1.0 * LMT.model.Parameters.orgPxScale * LMT.model.Parameters.orgImgSize / LMT.model.Parameters.svgViewportSize;
+//      }
+//      else {
+//        LMT.model.Parameters.pxScale = 0.01; //default value
+//      }
+//      
+//      bg.ctx.drawImage(bg.orgimg, 0, 0);
+//      LMT.ui.html.LoadProgressDialog.close();
+//      $.event.trigger("RefreshBackgroundImage");
+//    };
+//    
+//    LMT.utils.ImageLoader(urls, onEach, onAll, true);
+//    
+//    // the black background (needed for the svg to be clickable!!)
+//    var bgrect = document.createElementNS(svg.ns, "rect");
+//    bgrect.setAttribute("x","-10000");
+//    bgrect.setAttribute("y","-10000");
+//    bgrect.setAttribute("width","20000");
+//    bgrect.setAttribute("height","20000");
+//    bgrect.setAttribute("fill", "black");
+//    bgrect.setAttribute("stroke", "none");
+//  
+//
+//    // the image, created from the canvas.toDataURL
+//    var svgimg = document.createElementNS(svg.ns, "image");
+//    //svgimg.setAttributeNS(svg.xlinkns,"xlink:href", svg.bg.canv.toDataURL());
+//    svgimg.setAttribute("x","0");
+//    svgimg.setAttribute("y","0");
+//    svgimg.setAttribute("width","100%");
+//    svgimg.setAttribute("height","100%");
+//    
+//    svg.bg.svgimg = svgimg;
+//    
+//    svg.layer.bg.appendChild(bgrect);
+//    svg.layer.bg.appendChild(svgimg);
+//    
+//  },
+//  
+//  
+//  refreshBackgroundImage: function(evt) {
+//    //alert('refresh');
+//    svg.bg.svgimg.setAttributeNS(svg.xlinkns,"xlink:href", svg.bg.canv.toDataURL());
+//  },
+//  
+//  /*
+//  updateColor: function(evt, i){
+//    if (LMT.modelData.img_type == "BW"){
+//      svg.bgCmatrix[i].setAttribute("values", svg.generateColorMatrix(LMT.modelData.ch[i]));
+//    }
+//    else {
+//      svg.compFilter[i].setAttribute("k3", LMT.modelData.ch[i].co);
+//      svg.compFilter[i].setAttribute("k4", LMT.modelData.ch[i].br);
+//    }
+//  },
+//  */
+//  
+//  /**
+//   * sets the model view zoom and pan status
+//   * if state: to this coord and zoom factor, otherwise to the settings 
+//   */
+//  updateZoomPan: function(evt, state){
+//    var s;
+//    if (state){
+//      s = "translate(" + (state.x) + "," +
+//                             (state.y) + ") " + 
+//              "scale(" + state.scale + ")";
+//    }
+//    else {
+//      s = "translate(" + (LMT.settings.display.zoompan.x) + "," +
+//                         (LMT.settings.display.zoompan.y) + ") " + 
+//              "scale(" + LMT.settings.display.zoompan.scale + ")";
+//    }
+//    svg.layer.zoompan.setAttribute("transform", s);
+//    //no RepaintModel should be needed, only in zoom case, whats already taken care of below
+//  },
+//  
+//  zoom: function(evt, delta, coord){
+//    var d = delta*0.1;
+//    LMT.settings.display.zoompan.scale *= 1 + d;
+//    /*
+//    LMT.settings.display.zoompan.x = LMT.settings.display.zoompan.x + coord.x*d;
+//    LMT.settings.display.zoompan.y = LMT.settings.display.zoompan.y + coord.y*d;
+//    */
+//    LMT.ui.svg.bg.updateZoomPan();
+//    $.event.trigger("RepaintModel"); //is needed to change the radii of the masses, rulers ect..
+//  },
+//  
+//  zoomPanReset: function() {
+//    LMT.settings.display.zoompan.x = 0;
+//    LMT.settings.display.zoompan.y = 0;
+//    LMT.settings.display.zoompan.scale = 1;
+//    LMT.ui.svg.bg.updateZoomPan();
+//    $.event.trigger("RepaintModel"); //is needed to change the radii of the masses, rulers ect..
+//  }
+//}
 
 
 

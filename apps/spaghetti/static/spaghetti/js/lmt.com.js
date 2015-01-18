@@ -20,6 +20,7 @@ var com = {
 
 com.config = {
     lensesAPI: "/lenses/api",
+    spaghettiAPI: "/spaghetti/api",
 };
 
 
@@ -77,123 +78,194 @@ com.getAndLoadResult = function(evt, rid, loadHandler) {
 
 
 
-/**
- * gets the model data such as
- * - model name
- * - channels [1-3] with 
- *   * colorsettings {r, g, b, br, co}
- *   * url to image file  
- * 
- * can call for a specific model_id or a random model
- * if auth user: you'll get a model you havent already done
+/** NEW V2
+ * gets lens data from server
  */
-com.getModelData = function(evt, model_ids, catalog, action) {
-  
-  var success = function(obj, status_text, resp) {
-    // obj[0].fields['name']
-    // obj[0].fields['channel1_data']
-    // obj[0].fields['channel1_url']
-    
-    log("com.getModelData | success", "pk: " + obj[0].pk);
-    
-    var pid = null;
-    if (LMT.modelData && LMT.modelData.parentId) {pid = LMT.modelData.parentId;}
-    LMT.modelData = obj[0].fields;
-    if (pid) {LMT.modelData.parentId = pid;}
-    LMT.modelData.id = obj[0].pk;
-    LMT.modelData.nTodo = obj[1].todo;
-    LMT.modelData.nDone = obj[1].done;
-    LMT.modelData.nLenses = obj[1].nr;
-    LMT.modelData.nextAvail = obj[1].next_avail;
-    LMT.modelData.prevAvail = obj[1].prev_avail;
-    
-    LMT.modelData.add_data = JSON.parse(obj[0].fields.add_data)
-    
-    LMT.model.Parameters.z_src = LMT.modelData.z_source || 1;
-    LMT.model.Parameters.z_lens = LMT.modelData.z_lens || 0.5;
-    LMT.model.Parameters.orgPxScale = LMT.modelData.add_data.orgPxScale || null;
-    
-    LMT.modelData.ch = [];
-    
-    LMT.modelData.imgurl = JSON.parse(obj[0].fields.img_data).url
-    
-    /*
-    if (LMT.modelData['img_type'] == "CO") {
-      var data = LMT.modelData['channel1_data']=="" ? {co:1, br:0} : JSON.parse(LMT.modelData['channel1_data']);
-      LMT.modelData.ch.push({
-        r: 0,
-        g: 0,
-        b: 0,
-        co: data.co,
-        br: data.br,
-        url: LMT.modelData['channel1_imgurl'],
-        type: LMT.modelData['channel1_type']
-      });
-    }    
-    else {
-      for (var i = 1; i<=5; i++){
-        if (LMT.modelData['channel'+i+'_imgurl']==""){
-          continue;
-        }
-        
-        if (LMT.modelData['channel'+i+'_data'] && LMT.modelData['channel'+i+'_data'].length>0){
-          var data = JSON.parse(LMT.modelData['channel'+i+'_data']);
-        }
-        else {
-          var data = {r:Math.random(), g:Math.random(), b:Math.random(), co:1, br:0};
-        }
-        LMT.modelData.ch.push({
-          r: data.r,
-          g: data.g,
-          b: data.b,
-          co: data.co,
-          br: data.br,
-          url: LMT.modelData['channel'+i+'_imgurl'],
-          type: LMT.modelData['channel'+i+'_type']
-        });
-      }
-    }
-    */    
-    $.event.trigger('ReceivedModelData');
-  };
-  
-  var fail = function(resp, status_text, code) {
-    if (resp.responseText == "this model is not available") {
-      alert("you asked for a model that's not on the server");
-      $.event.trigger("ShowSelectModelDataDialog");
-    }
-    else if (resp.status == 404) {
-      alert("server configuration error: can't get model data from url: "+LMT.com.getModelDataUrl);
-    }
-    else if (status_text == "error") {
-      alert("server is down, please try later");
-    }
-    
-    log("com.getModelData | fail", resp, status_text, code);
-  };
+com.getLensData = function(evt, lens_id) {
 
-  /*
-  $.ajax(LMT.com.serverUrl + LMT.com.getModelDataUrl+'/'+model_id, {
-      type:"POST",
-      contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
-      data: {model_id: model_id, catalog_id: catalog_id}, 
-      dataType:"json", //data type expected from server
-      success:success,
-      error: fail
-      //mimeType: "text/plain"
-  });
-  */
- 
-  $.ajax(LMT.com.serverUrl + LMT.com.getModelDataUrl+'/', {
-      type:"POST",
-      contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
-      data: {action: action, models: model_ids, catalog: catalog}, 
-      dataType:"json", //data type expected from server
-      success:success,
-      error: fail
-      //mimeType: "text/plain"
-  });
-}
+    log("com.getLensData | start", "lens_id: " + lens_id);
+
+    var success = function(json, status, xhr) {
+        log("com.getLensData / success ", json.success);
+        
+        if (json.success) {
+            
+            var jsonimg = json.data.imgdata.COMPOSITE_PIXEL_IMAGE['0001'].DEFAULT
+            
+            LMT.lensData = json.data;
+//            LMT.lensData.imgurl = json.data.imgdata
+//                                           .COMPOSITE_PIXEL_IMAGE['0001']
+//                                           .DEFAULT.urls[0];
+
+            var burl = "/media/lenses/"
+            var h1 = lens_id.slice(0,2);
+            var h2 = lens_id.slice(2);
+            var dtype = "COMPOSITE_PIXEL_IMAGE";
+            var dsrc = "0001";
+            var stype = "DEFAULT";
+            var ext = jsonimg.format;
+            
+            LMT.lensData.imgurl = burl + h1 + "/" + h2 + "/" +
+                                  dtype + "-" + dsrc + "-" + stype + "." + ext;
+            
+            LMT.model.Parameters.orgPxScale = jsonimg.scale[0] || null;
+            //TODO ask user if Null
+
+            //TODO read scidata and save it into model.Parameters
+//            LMT.model.Parameters.z_src = LMT.modelData.z_source || 1;
+//            LMT.model.Parameters.z_lens = LMT.modelData.z_lens || 0.5;
+//            LMT.model.Parameters.orgPxScale = LMT.modelData.add_data.orgPxScale || null;
+
+            $.event.trigger('ReceivedModelData');
+            
+        } else { alert("APIError: " + json.error); }
+        
+        log("com.getLensData \\ success ");
+    };
+
+    var data = {
+        action: 'get_lens_data',
+        lens_id: lens_id,
+    };
+    
+    $.ajax(com.config.lensesAPI, {
+        type:"GET",
+        data: data,
+        dataType:"json",
+        success:success,
+        error: function () { alert("lens api not available (server down?)"); },
+    });
+    
+    
+    log("com.getLensData | end");
+};
+
+
+
+//V2 is above!
+///**
+// * gets the model data such as
+// * - model name
+// * - channels [1-3] with 
+// *   * colorsettings {r, g, b, br, co}
+// *   * url to image file  
+// * 
+// * can call for a specific model_id or a random model
+// * if auth user: you'll get a model you havent already done
+// */
+//com.getModelData = function(evt, model_ids, catalog, action) {
+//  
+//  var success = function(obj, status_text, resp) {
+//    // obj[0].fields['name']
+//    // obj[0].fields['channel1_data']
+//    // obj[0].fields['channel1_url']
+//    
+//    log("com.getModelData | success", "pk: " + obj[0].pk);
+//    
+//    var pid = null;
+//    if (LMT.modelData && LMT.modelData.parentId) {pid = LMT.modelData.parentId;}
+//    LMT.modelData = obj[0].fields;
+//    if (pid) {LMT.modelData.parentId = pid;}
+//    LMT.modelData.id = obj[0].pk;
+//    LMT.modelData.nTodo = obj[1].todo;
+//    LMT.modelData.nDone = obj[1].done;
+//    LMT.modelData.nLenses = obj[1].nr;
+//    LMT.modelData.nextAvail = obj[1].next_avail;
+//    LMT.modelData.prevAvail = obj[1].prev_avail;
+//    
+//    LMT.modelData.add_data = JSON.parse(obj[0].fields.add_data)
+//    
+//    LMT.model.Parameters.z_src = LMT.modelData.z_source || 1;
+//    LMT.model.Parameters.z_lens = LMT.modelData.z_lens || 0.5;
+//    LMT.model.Parameters.orgPxScale = LMT.modelData.add_data.orgPxScale || null;
+//    
+//    LMT.modelData.ch = [];
+//    
+//    LMT.modelData.imgurl = JSON.parse(obj[0].fields.img_data).url
+//    
+//    /*
+//    if (LMT.modelData['img_type'] == "CO") {
+//      var data = LMT.modelData['channel1_data']=="" ? {co:1, br:0} : JSON.parse(LMT.modelData['channel1_data']);
+//      LMT.modelData.ch.push({
+//        r: 0,
+//        g: 0,
+//        b: 0,
+//        co: data.co,
+//        br: data.br,
+//        url: LMT.modelData['channel1_imgurl'],
+//        type: LMT.modelData['channel1_type']
+//      });
+//    }    
+//    else {
+//      for (var i = 1; i<=5; i++){
+//        if (LMT.modelData['channel'+i+'_imgurl']==""){
+//          continue;
+//        }
+//        
+//        if (LMT.modelData['channel'+i+'_data'] && LMT.modelData['channel'+i+'_data'].length>0){
+//          var data = JSON.parse(LMT.modelData['channel'+i+'_data']);
+//        }
+//        else {
+//          var data = {r:Math.random(), g:Math.random(), b:Math.random(), co:1, br:0};
+//        }
+//        LMT.modelData.ch.push({
+//          r: data.r,
+//          g: data.g,
+//          b: data.b,
+//          co: data.co,
+//          br: data.br,
+//          url: LMT.modelData['channel'+i+'_imgurl'],
+//          type: LMT.modelData['channel'+i+'_type']
+//        });
+//      }
+//    }
+//    */    
+//    $.event.trigger('ReceivedModelData');
+//  };
+//  
+//  var fail = function(resp, status_text, code) {
+//    if (resp.responseText == "this model is not available") {
+//      alert("you asked for a model that's not on the server");
+//      $.event.trigger("ShowSelectModelDataDialog");
+//    }
+//    else if (resp.status == 404) {
+//      alert("server configuration error: can't get model data from url: "+LMT.com.getModelDataUrl);
+//    }
+//    else if (status_text == "error") {
+//      alert("server is down, please try later");
+//    }
+//    
+//    log("com.getModelData | fail", resp, status_text, code);
+//  };
+//
+//  /*
+//  $.ajax(LMT.com.serverUrl + LMT.com.getModelDataUrl+'/'+model_id, {
+//      type:"POST",
+//      contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
+//      data: {model_id: model_id, catalog_id: catalog_id}, 
+//      dataType:"json", //data type expected from server
+//      success:success,
+//      error: fail
+//      //mimeType: "text/plain"
+//  });
+//  */
+// 
+//  $.ajax(LMT.com.serverUrl + LMT.com.getModelDataUrl+'/', {
+//      type:"POST",
+//      contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
+//      data: {action: action, models: model_ids, catalog: catalog}, 
+//      dataType:"json", //data type expected from server
+//      success:success,
+//      error: fail
+//      //mimeType: "text/plain"
+//  });
+//}
+
+
+
+
+
+
 
 
 

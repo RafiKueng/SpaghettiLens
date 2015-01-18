@@ -144,32 +144,37 @@ html.SaveResultDialog = {
 };
 
 
+
+/** NEW V2
+ * Shows a progress Dilog while downloading a bunch of images
+ */
 html.LoadProgressDialog = {
-  init: function() {
-    $('#load_progress_dialog').dialog({
-      autoOpen: false,
-      minWidth: 250,
-      minHeight: 50,
-      modal: true,
-      //open: function(){},
-      buttons: []
-    });
-    html.LoadProgressDialog.htmlelem = $("#load_progress_dialog :first-child");
-  },
-  
-  show: function(nImgs){
-    html.LoadProgressDialog.update({nImgs:nImgs, nLoaded:0,p:0})
-    $('#load_progress_dialog').dialog("open");
-  },
-  
-  close: function(){
-    $('#load_progress_dialog').dialog("close");
-  },
-  
-  update: function(stat){
-    html.LoadProgressDialog.htmlelem.html("loaded: "+stat.p+"% ("+stat.nLoaded+" of "+stat.nImgs+")");
-  },
-  
+    init: function () {
+        $('#load_progress_dialog').dialog({
+            autoOpen: false,
+            minWidth: 250,
+            minHeight: 50,
+            modal: true,
+            //open: function(){},
+            buttons: []
+        });
+        html.LoadProgressDialog.htmlelem = $("#load_progress_dialog :first-child");
+    },
+
+    show: function (nImgs) {
+        html.LoadProgressDialog.update( {nImgs: nImgs, nLoaded: 0, p: 0} )
+        $('#load_progress_dialog').dialog("open");
+    },
+
+    close: function () {
+        $('#load_progress_dialog').dialog("close");
+    },
+
+    update: function(stat){
+        html.LoadProgressDialog.htmlelem.html(
+            "loaded: "+stat.p+"% ("+stat.nLoaded+" of "+stat.nImgs+")"
+        );
+    },
 };
 
 
@@ -601,7 +606,11 @@ html.SelectModelDialog = {
 
 
 
-/**
+
+
+
+
+/** V2 WIP
  * initalises the toolpars on the top and the one on the input / left side
  */
 html.Toolbar = {
@@ -666,28 +675,41 @@ html.Toolbar = {
     $.event.trigger("HideAllTooltips"); //workaround for stuck tooltips of deact. buttons
   },
   
-  /**
-   * updates the top toolbar buttons 
-   */
-  updateTop: function(evt) {
+    /** V2
+     * updates the top toolbar buttons 
+     */
+    updateTop: function(evt) {
     
-    if (evt.type=="ReceivedSimulation") {
-      //that means we sent our model to th server and checked it, we can save this as final result
-      LMT.settings.renderedEqualsModel = true;
-    }
-    else if (evt.type=="ActionStackUpdated") {
-      // means that something changed on the model.. user need to check the output before saving 
-      LMT.settings.renderedEqualsModel = false;
-    }
-    else {LMT.settings.renderedEqualsModel = false;} //this shouldn't happend
+        if (evt.type=="ReceivedSimulation") {
+            // that means we sent our model to th server and checked it,
+            // we can save this as final result
+            LMT.settings.renderedEqualsModel = true;
+
+        } else if (evt.type=="ActionStackUpdated") {
+            // means that something changed on the model.. user need to check the
+            // output before saving 
+            LMT.settings.renderedEqualsModel = false;
+
+        } else {
+            // this shouldn't happend
+            LMT.settings.renderedEqualsModel = false;
+        };
+
+        // prev and next buttons are not in use
+        $('#btnMainActionPrev').button("disable");
+        $('#btnMainActionNext').button("disable");
+
+        // set the final model save button accordingly
+        $('#btnMainFinish').button(
+            LMT.settings.renderedEqualsModel ? "enable" : "disable"
+        );
+
+        //workaround for stuck tooltips of deact. buttons
+        $.event.trigger("HideAllTooltips"); 
+    },
+
     
-    $('#btnMainActionPrev').button(LMT.modelData.prevAvail ? "enable" : "disable");
-    $('#btnMainActionNext').button(LMT.modelData.nextAvail ? "enable" : "disable");
-    $('#btnMainFinish').button(LMT.settings.renderedEqualsModel ? "enable" : "disable");
-    
-    $.event.trigger("HideAllTooltips"); //workaround for stuck tooltips of deact. buttons
-  },
-  
+
   /**
    * fires an event when a toolbar button is pressed 
    */
@@ -698,131 +720,231 @@ html.Toolbar = {
 
 
 
-html.ColorSettingsDialog = {
-  init: function(){	
-	
-  		// multiply the color settings tools for n channels
-  	var $parent = $('#cd_table');
-  	var $elem = $("#cd_table > .cd_row");
-  	var ch = LMT.modelData.ch;
-  	
-  	for (var i = 1; i<ch.length; i++){
-  		$clone = $elem.clone(true, true);
-  		var e = $clone.find('*');
-  		e.data('id', i);
-  		e.first().children().text("Ch"+(i+1));
-  		$clone.appendTo($parent);
-  	}
-  	
-  	
-  	// color picker dialog
-    $('#color_dialog').dialog({
-  	 	autoOpen: false,
-  		minWidth: 500,
-  		open: function(){
-  			 $('.mycp').each(function(i, val){
-  			   //get color in hex notation   
-           var str = (1 << 24) | (ch[i].r*255 << 16) | (ch[i].g*255 << 8) | ch[i].b*255;
-           $(this).val('#' + str.toString(16).substr(1)).focus();
-           
-           // hack that should update the field so they get their color from beginning
-           /*
-           var press = jQuery.Event("keyup");
-           press.ctrlKey = false;
-           press.which = 13;
-           $(this).trigger(press);*/
-  			 });
-  			 
-  		}
-  	});
-  	
-  	
-  	//sliders
-  	$('#color_dialog .slider').slider({
-  		max: 1,
-  		min: -1,
-  		value: 0,
-  		step: 0.05,
-  		slide: function(evt, ui) {
-  		  //only update labels
-        var value = ui.value;
-        var type = $(this).data("type");
-        if (type=="contrast"){
-          value = Math.pow(10, value); //change range from [-1...1] to [0.1 ... 10]
-        }
-        $(this).parent().siblings('.cd_cell_value').children().text(value.toFixed(2));
-  		},
-  		stop: function(evt, ui) {
-  			var value = ui.value;
-  			var type = $(this).data("type");
-  			var id = $(this).data("id");
-  			
-  			if (type=="contrast"){
-  				value = Math.pow(10, value); //change range from [-1...1] to [0.1 ... 10]
-  			}
-  			
-  			LMT.modelData.ch[id][type.substr(0,2)] = value;
-  			//log("stopped sliding");
-  			$.event.trigger('ChangedModelData', id);
-  		}
-  		
-  	});
-  	
-  	var e = $('.cd_cell_value > p');
-  	e.filter(':even').text("1.00");
-    e.filter(':odd').text("0.00");
-  	
-	  // if color image, hide color settings
-	  if (LMT.modelData.img_type == "CO"){
-	    $(".cd_cell_cp").add(".cd_cell_name").hide();
-	  }
-	
-	
-  	$('.mycp').colorpicker({
-  		parts: ['header',
-  			'map',
-  			'bar',
-  			//'hex',
-  			//'hsv',
-  			//'rgb',
-  			//'alpha',
-  			//'lab',
-  			//'cmyk',
-  			//'preview',
-  			'swatches',
-  			'footer'],
-  		colorFormat: '#HEX',
-  		showOn: 'both',
-  		buttonColorize: true,
-  		altField: '',
-  		buttonImage: 'img/cp/ui-colorpicker.png',
-  		buttonImageOnly: false,
-  		buttonText: 'pick',
-  		showOn: 'button',
-  		close: function(evt, data){
-  			var id= $(this).data("id");
-  			$(this).css('background', data.formatted);
-  			LMT.modelData.ch[id].r = data.rgb.r;
-  			LMT.modelData.ch[id].g = data.rgb.g;
-  			LMT.modelData.ch[id].b = data.rgb.b;
-  			//log("picked color for "+id);
-  			$.event.trigger('ChangedModelData', id);
-  		},
-  	});
-  	
-  	$parent.parent().removeClass("initHidden");
-  	
-  },
-  
-  show: function(){
-    $('#color_dialog')
-      .dialog("open");
-  }
-  
-  
-  
-}
+// OLD Toolbar, new V2 above
 
+///**
+// * initalises the toolpars on the top and the one on the input / left side
+// */
+//html.Toolbar = {
+//  init: function() {
+//  
+//  	$("#toolbarGrp1 button")
+//  	 .add("#toolbarGrp1 input")
+//  	 .add("#toolbarTop button")
+//  	 .add("#toolbarTop input")
+//  	 .each(function(){
+//  		
+//  		var $this = $(this);
+//  		var icon = $this.data("icon");
+//  		var eventName = $this.data("event");
+//  		var value = $this.data("value");
+//  		
+//  		$(this).button({
+//  			text: false,
+//  			disabled: false,
+//  			icons: {primary: icon }
+//  		})
+//  		.on('click', {name:eventName, value: value} , LMT.ui.html.Toolbar.fire);
+//  	});
+//  	
+//  	
+//  	//init top buttons correctly
+//    $('#btnMainActionPrev').on('click', function() {$.event.trigger('GetModelData', [null,null,'prev']);})
+//    $('#btnMainActionNext').on('click', function() {$.event.trigger('GetModelData', [null,null,'next']);})
+//    $("#toolbarGrpTop button").button("disable");
+//    $('#btnMainHelp').button("enable");
+//    $('#btnMainHelp').prop('checked', true);
+//    $('#btnMainHelp').change(); 	
+//  	
+//    // make buttongroups
+//    $("#toolbarGrp1 > .btnset").buttonset();
+//    $("#toolbarGrpTop > .btnset").buttonset();
+//  	
+//
+//    //set buttons to correct state 
+//    
+//    //mode radio buttons	
+//    $('input[data-value="'+LMT.settings.mode+'"]')[0].checked = true;
+//    $('input[name="mode"]').change();
+//    
+//    //un/re do buttons:
+//    $('#btnInUndo').add('#btnInRedo').button("disable");
+//    $('#btnInSettingsColor').button("disable");
+//    
+//  },
+//  
+//  /**
+//   * updates the buttons
+//   */
+//  update: function(evt) {
+//    //radiobuttons for mode selection 
+//    $('input[data-value="'+LMT.settings.mode+'"]')[0].checked = true;
+//    $('input[name="mode"]').change();
+//    // un / redo buttons whether there is something to be undone / redone
+//    $('#btnInUndo').button(LMT.actionstack.undoSize>0 ? "enable" : "disable");
+//    $('#btnInRedo').button(LMT.actionstack.redoSize>0 ? "enable" : "disable");
+//    
+//    $.event.trigger("HideAllTooltips"); //workaround for stuck tooltips of deact. buttons
+//  },
+//  
+//  /**
+//   * updates the top toolbar buttons 
+//   */
+//  updateTop: function(evt) {
+//    
+//    if (evt.type=="ReceivedSimulation") {
+//      //that means we sent our model to th server and checked it, we can save this as final result
+//      LMT.settings.renderedEqualsModel = true;
+//    }
+//    else if (evt.type=="ActionStackUpdated") {
+//      // means that something changed on the model.. user need to check the output before saving 
+//      LMT.settings.renderedEqualsModel = false;
+//    }
+//    else {LMT.settings.renderedEqualsModel = false;} //this shouldn't happend
+//    
+//    $('#btnMainActionPrev').button(LMT.modelData.prevAvail ? "enable" : "disable");
+//    $('#btnMainActionNext').button(LMT.modelData.nextAvail ? "enable" : "disable");
+//    $('#btnMainFinish').button(LMT.settings.renderedEqualsModel ? "enable" : "disable");
+//    
+//    $.event.trigger("HideAllTooltips"); //workaround for stuck tooltips of deact. buttons
+//  },
+//  
+//  /**
+//   * fires an event when a toolbar button is pressed 
+//   */
+//  fire: function(evt){
+//    $.event.trigger(evt.data.name, evt.data.value);
+//  }
+//}
+
+
+
+// OLD dialog, V2 not implemented yet (events -> on ReceivedModelData)
+//html.ColorSettingsDialog = {
+//  init: function(){	
+//	
+//  		// multiply the color settings tools for n channels
+//  	var $parent = $('#cd_table');
+//  	var $elem = $("#cd_table > .cd_row");
+//  	var ch = LMT.modelData.ch;
+//  	
+//  	for (var i = 1; i<ch.length; i++){
+//  		$clone = $elem.clone(true, true);
+//  		var e = $clone.find('*');
+//  		e.data('id', i);
+//  		e.first().children().text("Ch"+(i+1));
+//  		$clone.appendTo($parent);
+//  	}
+//  	
+//  	
+//  	// color picker dialog
+//    $('#color_dialog').dialog({
+//  	 	autoOpen: false,
+//  		minWidth: 500,
+//  		open: function(){
+//  			 $('.mycp').each(function(i, val){
+//  			   //get color in hex notation   
+//           var str = (1 << 24) | (ch[i].r*255 << 16) | (ch[i].g*255 << 8) | ch[i].b*255;
+//           $(this).val('#' + str.toString(16).substr(1)).focus();
+//           
+//           // hack that should update the field so they get their color from beginning
+//           /*
+//           var press = jQuery.Event("keyup");
+//           press.ctrlKey = false;
+//           press.which = 13;
+//           $(this).trigger(press);*/
+//  			 });
+//  			 
+//  		}
+//  	});
+//  	
+//  	
+//  	//sliders
+//  	$('#color_dialog .slider').slider({
+//  		max: 1,
+//  		min: -1,
+//  		value: 0,
+//  		step: 0.05,
+//  		slide: function(evt, ui) {
+//  		  //only update labels
+//        var value = ui.value;
+//        var type = $(this).data("type");
+//        if (type=="contrast"){
+//          value = Math.pow(10, value); //change range from [-1...1] to [0.1 ... 10]
+//        }
+//        $(this).parent().siblings('.cd_cell_value').children().text(value.toFixed(2));
+//  		},
+//  		stop: function(evt, ui) {
+//  			var value = ui.value;
+//  			var type = $(this).data("type");
+//  			var id = $(this).data("id");
+//  			
+//  			if (type=="contrast"){
+//  				value = Math.pow(10, value); //change range from [-1...1] to [0.1 ... 10]
+//  			}
+//  			
+//  			LMT.modelData.ch[id][type.substr(0,2)] = value;
+//  			//log("stopped sliding");
+//  			$.event.trigger('ChangedModelData', id);
+//  		}
+//  		
+//  	});
+//  	
+//  	var e = $('.cd_cell_value > p');
+//  	e.filter(':even').text("1.00");
+//    e.filter(':odd').text("0.00");
+//  	
+//	  // if color image, hide color settings
+//	  if (LMT.modelData.img_type == "CO"){
+//	    $(".cd_cell_cp").add(".cd_cell_name").hide();
+//	  }
+//	
+//	
+//  	$('.mycp').colorpicker({
+//  		parts: ['header',
+//  			'map',
+//  			'bar',
+//  			//'hex',
+//  			//'hsv',
+//  			//'rgb',
+//  			//'alpha',
+//  			//'lab',
+//  			//'cmyk',
+//  			//'preview',
+//  			'swatches',
+//  			'footer'],
+//  		colorFormat: '#HEX',
+//  		showOn: 'both',
+//  		buttonColorize: true,
+//  		altField: '',
+//  		buttonImage: 'img/cp/ui-colorpicker.png',
+//  		buttonImageOnly: false,
+//  		buttonText: 'pick',
+//  		showOn: 'button',
+//  		close: function(evt, data){
+//  			var id= $(this).data("id");
+//  			$(this).css('background', data.formatted);
+//  			LMT.modelData.ch[id].r = data.rgb.r;
+//  			LMT.modelData.ch[id].g = data.rgb.g;
+//  			LMT.modelData.ch[id].b = data.rgb.b;
+//  			//log("picked color for "+id);
+//  			$.event.trigger('ChangedModelData', id);
+//  		},
+//  	});
+//  	
+//  	$parent.parent().removeClass("initHidden");
+//  	
+//  },
+//  
+//  show: function(){
+//    $('#color_dialog')
+//      .dialog("open");
+//  }
+//  
+//  
+//  
+//}
+//
 
 
 html.ColorSettingsOutputDialog = {
@@ -1094,7 +1216,8 @@ html.GlassSettingsDialog = {
 
 
 
-/**
+
+/** V2 WIP
  * second try to do tooltips, this time use jqyerys tooltips 
  */
 html.Tooltip2 = {
@@ -1171,14 +1294,102 @@ html.Tooltip2 = {
     });
   },
   
-  /**
-   * event to close all stuck tooltips 
-   */
-  closeAll: function(){
-    $('.ttip').stop(true).fadeOut(200, function(){$(this).remove();});
-  }
-  
-}
+    /** V2
+     * event to close all stuck tooltips 
+     */
+    closeAll: function(){
+        $('.ttip').stop(true).fadeOut(200, function(){$(this).remove();});
+    }
+};
+
+
+
+// OLD Version bevor V2, new above
+///**
+// * second try to do tooltips, this time use jqyerys tooltips 
+// */
+//html.Tooltip2 = {
+//  init: function(item){
+//    var item = item || '*';
+//    $(item).tooltip({
+//      content: LMT.ui.html.Tooltip2.content,
+//      close:   LMT.ui.html.Tooltip2.close,
+//      tooltipClass: 'ttip'
+//    });
+//  },
+//
+//  content: function(response) {
+//    
+//    var tag = this.tagName;
+//    var $this = null
+//    
+//    if (tag=='LABEL') {
+//      $this = $(this).prev(); //.attr('data-tooltip'); //data('tooltip') doen't work!
+//    }
+//    else if (tag=='BUTTON') {
+//      $this = $(this);
+//    }
+//    else {
+//      return '';
+//    }
+//    
+//    var tit = $this.data("ttipTitle");
+//    var txt = $this.data("ttipText");
+//    var lnk = $this.data("ttipLink");
+//    var key = $this.data("hotkey");
+//
+//    var html =
+//      '<span class="titlebox">' + 
+//      '<span class="title">'+tit+'</span>' + 
+//      '<span class="close" onclick="LMT.ui.html.Tooltip2.forceClose(event)">[X]</span>' +
+//      '</span>' + 
+//      '<span class="txt">'+txt+'</span>';
+//      
+//    if (lnk!='' || key!='') {
+//      html += '<span class="small">';
+//      if (lnk!='') {html += '<span class="info"><a href="'+lnk+'">...more info</a></span>';}
+//      if (key!='') {html += '<span class="key">hotkey: '+key+'</span>';}
+//      html += '</span>';
+//    }
+//    
+//    return html
+//    // those are equal:
+//    //return 'haaa'
+//    //response('haaa')
+//  },
+//  
+//  /**
+//   * prevent tooltip from closing on mouseover 
+//   */
+//  close: function(evt, ui){
+//    ui.tooltip.hover(
+//      function(evt){
+//        $(this).stop(true).fadeTo(400,1);
+//      },
+//      function(evt){
+//        $(this).fadeOut("400", function(){ $(this).remove(); })
+//      }
+//    )
+//  },
+//  
+//  /**
+//   * manually close a tooltip in case it gets stuck
+//   * there are still many bugs in jqueryui tooltip... 
+//   */
+//  forceClose: function(evt){
+//    $(evt.currentTarget).parent().parent().parent().stop(true).fadeOut(200, function(){
+//      $(this).remove();
+//    });
+//  },
+//  
+//  /**
+//   * event to close all stuck tooltips 
+//   */
+//  closeAll: function(){
+//    $('.ttip').stop(true).fadeOut(200, function(){$(this).remove();});
+//  }
+//  
+//}
 
 
 

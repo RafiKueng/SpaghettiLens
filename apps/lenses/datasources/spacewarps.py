@@ -74,7 +74,7 @@ def fetch(lensname):
         
     
     urls = []
-    for r in resp2.history + [resp2]:
+    for r in [resp2] + resp2.history:
         urls.append(r.url)
     
     try:
@@ -105,16 +105,16 @@ def fetch(lensname):
     # claude added SDSS ids for many items:
     sdss_obj   = re.findall(r'SDSS(\w\d{6}\.\d{2}-\d{6}\.\d)', resp.text)
     sdss_objid = re.findall(r'\d{19}', resp.text)
-    print resp.text
-    print sdss_obj, sdss_objid
+    #print resp.text
+    #print sdss_obj, sdss_objid
     if len(sdss_obj)>0:
         metadata['SDSS_obj'] = sdss_obj[0]
         metadata['SDSS_objid'] = sdss_objid[0]
         
     # spaghettilens doesn't provide any scientific data
-    data = {}
+    scidata = {}
     
     #print data
     #print metadata
-    return (True, data, imgdata, metadata, ihash)
+    return (True, scidata, imgdata, metadata, ihash)
 

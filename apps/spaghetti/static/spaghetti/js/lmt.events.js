@@ -13,23 +13,22 @@
 
 
 
-var events = {
-  
-  // special event on startup
-  startUp: function(){
+var events = {};
 
-    initGetVars()
+// special event on startup
+events.startUp = function () {
 
-    
+    initGetVars();
+
     // first init some objects in the namespace
     LMT.model = new LMT.objects.Model();
     LMT.model.init();
-    
+
     LMT.actionstack = new LMT.objects.ActionStack();    
-    
+
     // then assign handlers
     LMT.events.assignHandlers();
-    
+
     // then initalise the rest
     LMT.ui.out.init();    
     LMT.ui.html.SelectModelDialog.init();
@@ -40,67 +39,97 @@ var events = {
     LMT.ui.html.SaveResultDialog.init();
     LMT.ui.html.WaitForResultDialog.init();
     LMT.ui.html.SetUsernameDialog.init();
-    
+
     LMT.ui.html.HelpBar.init();
-    
+
     LMT.ui.html.Tooltip.init();
     LMT.ui.html.Tooltip2.init();
     //LMT.ui.html.KeyboardListener.init(); //only load when app is ready, no more dialogs
-    
+
     LMT.ui.svg.initCanvas();
 
 
-//v2    LMT.ui.html.SelectDatasourceDialog.init();
+    //v2    LMT.ui.html.SelectDatasourceDialog.init();
     LMT.ui.html.LoadProgressDialog.init();
 
     /*
     $.event.trigger("ShowSelectDatasourceDialog");
     */
 
-      
-    if (LMT.GET.hasOwnProperty("mid")){
-      var mid = parseInt(LMT.GET["mid"]);
-      $.event.trigger("GetModelData", [[mid],'','init']);
-      $.event.trigger("SetUsername");
-    }
-    else if (LMT.GET.hasOwnProperty("rid")) {
-      rid = parseInt(LMT.GET["rid"]);
-      var loadResult = function(res_data) {
-        var mid = res_data.model_id;
-        jsonStr = res_data.json_str;
 
+    if (LMT.GET.hasOwnProperty("mid")){
+        var mid = parseInt(LMT.GET["mid"]);
         $.event.trigger("GetModelData", [[mid],'','init']);
-        LMT.model = Model.getModelFormJSONString(jsonStr);
-        $.event.trigger("UpdateRepaintModel");
-        LMT.modelData.parentId = rid;
-      };
-      $.event.trigger("GetAndLoadResult", [rid, loadResult]);
-      $.event.trigger("SetUsername");
-    }
-    else {
-//v2      $.event.trigger("ShowSelectDatasourceDialog");
+        $.event.trigger("SetUsername");
+
+    } else if (LMT.GET.hasOwnProperty("rid")) {
+        rid = parseInt(LMT.GET["rid"]);
+        var loadResult = function(res_data) {
+            var mid = res_data.model_id;
+            jsonStr = res_data.json_str;
+
+            $.event.trigger("GetModelData", [[mid],'','init']);
+            LMT.model = Model.getModelFormJSONString(jsonStr);
+            $.event.trigger("UpdateRepaintModel");
+            LMT.modelData.parentId = rid;
+        };
+
+        $.event.trigger("GetAndLoadResult", [rid, loadResult]);
+        $.event.trigger("SetUsername");
+    } else {
+        //v2      $.event.trigger("ShowSelectDatasourceDialog");
         $.event.trigger("GetSelectDatasourceDialog");
-    }
-  },
+    };
+};
   
-  
-  assignHandlers: function() {
+events.assignHandlers = function() {
     
     // dummy function
     var fnc = function(){return false;}
     
-    $(document).on('ToggleLog', logger.toggle);
     
-//v2    $(document).on('ShowSelectDatasourceDialog', LMT.ui.html.SelectDatasourceDialog.show);
-//v2    $(document).on('GetDatasourcesList', LMT.com.getDatasourcesList);
-//v2    $(document).on('RcvDatasourcesList', LMT.ui.html.SelectDatasourceDialog.onRcvDatasourcesList);
-    //$(document).on('ShowSelectDatasourceDialog', LMT.ui.html.SelectDatasourceDialog.call);
+
+
+// ---------- the new event handlers ----------------------
+    // This are the new and tested assignments
+
     $(document).on('GetSelectDatasourceDialog', LMT.com.getSelectDatasourceDialog);
     $(document).on('GotSelectDatasourceDialog', LMT.ui.html.SelectDatasourceDialog.show);
-    
-    $(document).on('GetDatasourceDialog', LMT.com.getDatasourceDialog);
-    $(document).on('RcvDatasourceDialog', LMT.ui.html.GenericDatasourceDialog.init);
-    
+
+    $(document).on('LensSelected', LMT.com.getLensData);
+
+    //$(document).on('ReceivedModelData', LMT.ui.html.ColorSettingsDialog.init); //for now, this is not used
+    $(document).on('ReceivedModelData', LMT.ui.html.Toolbar.updateTop);
+    $(document).on('ReceivedModelData', LMT.ui.svg.bg.init);
+    $(document).on('ReceivedModelData', LMT.events.AppReadyHandler); // only fires AppReady atm
+
+    //everything is loaded and init
+    $(document).on('AppReady', LMT.events.ready);
+      
+      
+      
+    $(document).on('HideAllTooltips', html.Tooltip2.closeAll); // should be called whenever a button gets deactivated due to a bug in jquery ui tooltip
+
+    $(document).on('RefreshBackgroundImage', LMT.ui.svg.bg.refreshBackgroundImage);
+      
+      //$(document).on('ShowDialogColorSettings', LMT.ui.html.ColorSettingsDialog.show); // not in use atm
+
+      
+// ---------- the old ones ----------------------
+
+    $(document).on('ToggleLog', logger.toggle);
+
+//    $(document).on('ShowSelectDatasourceDialog', LMT.ui.html.SelectDatasourceDialog.show);
+//    $(document).on('GetDatasourcesList', LMT.com.getDatasourcesList);
+//    $(document).on('RcvDatasourcesList', LMT.ui.html.SelectDatasourceDialog.onRcvDatasourcesList);
+    //$(document).on('ShowSelectDatasourceDialog', LMT.ui.html.SelectDatasourceDialog.call);
+
+      
+      
+//    $(document).on('GetDatasourceDialog', LMT.com.getDatasourceDialog);
+//    $(document).on('RcvDatasourceDialog', LMT.ui.html.GenericDatasourceDialog.init);
+      
+
     $(document).on('GetAndLoadResult', LMT.com.getAndLoadResult);
     $(document).on('SetUsername', LMT.ui.html.SetUsernameDialog.show);
     
@@ -118,16 +147,16 @@ var events = {
     $(document).on('GetModelData', LMT.com.getModelData);    
     $(document).on('ShowSelectModelDataDialog', LMT.ui.html.SelectModelDialog.show);    
     // the server sent the starting data for the model, like urls to the background image(s) and default color binding
-    $(document).on('ReceivedModelData', LMT.ui.html.ColorSettingsDialog.init);
-    $(document).on('ReceivedModelData', LMT.ui.html.Toolbar.updateTop);
-    $(document).on('ReceivedModelData', LMT.ui.svg.bg.init);
-    $(document).on('ReceivedModelData', LMT.events.AppReadyHandler);
+//    $(document).on('ReceivedModelData', LMT.ui.html.ColorSettingsDialog.init);
+//    $(document).on('ReceivedModelData', LMT.ui.html.Toolbar.updateTop);
+//    $(document).on('ReceivedModelData', LMT.ui.svg.bg.init);
+//    $(document).on('ReceivedModelData', LMT.events.AppReadyHandler);
 
-    $(document).on('RefreshBackgroundImage', LMT.ui.svg.bg.refreshBackgroundImage);
+//    $(document).on('RefreshBackgroundImage', LMT.ui.svg.bg.refreshBackgroundImage);
 
     
     //everything is loaded and init
-    $(document).on('AppReady', LMT.events.ready);
+//    $(document).on('AppReady', LMT.events.ready);
     
     // the background images / channels color settings were changed
     $(document).on('ChangedModelData', LMT.ui.svg.bg.updateColor);
@@ -147,7 +176,7 @@ var events = {
     $(document).on('ZoomPanReset', LMT.ui.svg.bg.zoomPanReset);
 
 
-    $(document).on('ShowDialogColorSettings', LMT.ui.html.ColorSettingsDialog.show);
+//    $(document).on('ShowDialogColorSettings', LMT.ui.html.ColorSettingsDialog.show);
     $(document).on('ShowDialogDisplaySettings', LMT.ui.html.DisplaySettingsDialog.show);
     $(document).on('ShowDialogGlassSettings', LMT.ui.html.GlassSettingsDialog.show); 
     $(document).on('ShowDialogOutputGraphics', LMT.ui.html.ColorSettingsOutputDialog.show);
@@ -200,31 +229,46 @@ var events = {
     $(document).on('ShowTooltip', html.Tooltip.show);
     $(document).on('HideTooltip', html.Tooltip.hide);
     */
-    $(document).on('HideAllTooltips', html.Tooltip2.closeAll); // should be called whenever a button gets deactivated due to a bug in jquery ui tooltip
+//    $(document).on('HideAllTooltips', html.Tooltip2.closeAll); // should be called whenever a button gets deactivated due to a bug in jquery ui tooltip
     
     $(document).on('ConvertInputImageToPNG', LMT.ui.svg.ConvertToPNG);
     //$(document).on('UploadInputImage', LMT.ui.com.UploadInputImage);
+};
+
+
+
+
+/** V2 NEW
+ * This should be called by each independant sub component involved in loading something
+ * Here is checked, if all sub components are already ready
+ * It they are, the final AppReady is called
+ *
+ * It's only a stub at the moment..
+ */
+events.AppReadyHandler = function () {
+    //TODO maybe some check if everything is really ready
+    $.event.trigger("AppReady");
+};
+
+
+
+/** V2 NEW
+ * This files, as soon as the the app is ready to be used by the user
+ */
+events.ready = function () {
+    log("events.ready == (Appready as been fired)");
     
-    
-  },
-  
-  ready: function(){
     //push initial state to actionstack
     $.event.trigger("SaveModelState");
+    
+    // only activate keyboard shotcut input, when the app is really ready
+    // otherwise messes shortcuts on dialogs up
     LMT.ui.html.KeyboardListener.init();
-  }
-  
-}  
+};
 
 
 
-/**
- * 
- */
-events.AppReadyHandler = function(){
-  //TODO maybe some check if everything is really ready
-  $.event.trigger("AppReady");
-}
+
 
 
 /**
@@ -238,7 +282,7 @@ events.UpdateRepaintModel = function(){
   LMT.model.update();
   LMT.model.paint();
   $(document).one('UpdateRepaintModel', LMT.events.UpdateRepaintModel);
-}
+};
 
 
 
@@ -251,14 +295,14 @@ events.UpdateRepaintModel = function(){
 events.MoveObject = function(evt, jsTarget, svgTarget, coord){
   jsTarget.move(coord, svgTarget);
   $(document).one('UpdateRepaintModel', LMT.events.UpdateRepaintModel);
-}
+};
 
 
 
 events.SimulateModel = function(){
   $.event.trigger("UploadModel");
   $(document).one('UploadModelComplete', function(){$.event.trigger("GetSimulation");});
-}
+};
 
 
 LMT.events = events;

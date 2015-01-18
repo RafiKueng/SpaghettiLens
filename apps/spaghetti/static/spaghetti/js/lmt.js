@@ -47,6 +47,14 @@ LMT.settings = {
 	tmp: 0
 }
 
+//---------------------- new in v2
+LMT.lensData = {};
+
+
+
+
+
+
 /*
 this fnc saves the arguments attached to the url to an $_GET object
 (similar to php)

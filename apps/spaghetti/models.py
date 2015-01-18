@@ -18,3 +18,9 @@ class TestDoc(cdb.Document):
         
     def __repr__(self):
         return "<r spaghetti.models.TestDoc name:%s>" % self.name
+        
+        
+
+
+class Model(cdb.Document):
+    pass

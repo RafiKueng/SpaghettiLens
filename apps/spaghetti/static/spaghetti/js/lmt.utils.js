@@ -1,4 +1,5 @@
 
+// better logger here: http://stackoverflow.com/a/18939803
 LMT.utils.logger = function(toConsole) {
   var _log = document.getElementById("logcont");
   var _history = [];
@@ -102,42 +103,48 @@ LMT.utils.round = function(number, digits) {
 
 
 
-/**
+/** V2 NEW
  * loads a set of Objects (images), provides a callback on each
  * loaded and one if all are loaded
  * crossOrigin: default True: allow to load from forwign origins
  * get the loaded images as an argument to the onAll callback
  */
 LMT.utils.ImageLoader = function(listOfURLs, onEach, onAll, crossOrigin) {
-  
-  var urls = listOfURLs;
-  var imgs = [];
-  var nImgs = listOfURLs.length;
-  var nLoaded = 0;
-  
-  var co = typeof crossOrigin !== 'boolean' ? true : crossOrigin;
-  
-  for (var i=0; i<listOfURLs.length; i++) {
-    if (typeof urls[i] === 'string'){
-      var img = new Image();
-      img.onload = function(){
-        nLoaded++;
-        onEach({nLoaded:nLoaded, nImgs:nImgs, p:100.0*nLoaded/nImgs});
-        
-        if (nLoaded==nImgs){
-          onAll(imgs);
+
+    var urls = listOfURLs;
+    var imgs = [];
+    var nImgs = listOfURLs.length;
+    var nLoaded = 0;
+
+    var co = typeof crossOrigin !== 'boolean' ? true : crossOrigin;
+
+    for (var i = 0; i < listOfURLs.length; i++) {
+        if (typeof urls[i] === 'string') {
+            var img = new Image();
+            img.onload = function () {
+                nLoaded++;
+                onEach({nLoaded:nLoaded, nImgs:nImgs, p:100.0*nLoaded/nImgs});
+
+                if (nLoaded==nImgs){
+                    onAll(imgs);
+                }
+            };
+            //TODO this should acutally not happen anymore
+            img.onerror = function(evt,a,b) { 
+                alert("Error loading image\n\n" +
+                      "I'm sorry, you just got the CORS Chrome bug...\n" +
+                      "Please open spaghettiLens in an inkognito mode tab " +
+                      "(ctrl + shift + n) or use firefox to prevent it.");
+                LMT.utils.ImageLoader(listOfURLs, onEach, onAll, false)
+            };
+            if (co) {
+                img.setAttribute('crossOrigin','anonymous');
+            }
+            img.src = urls[i];
+            imgs[i] = img;
         }
-      };
-      img.onerror = function(evt,a,b) {
-        alert("Error loading image\n\nI'm sorry, you just got the CORS Chrome bug...\nPlease open spaghettiLens in an inkognito mode tab (ctrl + shift + n) or use firefox to prevent it.");
-        LMT.utils.ImageLoader(listOfURLs, onEach, onAll, false)
-      };
-      if (co) {img.setAttribute('crossOrigin','anonymous');}
-      img.src = urls[i];
-      imgs[i] = img;
     }
-  }
-}
+};
 
 
 

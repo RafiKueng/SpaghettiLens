@@ -36,6 +36,19 @@ return {
 
                 return;
             },
+            
+            focus: function (event, ui) {
+                $("#sel_lens").val(ui.item.label);
+                return false; // cancel default event (replace label with value)
+            },
+            
+            select: function (event, ui) {
+                $("#sel_lens").val(ui.item.label);
+                $("#sel_lens_id").val(ui.item.value);   // probably can remove those and
+                                                        // the hidden form files and just
+                                                        // save it at the correct spot in js tree
+                return false; // cancel default event (replace label with value)
+            },
 /*
             change: function (event, ui) {
 
@@ -146,6 +159,7 @@ return {
                         $("#sele_ok").button("enable");
                         $("#sele_fetch").button("disable");
                         $("#select_lens_status_text").html("sucessfully added lens to database.<br/>click ok to continue.");
+                        $("#sel_lens_id").val(json.data.lens_id);
                     } else {
                         $("#select_lens_status_text").html(
                             "Something went wrong!<br>" +
@@ -182,15 +196,21 @@ return {
             id: "sele_ok",
             text: "Ok",
             click: function (evt) {
-                var val = $("#sel_datasource").val();
-                if (!val) {
-                    alert("Please choose one datasource to continue");
+                var lens_name = $("#sel_lens").val();
+                var lens_id = $("#sel_lens_id").val();
+                var uname = $("#username").val();
+
+                if ( ! lens_name || ! lens_id || lens_id.length < 64) {
+                    alert("OUuups, that should not pappen.. Please inform Rafa what you did!");
                     return;
-                } else {
-                    var uname = $("#username").val();
+                } else if (!uname){
+                    alert("Please enter your name");
+                } else
+                {
                     LMT.settings.username = uname;
-                    self.dialog("close");
-                    $.event.trigger("GetDatasourceDialog", [id = val, uname = uname]);
+                    $.event.trigger("LensSelected", [lens_id]);
+                    $("#select_lens_dialog").dialog("close");
+                    $("#select_lens_dialog").dialog("destroy");
                 }
             }
 

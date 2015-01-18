@@ -20,8 +20,7 @@ from . import datasources as pyDatasources
 # Create your views here.
 
 @csrf_exempt
-def getGui(request):
-    
+def getGui(request):    
     return HttpResponse("parent.Response_OK()", mimetype="application/x-javascript")
 
 
@@ -30,10 +29,16 @@ def getApiDef():
 #   -> GET /api_call?req_keyword=val0&req...   -> python _apiCallback(request)
     return {
 #        'get_datasource_dialog': _getDataSourceDialog,
-        'get_list_of_lenses': (_getListOfLenses, ['term']),
-        'get_select_lens_dialog': (_getSelectLensDialog, []),
-        'check_lensname_pattern': (_checkLensNamePatternAgainstDatasource, ['lensname', 'datasource']),
-        'fetch_lens': (_fetchRemoteLens, ['lensname', 'datasource']),
+        'get_list_of_lenses':     (_getListOfLenses,
+                                   ['term']),
+        'get_select_lens_dialog': (_getSelectLensDialog,
+                                   []),
+        'check_lensname_pattern': (_checkLensNamePatternAgainstDatasource,
+                                   ['lensname', 'datasource']),
+        'fetch_lens':             (_fetchRemoteLens,
+                                   ['lensname', 'datasource']),
+        'get_lens_data':          (_getLensData,
+                                   ['lens_id']),
     }
 
 
@@ -123,7 +128,8 @@ def _getListOfLenses(request):
     lenses = Datasource.view("lenses/Lenses__by_name")
     
 #    lyst = [{'label':lens['key'], 'value': lens['id']} for lens in lenses if term in lens['key']]
-    lyst = [lens['key'] for lens in lenses if term in lens['key']]
+    #lyst = [lens['key'] for lens in lenses if term in lens['key']]
+    lyst = [{'label':lens['key'], 'value': lens['id'], 'url':'bbla'} for lens in lenses if term in lens['key']]
     
     #regex = re.compile('.*('+term+').*')
     #lyst = [m.group(0) for l in lenses for m in [regex.search(l['key'])] if m]
@@ -184,15 +190,37 @@ def _fetchRemoteLens(rq):
     )
     
     lens._id = l_id
+
+    try:
+        lens.save()
+    except CouchExceptions.ResourceConflict:
+        JsonResponse({'success': False, 'error': 'Ressource already present ()'})
     
-    lens.save()
     
 #    keys = ['successful', 'lensid', 'lensname']        
 #    data = dict(zip(keys, rvals))
 #    return JsonResponse({'status': "SUCCESS", 'data': data})
-    return JsonResponse({'success': True, 'data': []})
+    return JsonResponse({'success': True, 'data': {'lens_id':l_id}})
 
 
+def _getLensData(rq):
+    
+    lens_id = rq.GET['lens_id']
+    
+    try:
+        lens = Lens.get(lens_id)
+    except CouchExceptions.ResourceNotFound as e:
+        JsonResponse({'success': False, 'error': 'Ressource not found (%s)' % e})
+    
+    return JsonResponse({'success': True, 'data': lens.to_json()})
+
+
+
+
+
+################################################################################
+### MEDIA QUERRIES                                                           ###
+################################################################################
 
 
 def getMedia(request, hash1, hash2, datatype, datasource, subtype, ext):
@@ -226,7 +254,7 @@ def getMedia(request, hash1, hash2, datatype, datasource, subtype, ext):
         wrapper = FileWrapper(file(fpath))
         response = HttpResponse(wrapper, content_type='image/%s'%ext)
         response['Content-Length'] = os.path.getsize(fpath)
-        print "shortcut"
+        #print "shortcut"
         return response    
     except IOError: # file does not exist: go on 
         pass 
@@ -269,6 +297,6 @@ def getMedia(request, hash1, hash2, datatype, datasource, subtype, ext):
     wrapper = FileWrapper(file(fpath))
     response = HttpResponse(wrapper, content_type='image/%s'%ext)
     response['Content-Length'] = os.path.getsize(fpath)
-    return response    
-    
-    return HttpResponse('; '.join([hash1, hash2, datatype, datasource, subtype, ext]))
+    return response
+
+
