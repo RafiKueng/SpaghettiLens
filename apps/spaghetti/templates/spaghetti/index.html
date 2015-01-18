@@ -358,8 +358,46 @@
 </div>  
     
 
+<div id="display_dialog" class="dialog initHidden" title="Display Settings">
+    <div id="dsettings">
+        <input type="checkbox" id="ds_all" />
+        <label for="ds_all">Toggle Model (all)</label>
+        <input type="checkbox" id="conn_l" />
+        <label for="conn_l">Toggle Connecting Lines</label>
+        <input type="checkbox" id="cont_p" />
+        <label for="cont_p">Toggle Contour Points</label>
+        <input type="checkbox" id="cont_l" />
+        <label for="cont_l">Toggle Contour Lines</label>
+    </div>
+</div>   
+
+
+<div id="glass_dialog" class="dialog" title="Glass Configuration">
+    <div>
+        <p style="display: inline">Redshifts: </p>
+        <p id='gset_redshift_out' style="display: inline"></p>
+        <div style="display: block; width: 300px" id="gset_redshift_slide" class="slider">
+        </div>
+    </div>
+
+    <div>
+        <p style="display: inline">PixelRadius: </p>
+        <p id='gset_pixrad_out' style="display: inline"></p>
+        <div style="display: block; width: 300px" id="gset_pixrad_slide" class="slider">
+        </div>
+    </div>
     
-    
+    <div>
+        <p style="display: inline">nModels: </p>
+        <p id='gset_nmodels_out' style="display: inline"></p>
+        <div style="display: block; width: 300px" id="gset_nmodels_slide" class="slider">
+        </div>
+    </div>
+    <div>
+        <p style="display: inline">is the model symmetrical? </p>
+        <input type="checkbox" id="gset_issymm" /><label for="gset_issymm">true</label>
+    </div>
+</div>
     
 
 </body>

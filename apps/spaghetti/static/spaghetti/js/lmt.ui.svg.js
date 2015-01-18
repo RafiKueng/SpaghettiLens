@@ -634,17 +634,23 @@ svg.moveCrosshair = function(evt, jsTarget, svgTarget, coord){
 }
 
 
+/** V2 NEW
+ * Hides the complete model
+ */
 svg.toggleModelDisplay = function(evt) {
-  log("svg | toggleModelDisplay");
-  $(svg.layer.masses).toggleClassSVG('invisible');
-  $(svg.layer.models).toggleClassSVG('invisible');
-  $(svg.layer.rulers).toggleClassSVG('invisible');
+
+    log("svg | toggleModelDisplay");
+    
+    $(svg.layer.masses).toggleClassSVG('invisible');
+    $(svg.layer.models).toggleClassSVG('invisible');
+    $(svg.layer.rulers).toggleClassSVG('invisible');
 };
 
 
 
-/**
- * transforms the optained raw coordines in the coordinate system of the zoomed / panned layer 
+/** NEW V2
+ * transforms the optained raw coordines in the coordinate system of the
+ * zoomed / panned layer 
  */
 svg.coordTrans = function(evt) {
 
@@ -654,8 +660,8 @@ svg.coordTrans = function(evt) {
 	var globalPoint = pt.matrixTransform(svg.root.getScreenCTM().inverse());
 	var globalToLocal = svg.layer.zoompan.getTransformToElement(svg.root).inverse();
 	var inObjectSpace = globalPoint.matrixTransform( globalToLocal );
-	
-  return inObjectSpace;
+
+    return inObjectSpace;
 }
 
 

@@ -272,7 +272,7 @@ Model.getModelFormJSONString = function(str) {
         case "Parameters":
           return val;
         default: // prevent injection to client side of unexpected code 
-          alert("Invalid object in json string..");
+          log("Invalid object in json string.." + key);
           return {};
         }
 		}
