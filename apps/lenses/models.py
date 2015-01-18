@@ -22,10 +22,12 @@ class Lens(cdb.Document):
     '''
     
     names = cdb.ListProperty()
+    scidata = cdb.DictProperty()
+    imgdata = cdb.DictProperty()
     metadata = cdb.DictProperty()
-    data = cdb.DictProperty()
     
     created_at = cdb.DateTimeProperty(default=datetime.datetime.utcnow())
-    updated_at = cdb.DateTimeProperty(default=datetime.datetime.utcnow(), auto_now=True)
+    last_edited_at = cdb.DateTimeProperty(default=datetime.datetime.utcnow(), auto_now=True)
     
-    created_by = cdb.StringProperty(default="")
+    created_by = cdb.StringProperty(default="-anonymous-")
+    edited_by = cdb.ListProperty(default=[])

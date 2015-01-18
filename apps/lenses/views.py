@@ -1,11 +1,17 @@
 from __future__ import absolute_import
 
-import re
+import os
+#import re
+import hashlib
+import requests
 
 #from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest  # , Http404
+from django.http import HttpResponse, JsonResponse, HttpResponsePermanentRedirect #, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext, loader
+from django.core.servers.basehttp import FileWrapper
+
+from couchdbkit import exceptions as CouchExceptions
 
 from .models import Datasource, Lens
 
@@ -146,18 +152,38 @@ def _fetchRemoteLens(rq):
     if rvals[0] == False:
         return JsonResponse({'success': False, 'error': rvals[1]})
         
-    _, data, metadata, i = rvals
+    _, scidata, imgdata, metadata, hhash = rvals
     
-    ndata = {}
+    nimgdata = {}
     
-    for typ, dat in data:
-        ndata[typ] = {dsid: dat}
+    for typ, dat in imgdata:
+        nimgdata[typ] = {dsid: dat}
+
+    m = hashlib.sha256()
+    m.update(dsid)
+    m.update(lensname)
+    m.update(hhash)
+    
+    l_id = m.hexdigest()
+    
+    short_id = l_id[0:9]
+    short_id = '-'.join([short_id[i:i+3] for i in [0,3,6]])
+    # this is a human readable EnoughUniqueId.. hopefully
+    # NOTE: probability of collision:
+    # http://stackoverflow.com/questions/19962424/probability-of-collision-with-truncated-sha-256-hash    
+    # 8 hex chars = 32bits (4bit / hexchar)
+    # 2**(8*4/2) = 65536 entries, so many entries, then collisions start to happen
+    # 2**(10*4/2) =~ 1mio entries using 10 hex chars
+    # 2**(9*4/2) =~ 250'000 entries using 9 hex chars
     
     lens = Lens(
-        names = [lensname],
-        data = ndata,
+        names = [short_id, lensname],
+        scidata = scidata,
+        imgdata = nimgdata,
         metadata = metadata
     )
+    
+    lens._id = l_id
     
     lens.save()
     
@@ -165,4 +191,84 @@ def _fetchRemoteLens(rq):
 #    data = dict(zip(keys, rvals))
 #    return JsonResponse({'status': "SUCCESS", 'data': data})
     return JsonResponse({'success': True, 'data': []})
+
+
+
+
+def getMedia(request, hash1, hash2, datatype, datasource, subtype, ext):
+    print hash1, hash2, datatype, datasource, subtype, ext
+    print request.path
+   
+    idd = (hash1+hash2).lower() # can be full or reduced 3x3 form
+
+    if len(idd) == 9:
+        sid = '-'.join([idd[i:i+3] for i in [0,3,6]])
+        try:
+            idd = Lens.view('lenses/Lenses__by_name', key=sid).one(except_all=True)['id']
+        except CouchExceptions.MultipleResultsFound:
+            return HttpResponse("failed, multiple", status=404)
+        except CouchExceptions.NoResultFound:
+            return HttpResponse("failed, none", status=404)
+        except KeyError:
+            return HttpResponse("failed, key", status=404)
+
+    # now, here I'm sure to have the full idd
+
+    # create the filenames in the storage
+    #TODO: hardcoded paths are in here!!
+    ddir = os.path.join(os.getcwd(), '../media/lenses', idd[:2], idd[2:])
+    fname = '%s-%s-%s.%s' % (datatype, datasource, subtype, ext)
+    fpath = os.path.join(ddir, fname)
+    
+    # prepare the response already (will be sent if already exists or at end)
+    # check if file already exists, then send it
+    try:
+        wrapper = FileWrapper(file(fpath))
+        response = HttpResponse(wrapper, content_type='image/%s'%ext)
+        response['Content-Length'] = os.path.getsize(fpath)
+        print "shortcut"
+        return response    
+    except IOError: # file does not exist: go on 
+        pass 
         
+    try:
+        l = Lens.get(idd)
+    except CouchExceptions.ResourceNotFound:
+        return HttpResponse("failed, no id found", status=404)
+    
+    try:
+        d = l['imgdata'][datatype][datasource][subtype]
+        urls = d['urls']
+        pext = d['format']
+    except KeyError:
+        return HttpResponse("failed, lens data wrong", status=404)
+    
+    # uups, got wrong extension...
+    if not ext.lower() == pext.lower():
+        return HttpResponsePermanentRedirect('/media/lenses/%s/%s/%s-%s-%s.%s' % (idd[:2], idd[2:], datatype, datasource, subtype, pext))
+
+    if not os.path.exists(ddir):
+        os.makedirs(ddir)
+    
+    # download the file first to the server
+    # stream it to avoid loading the file into memory
+    r = requests.get(urls[0], stream=True)
+    if r.status_code == 200:
+        with open(fpath, 'wb') as f:
+            for chunk in r.iter_content(1024):
+                f.write(chunk)
+    
+    # then upload it to the client directly
+    # http://stackoverflow.com/questions/1156246/having-django-serve-downloadable-files
+    # https://djangosnippets.org/snippets/365/
+    #
+    # I let django serve the files, so that the dev server works without an additional apache in front
+    # This is slightly better than loading the whole file to memory. It is served in chunks.
+    # (otherwise downloading a file of 1gb would make the server run out of ram quickly)
+    #
+    wrapper = FileWrapper(file(fpath))
+    response = HttpResponse(wrapper, content_type='image/%s'%ext)
+    response['Content-Length'] = os.path.getsize(fpath)
+    return response    
+    
+    return HttpResponse('; '.join([hash1, hash2, datatype, datasource, subtype, ext]))

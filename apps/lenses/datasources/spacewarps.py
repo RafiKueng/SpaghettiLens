@@ -8,9 +8,12 @@ Created on Thu Jan 15 18:38:44 2015
 """
 
 import requests
+import re
 from PIL import Image
 from StringIO import StringIO
+import hashlib
 
+from _types import DATATYPES, SUBTYPES
 
 def validate(txt):
     '''Guess if name could be valid
@@ -32,9 +35,12 @@ def fetch(lensname):
     if failed:
         return (False, 'error description')
     if successful:
-        return (True, data, metadata, PIL.Image)
-    #TODO note: maybe loading the image to ram and passing it around
+        return (True, data, metadata, hash)
+    #DONE note: maybe loading the image to ram and passing it around
                 isn't a good idea in case of huge fits files...
+    hash ist just some hash (sha256) of something (the image) used for id
+    generation (so that the same image results in the same id)
+    
     note: this has a filesize limit!
     '''
 
@@ -72,16 +78,21 @@ def fetch(lensname):
         urls.append(r.url)
     
     try:
-        i = Image.open(StringIO(r.content))
+        i = Image.open(StringIO(resp2.content))
     except:
         return (False, 'not an valid image')
+        
+    #gereate image hash
+    ihash = hashlib.sha256(resp2.content).hexdigest()
 
-    data = [('COMPOSED_PIXEL_IMAGE', {
-        'urls'  : urls,
-        'scale' : [0.187, 'arcsec/pixel'],
-        'format': i.format,
-        'size'  : list(i.size),
-    })]
+    imgdata = [(DATATYPES.COMPOSITE_PIXEL_IMAGE, {
+        SUBTYPES.COMPOSITE_PIXEL_IMAGE.DEFAULT : {
+            'urls'  : urls,
+            'scale' : [0.187, 'arcsec/pixel'],
+            'format': i.format,
+            'size'  : list(i.size+('pixel',)),
+            'hash'  : ihash,
+    }})]
         
     wanted_keys = ['activated_at','classification_count','created_at',
                    'group_id','id','location','metadata','project_id',
@@ -90,7 +101,20 @@ def fetch(lensname):
 
     metadata = {k: json[k] for k in set(wanted_keys) & set(json.keys())} # only gets the wanted_keys from json
     
+    # fetch additional stuff
+    # claude added SDSS ids for many items:
+    sdss_obj   = re.findall(r'SDSS(\w\d{6}\.\d{2}-\d{6}\.\d)', resp.text)
+    sdss_objid = re.findall(r'\d{19}', resp.text)
+    print resp.text
+    print sdss_obj, sdss_objid
+    if len(sdss_obj)>0:
+        metadata['SDSS_obj'] = sdss_obj[0]
+        metadata['SDSS_objid'] = sdss_objid[0]
+        
+    # spaghettilens doesn't provide any scientific data
+    data = {}
+    
     #print data
     #print metadata
-    return (True, data, metadata, i)
+    return (True, data, imgdata, metadata, ihash)
 
