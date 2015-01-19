@@ -39,8 +39,9 @@ def getApiDef():
 #  'api_call: (_apiCallback, [req_keyword0, ...])' 
 #   -> GET /api_call?req_keyword=val0&req...   -> python _apiCallback(request)
     return {
-#        'get_list_of_lenses':     (_getListOfLenses,
-#                                   ['term']),
+        'test':           (_testing, ['bla']),
+        'save_model':     (_saveModel,
+                           ['term']),
     }
 
 
@@ -48,22 +49,24 @@ def getApiDef():
 def api(request):
 
     
-    if request.method == 'GET':
-        if len(request.GET) == 0:
+    if request.method in ['GET', 'POST']:
+        if len(request.GET) == 0 and len(request.POST) == 0:
             return JsonResponse({'success': False, 'error': "no_arguments"})
 
-        elif 'action' not in request.GET.keys():
+        elif 'action' not in request.GET.keys() and 'action' not in request.POST.keys():
             return JsonResponse({'success': False, 'error': "no_action_key"})
 
-        action = request.GET['action']
+        action = request.GET.get('action', request.POST.get('action'))
         APIDEF = getApiDef()
         
+        kwdict = {}
         if action in APIDEF.keys():
             fn, kwargs = APIDEF[action]
             for kwarg in kwargs:
-                if request.GET.get(kwarg) is None:
-                    return JsonResponse({'success': False, 'error': "get_param_missing", 'details':kwarg})
-            return fn(request)
+                if request.GET.get(kwarg) is None and request.POST.get(kwarg) is None:
+                    return JsonResponse({'success': False, 'error': "get_or_post_param_missing", 'details':kwarg})
+                kwdict[kwarg] = request.GET.get(kwarg, request.POST.get(kwarg))
+            return fn(request, **kwdict)
             
         else:
             return JsonResponse({'success': False, 'error': "invalid_action"})
@@ -77,17 +80,19 @@ def api(request):
         return response
 
     else:
-        return HttpResponse("only GET (and OPTIONS) interface allowed. and this will be using json", status=400)
+        return HttpResponse("only GET, POST and OPTIONS interface allowed. and this will be using json", status=400)
 
 
 
 
+def _saveModel(rq):
+    pass
 
 
 
 
-
-
+def _testing(rq, bla):
+    return HttpResponse("ok "+bla)
 
 
 
