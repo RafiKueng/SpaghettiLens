@@ -114,7 +114,31 @@ events.assignHandlers = function() {
       
       //$(document).on('ShowDialogColorSettings', LMT.ui.html.ColorSettingsDialog.show); // not in use atm
 
-      
+
+    // old pipline, completly replaced by the stuff below
+//    $(document).on('UploadModel', LMT.com.UploadModel);
+//    $(document).on('SimulateModel', LMT.events.SimulateModel);
+//    $(document).on('ReceivedSimulation', LMT.ui.out.load);
+//    $(document).on('ReceivedSimulation', LMT.ui.html.Toolbar.updateTop);
+//    $(document).on('ReceivedSimulation', LMT.ui.html.WaitForResultDialog.stopRefresh);
+
+    $(document).on('SimulateModel', LMT.events.SimulateModel);
+    $(document).on('UploadModel', LMT.com.UploadModel);
+    $(document).on('UploadModelComplete', LMT.events.onUploadComplete);
+    $(document).on('StartRendering', LMT.com.StartRendering);
+    $(document).on('StartRendering', LMT.ui.html.WaitForResultDialog.show);
+    $(document).on('GetRenderingProgress', LMT.com.GetRenderingProgress);
+    $(document).on('UpdateRenderingStatus', LMT.ui.html.WaitForResultDialog.update); // if received a new status, this triggers an update of the status display
+    $(document).on('RenderingFailed', LMT.ui.html.WaitForResultDialog.close);
+    $(document).on('RenderingComplete', LMT.ui.html.WaitForResultDialog.close);
+    //$(document).on('RenderingComplete', LMT.ui.out.load);
+    //$(document).on('RenderingComplete', LMT.ui.html.Toolbar.updateTop);
+    
+    
+
+    
+    
+    
 // ---------- the old ones ----------------------
 
     $(document).on('ToggleLog', logger.toggle);
@@ -194,8 +218,6 @@ events.assignHandlers = function() {
     $(document).on('WaitForSimulation', LMT.ui.html.WaitForResultDialog.show);
     $(document).on('WaitForSimulation', LMT.ui.html.WaitForResultDialog.startRefresh);
     
-    $(document).on('UploadModel', LMT.com.UploadModel);
-    $(document).on('SimulateModel', LMT.events.SimulateModel);
     $(document).one('UpdateRepaintModel', LMT.events.UpdateRepaintModel); //can only be called once, once finished with the update, it reassigns itself
     $(document).on('RepaintModel', LMT.objects.Model.Repaint);
 
@@ -203,11 +225,6 @@ events.assignHandlers = function() {
 
     $(document).on('GetSimulationFail', LMT.ui.html.WaitForResultDialog.stopRefresh);
 
-    $(document).on('ReceivedSimulation', LMT.ui.out.load);
-    $(document).on('ReceivedSimulation', LMT.ui.html.Toolbar.updateTop);
-    $(document).on('ReceivedSimulation', LMT.ui.html.WaitForResultDialog.stopRefresh);
-    
-    
     $(document).on('DisplayOutputSlide', LMT.ui.out.show); //needs a id
     $(document).on('DisplayOutputSlideNext', LMT.ui.out.next);
     $(document).on('DisplayOutputSlidePrev', LMT.ui.out.prev);
@@ -298,10 +315,21 @@ events.MoveObject = function(evt, jsTarget, svgTarget, coord){
 };
 
 
-
+/** V2 NEW
+ * What happens when simulatemodel is clicked
+ */
 events.SimulateModel = function(){
-  $.event.trigger("UploadModel");
-  $(document).one('UploadModelComplete', function(){$.event.trigger("GetSimulation");});
+    $.event.trigger("UploadModel");
+    
+//  $(document).one('UploadModelComplete', function(){$.event.trigger("GetSimulation");}); 
+    //some old relict
+};
+
+/** V2 NEW
+ * Immideatly start polling for result once a model is uploaded
+ */
+events.onUploadComplete = function(){
+  $.event.trigger("StartRendering");
 };
 
 

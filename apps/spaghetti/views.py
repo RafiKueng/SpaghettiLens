@@ -9,6 +9,8 @@ from __future__ import absolute_import
 #import time
 #import pprint
 #import json
+import datetime
+import random
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse  # , Http404
@@ -16,11 +18,16 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 #from couchdbkit.ext.django.loading import get_db
- 
+from couchdbkit import exceptions as CouchExceptions
+
+from .utils import EvalAndSaveJSON
+
+from .models import Model
+from lenses.models import Lens
+
 #from celery.result import AsyncResult
 
-#from .tasks import add
-from .models import Model
+from .tasks import runGLASS
 
 # Create your views here.
 
@@ -39,15 +46,20 @@ def getApiDef():
 #  'api_call: (_apiCallback, [req_keyword0, ...])' 
 #   -> GET /api_call?req_keyword=val0&req...   -> python _apiCallback(request)
     return {
-        'test':           (_testing, ['bla']),
-        'save_model':     (_saveModel,
-                           ['term']),
+        'test':             (_testing, ['bla']),
+        'save_model':       (_saveModel,
+                             ['lmtmodel', 'lens_id', 'parent', 'username', 'comment']),
+        'start_rendering':  (_startRendering,
+                             ['model_id']),
+        'get_rendering_status':  (_getRenderingStatus,
+                             ['model_id']),
     }
 
 
 @csrf_exempt
 def api(request):
 
+    #print request.GET, request.POST
     
     if request.method in ['GET', 'POST']:
         if len(request.GET) == 0 and len(request.POST) == 0:
@@ -63,7 +75,8 @@ def api(request):
         if action in APIDEF.keys():
             fn, kwargs = APIDEF[action]
             for kwarg in kwargs:
-                if request.GET.get(kwarg) is None and request.POST.get(kwarg) is None:
+                #print kwarg, request.GET.get(kwarg), request.POST.get(kwarg)
+                if (request.GET.get(kwarg) is None) and (request.POST.get(kwarg) is None):
                     return JsonResponse({'success': False, 'error': "get_or_post_param_missing", 'details':kwarg})
                 kwdict[kwarg] = request.GET.get(kwarg, request.POST.get(kwarg))
             return fn(request, **kwdict)
@@ -85,9 +98,120 @@ def api(request):
 
 
 
-def _saveModel(rq):
-    pass
 
+
+
+
+
+
+
+
+def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
+    
+    print "username:", username
+    
+    try:
+        lens = Lens.get(lens_id)
+
+    except CouchExceptions.ResourceNotFound as e:
+        return JsonResponse({'success': False, 'error': 'Ressource not found (%s) The lens id doesnt exist!!' % e})
+    
+
+    print "eval and save"
+    obj = EvalAndSaveJSON(user_str = username,
+                          data_obj= lens,
+                          jsonStr = lmtmodel,
+                          is_final= False)
+
+    print "after eval and save"
+    print obj
+    for k, v in obj.__dict__.items():
+        print k, ': ', v
+
+
+    model_id = "model_"+str(random.randint(100,999))
+    print 'model_id:', model_id
+
+    now = datetime.datetime.utcnow()
+
+    model = Model(
+        lens_id = lens_id,
+        parent = parent,
+        
+        created_by = username,
+        created_at = now,
+        comments = [[username, now, comment]],
+        
+        obj = {},
+        glass = {},
+    
+        task_id = None
+    )
+    
+    model._id = model_id
+
+    try:
+        model.save()
+    except CouchExceptions.ResourceConflict:
+        return JsonResponse({'success': False, 'error': 'Ressource already present ()'})
+
+    return JsonResponse({'success': True, 'model_id': model_id})
+#    return HttpResponse("ok: "+'|'.join([lmtmodel, parent, username, comment]))
+
+
+
+
+
+
+
+
+def _startRendering(rq, model_id):
+
+
+    try:
+        model = Model.get(model_id)
+    except CouchExceptions.ResourceNotFound as e:
+        return JsonResponse({'success': False, 'error': 'Ressource not found (%s)' % e})
+
+    GLASSconfObj = {}    
+    
+    task = runGLASS.delay(GLASSconfObj)
+    print 'task:',task
+    print 'taskid:',task.id
+
+    model.task_id = task.id
+    model.save()
+    
+    return JsonResponse({'success': True, 'model_id': model_id})
+
+
+def _getRenderingStatus(rq, model_id):
+
+    try:
+        model = Model.get(model_id)
+    except CouchExceptions.ResourceNotFound as e:
+        return JsonResponse({'success': False, 'error': 'Ressource not found (%s)' % e})
+    
+    task = runGLASS.AsyncResult(model.task_id)
+
+    print 'task:',task
+    print 'taskid:',task.id
+    print "task.status:", task.status    
+    print "task.info:", task.info    
+    
+    prog = {
+        'solutions': (6,600),
+        'models': (0,400),
+        'images': (0,4)
+    }
+
+    prog = task.info
+    
+    stat = "done" # done | pending
+    stat = task.status.lower()
+    
+
+    return JsonResponse({'success': True, 'status': stat, 'progress': prog})
 
 
 
@@ -104,7 +228,9 @@ def _testing(rq, bla):
 
 
 
-
+def getMedia(rq, hash1, hash2, filename, ext):
+    print '; '.join([hash1, hash2, filename, ext])
+    return HttpResponse("ok "+ '; '.join([hash1, hash2, filename, ext]))
 
 
 

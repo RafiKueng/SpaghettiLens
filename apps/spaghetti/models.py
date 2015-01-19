@@ -2,9 +2,12 @@
 
 # Create your models here.
 
-from django.db import models
+import datetime
 
+#from django.db import models
 import couchdbkit.ext.django.schema as cdb
+
+
 
 class TestDoc(cdb.Document):
     name = cdb.StringProperty()
@@ -23,4 +26,20 @@ class TestDoc(cdb.Document):
 
 
 class Model(cdb.Document):
-    pass
+    
+    lens_id = cdb.StringProperty()
+    parent = cdb.StringProperty()
+    
+    created_by = cdb.StringProperty()
+    created_at = cdb.DateTimeProperty(default=datetime.datetime.utcnow())
+    comments = cdb.ListProperty(default=[])
+    
+    obj = cdb.DictProperty()
+    glass = cdb.DictProperty()
+
+    task_id = cdb.StringProperty()
+    
+    def __unicode__(self):
+        return "<u spaghetti.models.Model id:%s>" % self._id[0:8]
+
+

@@ -12,30 +12,47 @@ import time
 #from celery import shared_task
 from _app.celery import app
 
-#@shared_task
+
 @app.task(bind=True)
-def add(self, x, y):
-
-    print 0
+def runGLASS(self, jsonGLASSconfig):
     
-    time.sleep(1)    
-    print 1
-
-    if not self.request.called_directly:
-        self.update_state(state='PROGRESS', meta={'current': 0, 'total': 2})
-
-
-    time.sleep(1)    
-    print 2
-
-    if not self.request.called_directly:
-        self.update_state(state='PROGRESS', meta={'current': 1, 'total': 2})
-
-    time.sleep(1)    
-    print 3
-
+    for i in range(40):
+        print i
+        time.sleep(0.5)
+        if not self.request.called_directly:
+            self.update_state(state='PROGRESS', meta={'solutions': ( i, 40)})
     
-    if not self.request.called_directly:
-        self.update_state(state='PROGRESS', meta={'current': 2, 'total': 2})
-        
-    return x + y
+    return {}
+
+
+
+
+######
+# DEMO
+##@shared_task
+#@app.task(bind=True)
+#def add(self, x, y):
+#
+#    print 0
+#    
+#    time.sleep(1)    
+#    print 1
+#
+#    if not self.request.called_directly:
+#        self.update_state(state='PROGRESS', meta={'current': 0, 'total': 2})
+#
+#
+#    time.sleep(1)    
+#    print 2
+#
+#    if not self.request.called_directly:
+#        self.update_state(state='PROGRESS', meta={'current': 1, 'total': 2})
+#
+#    time.sleep(1)    
+#    print 3
+#
+#    
+#    if not self.request.called_directly:
+#        self.update_state(state='PROGRESS', meta={'current': 2, 'total': 2})
+#        
+#    return x + y

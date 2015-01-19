@@ -270,7 +270,17 @@ com.getLensData = function(evt, lens_id) {
 
 
 
-/**
+
+
+
+
+
+
+
+
+
+
+/** V2 NEW
  * event handler 
  * save the resulting model string in the database
  * as a temporary result for rendering
@@ -279,56 +289,129 @@ com.getLensData = function(evt, lens_id) {
  * - isFinal: false
  * 
  * post returns json 
- * {status: "OK" or "BAD..."
+ * {success: True False
  */
 com.UploadModel = function(evt) {
-
-  var success = function(jsonResp, statusTxt, XHRRespObj) {
-    log('com.UploadModel | success', 'result_id:' + jsonResp.result_id);
-    LMT.simulationResult.resultId = jsonResp.result_id;
-    //LMT.simulationResult.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
-    $.event.trigger("UploadModelComplete")
-  };
-  
-  var fail = function(a, b, c) {
-    log("com.UploadModel | fail", a, b, c, a.responseText);
-    var win=window.open('about:blank');
-    with(win.document)
-    {
-      open();
-      write(a.responseText);
-      close();
+    
+    log("com.UploadModel / start ");
+    
+    if (LMT.model.Sources.length==0){
+        alert("Please create a model first before uploading");
+        return false;
     }
-  };
 
-
-  if (LMT.model.Sources.length==0){
-    alert("Please create a model first before uploading");
-    return false;
-  }
-  
-  var data = {
-        modelid: LMT.modelData.id,
-        string: LMT.model.getStateAsString(),
-        isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
+    console.log(1);
+    
+//    var nmodel = {
+//        ExternalMasses:      jQuery.extend(true, {}, LMT.model.ExternalMasses),
+//        MinMmaxSwitchAngle:  jQuery.extend(true, {}, LMT.model.MinMmaxSwitchAngle),
+//        NrOf:                jQuery.extend(true, {}, LMT.model.NrOf),
+//        Parameters:          jQuery.extend(true, {}, LMT.model.Parameters),
+//        Rulers:              jQuery.extend(true, {}, LMT.model.Rulers),
+//        Sources:             jQuery.extend(true, {}, LMT.model.Sources),
+//    }
+    
+    var data = {
+        action: "save_model",
+        lens_id: LMT.lensData._id,
+//        lmtmodel: jQuery.extend(true, {}, LMT.model),
+        lmtmodel: LMT.model.getStateAsString(),
         username: LMT.settings.username ? LMT.settings.username : '',
-        parentid: (LMT.modelData.parentId ? LMT.modelData.parentId : -1)
+        parent: LMT.modelData.parentId ? LMT.modelData.parentId : '',
+        comment: '',
+        //isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
     };
-  
-  LMT.simulationResult.resultId = -1;
-  LMT.simulationResult.resultModelHash = data.string.hashCode();
-  
-  $.ajax(LMT.com.serverUrl + LMT.com.saveDataUrl, {
-      type:"POST",
-      contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
-      data: data, 
-      dataType:"json", //data type expected from server
-      success:success,
-      error: fail
-      //mimeType: "text/plain"
-  });
 
+    LMT.simulationResult.modelId = -1;
+    LMT.simulationResult.resultModelHash = LMT.model.getStateAsString().hashCode();
+    //TODO find a better way to hash the model.. this is a left over from V1
+    
+    console.log(2);
+
+    var success = function(json, status, xhr) {
+        
+        log('com.UploadModel.success / ', 'result_id:' + json.model_id);
+        
+        LMT.simulationResult.modelId = json.model_id;
+        //LMT.simulationResult.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
+        $.event.trigger("UploadModelComplete")
+    };
+
+    console.log(3);
+
+    $.ajax(com.config.spaghettiAPI, {
+        type:"POST",
+        success:success,
+        error: function (a,b,c) { log('fail',a,b,c); alert("api not available"); },
+        data: data, 
+        dataType: "json"
+    });
+
+    log("com.UploadModel \\ end ");
 }
+
+
+
+// OLD ONE new above
+///**
+// * event handler 
+// * save the resulting model string in the database
+// * as a temporary result for rendering
+// * - model name
+// * - model string: the serialized model data (json)
+// * - isFinal: false
+// * 
+// * post returns json 
+// * {status: "OK" or "BAD..."
+// */
+//com.UploadModel = function(evt) {
+//
+//  var success = function(jsonResp, statusTxt, XHRRespObj) {
+//    log('com.UploadModel | success', 'result_id:' + jsonResp.result_id);
+//    LMT.simulationResult.resultId = jsonResp.result_id;
+//    //LMT.simulationResult.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
+//    $.event.trigger("UploadModelComplete")
+//  };
+//  
+//  var fail = function(a, b, c) {
+//    log("com.UploadModel | fail", a, b, c, a.responseText);
+//    var win=window.open('about:blank');
+//    with(win.document)
+//    {
+//      open();
+//      write(a.responseText);
+//      close();
+//    }
+//  };
+//
+//
+//  if (LMT.model.Sources.length==0){
+//    alert("Please create a model first before uploading");
+//    return false;
+//  }
+//  
+//  var data = {
+//        modelid: LMT.modelData.id,
+//        string: LMT.model.getStateAsString(),
+//        isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
+//        username: LMT.settings.username ? LMT.settings.username : '',
+//        parentid: (LMT.modelData.parentId ? LMT.modelData.parentId : -1)
+//    };
+//  
+//  LMT.simulationResult.resultId = -1;
+//  LMT.simulationResult.resultModelHash = data.string.hashCode();
+//  
+//  $.ajax(LMT.com.serverUrl + LMT.com.saveDataUrl, {
+//      type:"POST",
+//      contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
+//      data: data, 
+//      dataType:"json", //data type expected from server
+//      success:success,
+//      error: fail
+//      //mimeType: "text/plain"
+//  });
+//
+//}
 
 
 
@@ -406,99 +489,185 @@ com.SaveModel = function(evt) {
 
 
 
-/*
- * can be called after saving a result
- * will return a json obj with the urls to the images
- * that can be gotten with long pulling later
+
+
+
+
+/** NEW V2
+ * gets the progress of the rendering of a modelID
  */
-com.GetSimulation = function(){
-  var success = function(jsonResp, statusTxt, XHRRespObj) {
-    log("com.GetSimulation | success", 'status:' + jsonResp.status + ' res_id: ' + jsonResp.result_id);
-    
-    LMT.simulationResult.img = [];
-    if (jsonResp.status!="READY"){ //polling
-      if (jsonResp.status=="FAILURE") { // did the worker crash?
-        alert("error with worker: crash");
-        $.event.trigger("GetSimulationFail");
-        $('body').css('cursor', '');
-        return false;
-      }
-      else if (jsonResp.status=="REVOKED") { // is the server under heavy load?
-        alert("the server is currently under heavy load\nYour request couldn't be processed, I've waited 30sec, then gave up.\nTry again later. Sorry!\nIf this happens often please inform Rafi to upgrade the server!");
-        $('body').css('cursor', '');
-        $.event.trigger("GetSimulationFail");
-        return false;
-      }
-      /*
-      if (LMT.com.refreshCounter>LMT.settings.estimate*2+10) { //if more than 10min waiting time... assume 0.5 refresh / sec
-        alert("Timeout on the server side..");
-        LMT.com.refreshCounter = 0;
-        $('body').css('cursor', '');
-        return false;
-      }*/
+com.GetRenderingProgress = function () {
 
-      setTimeout(function(){$.event.trigger("GetSimulation");}, 1000);
-      LMT.com.refreshCounter += 1;
-      return;
-    }
+    log('com.GetRenderingProgress / start', 'modelId: ' + LMT.simulationResult.modelId);
 
-    var imgs = jsonResp.imgs;
-    var n = imgs.length;
-    
-    LMT.simulationResult.imgs = new Array(n);
-    
-    for (var i=0; i<n; i++) {
-      LMT.simulationResult.imgs[i] = {
-        type: imgs[i].type,
-        url: imgs[i].url,
-      };
-    }
-    
-    /*
-    var n = parseInt(jsonResp.n_img);
-    for (var i = 1; i<=n; i++){
-      imgdata = {
-        desc: jsonResp['img'+i+'desc'],
-        url: jsonResp['img'+i+'url'], 
-      }
-      LMT.simulationResult.img.push(imgdata);
-    }
-    */
-    
-    $('body').css('cursor', '');
-    $.event.trigger("ReceivedSimulation");
-  };
-  
-  var fail = function(a, b, c) {
-    log('com.GetSimulation | fail', a, b, c, a.responseText);
-    if (c && c=='Bad Gateway') {
-      alert("the server is currently not online. Please drop a note to Rafael. I'm sorry!");
-    }
-    else {
-      alert('This it bad.. server is not reachable. I\'m sorry! Please let Rafael know about this error!');
-    }
-    $('body').css('cursor', '');
-    $.event.trigger("GetSimulationFail");
-  };
+    var data = {
+        action: "get_rendering_status",
+        model_id: LMT.simulationResult.modelId
+    };
 
+    var success = function (json, status, xhr) {
 
-  $('body').css('cursor', 'progress');
-  $.event.trigger("WaitForSimulation");
+        log('com.GetRenderingProgress.success ==', 'status='+json.status);
 
-  $.ajax(LMT.com.serverUrl + LMT.com.resultUrl + LMT.simulationResult.resultId + ".json", {
-      type:"GET",
-      //contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
-      //data: {
-      //  modelid: LMT.modelData.id,
-      //  string: LMT.actionstack.current.stateStr,
-      //  isFinal: false //isFinal
-      //}, 
-      //dataType:"json", //data type expected from server
-      success:success,
-      error: fail
-      //mimeType: "text/plain"
-  });
+        if (json.success) {
+            if (json.status === 'done') {
+                $.event.trigger("RenderingComplete");
+                
+            } else if (json.status === 'pending' || json.status === 'progress') {
+                LMT.simulationResult.progress = json.progress;
+                $.event.trigger("UpdateRenderingStatus");
+                setTimeout(function(){$.event.trigger("GetRenderingProgress");}, 500);
+                
+            } else { // status = failed??
+                $.event.trigger("RenderingFailed");
+            }
+
+        } else { alert("APIError: " + json.error); }
+    };
+
+    $.ajax(com.config.spaghettiAPI, {
+        type: "GET",
+        success: success,
+        error: function () { alert("api not available"); },
+        data: data,
+        dataType: "json" //data type expected from server
+    });
+
+    log('com.GetRenderingProgress \\ end');
+
 }
+
+
+
+
+
+/** NEW V2
+ * Starts the rendering of a submitted modelID
+ */
+com.StartRendering = function () {
+
+    log('com.StartRendering / start', 'modelId: ' + LMT.simulationResult.modelId);
+
+    var data = {
+        action: "start_rendering",
+        model_id: LMT.simulationResult.modelId
+    };
+
+    var success = function (json, status, xhr) {
+        log('com.StartRendering.success ==', + json.status);
+
+        if (json.success) {
+            $.event.trigger("GetRenderingProgress");
+
+        } else { alert("APIError: " + json.error); }
+    };
+
+    $.ajax(com.config.spaghettiAPI, {
+        type: "GET",
+        success: success,
+        error: function () { alert("api not available"); },
+        data: data,
+        dataType: "json" //data type expected from server
+    });
+
+    log('com.StartRendering \\ end');
+
+}
+
+// OLD Version V2, no new (new scematics)
+///*
+// * can be called after saving a result
+// * will return a json obj with the urls to the images
+// * that can be gotten with long pulling later
+// */
+//com.GetSimulation = function(){
+//  var success = function(jsonResp, statusTxt, XHRRespObj) {
+//    log("com.GetSimulation | success", 'status:' + jsonResp.status + ' res_id: ' + jsonResp.result_id);
+//    
+//    LMT.simulationResult.img = [];
+//    if (jsonResp.status!="READY"){ //polling
+//      if (jsonResp.status=="FAILURE") { // did the worker crash?
+//        alert("error with worker: crash");
+//        $.event.trigger("GetSimulationFail");
+//        $('body').css('cursor', '');
+//        return false;
+//      }
+//      else if (jsonResp.status=="REVOKED") { // is the server under heavy load?
+//        alert("the server is currently under heavy load\nYour request couldn't be processed, I've waited 30sec, then gave up.\nTry again later. Sorry!\nIf this happens often please inform Rafi to upgrade the server!");
+//        $('body').css('cursor', '');
+//        $.event.trigger("GetSimulationFail");
+//        return false;
+//      }
+//      /*
+//      if (LMT.com.refreshCounter>LMT.settings.estimate*2+10) { //if more than 10min waiting time... assume 0.5 refresh / sec
+//        alert("Timeout on the server side..");
+//        LMT.com.refreshCounter = 0;
+//        $('body').css('cursor', '');
+//        return false;
+//      }*/
+//
+//      setTimeout(function(){$.event.trigger("GetSimulation");}, 1000);
+//      LMT.com.refreshCounter += 1;
+//      return;
+//    }
+//
+//    var imgs = jsonResp.imgs;
+//    var n = imgs.length;
+//    
+//    LMT.simulationResult.imgs = new Array(n);
+//    
+//    for (var i=0; i<n; i++) {
+//      LMT.simulationResult.imgs[i] = {
+//        type: imgs[i].type,
+//        url: imgs[i].url,
+//      };
+//    }
+//    
+//    /*
+//    var n = parseInt(jsonResp.n_img);
+//    for (var i = 1; i<=n; i++){
+//      imgdata = {
+//        desc: jsonResp['img'+i+'desc'],
+//        url: jsonResp['img'+i+'url'], 
+//      }
+//      LMT.simulationResult.img.push(imgdata);
+//    }
+//    */
+//    
+//    $('body').css('cursor', '');
+//    $.event.trigger("ReceivedSimulation");
+//  };
+//  
+//  var fail = function(a, b, c) {
+//    log('com.GetSimulation | fail', a, b, c, a.responseText);
+//    if (c && c=='Bad Gateway') {
+//      alert("the server is currently not online. Please drop a note to Rafael. I'm sorry!");
+//    }
+//    else {
+//      alert('This it bad.. server is not reachable. I\'m sorry! Please let Rafael know about this error!');
+//    }
+//    $('body').css('cursor', '');
+//    $.event.trigger("GetSimulationFail");
+//  };
+//
+//
+//  $('body').css('cursor', 'progress');
+//  $.event.trigger("WaitForSimulation");
+//
+//  $.ajax(LMT.com.serverUrl + LMT.com.resultUrl + LMT.simulationResult.resultId + ".json", {
+//      type:"GET",
+//      //contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
+//      //data: {
+//      //  modelid: LMT.modelData.id,
+//      //  string: LMT.actionstack.current.stateStr,
+//      //  isFinal: false //isFinal
+//      //}, 
+//      //dataType:"json", //data type expected from server
+//      success:success,
+//      error: fail
+//      //mimeType: "text/plain"
+//  });
+//}
 
 
 

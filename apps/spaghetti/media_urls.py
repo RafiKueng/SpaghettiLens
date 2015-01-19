@@ -3,5 +3,12 @@ from django.conf.urls import patterns, url
 from spaghetti import views
 
 urlpatterns = patterns('',
-    url(r'^api$', views.api, name='api'),
+
+    url(r'^(?P<hash1>[0-9a-fA-F]{2})/(?P<hash2>[0-9a-fA-F]{62})/(?P<filename>\w+)\.(?P<ext>\w+)$',
+        views.getMedia, name='getMedia'),
+
+    # for testing
+    url(r'^(?P<hash1>[0-9a-fA-F]{2})/(?P<hash2>[0-9a-fA-F]{7})/(?P<filename>\w+)\.(?P<ext>\w+)$',
+        views.getMedia, name='getMedia'),
+
 )

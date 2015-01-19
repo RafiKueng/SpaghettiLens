@@ -194,7 +194,7 @@ def _fetchRemoteLens(rq):
     try:
         lens.save()
     except CouchExceptions.ResourceConflict:
-        JsonResponse({'success': False, 'error': 'Ressource already present ()'})
+        return JsonResponse({'success': False, 'error': 'Ressource already present ()'})
     
     
 #    keys = ['successful', 'lensid', 'lensname']        
@@ -210,7 +210,7 @@ def _getLensData(rq):
     try:
         lens = Lens.get(lens_id)
     except CouchExceptions.ResourceNotFound as e:
-        JsonResponse({'success': False, 'error': 'Ressource not found (%s)' % e})
+        return JsonResponse({'success': False, 'error': 'Ressource not found (%s)' % e})
     
     return JsonResponse({'success': True, 'data': lens.to_json()})
 

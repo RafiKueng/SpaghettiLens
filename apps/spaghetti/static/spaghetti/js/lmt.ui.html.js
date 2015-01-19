@@ -180,81 +180,126 @@ html.LoadProgressDialog = {
 
 
 
+
+
 html.WaitForResultDialog = {
-  init: function() {
-    $('#wait_for_results_dialog').dialog({
-      autoOpen: false,
-      minWidth: 350,
-      minHeight: 100,
-      modal: false,
-      //open: html.WaitForResultDialog.onOpen,
-      buttons: []
-    });
-  },
-  
-  show: function(){
-    $('#wait_for_results_dialog')
-      .dialog('open')
-      .dialog('widget').position({
-        my: "center center",
-        at: "center center",
-        of: $('#out')
-      });
-  },
-  
-  estimate: function tottime(p,n) {
-    //parameters from variious fits
-    //machine: how much slower is the worker than anker (@2.8Ghz): 2.21 for mite
-    var aa1= 34.1040000000;
-    var bb1=-28.0330000000;
-    var aa2=  0.9857000000;
-    var bb2=  2.3436000000;
-    var cc1=  0.0000000000;
-    var a11=  0.0000001989;
-    var a12=  0.8493931800;
-    var a21=  0.0000005989;
-    var a22=  0.0055298878;
-    var a23= -3.0273621847;
-    var machine=  2.2100000000;
-    return machine*(aa1*(a11*Math.pow(p,7) + a12)+bb1 + aa2*(a21*Math.pow(p,7) + a22*n*3 + a23)+bb2 + cc1);
-  },
-  
-  close: function(){
-    $('#wait_for_results_dialog').dialog('close');
-  },
-  
-  startRefresh: function(){
-    if (!html.WaitForResultDialog.doRefresh){
-      html.WaitForResultDialog.doRefresh = true;
-      var now = new Date();
-      html.WaitForResultDialog.startTime = now.getTime() / 1000;
-      var pr = LMT.model.Parameters.pixrad;
-      var nm = LMT.model.Parameters.n_models;
-      LMT.settings.estimate = html.WaitForResultDialog.estimate(pr, nm);
-      setTimeout(html.WaitForResultDialog.update,1);
-    }
-  },
-  
-  stopRefresh: function(){
-    html.WaitForResultDialog.doRefresh = false;
-    $('#wait_for_results_dialog').dialog('close');
-  },
-  
-  update: function(){
-    if (html.WaitForResultDialog.doRefresh == true) {
-      var now = new Date();
-      var dt = now.getTime()/1000 - html.WaitForResultDialog.startTime;
-      $('#wfrd_running').html(dt.toFixed(1));
-      $('#wfrd_est').html(LMT.settings.estimate.toFixed(1));
-      setTimeout(function(){html.WaitForResultDialog.update()},100);
-    }
-    else {
-      $('#wfrd_running').html(0);
-      $('#wfrd_est').html(0);
-    }
-  },
-  
+    init: function() {
+        $('#wait_for_results_dialog').dialog({
+            autoOpen: false,
+            minWidth: 350,
+            minHeight: 100,
+            modal: false,
+            //open: html.WaitForResultDialog.onOpen,
+            buttons: []
+        });
+    },
+
+    show: function(){
+        $('#wait_for_results_dialog')
+            .dialog('open')
+            .dialog('widget').position({
+            my: "center center",
+            at: "center center",
+            of: $('#out')
+        });
+    },
+
+
+    close: function(){
+        $('#wait_for_results_dialog').dialog('close');
+    },
+
+    update: function(){
+        if (LMT.simulationResult.progress) {
+            $('#wait_for_results_dialog p').html(
+                'solutions: ' + LMT.simulationResult.progress.solutions + '<br>' +
+                'models: ' + LMT.simulationResult.progress.models + '<br>' +
+                'images: ' + LMT.simulationResult.progress.images + '<br>'
+            );
+        }
+    },
 };
+
+
+
+
+// OLD, new above, new pipeline
+//
+//html.WaitForResultDialog = {
+//  init: function() {
+//    $('#wait_for_results_dialog').dialog({
+//      autoOpen: false,
+//      minWidth: 350,
+//      minHeight: 100,
+//      modal: false,
+//      //open: html.WaitForResultDialog.onOpen,
+//      buttons: []
+//    });
+//  },
+//  
+//  show: function(){
+//    $('#wait_for_results_dialog')
+//      .dialog('open')
+//      .dialog('widget').position({
+//        my: "center center",
+//        at: "center center",
+//        of: $('#out')
+//      });
+//  },
+//  
+//  estimate: function tottime(p,n) {
+//    //parameters from variious fits
+//    //machine: how much slower is the worker than anker (@2.8Ghz): 2.21 for mite
+//    var aa1= 34.1040000000;
+//    var bb1=-28.0330000000;
+//    var aa2=  0.9857000000;
+//    var bb2=  2.3436000000;
+//    var cc1=  0.0000000000;
+//    var a11=  0.0000001989;
+//    var a12=  0.8493931800;
+//    var a21=  0.0000005989;
+//    var a22=  0.0055298878;
+//    var a23= -3.0273621847;
+//    var machine=  2.2100000000;
+//    return machine*(aa1*(a11*Math.pow(p,7) + a12)+bb1 + aa2*(a21*Math.pow(p,7) + a22*n*3 + a23)+bb2 + cc1);
+//  },
+//  
+//  close: function(){
+//    $('#wait_for_results_dialog').dialog('close');
+//  },
+//  
+//  startRefresh: function(){
+//    if (!html.WaitForResultDialog.doRefresh){
+//      html.WaitForResultDialog.doRefresh = true;
+//      var now = new Date();
+//      html.WaitForResultDialog.startTime = now.getTime() / 1000;
+//      var pr = LMT.model.Parameters.pixrad;
+//      var nm = LMT.model.Parameters.n_models;
+//      LMT.settings.estimate = html.WaitForResultDialog.estimate(pr, nm);
+//      setTimeout(html.WaitForResultDialog.update,1);
+//    }
+//  },
+//  
+//  stopRefresh: function(){
+//    html.WaitForResultDialog.doRefresh = false;
+//    $('#wait_for_results_dialog').dialog('close');
+//  },
+//  
+//  update: function(){
+//    if (html.WaitForResultDialog.doRefresh == true) {
+//      var now = new Date();
+//      var dt = now.getTime()/1000 - html.WaitForResultDialog.startTime;
+//      $('#wfrd_running').html(dt.toFixed(1));
+//      $('#wfrd_est').html(LMT.settings.estimate.toFixed(1));
+//      setTimeout(function(){html.WaitForResultDialog.update()},100);
+//    }
+//    else {
+//      $('#wfrd_running').html(0);
+//      $('#wfrd_est').html(0);
+//    }
+//  },
+//  
+//};
 
 //v2 this is outdated
 /*
