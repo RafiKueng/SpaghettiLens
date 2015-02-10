@@ -10,7 +10,7 @@ import os
 
 from fabric import api
 from fabric import colors
-from fabric.contrib import console
+from fabric.contrib import console, files
 
 from .settings import settings as _S
 
@@ -88,3 +88,28 @@ def choose(s, opts, list_options=False):
 def check_or_create_dirs(dirs=None):
     for d in dirs:
         api.run("mkdir -p %s" % d)
+
+
+
+
+def install_pkg(pkgs):
+
+    pkgnames = []
+    
+    for pkg in pkgs:
+        
+        if pkg.requ:
+            api.sudo("zypper -n in %s" % " ".join(pkg.requ))
+
+        if pkg.file:
+            lnk = '/'.join((_S.PKG.PREFIX,) + pkg.path + (pkg.file,)) + pkg.ext
+            fname = pkg.file + pkg.ext
+            pkgnames.append(fname)
+            if not files.exists(fname):
+                api.run("wget %s" % lnk)
+    
+    if pkgnames:
+        c = api.sudo("rpm -Uihv %s" % " ".join(pkgnames), warn_only=True)
+        if c.failed:
+            warnn('There was an error. Check the log!')
+            api.promt('Any key to continue, ctrl-c to abort')

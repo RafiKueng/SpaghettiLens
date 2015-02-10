@@ -42,6 +42,99 @@ _.SERVER_TEST_HOST  = ['192.168.100.10']
 _.SERVER_PROD_HOST  = ['swlabs.physik.uzh.ch']
 
 
+#
+# which packages to install
+#
+# get the link from https://software.opensuse.org
+#
+# name: basic backage name
+# requ: requirements to install first (using zypper)
+# path: which package exactly (the url to the file)
+# file: the complete filename (as reported by rpm -q <name>, and also part of the url)
+# ext : the extension (.rpm)
+
+_.PKG                           = AttrDict()
+
+_.PKG.OSVER                     = 'openSUSE_13.1'
+_.PKG.ARCH                      = 'x86_64'
+_.PKG.PREFIX                    = "http://download.opensuse.org/repositories"
+
+# https://software.opensuse.org/package/couchdb
+_.PKG.COUCH                     = [
+    AttrDict({
+        'name': 'couchdb',
+        'requ': ('libmozjs185-1_0', 'libopenssl-devel'),
+        'path': ('server:', 'database', _.PKG.OSVER,_.PKG.ARCH),
+        'file': 'couchdb-1.6.1-51.1.x86_64',
+        'ext' : '.rpm'
+    })]
+
+# https://software.opensuse.org/package/erlang
+# https://software.opensuse.org/package/erlang-epmd
+_.PKG.ERLANG                    = [
+    AttrDict({
+        'name': 'erlang',
+        'requ': ('unixODBC',),
+        'path': ('server:', 'database', _.PKG.OSVER,_.PKG.ARCH),
+        'file': 'erlang-17.4-3.1.x86_64',
+        'ext' : '.rpm'
+    }),
+    AttrDict({
+        'name': 'erlang-epmd',
+        'requ': (),
+        'path': ('server:', 'database', _.PKG.OSVER,_.PKG.ARCH),
+        'file': 'erlang-epmd-17.4-3.1.x86_64',
+        'ext' : '.rpm'
+    })]
+
+# https://software.opensuse.org/package/rabbitmq-server
+# http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/rabbitmq-server-3.1.5-2.2.2.x86_64.rpm
+# https://software.opensuse.org/package/rabbitmq-server-plugins
+# http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/rabbitmq-server-plugins-3.1.5-2.2.2.x86_64.rpm
+_.PKG.RABBITMQ                  = [
+    AttrDict({
+        'name': 'rabbitmq-server',
+        'requ': (),
+        'path': ('openSUSE:', '13.1', 'standard', _.PKG.ARCH),
+        'file': 'rabbitmq-server-3.1.5-2.2.2.x86_64',
+        'ext' : '.rpm'
+    }),
+    AttrDict({
+        'name': 'rabbitmq-server-plugins',
+        'requ': (),
+        'path': ('openSUSE:', '13.1', 'standard', _.PKG.ARCH),
+        'file': 'rabbitmq-server-plugins-3.1.5-2.2.2.x86_64',
+        'ext' : '.rpm'
+    }),
+    ]
+
+#
+# use apache from zypper
+#
+_.PKG.APACHE = [
+    AttrDict({
+        'name': 'apache',
+        'requ': ('apache2', 'apache2-mod_wsgi'),
+        'path': (),
+        'file': '',
+        'ext' : ''
+    }),
+]
+
+#
+# python is around. but there might be some requrements needed for some packages
+#
+_.PKG.PYTHON = [
+    AttrDict({
+        'name': 'python-imaging',
+        'requ': (
+            'libjpeg-devel','libtiff-devel',   # for pillow
+            ),
+        'path': (),
+        'file': '',
+        'ext' : ''
+    }),
+]
 
 
 

@@ -9,7 +9,7 @@ Created on Thu Oct 16 15:51:20 2014
 from __future__ import absolute_import
 
 
-from fabric.api import cd, prefix, local, put, puts, settings, run, abort, env, task, sudo, prompt  #*
+from fabric.api import cd, prefix, local, puts, settings, run, abort, env, task, sudo, prompt  #*
 #from fabric.utils import *
 
 #from fabric import operations as ops
@@ -17,12 +17,12 @@ from fabric.api import cd, prefix, local, put, puts, settings, run, abort, env, 
 from fabric.contrib import console, files, project
 
 
-from .fab_tools import check_or_create_dirs, inform, warnn, debugmsg, localc, rvenv
+from .fab_tools import inform, warnn, debugmsg, localc, rvenv, install_pkg
 
 from .settings import settings as _S
 
 
-#from pprint import pprint
+from pprint import pprint
 #from datetime import datetime as dt
 import os
 from os.path import join
@@ -74,6 +74,7 @@ def dbg_run():
     
     #_server_rabbitmq_setup()
     #_server_couchdb_setup()
+    #_server_apache2_install()
     #_server_apache2_setup()
 
     #_server_rabbitmq_configure()
@@ -815,6 +816,9 @@ def _install_missing_server_software(tests_passed):
                 _server_couchdb_install()
 #                _server_couchdb_setup()
 #                _server_couchdb_configure()
+                
+            elif test == "pipdjango":
+                _server_djangoapp_install()
 
                 
             else:
@@ -831,33 +835,18 @@ def _server_erlang_install():
     run('mkdir -p %s' % _S.TMPPATH)
     with cd(_S.TMPPATH):
 
-        #old version..        
-        #run('wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/erlang-R16B01-2.1.3.x86_64.rpm')
-        #sudo( 'zypper in erlang-R16B01-2.1.3.x86_64.rpm')
-        
-        sudo("zypper -n in unixODBC")
-
-        # this works on opensuse 13.2
-#        run("wget http://download.opensuse.org/repositories/openSUSE:/13.2/standard/x86_64/erlang-17.1-3.1.11.x86_64.rpm")
-#        run("wget http://download.opensuse.org/repositories/openSUSE:/13.2/standard/x86_64/erlang-epmd-17.1-3.1.11.x86_64.rpm")
-#        sudo("rpm -Uihv erlang-epmd-17.1-1.1.x86_64.rpm erlang-17.1-1.1.x86_64.rpm")
-        
-        #this works on opensuse 13.1?
-#        run("wget http://download.opensuse.org/repositories/devel:/languages:/erlang:/Factory/openSUSE_13.1/x86_64/erlang-epmd-17.4-1.1.x86_64.rpm")
-#        run("wget http://download.opensuse.org/repositories/devel:/languages:/erlang:/Factory/openSUSE_13.1/x86_64/erlang-17.4-1.1.x86_64.rpm")
-#        sudo("rpm -Uihv erlang-epmd-17.4-1.1.x86_64.rpm erlang-17.4-1.1.x86_64.rpm")
-        run("wget http://download.opensuse.org/repositories/server:/database/openSUSE_13.1/x86_64/erlang-epmd-17.4-3.1.x86_64.rpm")
-        run("wget http://download.opensuse.org/repositories/server:/database/openSUSE_13.1/x86_64/erlang-17.4-3.1.x86_64.rpm")
-        sudo("rpm -Uihv erlang-17.4-3.1.x86_64.rpm erlang-epmd-17.4-3.1.x86_64.rpm")
+        install_pkg(_S.PKG.ERLANG)
 
 
 def _server_rabbitmq_install():
+    
     with cd(_S.TMPPATH):
-        run('wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/rabbitmq-server-3.1.5-2.2.2.x86_64.rpm')
-        sudo('rpm -Uihv rabbitmq-server-3.1.5-2.2.2.x86_64.rpm', warn_only=True)
-
-        run("wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/rabbitmq-server-plugins-3.1.5-2.2.2.x86_64.rpm")
-        sudo("rpm -Uhiv rabbitmq-server-plugins-3.1.5-2.2.2.x86_64.rpm")
+        install_pkg(_S.PKG.RABBITMQ)
+#        run('wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/rabbitmq-server-3.1.5-2.2.2.x86_64.rpm')
+#        sudo('rpm -Uihv rabbitmq-server-3.1.5-2.2.2.x86_64.rpm', warn_only=True)
+#
+#        run("wget http://download.opensuse.org/repositories/openSUSE:/13.1/standard/x86_64/rabbitmq-server-plugins-3.1.5-2.2.2.x86_64.rpm")
+#        sudo("rpm -Uhiv rabbitmq-server-plugins-3.1.5-2.2.2.x86_64.rpm")
 
 
 
@@ -872,7 +861,7 @@ def _server_rabbitmq_setup():
     
     sudo("systemctl stop rabbitmq-server")
     sudo("systemctl enable rabbitmq-server")
-    sudo("systemctl restart rabbitmq-server")
+    sudo("systemctl restart rabbitmq-server", warn_only=True)
     sudo("rabbitmqctl status", warn_only=True)
     time.sleep(5)
     sudo("systemctl restart rabbitmq-server")
@@ -910,19 +899,10 @@ def _server_rabbitmq_configure():
 
 
 def _server_couchdb_install():
-
-    with cd(_S.TMPPATH):
-
-        sudo("zypper -n in libmozjs185-1_0 libopenssl-devel")
     
-    #sudo("wget http://download.opensuse.org/repositories/server:/database/openSUSE_13.1/x86_64/couchdb-1.6.1-47.1.x86_64.rpm")
-    #sudo("rpm -Uihv couchdb-1.6.1-47.1.x86_64.rpm")
+    with cd(_S.TMPPATH):
+        install_pkg(_S.PKG.COUCH)
 
-#    sudo("wget http://download.opensuse.org/repositories/server:/database/openSUSE_13.2/x86_64/couchdb-1.6.1-47.1.x86_64.rpm")
-#    sudo("rpm -Uihv couchdb-1.6.1-47.1.x86_64.rpm")
-
-        run("wget http://download.opensuse.org/repositories/server:/database/openSUSE_13.1/x86_64/couchdb-1.6.1-47.1.x86_64.rpm")
-        sudo("rpm -Uihv couchdb-1.6.1-47.1.x86_64.rpm")
     
     # setup initial dirs
     sudo("chown -R couchdb:couchdb /etc/couchdb")
@@ -982,9 +962,11 @@ def _server_couchdb_configure():
     
     
 def _server_apache2_install():
+    
+    install_pkg(_S.PKG.APACHE)
 
-    sudo("zypper -n in apache2")
-    sudo("zypper -n in apache2-mod_wsgi")
+#    sudo("zypper -n in apache2")
+#    sudo("zypper -n in apache2-mod_wsgi")
 
 #    with cd(_S.TMPPATH):
 #        run("wget http://download.opensuse.org/repositories/openSUSE:/13.1:/Update/standard/x86_64/apache2-mod_wsgi-3.4-2.28.1.x86_64.rpm")
@@ -1004,9 +986,10 @@ def _server_apache2_setup():
     sudo("SuSEfirewall2 stop")
     sudo("SuSEfirewall2 start")
 
-    sudo("a2enmod mod_proxy")
-    sudo("a2enmod mod_proxy_http")
-    sudo("a2enmod mod_wsgi")
+    sudo("a2enmod proxy")
+    sudo("a2enmod proxy_http")
+    sudo("a2enmod wsgi")
+    sudo("a2enmod rewrite")
 
     # make ln in /etc/apache2/vhosts.d/ to config in prog dir
     if files.exists(_AP.ORGCONF_PATH, use_sudo=True): # this will be false, if the link exists, but not the target!
@@ -1022,6 +1005,8 @@ def _server_apache2_setup():
 def _server_apache2_configure():
     _AP = _S.APACHE
     sudo("systemctl stop apache2.service")
+    
+    pprint(_AP)
 
     # create/upload config in progdir
     run('mkdir -p {PATH}'.format(**_S.SVCCONFIG))
@@ -1047,9 +1032,10 @@ def _server_apache2_configure():
         
     
 def _server_djangoapp_install():
+
+    install_pkg(_S.PKG.PYTHON)
     
 
-    pass
         
 
 def _server_djangoapp_setup():
@@ -1057,7 +1043,7 @@ def _server_djangoapp_setup():
     
     install_path    = join(_E.INSTALLPATH, _DA.ROOT_DIR)    #subfolder of root dir that contains the django project
     link_path       = join(_E.INSTALLPATH, _DA.LINK_DIR)    # should be called project dir (the main project dir, where wsgi.py and settings are)
-    link_fqfn       = join(link_path, _DA.CONF_NAME)  # where django expects the config file, but a link to the actual config file location here
+    link_fqfn       = join(link_path, _DA.CONF_NAME)  # where django expects the config file, put a link to the actual config file location here
     configfile_path = join(_E.INSTALLPATH, _S.SVCCONFIG.DIR) # this is the actual config file location
     configfile_fqfn = join(configfile_path, _DA.CONF_NAME) # ... and its fqfn
     source_dir      = join(_DA.SRCDIR, '') # add trailing slash
