@@ -15,7 +15,7 @@ import random
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse  # , Http404
 from django.views.decorators.csrf import csrf_exempt
-
+from django.conf import settings
 
 #from couchdbkit.ext.django.loading import get_db
 from couchdbkit import exceptions as CouchExceptions
@@ -173,9 +173,14 @@ def _startRendering(rq, model_id):
     except CouchExceptions.ResourceNotFound as e:
         return JsonResponse({'success': False, 'error': 'Ressource not found (%s)' % e})
 
-    GLASSconfObj = {}    
+    GLASSconfObj = {}
+    config = {
+        'upload_host': settings.UPLOAD_HOST,
+        'upload_user': settings.UPLOAD_USER,
+        'upload_dest': settings.MEDIA_DIR
+    }
     
-    task = runGLASS.delay(GLASSconfObj)
+    task = runGLASS.delay(GLASSconfObj, config)
     print 'task:',task
     print 'taskid:',task.id
 
@@ -185,7 +190,6 @@ def _startRendering(rq, model_id):
     return JsonResponse({'success': True, 'model_id': model_id})
 
 
-def _getRenderingStatus(rq, model_id):
 
     try:
         model = Model.get(model_id)

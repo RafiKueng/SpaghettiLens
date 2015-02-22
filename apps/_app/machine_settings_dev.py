@@ -32,6 +32,12 @@ COUCHDB_DATABASES = (
     ('djangoapp.lenses',    'http://192.168.100.3:5984/lenses'),
 )
 
+STATIC_ROOT = '/data/swlabs/static'
+MEDIA_ROOT = '/data/swlabs/media'
+
+UPLOAD_USER = 'rafik'
+UPLOAD_HOST = '192.168.100.10'
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = ')ir@&^cmbu$e+btd&dske8h&u+u8dy9=mmho*tc171*0f!q@xn'

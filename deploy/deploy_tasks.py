@@ -144,6 +144,7 @@ def deploy_worker():
     if not files.exists('/home/ara/rafik'):
         sudo('mkdir -p /home/ara/rafik')
         sudo('chown rafik:users /home/ara/rafik')
+        sudo('zypper in swig')
         
         
     run('mkdir -p %s' % _E.INSTALLPATH)
@@ -457,6 +458,7 @@ def _build_and_setup_glass(doBuild = True):
     with cd(tmp_build_dir):
         
         debugmsg('if this fails, make sure to have swig installed: zypper in swig')
+        run('git fetch') # make a pull if tmp is around, but not up to date
         run('git checkout %s' % _GL.COMMIT)
         
         if doBuild:
@@ -502,7 +504,7 @@ def _build_and_setup_glass(doBuild = True):
     
     # path the env for glass ext libs
     sstr  = 'LD_LIBRARY_PATH="$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH"\nexport LD_LIBRARY_PATH\n\n'
-    sstr += 'PYTHONPATH="$PYTHONPATH:{ROOT_PATH}/_current/{EXTAPPS.DIR}/glpk"\nexport PYTHONPATH\n'.format(**_S)
+    sstr += 'PYTHONPATH="$PYTHONPATH:{ROOT_PATH}/_current/{EXTAPPS.DIR}/glpk:{ROOT_PATH}/_current/{EXTAPPS.DIR}"\nexport PYTHONPATH\n'.format(**_S)
     files.append(venv_setenv_path, sstr)
     files.append(venv_activate_path, 'source setenv')
 

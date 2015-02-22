@@ -16,3 +16,4 @@ Celery>=3.1.17,<3.2
 flower
 
 puka #for rabbitmq connection during testing
+scp

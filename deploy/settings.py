@@ -211,7 +211,7 @@ _.EXTAPPS.DIR                   = 'ext_apps'
 _.GLASS                         = AttrDict()
 _.GLASS.TMPBUILDDIR             = 'tmp_glass'
 _.GLASS.REPROURL                = 'https://github.com/RafiKueng/glass.git'
-_.GLASS.COMMIT                  = '64b2be69'
+_.GLASS.COMMIT                  = '8c3dd2c' #'64b2be69'
 
 
 

@@ -24,11 +24,15 @@ DATABASES = {
 }
 
 COUCHDB_DATABASES = (
-    ('djangoapp.spaghetti', 'http://127.0.0.1:5984/spaghetti'),
-    ('djangoapp.lenses',    'http://127.0.0.1:5984/lenses'),
+    ('djangoapp.spaghetti', 'http://192.168.100.3:5984/spaghetti'),
+    ('djangoapp.lenses',    'http://192.168.100.3:5984/lenses'),
 )
 
 STATIC_ROOT = '/data/swlabs/static'
+MEDIA_ROOT = '/data/swlabs/media'
+
+UPLOAD_USER = 'rafik'
+UPLOAD_HOST = '192.168.100.10'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = ')ir@&^cmbu$e+btd&dske8h&u+u8dy9=mmho*tc171*0f!q@xn'
