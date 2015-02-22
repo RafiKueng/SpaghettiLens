@@ -17,3 +17,4 @@ flower
 
 puka #for rabbitmq connection during testing
 scp
+paramiko
