@@ -45,21 +45,41 @@ _E = env
 
 
 @task()
-def update_files(): #TODO this is broken after major cleanup.. but was unreliable on the fristplace
+def update_server_django():
     '''just uploads the files, usefull for testing the unittests on tmp server
 
     only works after one successful deploy_server    
     '''
-    #_E.INSTALLPATH = '/tmp/swlabs' #'real' install dir
-    #_copy_files_server()
-    
+    _E.INSTALLPATH = _S.ROOT_PATH
+    _server_djangoapp_setup()
+
+
+@task()
+def update_worker_django():
+    '''just uploads the files for django
+
+    only works after one successful deploy_worker
+    '''
+    _E.INSTALLPATH = os.path.join(_S.ROOT_PATH, '_current')
+    _server_djangoapp_setup()
+
+
+@task()
+def update_worker_glass():
+    '''just uploads the files for glass
+
+    only works after one successful deploy_worker
+    '''
+    _E.INSTALLPATH = os.path.join(_S.ROOT_PATH, '_current')
+    _worker_build_and_setup_glass(doBuild=True, commit="1f1f352")
     
     
 @task()
 def test_srv():
-    #_generate_version_information()
-    _upload_tests()
-    _test_server_setup()
+    _generate_version_information()
+    #_upload_tests()
+    #_test_server_setup()
+
 
 
 
@@ -81,7 +101,11 @@ def dbg_run():
     #_server_couchdb_configure()
     #_server_apache2_configure()
 
-    _upload_tests()
+    #_upload_tests()
+#    _worker_setup_ssh()
+    
+    
+    
 
 @task()
 def deploy_server():
@@ -108,7 +132,7 @@ def deploy_server():
     
     _E.SERVERSETUPTEST_PASSED = _test_server_setup_in_adv()
     
-    _install_missing_server_software(_E.SERVERSETUPTEST_PASSED)
+    _server_install_missing_server_software(_E.SERVERSETUPTEST_PASSED)
     _pypipvenv_install(_S.SRC.PIP_REQ_FILE_SRV)
 
     _server_rabbitmq_setup()
@@ -149,14 +173,45 @@ def deploy_worker():
         
     run('mkdir -p %s' % _E.INSTALLPATH)
 
+    # if debug: use bkup if available
+    bkupdir = join(_S.TMPDIR, 'pyenv_bkup') # used for debug to bkup the pyenv dir (faster compile)
+#    print bkupdir
+#    print 'restore:'
+#    print join(bkupdir,'.')
+#    print join(_E.INSTALLPATH, _S.PYENV_DIR)
+#    print 'save:'
+#    print join(_E.INSTALLPATH, _S.PYENV_DIR, '.')
+#    print bkupdir
+    if DEBUG:
+        if files.exists(bkupdir):
+            src = join(bkupdir,'.')
+            dest = join(_E.INSTALLPATH, _S.PYENV_DIR)
+            debugmsg("backup of pyenv exists, copying this..")
+            debugmsg("this     : "+src)
+            debugmsg("into this: "+dest)
+            
+            run("mkdir -p %s" % dest)
+            run("cp -a %s %s" % (src, dest))
+
     _pypipvenv_install(_S.SRC.PIP_REQ_FILE_WRK)
 
+    #make bakup for faster compile (if debug)
+    if DEBUG:
+        if not files.exists(bkupdir):
+            src = join(_E.INSTALLPATH, _S.PYENV_DIR, '.')
+            dest = bkupdir
+            debugmsg("creating backup of pyenv dir for next time")
+            debugmsg("this     : "+src)
+            debugmsg("into this: "+dest)
+            run("mkdir -p %s" % dest)
+            run("cp -a %s %s" % (src, dest))
+    
 
     _server_djangoapp_install()
     _server_djangoapp_setup()
     _server_djangoapp_configure()
 
-    _build_and_setup_glass(doBuild=True)
+    _worker_build_and_setup_glass(doBuild=True)
 
 #    with cd(_E.INSTALLPATH):
 #
@@ -173,6 +228,7 @@ def deploy_worker():
 #            pass # we already enabled site packages, because no need to build numpy..
 #
 
+    _worker_setup_ssh()
 
     _upload_tests()
     
@@ -190,6 +246,18 @@ def deploy_worker():
         
         
     # create startup scripts
+    _CY = _S.CELERY
+    settings = {
+        "TIMESTAMP": env.TIMESTAMP,
+        "PYENVACTVATE" : join(_S.ROOT_PATH, '_current', _S.PYENV_DIR, 'bin', 'activate'),
+        "DJANGODIR": join(_S.ROOT_PATH, '_current', _S.DJANGOAPP.ROOT_DIR)
+    }
+    run("mkdir -p %s" % _S.BIN_PATH)
+    src = join(_S.SRC.TEMPLATES, _CY.STARTSCRIPT_TMPL)
+    dest = join(_S.BIN_PATH, _CY.STARTSCRIPT_NAME)
+    files.upload_template(src, dest, context = settings)
+    run("chmod +x %s" % dest)
+
 
 
 
@@ -435,7 +503,7 @@ Check commit your changes and merge with master, then test, then update the work
             
             
             
-def _build_and_setup_glass(doBuild = True):
+def _worker_build_and_setup_glass(doBuild = True, commit=None):
     '''compile glass and its libraries with the make file in a temp dir and then rearrange things'''
     
     inform('Building and setting up glass')
@@ -459,14 +527,18 @@ def _build_and_setup_glass(doBuild = True):
         
         debugmsg('if this fails, make sure to have swig installed: zypper in swig')
         run('git fetch') # make a pull if tmp is around, but not up to date
-        run('git checkout %s' % _GL.COMMIT)
+        if not commit: #only set the commit for debut puroses in the function. use settings file
+            commit = _GL.COMMIT
+        else:
+            debugmsg("Overwriting the glass git commit hash!!!")
+        run('git checkout %s' % commit)
         
         if doBuild:
             with settings(warn_only=True):
                 run('make -j4')
             run('make')
         else:
-            debugmsg('skipping building, because DEBUG is on..')
+            debugmsg('skipping building, because flag tells so..')
 
 # IT DOESN"T WORK IF DONE INSTIDE OF VENV.. prob because we use system numpy. (import error on numpy/..something...h)
 #
@@ -499,7 +571,10 @@ def _build_and_setup_glass(doBuild = True):
             }))
         
     with cd(venv_lib_path):
-        run('ln -s libglpk.so.0.32.0 libglpk.so.0')
+        c = run('ln -s libglpk.so.0.32.0 libglpk.so.0', warn_only=True)
+        if c.failed:
+            warnn("error happend, check log")
+            prompt('Any key to continue, ctrl-c to abort')
             
     
     # path the env for glass ext libs
@@ -773,7 +848,7 @@ def _test_server_setup():
 
 
 
-def _install_missing_server_software(tests_passed):
+def _server_install_missing_server_software(tests_passed):
     '''if ceratin server software is not installed, then do it and set it up properly
     
     #TODO: for now only breaks the flow if failed    
@@ -829,6 +904,27 @@ def _install_missing_server_software(tests_passed):
 
 
 
+
+
+def _worker_setup_ssh():
+    
+    SRV = _S.SERVERHOST
+    
+    print files.exists('~/.ssh/id_rsa')
+    
+    if not files.exists('~/.ssh/id_rsa'):
+        warnn("No ssh keys found on this host. Create one for automatic login to server")
+        run('ssh-keygen', warn_only=True)
+
+    # add the server to the list of known hosts
+    run("ssh-keygen -R %s" % SRV) # first remove if already in list, prevents duplicate entries
+    run("ssh-keyscan -H %s >> ~/.ssh/known_hosts" % SRV)
+    
+    # copy my id to the server        
+    run("ssh-copy-id %s" % SRV)
+    
+    # try to log in
+    run("ssh %s 'echo running remote'" % SRV)
 
 
 

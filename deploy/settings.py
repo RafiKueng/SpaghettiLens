@@ -41,6 +41,11 @@ _.WORKER_PROD_HOSTS = ['taurus.physik.uzh.ch']
 _.SERVER_TEST_HOST  = ['192.168.100.10']
 _.SERVER_PROD_HOST  = ['swlabs.physik.uzh.ch']
 
+# where is the server located
+# used for worker to connect to
+# will be overwritten below in role specific part
+_.SERVERHOST = "127.0.0.1" 
+
 
 #
 # which packages to install
@@ -65,7 +70,7 @@ _.PKG.COUCH                     = [
         'name': 'couchdb',
         'requ': ('libmozjs185-1_0', 'libopenssl-devel'),
         'path': ('server:', 'database', _.PKG.OSVER,_.PKG.ARCH),
-        'file': 'couchdb-1.6.1-51.1.x86_64',
+        'file': 'couchdb-1.6.1-54.1.x86_64',
         'ext' : '.rpm'
     })]
 
@@ -138,22 +143,27 @@ _.PKG.PYTHON = [
 
 
 
+
 _.PYENV_DIR                     = 'py_env'
 
 _.TMPDIR                        = 'ttemp'
 _.TMPPATH_                      = lambda: join(_.ROOT_PATH, _.TMPDIR)
 
+# is set per task / role
+#_.BIN_PATH                     = lambda: join(_.ROOT_PATH, 'bin')
 
 
-
+# for server
 _.ROOT_PATH                     = '/data/labs.spacewarps.org'
 _.HOST                          = 'labs.spacewarps.org'
 
 
-
-
 _.HTDOCS_DIR                    = 'htdocs'
 _.HTDOCS_PATH_                  = lambda: join(_.ROOT_PATH, _.HTDOCS_DIR)
+
+
+
+
 
 
 '''
@@ -291,6 +301,14 @@ _.DJANGOAPP.REQ_FOLDERS         = [das.STATICFOLDER, das.MEDIAFOLDER]
 
 
 
+#
+# stuff fot the worker
+#
+_.CELERY                        = AttrDict()
+_.CELERY.STARTSCRIPT_TMPL       = 'start_celery' # the filename in tmpl folder in repro
+_.CELERY.STARTSCRIPT_NAME       = 'start_celery' # the name on the worker (inside _.BIN_PATH)
+
+
 # NOT TRUE ANYMORE.. I HOPE PORTNUMERSS ECT WORK AS STRINGS AS WELL
 # Attention: in the final config file (which is a python file) strings have
 # to be escaped!! So use:
@@ -332,7 +350,7 @@ if len(env.tasks)==1 and len(env.roles)==1:
     
     # WORKER related tasks
 #    print '>%s<' % task
-    if task in ['deploy_worker',]:
+    if task in ['deploy_worker','update_worker_django', 'update_worker_glass']:
         
         _.ROLEDEFS = {
             'dev'   : {'hosts': _.WORKER_DEV_HOSTS},
@@ -342,18 +360,27 @@ if len(env.tasks)==1 and len(env.roles)==1:
         
         if role == 'dev':
             _.ROOT_PATH = '/tmp/app/swl_worker'
-            _.BIN_DIR   = '/tmp/app/swl_worker_bin'
+            _.BIN_PATH  = '/tmp/app/swl_worker_bin'
             _.TMPDIR    = '/tmp/app/swl_worker_tmp'
+            _.SERVERHOST = "127.0.0.1"
+
+
+        if role == "test":
+            _.SERVERHOST = "127.0.0.1"
             
-        elif role in ['test', 'prod']:
+        if role == "prod":
+            _.SERVERHOST = "swlabs.physik.uzh.ch" 
+            
+         
+        if role in ['test', 'prod']:
             _.ROOT_PATH = '/home/ara/rafik/swlabs_worker'
-            _.BIN_DIR   = '/home/ara/rafik/local_bins'
+            _.BIN_PATH  = '/home/ara/rafik/local_bins'
             _.TMPDIR    = '/home/ara/rafik/worker_tmp'
             
             
 
     # SERVER related tasks            
-    elif task in ['deploy_server', 'update_files', 'test_srv', 'dbg_run']:
+    elif task in ['deploy_server', 'update_server_django', 'test_srv', 'dbg_run']:
         
         _.ROLEDEFS = {
             'test'  : {'hosts': _.SERVER_TEST_HOST},
@@ -367,7 +394,7 @@ if len(env.tasks)==1 and len(env.roles)==1:
         elif role in ['test', 'prod']:
             _.ROOT_PATH = '/data/swlabs'
             _.TMPDIR    = 'srv_tmp'
-            _.BIN_DIR   = '/data/swlabs/_bin'
+            _.BIN_PATH  = '/data/swlabs/_bin'
             
         else:
             abort("role not found")

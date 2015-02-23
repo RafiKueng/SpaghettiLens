@@ -177,7 +177,7 @@ def _startRendering(rq, model_id):
     config = {
         'upload_host': settings.UPLOAD_HOST,
         'upload_user': settings.UPLOAD_USER,
-        'upload_dest': settings.MEDIA_DIR
+        'upload_dest': settings.MEDIA_ROOT
     }
     
     task = runGLASS.delay(GLASSconfObj, config)
@@ -190,7 +190,8 @@ def _startRendering(rq, model_id):
     return JsonResponse({'success': True, 'model_id': model_id})
 
 
-
+def _getRenderingStatus(rq, model_id):
+    
     try:
         model = Model.get(model_id)
     except CouchExceptions.ResourceNotFound as e:

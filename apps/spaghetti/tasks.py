@@ -17,21 +17,24 @@ from glass.command import command, Commands
 from glass.exmass import * #PointMass
 from glass.exceptions import GLInputError
 
+import matplotlib as mpl
+from matplotlib import pyplot as plt
+import pylab as pl
 
 #from celery import shared_task
 from _app.celery import app
 
 
-@app.task(bind=True)
-def runGLASS(self, jsonGLASSconfig):
-    
-    for i in range(40):
-        print i
-        time.sleep(0.5)
-        if not self.request.called_directly:
-            self.update_state(state='PROGRESS', meta={'solutions': ( i, 40)})
-    
-    return {}
+#@app.task(bind=True)
+#def runGLASS(self, jsonGLASSconfig):
+#    
+#    for i in range(40):
+#        print i
+#        time.sleep(0.5)
+#        if not self.request.called_directly:
+#            self.update_state(state='PROGRESS', meta={'solutions': ( i, 40)})
+#    
+#    return {}
 
 
 
@@ -57,10 +60,10 @@ def runGLASS(self, jsonGLASSconfig, config):
     
     def update_status(args):
         text = args['text']
-        i, n = args['progress']
+        i, n = map(str, args['progress'])
 
         if not this.request.called_directly:
-            this.update_state(state='PROGRESS', meta={'text':text, 'solutions': ( i, n)})
+            this.update_state(state='PROGRESS', meta={'text':text, 'solutions': (i, n)})
 
         print ' '.join([text, i, 'of', n])
 
@@ -83,7 +86,7 @@ def runGLASS(self, jsonGLASSconfig, config):
 
     glass_basis('glass.basis.pixels', solver='rwalk')
     meta(author='Jonathan Coles', notes='Just testing')
-    setup_log('B1115.log', stdout=False)
+    setup_log('B1115.log', stdout=True)
     samplex_random_seed(0)
     samplex_acceptance(rate=0.25, tol=0.15)
     exclude_all_priors()
@@ -102,7 +105,7 @@ def runGLASS(self, jsonGLASSconfig, config):
     globject('B1115+080')
     
     zlens(0.31)  
-    pixrad(5)
+    pixrad(6)
     steepness(0,None)
     smooth(2,include_central_pixel=False)
     local_gradient(45)
@@ -124,8 +127,12 @@ def runGLASS(self, jsonGLASSconfig, config):
     figpath = '/tmp/spaghettilens/'
     name = 'testing'
     path = os.path.join(figpath, name)
-    os.makedirs(path,exist_ok=True)
 
+    try: # this prevents a race condition
+        os.makedirs(path)
+    except OSError:
+        if not os.path.isdir(path):
+            raise
 
     update_status({'text':'create files', 'progress':(0,5)})   
     
@@ -159,7 +166,7 @@ def runGLASS(self, jsonGLASSconfig, config):
     
     env().srcdiff_plot_adv(env().ensemble_average, night=True, upsample=8)
     env().overlay_input_points(env().ensemble_average)
-    pl.savefig(os.path.join(path, 'img3_ipol.png', facecolor='black', edgecolor='none'))
+    pl.savefig(os.path.join(path, 'img3_ipol.png'), facecolor='black', edgecolor='none')
     pl.close()
     update_status({'text':'create files', 'progress':(5,5)})
 

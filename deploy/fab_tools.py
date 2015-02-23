@@ -99,7 +99,11 @@ def install_pkg(pkgs):
     for pkg in pkgs:
         
         if pkg.requ:
-            api.sudo("zypper -n in %s" % " ".join(pkg.requ))
+            c=api.sudo("zypper -n in %s" % " ".join(pkg.requ), warn_only=True)
+            if c.failed:
+                warnn('There was an error. (You did press Ctrl+c..) Check the log!')
+                api.prompt('Any key to continue, ctrl-c again to abort')
+            
 
         if pkg.file:
             lnk = '/'.join((_S.PKG.PREFIX,) + pkg.path + (pkg.file,)) + pkg.ext
@@ -112,4 +116,4 @@ def install_pkg(pkgs):
         c = api.sudo("rpm -Uihv %s" % " ".join(pkgnames), warn_only=True)
         if c.failed:
             warnn('There was an error. Check the log!')
-            api.promt('Any key to continue, ctrl-c to abort')
+            api.prompt('Any key to continue, ctrl-c to abort')
