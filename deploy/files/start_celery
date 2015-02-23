@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+# starts the celery worker
+#
+# generated/uploaded by install script
+#
+# rafik -- %(TIMESTAMP)s
+
+source %(PYENVACTVATE)s
+cd %(DJANGODIR)s
+
+celery -A _app worker -l info
