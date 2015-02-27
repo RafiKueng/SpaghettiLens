@@ -38,6 +38,7 @@ class Model(cdb.Document):
     glass = cdb.DictProperty()
 
     task_id = cdb.StringProperty()
+    rendered = cdb.BooleanProperty()
     
     def __unicode__(self):
         return "<u spaghetti.models.Model id:%s>" % self._id[0:8]

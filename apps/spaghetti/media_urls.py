@@ -11,4 +11,10 @@ urlpatterns = patterns('',
     url(r'^(?P<hash1>[0-9a-fA-F]{2})/(?P<hash2>[0-9a-fA-F]{7})/(?P<filename>\w+)\.(?P<ext>\w+)$',
         views.getMedia, name='getMedia'),
 
+#    # using shortcuts
+#    url(r'^(?P<hash1>[0-9a-fA-F]{4})-(?P<hash2>[0-9a-fA-F]{4})/(?P<filename>\w+)\.(?P<ext>\w+)$',
+#        views.getMedia, name='getMediaShort'),
+
+        
+
 )

@@ -12,11 +12,6 @@ from paramiko import SSHClient
 from scp import SCPClient
 import paramiko
 
-from glass.environment import env, Environment
-from glass.command import command, Commands
-from glass.exmass import * #PointMass
-from glass.exceptions import GLInputError
-
 import matplotlib as mpl
 from matplotlib import pyplot as plt
 import pylab as pl
@@ -40,21 +35,31 @@ from _app.celery import app
 
 
 
-@command('Load a glass basis set')
-def glass_basis(env, name, **kwargs):
-    #print __builtins__
-    env.basis_options = kwargs
-    f = __import__(name, globals(), locals())
-    for name,[f,g,help_text] in Commands.glass_command_list.iteritems():
-        if __builtins__.has_key(name):
-            print 'WARNING: Glass command %s (%s) overrides previous function %s' % (name, f, __builtins__[name])
-        __builtins__[name] = g
-
-
-
 
 @app.task(bind=True)
 def runGLASS(self, jsonGLASSconfig, config):
+
+    # don't take this outside, because only the worker has glass installed,
+    # the webserver doesn't
+    # so there will be import errors
+
+    from glass.environment import env, Environment
+    from glass.command import command, Commands
+    from glass.exmass import PointMass
+    from glass.exceptions import GLInputError
+
+
+    @command('Load a glass basis set')
+    def glass_basis(env, name, **kwargs):
+        #print __builtins__
+        env.basis_options = kwargs
+        f = __import__(name, globals(), locals())
+        for name,[f,g,help_text] in Commands.glass_command_list.iteritems():
+            if __builtins__.has_key(name):
+                print 'WARNING: Glass command %s (%s) overrides previous function %s' % (name, f, __builtins__[name])
+            __builtins__[name] = g
+
+
     
     this = self
     

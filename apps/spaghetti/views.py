@@ -11,11 +11,14 @@ from __future__ import absolute_import
 #import json
 import datetime
 import random
+import os
 
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse  # , Http404
+from django.http import HttpResponse, JsonResponse, HttpResponsePermanentRedirect  # , Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+from django.core.servers.basehttp import FileWrapper
+
 
 #from couchdbkit.ext.django.loading import get_db
 from couchdbkit import exceptions as CouchExceptions
@@ -145,7 +148,8 @@ def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
         obj = {},
         glass = {},
     
-        task_id = None
+        task_id = None,
+        rendered = False,
     )
     
     model._id = model_id
@@ -181,13 +185,15 @@ def _startRendering(rq, model_id):
     }
     
     task = runGLASS.delay(GLASSconfObj, config)
-    print 'task:',task
-    print 'taskid:',task.id
+    status = task.status.lower()
+
+#    print 'task:',task
+#    print 'taskid:',task.id
 
     model.task_id = task.id
     model.save()
     
-    return JsonResponse({'success': True, 'model_id': model_id})
+    return JsonResponse({'success': True, 'status': status, 'model_id': model_id, 'progress':{}})
 
 
 def _getRenderingStatus(rq, model_id):
@@ -197,24 +203,36 @@ def _getRenderingStatus(rq, model_id):
     except CouchExceptions.ResourceNotFound as e:
         return JsonResponse({'success': False, 'error': 'Ressource not found (%s)' % e})
     
+    # if alredy rendered
+    if model.rendered:
+        return JsonResponse({'success': True, 'status': 'done', 'progress': {}})
+    # something odd, rendering not complete, but no task id (_startRendering was not called, should not happen)
+    elif model.task_id == '':
+        return _startRendering(rq, model_id)
+        
+        
+        
     task = runGLASS.AsyncResult(model.task_id)
-
-    print 'task:',task
-    print 'taskid:',task.id
-    print "task.status:", task.status    
-    print "task.info:", task.info    
+        
+#    print 'task:',task
+#    print 'taskid:',task.id
+#    print "task.status:", task.status    
+#    print "task.info:", task.info    
     
-    prog = {
-        'solutions': (6,600),
-        'models': (0,400),
-        'images': (0,4)
-    }
+#    prog = {
+#        'solutions': (6,600),
+#        'models': (0,400),
+#        'images': (0,4)
+#    }
 
     prog = task.info
     
-    stat = "done" # done | pending
+#    stat = "done" # done | pending
     stat = task.status.lower()
     
+    if stat == "done":
+        model.task_id = ""
+        model.save()
 
     return JsonResponse({'success': True, 'status': stat, 'progress': prog})
 
@@ -232,13 +250,84 @@ def _testing(rq, bla):
 
 
 
-
+#
+# This should not (yet) happen. Here I would need to start the image generation
+# pipeline for files that don't exist.
+# If the file exists in the database, it should be served by the webserver directly
+#
 def getMedia(rq, hash1, hash2, filename, ext):
+    
     print '; '.join([hash1, hash2, filename, ext])
     return HttpResponse("ok "+ '; '.join([hash1, hash2, filename, ext]))
 
 
 
+    idd = (hash1+hash2).lower() # can be full or reduced 3x3 form
+
+    # someone gave a short id, which is not really supported
+    if len(idd) == 8:
+#        sid = hash1 + "-" + hash2
+#        try:
+#            idd = Lens.view('lenses/Lenses__by_name', key=sid).one(except_all=True)['id']
+#        except CouchExceptions.MultipleResultsFound:
+#            return HttpResponse("failed, multiple", status=404)
+#        except CouchExceptions.NoResultFound:
+#            return HttpResponse("failed, none", status=404)
+#        except KeyError:
+#            return HttpResponse("failed, key", status=404)
+        return HttpResponse("failed, hashid wrong", status=404)
+
+    # now, here I'm sure to have the full idd
+
+    available_plots = [
+        'kappa_plot',
+        'arrival_plot',
+        'srcdiff_plot',
+        'srcdiff_plot_adv'
+    ]
+    
+    redirect_filenames = {
+        'img1': 'arrival_plot',
+        'img2': 'kappa_plot',
+        'img3': 'srcdiff_plot',
+        'img3_ipol': 'srcdiff_plot_adv'
+    }
+    
+    if filename in redirect_filenames.keys():
+        newname = redirect_filenames[filename]
+        return HttpResponsePermanentRedirect('/'.join(['','media', 'spaghetti', hash1, hash2, newname+'.'+ext]))
+        
+    if filename not in available_plots:
+        return HttpResponse("failed, this plot is not available", status=404)
+
+    # create the filenames in the storage
+    #TODO: hardcoded paths are in here!!
+    ddir = os.path.join(os.getcwd(), '../media/spaghetti', idd[:2], idd[2:])
+    fname = '%s.%s' % (filename, ext)
+    fpath = os.path.join(ddir, fname)
+    
+    # prepare the response already (will be sent if already exists or at end)
+    # check if file already exists, then send it
+    try:
+        wrapper = FileWrapper(file(fpath))
+        response = HttpResponse(wrapper, content_type='image/%s'%ext)
+        response['Content-Length'] = os.path.getsize(fpath)
+        #print "shortcut"
+        return response    
+    except IOError: # file does not exist: go on 
+        pass 
+
+    
+    return HttpResponse("failed, server error, file not found", status=500)    
+
+
+
+
+
+
+
+
+#def getMediaShort():
 
 
 
