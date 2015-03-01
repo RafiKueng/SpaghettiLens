@@ -253,7 +253,7 @@ class EvalAndSaveJSON:
 #    print "EAS: create mr"
 #    self.createModellingResult()
 #    print "EAS: create cfg"
-#    self.createConfigFile()    
+    self.createConfigFile()    
     print "EAS: done"
         
 #  def __setitem__(self, key, value):
@@ -410,31 +410,38 @@ class EvalAndSaveJSON:
   def createConfigFile(self):
     #print "in cfg: start"
     #print self.result_id
+    self._.result_id = 000000
 
-    self.logfilename = "../tmp_media/%06i/log.txt" % self.result_id
+    self._.logfilename = "../tmp_media/%06i/log.txt" % self._.result_id
     try:
       cat_name = "__" + str(self.lens_data_obj.catalog.name)
     except:
       cat_name = ""
-    self.lensidentifier = str(self.result_id) + "__" + str(self.lens_data_obj.name) + cat_name
-    self.statefilepath = "../tmp_media/%06i/state.txt" % self.result_id
-    self.imgpath = "../tmp_media/%06i/" % self.result_id
-    self.img_name = "img%i.png"
+#    self.lensidentifier = str(self.result_id) + "__" + str(self.lens_data_obj.name) + cat_name
+    self._.lensidentifier = "lensidddd"
+    self._.statefilepath = "../tmp_media/%06i/state.txt" % self._.result_id
+    self._.imgpath = "../tmp_media/%06i/" % self._.result_id
+    self._.img_name = "img%i.png"
     
-    self.cfg_path = "../tmp_media/%06i/" % self.result_id
-    self.cfg_file = "cfg.gls"
+    self._.cfg_path = "../tmp_media/%06i/" % self._.result_id
+    self._.cfg_file = "cfg.gls"
 
-    _ = self
+    self._.cfg_path = "/tmp/" # % self.result_id
+    self._.cfg_file = "cfg.gls"
+
+
+    _ = self._
     
     #print "start gls"
     
     gls = [
-      "# LMT_GLS_%s" % settings.GLS_VERSION ,
-      "# LMT_%s" % settings.LMT_VERSION ,
+#      "# LMT_GLS_%s" % settings.GLS_VERSION ,
+#      "# LMT_%s" % settings.LMT_VERSION ,
       "import matplotlib as mpl"                                            ,
       "import pylab as pl"                                                  ,
       "glass_basis('glass.basis.pixels', solver='rwalk')"                   ,
-      "meta(author='%s', notes='using LensModellingTools')" % _.user_str    ,
+#      "meta(author='%s', notes='using LensModellingTools')" % _.user_str    ,
+      "meta(author='%s', notes='using LensModellingTools')" % 'some user'    ,
       "setup_log('%s')" % _.logfilename                                     ,
       "samplex_random_seed(0)"                                              ,
       "samplex_acceptance(rate=0.25, tol=0.15)"                             ,
@@ -528,12 +535,12 @@ class EvalAndSaveJSON:
     # append LMT data object
     gls.extend([
       "LMT={",
-      " 'svgViewport' : %i,"     % _.svgViewportSize,
-      " 'orgImgSize'  : %i,"     % _.orgImgSize,
-      " 'pxScale'     : %.5f,"   % _.pxScale,
-      " 'orgPxScale'  : %.5f,"   % _.orgPxScale,
-      " 'gls_version' : '%s',"   % settings.GLS_VERSION ,
-      " 'lmt_version' : '%s',"   % settings.LMT_VERSION ,
+#      " 'svgViewport' : %i,"     % _.svgViewportSize,
+#      " 'orgImgSize'  : %i,"     % _.orgImgSize,
+#      " 'pxScale'     : %.5f,"   % _.pxScale,
+#      " 'orgPxScale'  : %.5f,"   % _.orgPxScale,
+#      " 'gls_version' : '%s',"   % settings.GLS_VERSION ,
+#      " 'lmt_version' : '%s',"   % settings.LMT_VERSION ,
       "}"
     ])
  
