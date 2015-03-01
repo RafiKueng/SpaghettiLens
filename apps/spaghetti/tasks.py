@@ -40,8 +40,12 @@ from _app.celery import app
 def runGLASS(self, GLASSconfig, config):
     
     print '='*80
-    print "got config:\n"
+    print "got GLASSconfig:\n"
     for k, v in GLASSconfig.items():
+        print '%-16s : %s' % (k,v)
+    print '='*80
+    print "got config:\n"
+    for k, v in config.items():
         print '%-16s : %s' % (k,v)
     print '='*80
 
@@ -159,7 +163,11 @@ def runGLASS(self, GLASSconfig, config):
 #                    C,'sad', None,
 #                    D,'sad', 11.7)
 
+    print GC['source']
     source(*GC['source'])
+
+    for i, exm in enumerate(GC['ext_masses']):
+        external_mass(PointMass(exm['x'],exm['y'],name='PM%02i'%i), (0, exm['m']))
 
                     
     update_status({'text':'started modelling', 'progress':(0,0)})   

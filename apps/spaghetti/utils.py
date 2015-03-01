@@ -4,6 +4,7 @@ from django.conf import settings
 import json
 import os
 from attrdict import AttrDict
+import numpy as np
 
 class Point(object):
   def __init__(self, x, y, _type='min', _delay="", child1=None, child2=None, wasType=""):
@@ -133,6 +134,8 @@ class ExtMass(object):
   # changes the pixel values to relative values
   # and the massses/radius to arcsec
   # note: origin is and stays in pixels!!
+
+  #TOODO clean this up! limits not working any more correctly, only mode with one numer (= will be interpretes as upper limit)
   def changePxToArcsec(self, origin, pxScale):
 
     # rescale the location
@@ -142,10 +145,13 @@ class ExtMass(object):
     # convert the radius in px to mass in arcsec
     #f = 1.0 * viewport/imgSize * pxScale
     f = pxScale
-    m     = self.m_px*f     if self.m_px     else None 
+
+    r     = self.m_px*f     if self.m_px     else None 
     m_min = self.m_px_min*f if self.m_px_min else None 
     m_max = self.m_px_max*f if self.m_px_max else None 
-    
+
+    m = r**2 * np.pi
+
     if not m_min and not m_max and m: #-1 or None
       if self.derr1:
         self.m = None
@@ -172,6 +178,13 @@ class ExtMass(object):
     self.init = True
     return self
     
+    
+  def toDict(self):
+      return {
+        'x': self.x,
+        'y': self.y,
+        'm': self.m #* 1e-6, #TODO fix this
+      }
 
 
 
@@ -179,8 +192,7 @@ class EvalAndSaveJSON:
   
   def __init__(self, user_str, data_obj, jsonStr, is_final, prefs={}):
       
-    self.obj = AttrDict()
-    self._ = self.obj
+    self._ = AttrDict()
 #    _ = self.obj
 
     #print "init easj"
@@ -388,10 +400,10 @@ class EvalAndSaveJSON:
     print 'adding external masses'
     print 'origin:', origin
     self._.ext_masses = []
-    for m in self._.jsonObj["ExternalMasses"]:
+    for mass in self._.jsonObj["ExternalMasses"]:
       # note: origin is and stays in pixels!!
-      self._.ext_masses.append(m.changePxToArcsec(origin, self._.pxScale))
-      print m
+      self._.ext_masses.append(mass.changePxToArcsec(origin, self._.pxScale))
+      print mass
    
   
   
@@ -583,11 +595,11 @@ class EvalAndSaveJSON:
       
       self._.source = []
       
-      self._.source.append(self._.z_lens)
+      self._.source.append(self._.z_src)
       for i, pnt in enumerate(self._.points):
           self._.source.extend(pnt.toGLSLst(i))
           
-      print "in eval:", self._.source
+      print "in eval (source):", self._.source
 
       points = []
       for pnt in self._.points:
@@ -597,4 +609,20 @@ class EvalAndSaveJSON:
       
       self._.jsonObj = ""
       
-      return dict(self._)
+      print "in eval (source2:", self._.source
+      print dict(self._)['source']
+
+      exms = []
+      for exm in self._.ext_masses:
+          exms.append(exm.toDict())
+
+      if len(self._.ext_masses) >0:
+          self._.include_priors.append('external_mass')
+      
+      
+      d = dict(self._) #TODO this forgets about the source, check why!!!
+      d['source'] = self._.source
+      d['ext_masses'] = exms
+      d['include_priors'] = self._.include_priors
+      
+      return d

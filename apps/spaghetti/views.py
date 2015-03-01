@@ -139,6 +139,13 @@ def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
     obj = EASJobj.getDict()
 
     print "after eval and save"
+
+    print '='*80
+    print "EASJobj:"
+    for k, v in EASJobj.__dict__['_'].items():
+        print "%-16s : %s" % (k, v)
+    print '='*80
+        
     
     print '='*80
     print "parsed data obj:"
