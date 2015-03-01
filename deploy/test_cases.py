@@ -19,9 +19,7 @@ from fabric.api import run, env, cd, local, hide, warn_only, sudo
 from .settings import settings as _S
 
 
-
-
-_E = env
+#_E = env
 
 
 
@@ -36,6 +34,17 @@ def _lsudo(cmd):
     with hide('running', 'output', 'warnings'), warn_only():
         return local('sudo '+cmd, capture=True)
 
+#
+# alternate approach not using existing fabic,,
+#
+#import shlex, subprocess
+#
+#def _local(cmd):
+#    args = shlex.split(cmd)
+#    p = subprocess.Popen(args)
+#    p.wait()
+#    return p.returncode
+    
 
 
 #
@@ -139,7 +148,7 @@ class ServerDjangoTestCase(ut.TestCase):
     runns locally on server
     should be valid, due to the pip req file, but ceck anyways
     """
-    
+
 
     def setUp(self):
 
@@ -167,7 +176,7 @@ class ServerDjangoTestCase(ut.TestCase):
         
     def test_managepy_version(self):
         '''test the local manage.py reported version'''
-        
+
         cmd = _local("python %s/manage.py --version" % _S.DJANGOAPP.ROOT_DIR )
         self.assertTrue(cmd.succeeded)
         ver = tuple(map(int, cmd.stdout.split('.')))
@@ -228,6 +237,22 @@ class ServerErlangTestCase(ut.TestCase):
 
 
 
+class ServerTexliveTestCase(ut.TestCase):
+
+    def setUp(self):
+        self.ver_min = (0,)
+        self.ver_max = (99,99)
+    
+
+    def test_0_pkg_installed(self):
+        # cmd = _local("erl -noshell -eval 'io:fwrite(\"~s\n\", [erlang:system_info(otp_release)]).' -s erlang halt")
+        cmd = _local("rpm -q texlive")
+        
+        self.assertTrue(cmd.succeeded, "texlive not available")
+
+
+    def test_0_version(self):
+        return
 
 
 
@@ -574,7 +599,6 @@ class ServerApache2TestCase(ServiceTestCase):
 def runTestSuite_ServerAll():
     tcs = [
         ServerDjangoTestCase,
-        ServerRedisTestCase,  
         ]
     suites = []
     

@@ -10,8 +10,10 @@ from __future__ import absolute_import
 #import pprint
 #import json
 import datetime
-import random
+#import random
 import os
+import hashlib
+import base64
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponsePermanentRedirect  # , Http404
@@ -34,7 +36,15 @@ from .tasks import runGLASS
 
 # Create your views here.
 
+import os, errno
 
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc: # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else: raise
 
 
 @csrf_exempt
@@ -132,7 +142,12 @@ def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
         print k, ': ', v
 
 
-    model_id = "model_"+str(random.randint(100,999))
+    #model_id = "model_"+str(random.randint(100,999))
+
+    m = hashlib.sha256()
+    m.update(lens_id)
+    m.update(lmtmodel)
+    model_id = base64.b32encode(m.digest())[0:10]
     print 'model_id:', model_id
 
     now = datetime.datetime.utcnow()
@@ -177,12 +192,17 @@ def _startRendering(rq, model_id):
     except CouchExceptions.ResourceNotFound as e:
         return JsonResponse({'success': False, 'error': 'Ressource not found (%s)' % e})
 
+    idd = model_id
+
     GLASSconfObj = {}
     config = {
+        'model_id'  : model_id,
         'upload_host': settings.UPLOAD_HOST,
         'upload_user': settings.UPLOAD_USER,
-        'upload_dest': settings.MEDIA_ROOT
+        'upload_dest': os.path.join(settings.MEDIA_ROOT, 'spaghetti', idd[0:2], idd[2:])
     }
+    
+    mkdir_p(config['upload_dest'])
     
     task = runGLASS.delay(GLASSconfObj, config)
     status = task.status.lower()

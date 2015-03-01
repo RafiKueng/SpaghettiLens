@@ -145,6 +145,26 @@ def deploy_server():
     _server_djangoapp_setup()
     _server_djangoapp_configure()
     
+
+
+
+    # create flower startup script
+    _CY = _S.CELERY
+    settings = {
+        "TIMESTAMP": env.TIMESTAMP,
+        "PYENVACTVATE" : join(_S.ROOT_PATH, _S.PYENV_DIR, 'bin', 'activate'),
+        "DJANGODIR": join(_S.ROOT_PATH, _S.DJANGOAPP.ROOT_DIR),
+        "PORT"      : _S.CELERY.FLOWERPORT,
+    }
+    run("mkdir -p %s" % _S.BIN_PATH)
+    src = join(_S.SRC.TEMPLATES, _CY.FLOWERSTARTSCRIPT_TMPL)
+    dest = join(_S.BIN_PATH, _CY.FLOWERSTARTSCRIPT_NAME)
+    files.upload_template(src, dest, context = settings)
+    run("chmod +x %s" % dest)
+    sudo("SuSEfirewall2 open EXT TCP {FLOWERPORT}".format(**_S.CELERY))
+    sudo("SuSEfirewall2 stop")
+    sudo("SuSEfirewall2 start")
+
     
     
     tests_passed = _test_server_setup()
@@ -749,6 +769,9 @@ def _test_server_setup_in_adv():
         ('apache',       ['ServerApache2TestCase.test_0_pkg_installed',
                           'ServerApache2TestCase.test_0_version',
                           ]),
+        ('texlive',      ['ServerTexliveTestCase.test_0_pkg_installed',
+                          'ServerTexliveTestCase.test_0_version',
+                          ]),
                           
         
     ]
@@ -897,6 +920,9 @@ def _server_install_missing_server_software(tests_passed):
             elif test == "pipdjango":
                 _server_djangoapp_install()
 
+            elif test == "texlive":
+                _server_texlive_install()
+
                 
             else:
                 if not DEBUG:           
@@ -917,6 +943,7 @@ def _worker_setup_ssh():
         run('ssh-keygen', warn_only=True)
 
     # add the server to the list of known hosts
+    run("touch ~/.ssh/known_hosts")
     run("ssh-keygen -R %s" % SRV) # first remove if already in list, prevents duplicate entries
     run("ssh-keyscan -H %s >> ~/.ssh/known_hosts" % SRV)
     
@@ -1128,6 +1155,12 @@ def _server_apache2_configure():
 #    else:
 #        warnn("not updating apache file in %s" % _S.APACHE.CONFFILE_PATH)
         
+
+def _server_texlive_install():
+
+    install_pkg(_S.PKG.TEXLIVE)
+
+
     
 def _server_djangoapp_install():
 

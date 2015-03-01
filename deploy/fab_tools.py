@@ -99,10 +99,18 @@ def install_pkg(pkgs):
     for pkg in pkgs:
         
         if pkg.requ:
-            c=api.sudo("zypper -n in %s" % " ".join(pkg.requ), warn_only=True)
-            if c.failed:
-                warnn('There was an error. (You did press Ctrl+c..) Check the log!')
-                api.prompt('Any key to continue, ctrl-c again to abort')
+            instll = False
+            for req in pkg.requ:
+                c = api.run("rpm -q %s" % req)
+                if c.failed:
+                    instll = True
+            if instll:
+                c=api.sudo("zypper -n in %s" % " ".join(pkg.requ), warn_only=True)
+                if c.failed:
+                    warnn('There was an error. (You did press Ctrl+c..) Check the log!')
+                    api.prompt('Any key to continue, ctrl-c again to abort')
+            else:
+                warnn('skipping package install. already present: ' + str(pkg.requ))
             
 
         if pkg.file:

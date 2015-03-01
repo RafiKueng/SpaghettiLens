@@ -70,7 +70,7 @@ _.PKG.COUCH                     = [
         'name': 'couchdb',
         'requ': ('libmozjs185-1_0', 'libopenssl-devel'),
         'path': ('server:', 'database', _.PKG.OSVER,_.PKG.ARCH),
-        'file': 'couchdb-1.6.1-54.1.x86_64',
+        'file': 'couchdb-1.6.1-56.2.x86_64',
         'ext' : '.rpm'
     })]
 
@@ -81,14 +81,14 @@ _.PKG.ERLANG                    = [
         'name': 'erlang',
         'requ': ('unixODBC',),
         'path': ('server:', 'database', _.PKG.OSVER,_.PKG.ARCH),
-        'file': 'erlang-17.4-3.1.x86_64',
+        'file': 'erlang-17.4-4.2.x86_64',
         'ext' : '.rpm'
     }),
     AttrDict({
         'name': 'erlang-epmd',
         'requ': (),
         'path': ('server:', 'database', _.PKG.OSVER,_.PKG.ARCH),
-        'file': 'erlang-epmd-17.4-3.1.x86_64',
+        'file': 'erlang-epmd-17.4-4.2.x86_64',
         'ext' : '.rpm'
     })]
 
@@ -127,13 +127,28 @@ _.PKG.APACHE = [
 ]
 
 #
+# use texlive from zypper
+#
+_.PKG.TEXLIVE = [
+    AttrDict({
+        'name': 'texlive',
+        'requ': ('texlive-scheme-medium',),
+        'path': (),
+        'file': '',
+        'ext' : ''
+    }),
+]
+
+
+
+#
 # python is around. but there might be some requrements needed for some packages
 #
 _.PKG.PYTHON = [
     AttrDict({
         'name': 'python-imaging',
         'requ': (
-            'libjpeg-devel','libtiff-devel',   # for pillow
+            'libjpeg62-devel','libtiff-devel',   # for pillow
             ),
         'path': (),
         'file': '',
@@ -221,7 +236,7 @@ _.EXTAPPS.DIR                   = 'ext_apps'
 _.GLASS                         = AttrDict()
 _.GLASS.TMPBUILDDIR             = 'tmp_glass'
 _.GLASS.REPROURL                = 'https://github.com/RafiKueng/glass.git'
-_.GLASS.COMMIT                  = '8c3dd2c' #'64b2be69'
+_.GLASS.COMMIT                  = '1f1f3527' #'8c3dd2c' #'64b2be69'
 
 
 
@@ -302,11 +317,15 @@ _.DJANGOAPP.REQ_FOLDERS         = [das.STATICFOLDER, das.MEDIAFOLDER]
 
 
 #
-# stuff fot the worker
+# stuff for the worker
 #
 _.CELERY                        = AttrDict()
 _.CELERY.STARTSCRIPT_TMPL       = 'start_celery' # the filename in tmpl folder in repro
 _.CELERY.STARTSCRIPT_NAME       = 'start_celery' # the name on the worker (inside _.BIN_PATH)
+# this is for the server
+_.CELERY.FLOWERSTARTSCRIPT_TMPL = 'start_flower' # the filename in tmpl folder in repro
+_.CELERY.FLOWERSTARTSCRIPT_NAME = 'start_flower' # the name on the worker (inside _.BIN_PATH)
+_.CELERY.FLOWERPORT             = "5555"
 
 
 # NOT TRUE ANYMORE.. I HOPE PORTNUMERSS ECT WORK AS STRINGS AS WELL
