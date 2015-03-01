@@ -3,6 +3,7 @@ from django.conf import settings
 
 import json
 import os
+from attrdict import AttrDict
 
 class Point(object):
   def __init__(self, x, y, _type='min', _delay="", child1=None, child2=None, wasType=""):
@@ -46,6 +47,22 @@ class Point(object):
     return "Point [ x:% .2f | y:% .2f | type:%s ]" % (self.x, self.y, self.type)
   def __str__(self):
     return self.__repr__()
+    
+  def toDict(self):
+      return {
+        'x': self.x,
+        'y': self.y,
+        'type': self.type,
+        'wasType': self.wasType,
+        'delay' : self.delay
+      }
+      
+  def toGLSLst(self, i):
+      if i == 0:
+          return [[self.x, self.y], self.type]
+      else:
+          return [[self.x, self.y], self.type, None]
+          
 
 
 '''
@@ -161,40 +178,58 @@ class ExtMass(object):
 class EvalAndSaveJSON:
   
   def __init__(self, user_str, data_obj, jsonStr, is_final, prefs={}):
+      
+    self.obj = AttrDict()
+    self._ = self.obj
+#    _ = self.obj
 
     #print "init easj"
     #self.username = "anonymous"
-    self.hubbletime = 13.7
-    self.z_lens = 0.50
-    self.pixrad = 5
-    self.steep_min = 0
-    self.steep_max = "None"
-    self.smooth_val = 2
-    self.smooth_ic = "False"
-    self.loc_grad = 45
-    self.isSym = False
-    self.maprad = 0 #1.9637 #set 0 to turn off
-    self.shear = 0.01
-    self.z_src = 1.00
-    self.n_models = 200
+    self._.hubbletime = 13.7
+    self._.z_lens = 0.50
+    self._.pixrad = 5
+    self._.steep_min = 0 #TODO remove by steepness
+    self._.steep_max = "None" #TODO remove by steepness
+    self._.smooth_val = 2
+    self._.smooth_ic = "False" #TODO is overwritten below
+    self._.loc_grad = 45
+    self._.isSym = False
+    self._.maprad = 0 #1.9637 #set 0 to turn off
+    self._.shear = 0.01
+    self._.z_src = 1.00
+    self._.n_models = 200
     
-    self.viewport = 500   # viewport size default in <GLSv3, LMTv1.6
-    self.imgSize  = 440   # default for spacewarps
-    self.pxScale  = 0.01  # default [LMT] viewport pixel coordinates -> [glass] arcsec; [arcsec / px]
-    self.orgPxScale = 0   # orgImg: arcsex / px
+    self._.viewport = 500   # viewport size default in <GLSv3, LMTv1.6
+    self._.imgSize  = 440   # default for spacewarps
+    self._.pxScale  = 0.01  # default [LMT] viewport pixel coordinates -> [glass] arcsec; [arcsec / px]
+    self._.orgPxScale = 0   # orgImg: arcsex / px
+
+    #newly added params
+    self._.random_seed = 0
+    self._.author = "[none]"
+    self._.notes = ""
+    self._.samplex_acceptance = {'rate':0.25, 'tol':0.15}
+    self._.exclude_all_priors = True
+    self._.include_priors = ['lens_eq', 'time_delay', 'profile_steepness', 'J3gradient', 
+                           'magnification', 'hubble_constant', 'PLsmoothness3', 'shared_h',
+                           'external_shear'
+                           ]
+    self._.steepness = [0, None]
+    self._.smooth_ic = False
 
     #self.points = [Pnt(2,3), Pnt(2,1), Pnt(5,2)]  
 
     #replacce default settings with setttings provided
     for key, value in prefs.iteritems():
-      if hasattr(self, key):
-        setattr(self, key, value)
+      if hasattr(self._, key):
+        setattr(self._, key, value)
       
     #save databse elements / objects
-    self.lens_data_obj = data_obj
-    self.user_str = user_str
-    self.jsonStr = jsonStr
-    self.is_final = is_final
+    self._.lens_data_obj = data_obj._id
+#    self._.user_str = user_str
+    self._.author = user_str
+    self._.jsonStr = jsonStr
+    self._.is_final = is_final
     
     
     
@@ -209,8 +244,10 @@ class EvalAndSaveJSON:
 #    self.createConfigFile()    
     print "EAS: done"
         
+#  def __setitem__(self, key, value):
+#    self.__dict__[key] = value
   def __setitem__(self, key, value):
-    self.__dict__[key] = value
+    self._[key] = value
     
   def evalModelString(self):
     #print "eval easj"
@@ -231,12 +268,12 @@ class EvalAndSaveJSON:
           return None
       return dct
         
-    self.jsonObj = json.loads(self.jsonStr, object_hook=objHook)
+    self._.jsonObj = json.loads(self._.jsonStr, object_hook=objHook)
     
     print "converted json str"
-    print self.jsonObj
+    print self._.jsonObj
     
-    gs = self.jsonObj["Parameters"]
+    gs = self._.jsonObj["Parameters"]
     
 
     # make sure to check the passed parameters and to cast it to expected types, to prevent script injection
@@ -270,7 +307,7 @@ class EvalAndSaveJSON:
           except TypeError:
             value = 0
         print "found attr:", attr, str(type), ":", value, gs[attr] 
-        self[attr] = value
+        self._[attr] = value
         
     #self.isSym = True;
     
@@ -281,7 +318,7 @@ class EvalAndSaveJSON:
   
   def orderPoints2(self):
     # find origin first
-    pnt = self.jsonObj['Sources'][0] #TODO: here is hardcoded that only the fors soucre is supported
+    pnt = self._.jsonObj['Sources'][0] #TODO: here is hardcoded that only the fors soucre is supported
     
     # note: origin is and stays in pixels!!
     try:
@@ -339,21 +376,21 @@ class EvalAndSaveJSON:
     res.sort(key=lambda pnt: pnt.level)
     print "sorted"
     for r in res:
-      r.changePxToArcsec(self.pxScale)
+      r.changePxToArcsec(self._.pxScale)
       print r, "-> x:% .2f, y:% .2f, type:%s, level:% .2f, depth:%i" % (r.x, r.y, r.type, r.level, r.depth)
       
     # if the last point is a max, take it out
     if res[-1].type == "max":
       res = res[:-1]
-    self.points = res
+    self._.points = res
     
     # rescale and set the external masses
     print 'adding external masses'
     print 'origin:', origin
-    self.ext_masses = []
-    for m in self.jsonObj["ExternalMasses"]:
+    self._.ext_masses = []
+    for m in self._.jsonObj["ExternalMasses"]:
       # note: origin is and stays in pixels!!
-      self.ext_masses.append(m.changePxToArcsec(origin, self.pxScale))
+      self._.ext_masses.append(m.changePxToArcsec(origin, self._.pxScale))
       print m
    
   
@@ -541,3 +578,23 @@ class EvalAndSaveJSON:
 #    self.result_id = mr.id
 #
 #    
+
+  def getDict(self):
+      
+      self._.source = []
+      
+      self._.source.append(self._.z_lens)
+      for i, pnt in enumerate(self._.points):
+          self._.source.extend(pnt.toGLSLst(i))
+          
+      print "in eval:", self._.source
+
+      points = []
+      for pnt in self._.points:
+          points.append(pnt.toDict())
+      self._.points = points
+
+      
+      self._.jsonObj = ""
+      
+      return dict(self._)

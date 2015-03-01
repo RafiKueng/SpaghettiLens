@@ -39,8 +39,9 @@ class Model(cdb.Document):
 
     task_id = cdb.StringProperty()
     rendered = cdb.BooleanProperty()
+    isFinal = cdb.BooleanProperty()
     
     def __unicode__(self):
-        return "<u spaghetti.models.Model id:%s>" % self._id[0:8]
+        return "<u spaghetti.models.Model id:%s-%s>" % (self._id[0:5], self._id[5:])
 
 

@@ -37,7 +37,13 @@ from _app.celery import app
 
 
 @app.task(bind=True)
-def runGLASS(self, jsonGLASSconfig, config):
+def runGLASS(self, GLASSconfig, config):
+    
+    print '='*80
+    print "got config:\n"
+    for k, v in GLASSconfig.items():
+        print '%-16s : %s' % (k,v)
+    print '='*80
 
     # don't take this outside, because only the worker has glass installed,
     # the webserver doesn't
@@ -89,45 +95,76 @@ def runGLASS(self, jsonGLASSconfig, config):
     import glass.scales
     
 
+    GC = GLASSconfig
+    C = config
+    
+    logfile = "glass.log"
+
+
     glass_basis('glass.basis.pixels', solver='rwalk')
-    meta(author='Jonathan Coles', notes='Just testing')
-    setup_log('B1115.log', stdout=True)
-    samplex_random_seed(0)
-    samplex_acceptance(rate=0.25, tol=0.15)
-    exclude_all_priors()
-    include_prior(
-        'lens_eq', 
-        'time_delay', 
-        'profile_steepness', 
-        'J3gradient', 
-        'magnification',
-        'hubble_constant',
-        'PLsmoothness3',
-        'shared_h',
-        'external_shear'
-    )
-    hubble_time(13.7)
-    globject('B1115+080')
+    meta(author=GC['author'], notes=GC['notes'])
+    setup_log(logfile, stdout=True)
+    samplex_random_seed(GC['random_seed'])
+#    samplex_acceptance(rate=0.25, tol=0.15)
+    samplex_acceptance(**GC['samplex_acceptance'])
     
-    zlens(0.31)  
-    pixrad(6)
-    steepness(0,None)
-    smooth(2,include_central_pixel=False)
-    local_gradient(45)
-    shear(0.01)
+    if GC['exclude_all_priors']:
+        exclude_all_priors()
+
+#    include_prior(
+#        'lens_eq', 
+#        'time_delay', 
+#        'profile_steepness', 
+#        'J3gradient', 
+#        'magnification',
+#        'hubble_constant',
+#        'PLsmoothness3',
+#        'shared_h',
+#        'external_shear'
+#    )
+    include_prior(*GC['include_priors'])
+
+#    hubble_time(13.7)
+#    globject('B1115+080')
+
+    hubble_time(GC['hubbletime'])
+    globject(C['model_id']) 
+
     
-    A =  0.3550,  1.3220 
-    B = -0.9090, -0.7140
-    C = -1.0930, -0.2600
-    D =  0.7170, -0.6270
-    
-    source(1.722,   A,'min', 
-                    B,'min', 13.3,
-                    C,'sad', None,
-                    D,'sad', 11.7)
+#    zlens(0.31)  
+#    pixrad(6)
+#    steepness(0,None)
+#    smooth(2,include_central_pixel=False)
+#    local_gradient(45)
+#    shear(0.01)
+    zlens(GC['z_lens'])  
+    pixrad(GC['pixrad'])
+    steepness(*GC['steepness'])
+    smooth(GC['smooth_val'],include_central_pixel=GC['smooth_ic'])
+    local_gradient(GC['loc_grad'])
+    shear(GC['shear'])
+    if GC['isSym']:
+        symm()
+        
+        
+        
+#    
+#    A =  0.3550,  1.3220 
+#    B = -0.9090, -0.7140
+#    C = -1.0930, -0.2600
+#    D =  0.7170, -0.6270
+#    
+#    source(1.722,   A,'min', 
+#                    B,'min', 13.3,
+#                    C,'sad', None,
+#                    D,'sad', 11.7)
+
+    source(*GC['source'])
+
                     
     update_status({'text':'started modelling', 'progress':(0,0)})   
-    model(200, update_hook=update_status)
+
+    model(GC['n_models'], update_hook=update_status)
     
     figpath = '/tmp/spaghettilens/'
     name = 'testing'

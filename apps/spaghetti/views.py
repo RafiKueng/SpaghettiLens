@@ -131,16 +131,20 @@ def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
     
 
     print "eval and save"
-    obj = EvalAndSaveJSON(user_str = username,
+    EASJobj = EvalAndSaveJSON(user_str = username,
                           data_obj= lens,
                           jsonStr = lmtmodel,
                           is_final= False)
+                          
+    obj = EASJobj.getDict()
 
     print "after eval and save"
-    print obj
-    for k, v in obj.__dict__.items():
-        print k, ': ', v
-
+    
+    print '='*80
+    print "parsed data obj:"
+    for k, v in obj.items():
+        print "%-16s : %s" % (k, v)
+    print '='*80
 
     #model_id = "model_"+str(random.randint(100,999))
 
@@ -160,11 +164,12 @@ def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
         created_at = now,
         comments = [[username, now, comment]],
         
-        obj = {},
+        obj = obj,
         glass = {},
     
         task_id = None,
         rendered = False,
+        isFinal = False,
     )
     
     model._id = model_id
@@ -194,9 +199,9 @@ def _startRendering(rq, model_id):
 
     idd = model_id
 
-    GLASSconfObj = {}
+    GLASSconfObj = model.obj
     config = {
-        'model_id'  : model_id,
+        'model_id'   : model_id,
         'upload_host': settings.UPLOAD_HOST,
         'upload_user': settings.UPLOAD_USER,
         'upload_dest': os.path.join(settings.MEDIA_ROOT, 'spaghetti', idd[0:2], idd[2:])
