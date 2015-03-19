@@ -6,7 +6,7 @@ Created on Tue Jan 13 17:48:53 2015
 """
 
 from __future__ import division, with_statement, absolute_import
-import sys, getopt, os, traceback, time
+import sys, getopt, os, traceback, time, json
 
 from paramiko import SSHClient
 from scp import SCPClient
@@ -38,6 +38,23 @@ from _app.celery import app
 
 @app.task(bind=True)
 def runGLASS(self, GLASSconfig, config):
+
+    this = self
+    
+    def update_status(hist):
+        
+        currStatus = hist[-1]
+
+        if not this.request.called_directly:
+            this.update_state(state='PROGRESS', meta={
+                'text': currStatus[0],
+                'i'   : currStatus[1],
+                'n'   : currStatus[2],
+                'hist': json.dumps(hist)
+            })
+
+        print "UPDATE_STAT: %-16s: %04i of %04i" % tuple(currStatus)
+
     
     print '='*80
     print "got GLASSconfig:\n"
@@ -57,6 +74,7 @@ def runGLASS(self, GLASSconfig, config):
     from glass.command import command, Commands
     from glass.exmass import PointMass
     from glass.exceptions import GLInputError
+    from glass.log import Status
 
 
     @command('Load a glass basis set')
@@ -69,18 +87,6 @@ def runGLASS(self, GLASSconfig, config):
                 print 'WARNING: Glass command %s (%s) overrides previous function %s' % (name, f, __builtins__[name])
             __builtins__[name] = g
 
-
-    
-    this = self
-    
-    def update_status(args):
-        text = args['text']
-        i, n = map(str, args['progress'])
-
-        if not this.request.called_directly:
-            this.update_state(state='PROGRESS', meta={'text':text, 'solutions': (i, n)})
-
-        print ' '.join([text, i, 'of', n])
 
     #update_status({'text':'', 'progress':(0,0)})   
     update_status({'text':'init', 'progress':(0,0)})

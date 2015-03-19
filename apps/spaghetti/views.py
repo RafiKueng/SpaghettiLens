@@ -44,7 +44,9 @@ def mkdir_p(path):
     except OSError as exc: # Python >2.5
         if exc.errno == errno.EEXIST and os.path.isdir(path):
             pass
-        else: raise
+        else:
+            raise
+    os.chmod(path, 0777)  #TODO check what rights are really needed
 
 
 @csrf_exempt
