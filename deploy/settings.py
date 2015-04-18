@@ -70,7 +70,7 @@ _.PKG.COUCH                     = [
         'name': 'couchdb',
         'requ': ('libmozjs185-1_0', 'libopenssl-devel'),
         'path': ('server:', 'database', _.PKG.OSVER,_.PKG.ARCH),
-        'file': 'couchdb-1.6.1-56.2.x86_64',
+        'file': 'couchdb-1.6.1-56.3.x86_64',
         'ext' : '.rpm'
     })]
 
@@ -81,14 +81,14 @@ _.PKG.ERLANG                    = [
         'name': 'erlang',
         'requ': ('unixODBC',),
         'path': ('server:', 'database', _.PKG.OSVER,_.PKG.ARCH),
-        'file': 'erlang-17.4-4.2.x86_64',
+        'file': 'erlang-17.5-3.1.x86_64',
         'ext' : '.rpm'
     }),
     AttrDict({
         'name': 'erlang-epmd',
         'requ': (),
         'path': ('server:', 'database', _.PKG.OSVER,_.PKG.ARCH),
-        'file': 'erlang-epmd-17.4-4.2.x86_64',
+        'file': 'erlang-epmd-17.5-3.1.x86_64',
         'ext' : '.rpm'
     })]
 

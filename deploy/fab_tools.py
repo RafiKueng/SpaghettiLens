@@ -101,7 +101,7 @@ def install_pkg(pkgs):
         if pkg.requ:
             instll = False
             for req in pkg.requ:
-                c = api.run("rpm -q %s" % req)
+                c = api.run("rpm -q %s" % req, warn_only=True)
                 if c.failed:
                     instll = True
             if instll:

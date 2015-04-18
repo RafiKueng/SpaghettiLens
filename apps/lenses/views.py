@@ -10,6 +10,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponsePermanentRedirec
 from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext, loader
 from django.core.servers.basehttp import FileWrapper
+from django.conf import settings
 
 from couchdbkit import exceptions as CouchExceptions
 
@@ -244,7 +245,7 @@ def getMedia(request, hash1, hash2, datatype, datasource, subtype, ext):
 
     # create the filenames in the storage
     #TODO: hardcoded paths are in here!!
-    ddir = os.path.join(os.getcwd(), '../media/lenses', idd[:2], idd[2:])
+    ddir = os.path.join(settings.MEDIA_ROOT, 'lenses', idd[:2], idd[2:])
     fname = '%s-%s-%s.%s' % (datatype, datasource, subtype, ext)
     fpath = os.path.join(ddir, fname)
     

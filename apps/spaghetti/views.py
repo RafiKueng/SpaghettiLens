@@ -336,7 +336,7 @@ def getMedia(rq, hash1, hash2, filename, ext):
 
     # create the filenames in the storage
     #TODO: hardcoded paths are in here!!
-    ddir = os.path.join(os.getcwd(), '../media/spaghetti', idd[:2], idd[2:])
+    ddir = os.path.join(settings.MEDIA_ROOT, 'spaghetti', idd[:2], idd[2:])
     fname = '%s.%s' % (filename, ext)
     fpath = os.path.join(ddir, fname)
     
