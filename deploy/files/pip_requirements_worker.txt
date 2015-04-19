@@ -4,7 +4,7 @@ scipy>=0.13.0 # there a import _fblas bug for earlier versions (2490)
 
 requests
 pillow>=2.0
-
+attrdict==1.2
 
 django>=1.7,<1.8
 Celery>=3.1.17,<3.2

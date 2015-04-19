@@ -20,6 +20,9 @@ import pylab as pl
 from _app.celery import app
 
 
+DEBUG = True
+
+
 #@app.task(bind=True)
 #def runGLASS(self, jsonGLASSconfig):
 #    
@@ -40,6 +43,22 @@ from _app.celery import app
 def runGLASS(self, GLASSconfig, config):
 
     this = self
+    hist = []
+    
+#    def status(*args):
+#        if len(args)<3:
+#            while len(args)<3:
+#                args.append(0)
+#        hist.append(args)
+#        update_status(hist)
+#    
+#    def status2(lst):
+#    # this is hack to fix the complicated stuff in glass.
+#    # I don't know why I put it there.. possibly its better to have the history here
+#        print "\n", "--"*40
+#        print lst
+#        print "--"*40
+#        status(lst[-1])
     
     def update_status(hist):
         
@@ -53,18 +72,18 @@ def runGLASS(self, GLASSconfig, config):
                 'hist': json.dumps(hist)
             })
 
-        print "UPDATE_STAT: %-16s: %04i of %04i" % tuple(currStatus)
+        print ">> UPDATE_STAT: %-20s: %04i of %04i" % tuple(currStatus)
 
-    
-    print '='*80
-    print "got GLASSconfig:\n"
-    for k, v in GLASSconfig.items():
-        print '%-16s : %s' % (k,v)
-    print '='*80
-    print "got config:\n"
-    for k, v in config.items():
-        print '%-16s : %s' % (k,v)
-    print '='*80
+    if DEBUG:
+        print '='*80
+        print "got GLASSconfig:\n"
+        for k, v in GLASSconfig.items():
+            print '%-16s : %s' % (k,v)
+        print '='*80
+        print "got config:\n"
+        for k, v in config.items():
+            print '%-16s : %s' % (k,v)
+        print '='*80
 
     # don't take this outside, because only the worker has glass installed,
     # the webserver doesn't
@@ -74,7 +93,7 @@ def runGLASS(self, GLASSconfig, config):
     from glass.command import command, Commands
     from glass.exmass import PointMass
     from glass.exceptions import GLInputError
-    from glass.log import Status
+    from glass.log import Status, setup_status_reporter
 
 
     @command('Load a glass basis set')
@@ -89,7 +108,8 @@ def runGLASS(self, GLASSconfig, config):
 
 
     #update_status({'text':'', 'progress':(0,0)})   
-    update_status({'text':'init', 'progress':(0,0)})
+    setup_status_reporter([update_status])
+    Status('init')
     
     Environment.global_opts['ncpus_detected'] = 2
     Environment.global_opts['ncpus'] = 2
@@ -176,9 +196,10 @@ def runGLASS(self, GLASSconfig, config):
         external_mass(PointMass(exm['x'],exm['y'],name='PM%02i'%i), (0, exm['m']))
 
                     
-    update_status({'text':'started modelling', 'progress':(0,0)})   
+#    update_status({'text':'started modelling', 'progress':(0,0)})   
+    Status('started modelling')   
 
-    model(GC['n_models'], update_hook=update_status)
+    model(GC['n_models']) #, update_hook=status2)
     
     figpath = '/tmp/spaghettilens/'
     name = 'testing'
@@ -190,10 +211,12 @@ def runGLASS(self, GLASSconfig, config):
         if not os.path.isdir(path):
             raise
 
-    update_status({'text':'create files', 'progress':(0,5)})   
+#    update_status({'text':'create files', 'progress':(0,5)})   
+    Status('create files', 0,5)   
     
     savestate(os.path.join(path, 'state.glass'))
-    update_status({'text':'create files', 'progress':(1,5)})   
+#    update_status({'text':'create files', 'progress':(1,5)})   
+    Status('create files', 1,5)   
 
     env().make_ensemble_average()
     env().arrival_plot(env().ensemble_average, only_contours=True, colors='magenta', clevels=40)
@@ -202,7 +225,8 @@ def runGLASS(self, GLASSconfig, config):
     pl.gca().axes.get_yaxis().set_visible(False)
     pl.savefig(os.path.join(path, 'img1.png'))
     pl.close()
-    update_status({'text':'create files', 'progress':(2,5)})   
+#    update_status({'text':'create files', 'progress':(2,5)})   
+    Status('create files', 2,5)   
 
 
     env().kappa_plot(env().ensemble_average, 0, with_contours=True, clevels=20, vmax=1, with_colorbar=False)
@@ -210,7 +234,8 @@ def runGLASS(self, GLASSconfig, config):
     pl.gca().axes.get_yaxis().set_visible(False)
     pl.savefig(os.path.join(path, 'img2.png'))
     pl.close()
-    update_status({'text':'create files', 'progress':(3,5)})   
+#    update_status({'text':'create files', 'progress':(3,5)})   
+    Status('create files', 3,5)   
     
     env().srcdiff_plot(env().ensemble_average)
     env().overlay_input_points(env().ensemble_average)
@@ -218,13 +243,15 @@ def runGLASS(self, GLASSconfig, config):
     pl.gca().axes.get_yaxis().set_visible(False)
     pl.savefig(os.path.join(path, 'img3.png'))
     pl.close()
-    update_status({'text':'create files', 'progress':(4,5)})   
+#    update_status({'text':'create files', 'progress':(4,5)})   
+    Status('create files', 4,5)   
     
     env().srcdiff_plot_adv(env().ensemble_average, night=True, upsample=8)
     env().overlay_input_points(env().ensemble_average)
     pl.savefig(os.path.join(path, 'img3_ipol.png'), facecolor='black', edgecolor='none')
     pl.close()
-    update_status({'text':'create files', 'progress':(5,5)})
+#    update_status({'text':'create files', 'progress':(5,5)})
+    Status('create files', 5,5)   
 
 
     # upload
@@ -245,11 +272,13 @@ def runGLASS(self, GLASSconfig, config):
     ssh.connect(host, username=user)
     scp = SCPClient(ssh.get_transport())
     
-    update_status({'text':'upload files', 'progress':(0,5)})
+#    update_status({'text':'upload files', 'progress':(0,5)})
+    Status('upload files', 0,5)
 
     for i, f in enumerate(files):
         scp.put(os.path.join(path, f), os.path.join(destpath, f))
-        update_status({'text':'upload files', 'progress':(i+1,5)})
+        #update_status({'text':'upload files', 'progress':(i+1,5)})
+        Status('upload files', i+1,5)
         
   
     # ...
@@ -262,6 +291,8 @@ def runGLASS(self, GLASSconfig, config):
 #        time.sleep(0.5)
 #        if not self.request.called_directly:
 #            self.update_state(state='PROGRESS', meta={'solutions': ( i, 40)})
+
+    Status('finished')    
     
     return {}
 
