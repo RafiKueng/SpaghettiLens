@@ -131,8 +131,10 @@ events.assignHandlers = function() {
     $(document).on('UpdateRenderingStatus', LMT.ui.html.WaitForResultDialog.update); // if received a new status, this triggers an update of the status display
     $(document).on('RenderingFailed', LMT.ui.html.WaitForResultDialog.close);
     $(document).on('RenderingComplete', LMT.ui.html.WaitForResultDialog.close);
-    //$(document).on('RenderingComplete', LMT.ui.out.load);
-    //$(document).on('RenderingComplete', LMT.ui.html.Toolbar.updateTop);
+    
+    // those still need overhaul
+    $(document).on('RenderingComplete', LMT.ui.out.load);
+    $(document).on('RenderingComplete', LMT.ui.html.Toolbar.updateTop);
     
     
 

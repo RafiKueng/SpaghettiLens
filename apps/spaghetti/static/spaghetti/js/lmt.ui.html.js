@@ -210,11 +210,22 @@ html.WaitForResultDialog = {
     },
 
     update: function(){
-        if (LMT.simulationResult.progress) {
+        var prog = LMT.simulationResult.progress;
+        if (prog) {
+            if (prog.of == 0) {
+                ss = '';
+            }
+            else {
+                ss = " (" + prog.i + " of " + prog.of + ")";
+            }
             $('#wait_for_results_dialog p').html(
+                prog.text + ss
+
+/*
                 'solutions: ' + LMT.simulationResult.progress.solutions + '<br>' +
                 'models: ' + LMT.simulationResult.progress.models + '<br>' +
                 'images: ' + LMT.simulationResult.progress.images + '<br>'
+*/
             );
         }
     },

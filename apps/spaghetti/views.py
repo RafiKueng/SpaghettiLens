@@ -239,7 +239,13 @@ def _getRenderingStatus(rq, model_id):
     
     # if alredy rendered
     if model.rendered:
-        return JsonResponse({'success': True, 'status': 'done', 'progress': {}})
+        imgs = [
+            {'type':'cont', 'url': '/media/spaghetti/%s/%s/img1.png'%(model_id[:2], model_id[2:])},
+            {'type':'mdis', 'url': '/media/spaghetti/%s/%s/img2.png'%(model_id[:2], model_id[2:])},
+            {'type':'synt', 'url': '/media/spaghetti/%s/%s/img3.png'%(model_id[:2], model_id[2:])},
+            {'type':'isyn', 'url': '/media/spaghetti/%s/%s/img3_ipol.png'%(model_id[:2], model_id[2:])},
+        ]
+        return JsonResponse({'success': True, 'status': 'done', 'imgs': imgs})
     # something odd, rendering not complete, but no task id (_startRendering was not called, should not happen)
     elif model.task_id == '':
         return _startRendering(rq, model_id)
@@ -264,8 +270,11 @@ def _getRenderingStatus(rq, model_id):
 #    stat = "done" # done | pending
     stat = task.status.lower()
     
-    if stat == "done":
+    if stat == "done" or stat == "success":
         model.task_id = ""
+        # this is the quick and dirty hack, remove if image pipeline is implemented
+        model.rendered = True
+        stat = 'pending'
         model.save()
 
     return JsonResponse({'success': True, 'status': stat, 'progress': prog})

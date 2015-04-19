@@ -507,10 +507,11 @@ com.GetRenderingProgress = function () {
 
     var success = function (json, status, xhr) {
 
-        log('com.GetRenderingProgress.success ==', 'status='+json.status);
+        log('com.GetRenderingProgress.success', 'status='+json.status);
 
         if (json.success) {
             if (json.status === 'done') {
+                LMT.simulationResult.imgs = json.imgs; /*TODO this part is a quick hack*/
                 $.event.trigger("RenderingComplete");
                 
             } else if (json.status === 'pending' || json.status === 'progress') {

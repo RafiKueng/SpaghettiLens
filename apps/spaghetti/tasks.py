@@ -68,7 +68,7 @@ def runGLASS(self, GLASSconfig, config):
             this.update_state(state='PROGRESS', meta={
                 'text': currStatus[0],
                 'i'   : currStatus[1],
-                'n'   : currStatus[2],
+                'of'  : currStatus[2],
                 'hist': json.dumps(hist)
             })
 
