@@ -72,7 +72,7 @@ def runGLASS(self, GLASSconfig, config):
                 'hist': json.dumps(hist)
             })
 
-        print ">> UPDATE_STAT: %-20s: %04i of %04i" % tuple(currStatus)
+        #print ">> UPDATE_STAT: %-20s: %04i of %04i" % tuple(currStatus)
 
     if DEBUG:
         print '='*80

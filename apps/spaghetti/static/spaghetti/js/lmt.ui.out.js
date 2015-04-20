@@ -221,6 +221,8 @@ out = {
 
 
         $.event.trigger('InitTooltips'); //enable tooltips for newly created buttons
+        
+        LMT.settings.renderedEqualsModel = true;
 
         $("#btnsetOutNav > button").button({ disabled: false });
         $('#btnOutGraphics').button({disabled: false});
@@ -296,7 +298,8 @@ out = {
         LMT.ui.out.showSlide(i);
     },
 	
-	/**
+    
+	/**  V2
 	 *internal, does really show the image
 	 * zindex layers:
 	 * 80 default
@@ -305,7 +308,7 @@ out = {
 	 */
     showSlide: function(i){
 
-        if (!LMT.simulationResult.resultId) {return;}
+        if (!LMT.simulationResult.modelId) {return;}
 
         var that = LMT.ui.out;
 

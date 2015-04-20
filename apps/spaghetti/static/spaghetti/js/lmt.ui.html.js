@@ -9,7 +9,7 @@ var html = {};
 
 
 
-html.fire = function(evt){
+html.fire = function (evt) {
 	
 };
 
@@ -19,128 +19,126 @@ html.fire = function(evt){
  * used when loading a result or model
  */
 html.SetUsernameDialog = {
-  init: function() {
-    var $div = $('#get_username').dialog({
-      autoOpen: false,
-      minWidth: 400,
-      minHeight: 200,
-      modal: true,
-      buttons: [
-        {
-          text: "Ok",
-          click: function(evt){
-            $('#get_username').dialog("close");
-            var uname = $("#username2").val();
-            LMT.settings.username = uname;
-          }
-        },],
-      open: function(){
+    init: function () {
+        var $div = $('#get_username').dialog({
+            autoOpen: false,
+            minWidth: 400,
+            minHeight: 200,
+            modal: true,
+            buttons: [
+                {
+                    text: "Ok",
+                    click: function (evt) {
+                        $('#get_username').dialog("close");
+                        var uname = $("#username2").val();
+                        LMT.settings.username = uname;
+                    }
+                }
+            ],
+            open: function () {
+                var uname = $.cookie('username');
+                if (uname) {
+                    $("#username2").val(uname);
+                    $('.ui-dialog-buttonpane button:last').focus();
+                }
+            }
+        });
+    },
+
+    show: function () {
         var uname = $.cookie('username');
-        if (uname){
-          $("#username2").val(uname);
-          $('.ui-dialog-buttonpane button:last').focus();
+        if (uname) {
+            LMT.settings.username = uname;
+        } else {
+            $('#get_username').dialog("open");
         }
-        
-      }
-    });
-  },
-  
-  show: function() {
-    var uname = $.cookie('username');
-    if (uname){
-      LMT.settings.username = uname;
     }
-    else {
-      $('#get_username').dialog("open");
+  
+
+};
+
+
+/** V2
+ * 
+ */
+html.SaveModelDialog = {
+
+    init: function () {
+        $('#save_model_dialog').dialog({
+            autoOpen: false,
+            minWidth: 600,
+            minHeight: 400,
+            modal: true,
+            open: function () {},
+            buttons: [
+                {
+                    text: "Abort",
+                    click: function (evt) { $('#save_model_dialog').dialog("close"); }
+                },
+                {
+                    text: "Save",
+                    click: LMT.ui.html.SaveModelDialog.upload
+                },
+                {
+                    text: "Close",
+                    click: LMT.ui.html.SaveModelDialog.close
+                },
+                {
+                    text: "Restart",
+                    click: function (evt) { document.location.reload(true); }
+                }
+            ]
+        });
+    },
+
+    show: function () {
+        $('#save_model_dialog').html('<p>genrating input image...</p>');
+        $('#save_model_dialog').dialog("open");
+        $(".ui-dialog-buttonpane button:contains('Restart')").button('disable');
+        $(".ui-dialog-buttonpane button:contains('Close')").button('disable');
+        $(".ui-dialog-buttonpane button:contains('Save')").button('disable');
+        $(".ui-dialog-buttonpane button:contains('Abort')").button('enable');
+        $.event.trigger("ConvertInputImageToPNG");
+    },
+
+    upload: function (evt) {
+        $.event.trigger("SaveModel");
+    },
+
+    close: function (evt) {
+        $('#save_model_dialog').dialog("close");
+    },
+
+    generatedImage: function (evt) {
+        var html = [
+            '<p>Input image:</p>',
+            '<img style="width:300px; float: left;" src="' + LMT.ui.svg.img + '"/>',
+            '<p>To adjust your image before uploading, press Abort, make your changes and reopen the save dialog.<br/>',
+            '(Pay attention not to <b>modify</b> the model, otherwise you\'d have to render the model again.)</p>'
+        ].join('\n');
+
+        $('#save_model_dialog').html(html);
+
+        $(".ui-dialog-buttonpane button:contains('Close')").button('disable');
+        $(".ui-dialog-buttonpane button:contains('Save')").button('enable');
+    },
+
+    savedModel: function (evt, rid) {
+        $(".ui-dialog-buttonpane button:contains('Restart')").button('enable');
+        $(".ui-dialog-buttonpane button:contains('Close')").button('enable');
+        $(".ui-dialog-buttonpane button:contains('Save')").button('disable');
+        $(".ui-dialog-buttonpane button:contains('Abort')").button('disable');
+
+        var url = "http://mite.physik.uzh.ch/data/" + rid;
+        var html = [
+            '<p>Result Saved</p>',
+            '<p>You can retrieve your model at the following url:<br/>',
+            '<a href="' + url + '" target="_blank">' + url + '</a></p>'
+        ].join('\n');
+
+        $('#save_model_dialog').html(html);
     }
-  }
-  
 
-}
-
-
-html.SaveResultDialog = {
-  init: function() {
-    $('#save_results_dialog').dialog({
-      autoOpen: false,
-      minWidth: 600,
-      minHeight: 400,
-      modal: true,
-      open: function(){},
-      buttons: [
-        {
-          text: "Abort",
-          click: function(evt){
-            $('#save_results_dialog').dialog("close");
-          }
-        },
-        {
-          text: "Save",
-          click: LMT.ui.html.SaveResultDialog.upload
-        },
-        {
-          text: "Close",
-          click: LMT.ui.html.SaveResultDialog.close
-        },
-        {
-          text: "Restart",
-          click: function(evt){
-            document.location.reload(true);
-          }
-        }
-      ]
-    });
-  },
-  
-  show: function(){
-    $('#save_results_dialog').html('<p>genrating input image...</p>');
-    $('#save_results_dialog').dialog("open");
-    $(".ui-dialog-buttonpane button:contains('Restart')").button('disable');
-    $(".ui-dialog-buttonpane button:contains('Close')").button('disable');
-    $(".ui-dialog-buttonpane button:contains('Save')").button('disable');
-    $(".ui-dialog-buttonpane button:contains('Abort')").button('enable');
-    $.event.trigger("ConvertInputImageToPNG");
-  },
-  
-  
-  upload: function(evt){
-    $.event.trigger("SaveModel");
-  },
-  
-  close: function(evt){
-    $('#save_results_dialog').dialog("close");
-  },
-  
-  generatedImage: function(evt){
-    
-    var html = [
-      '<p>Input image:</p>',
-      '<img style="width:300px; float: left;" src="'+LMT.ui.svg.img+'"/>',
-      '<p>To adjust your image before uploading, press Abort, make your changes and reopen the save dialog.<br/>',
-      '(Pay attention not to <b>modify</b> the model, otherwise you\'d have to render the model again.)</p>'      
-    ].join('\n');
-    $('#save_results_dialog').html(html);
-
-    $(".ui-dialog-buttonpane button:contains('Close')").button('disable');
-    $(".ui-dialog-buttonpane button:contains('Save')").button('enable');
-  },
-  
-  savedModel: function(evt, rid){
-    $(".ui-dialog-buttonpane button:contains('Restart')").button('enable');
-    $(".ui-dialog-buttonpane button:contains('Close')").button('enable');
-    $(".ui-dialog-buttonpane button:contains('Save')").button('disable');
-    $(".ui-dialog-buttonpane button:contains('Abort')").button('disable');
-
-    var url = "http://mite.physik.uzh.ch/data/"+rid;
-    var html = [
-      '<p>Result Saved</p>',
-      '<p>You can retrieve your model at the following url:<br/>',
-      '<a href="'+url+'" target="_blank">'+url+'</a></p>'
-    ].join('\n');
-    
-    $('#save_results_dialog').html(html);
-  }
-  
 };
 
 
@@ -180,8 +178,9 @@ html.LoadProgressDialog = {
 
 
 
-
-
+/** V2
+ * Shows status from running glass process
+ */
 html.WaitForResultDialog = {
     init: function() {
         $('#wait_for_results_dialog').dialog({
@@ -202,6 +201,7 @@ html.WaitForResultDialog = {
             at: "center center",
             of: $('#out')
         });
+        $.event.trigger("HideAllTooltips"); 
     },
 
 
@@ -220,12 +220,6 @@ html.WaitForResultDialog = {
             }
             $('#wait_for_results_dialog p').html(
                 prog.text + ss
-
-/*
-                'solutions: ' + LMT.simulationResult.progress.solutions + '<br>' +
-                'models: ' + LMT.simulationResult.progress.models + '<br>' +
-                'images: ' + LMT.simulationResult.progress.images + '<br>'
-*/
             );
         }
     },
@@ -736,21 +730,13 @@ html.Toolbar = {
      */
     updateTop: function(evt) {
     
-        if (evt.type=="ReceivedSimulation") {
-            // that means we sent our model to th server and checked it,
-            // we can save this as final result
-            LMT.settings.renderedEqualsModel = true;
-
-        } else if (evt.type=="ActionStackUpdated") {
+        if (evt.type=="ActionStackUpdated") {
             // means that something changed on the model.. user need to check the
             // output before saving 
             LMT.settings.renderedEqualsModel = false;
 
-        } else {
-            // this shouldn't happend
-            LMT.settings.renderedEqualsModel = false;
-        };
-
+        }
+        
         // prev and next buttons are not in use
         $('#btnMainActionPrev').button("disable");
         $('#btnMainActionNext').button("disable");

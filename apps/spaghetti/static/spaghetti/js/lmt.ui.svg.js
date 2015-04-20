@@ -1131,7 +1131,7 @@ svg.CheckInputImage = function(){
       return;
     }
     
-    //$('#save_results_dialog').append('<img style="width:300px;" src="'+img+'"/>');
+    //$('#save_model_dialog').append('<img style="width:300px;" src="'+img+'"/>');
     svg.canvasoutprnt.remove();
     LMT.ui.svg.canvasout = null;
     LMT.ui.svg.img = img;

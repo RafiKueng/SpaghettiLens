@@ -512,6 +512,7 @@ com.GetRenderingProgress = function () {
         if (json.success) {
             if (json.status === 'done') {
                 LMT.simulationResult.imgs = json.imgs; /*TODO this part is a quick hack*/
+                //LMT.settings.renderedEqualsModel = true; // this is set in lmt.ui.out.load
                 $.event.trigger("RenderingComplete");
                 
             } else if (json.status === 'pending' || json.status === 'progress') {

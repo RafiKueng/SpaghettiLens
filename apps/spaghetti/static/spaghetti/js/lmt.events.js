@@ -36,7 +36,7 @@ events.startUp = function () {
     LMT.ui.html.DisplaySettingsDialog.init();
     LMT.ui.html.GlassSettingsDialog.init();
     LMT.ui.html.ColorSettingsOutputDialog.init();
-    LMT.ui.html.SaveResultDialog.init();
+    LMT.ui.html.SaveModelDialog.init();
     LMT.ui.html.WaitForResultDialog.init();
     LMT.ui.html.SetUsernameDialog.init();
 
@@ -136,8 +136,14 @@ events.assignHandlers = function() {
     $(document).on('RenderingComplete', LMT.ui.out.load);
     $(document).on('RenderingComplete', LMT.ui.html.Toolbar.updateTop);
     
+    $(document).on('DisplayOutputSlide', LMT.ui.out.show); //needs a id
     
+    $(document).on('ShowDialogSaveResult', LMT.ui.html.SaveModelDialog.show);
+    $(document).on('ConvertInputImageToPNG', LMT.ui.svg.ConvertToPNG);
 
+    $(document).on('InputImageGenerated', LMT.ui.html.SaveModelDialog.generatedImage);
+    $(document).on('SaveModel', LMT.com.SaveModel);  // upload model with is final tag
+    $(document).on('SavedModel', LMT.ui.html.SaveModelDialog.savedModel);  // if successful saved
     
     
     
@@ -212,10 +218,10 @@ events.assignHandlers = function() {
     $(document).on('SwitchMode', LMT.ui.svg.SwitchMode);
     $(document).on('ModeSwitched', LMT.ui.html.Toolbar.update);
 
-    $(document).on('ShowDialogSaveResult', LMT.ui.html.SaveResultDialog.show);
-    $(document).on('InputImageGenerated', LMT.ui.html.SaveResultDialog.generatedImage);
-    $(document).on('SaveModel', LMT.com.SaveModel);  // upload model with is final tag
-    $(document).on('SavedModel', LMT.ui.html.SaveResultDialog.savedModel);  // if successful saved
+//    $(document).on('ShowDialogSaveResult', LMT.ui.html.SaveResultDialog.show);
+//    $(document).on('InputImageGenerated', LMT.ui.html.SaveResultDialog.generatedImage);
+//    $(document).on('SaveModel', LMT.com.SaveModel);  // upload model with is final tag
+//    $(document).on('SavedModel', LMT.ui.html.SaveResultDialog.savedModel);  // if successful saved
     
     $(document).on('WaitForSimulation', LMT.ui.html.WaitForResultDialog.show);
     $(document).on('WaitForSimulation', LMT.ui.html.WaitForResultDialog.startRefresh);
@@ -227,10 +233,9 @@ events.assignHandlers = function() {
 
     $(document).on('GetSimulationFail', LMT.ui.html.WaitForResultDialog.stopRefresh);
 
-    $(document).on('DisplayOutputSlide', LMT.ui.out.show); //needs a id
-    $(document).on('DisplayOutputSlideNext', LMT.ui.out.next);
-    $(document).on('DisplayOutputSlidePrev', LMT.ui.out.prev);
-    $(document).on('DisplayOutputSlideOverview', LMT.ui.out.showOverview); //not yet implemented
+//    $(document).on('DisplayOutputSlideNext', LMT.ui.out.next);
+//    $(document).on('DisplayOutputSlidePrev', LMT.ui.out.prev);
+//    $(document).on('DisplayOutputSlideOverview', LMT.ui.out.showOverview); //not yet implemented
 
     
     $(document).on('CreateRootMinima', LMT.objects.Model.CreateRootMinima);
@@ -250,7 +255,7 @@ events.assignHandlers = function() {
     */
 //    $(document).on('HideAllTooltips', html.Tooltip2.closeAll); // should be called whenever a button gets deactivated due to a bug in jquery ui tooltip
     
-    $(document).on('ConvertInputImageToPNG', LMT.ui.svg.ConvertToPNG);
+//    $(document).on('ConvertInputImageToPNG', LMT.ui.svg.ConvertToPNG);
     //$(document).on('UploadInputImage', LMT.ui.com.UploadInputImage);
 };
 
