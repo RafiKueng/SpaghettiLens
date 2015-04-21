@@ -45,7 +45,7 @@ svg.initCanvas = function() {
 	var parent = document.getElementById("inp");
 	svg.root = document.createElementNS(svg.ns, "svg");
 	
-	svg.root.setAttribute("version", "1.2");
+	svg.root.setAttribute("version", "1.1");
 		
 	// create the layers
 	svg.layer = {};
@@ -1053,68 +1053,241 @@ svg.updateDisp = function() {
 
 
 
-/**
+/** V2
  * will convert the current canvas to a png string for later upload 
  */
-svg.ConvertToPNG = function(evt) {
-  //alert('convert');
-  
-  // put canvas in parent element of fixed size, because canvg takes dimensions of parent
-  var $parent = $('<div style="width:800px;height:600px;position:absolute;top:0;left:0;zindex:0;"></div>');
+svg.conv2 = function () {
+    
+    
+function svg_to_png_data(target) {
+  var ctx, mycanvas, svg_data, img, child;
 
-  var canvas = document.createElement('canvas');
-  canvas.width = 800;
-  canvas.height = 600;
-  canvas.style.width  = '800px';
-  canvas.style.height = '600px';
-  
-
-  
-  // first add css to the svg!!
-  // make a clone and add css to the clone
-  //  http://code.google.com/p/canvg/issues/detail?id=143
-  var clonedSVG = svg.root.cloneNode(true);
-  
-  var style = document.createElementNS(svg.ns, "style");
-  
-  //style.textContent += "<![CDATA[\n";
-  
-  //get stylesheet for svg
-  for (var i=0;i<document.styleSheets.length; i++) {
-    str = document.styleSheets[i].href;
-    if (str.indexOf('lmt.v')>-1 || str.indexOf('lmt.90.')>-1){
-      var rules = document.styleSheets[i].cssRules;
-      for (var j=0; j<rules.length;j++){
-        style.textContent += (rules[j].cssText + "\n");
-      }
-      break;
+  // Flatten CSS styles into the SVG
+  for (i = 0; i < target.childNodes.length; i++) {
+    child = target.childNodes[i];
+    var cssStyle = window.getComputedStyle(child);
+    if(cssStyle){
+       child.style.cssText = cssStyle.cssText;
     }
   }
-  //style.textContent += "]]>";
-  
-  clonedSVG.getElementsByTagName("defs")[0].appendChild(style);
-  
-  canvg(canvas, (new XMLSerializer()).serializeToString(clonedSVG), { ignoreMouse: true, ignoreAnimation: true });
-  
-  clonedSVG = null;
-  
 
-  // add elements to dom, so canvas gets drawn
-  $parent.append(canvas);
-  $('body').append($parent);
+  // Construct an SVG image
+  svg_data = '<svg xmlns="http://www.w3.org/2000/svg" width="' + target.offsetWidth +
+             '" height="' + target.offsetHeight + '">' + target.innerHTML + '</svg>';
+  img = new Image();
+  img.src = "data:image/svg+xml," + encodeURIComponent(svg_data);
 
-  //$(canvas).css({'display': 'none'});
-  //$parent.css({'display': 'none'});
-  //$(canvas).css({'visibility': 'hidden'});
-  $parent.css({'visibility': 'hidden'});
+  // Draw the SVG image to a canvas
+  mycanvas = document.createElement('canvas');
+  mycanvas.width = target.offsetWidth;
+  mycanvas.height = target.offsetHeight;
+  ctx = mycanvas.getContext("2d");
+  ctx.drawImage(img, 0, 0);
 
-  svg.canvasout = canvas;
-  svg.canvasoutprnt = $parent;
-  
-  // wait for the canvas to redraw
-  setTimeout(function(){
+  // Return the canvas's data
+  return mycanvas.toDataURL("image/png");
+}
+   console.log(svg_to_png_data(document.getElementById("svgroot")) );
+    
+/*
+    var style = "\n"
+    for (var i=0; i<document.styleSheets.length; i++) {
+      str = document.styleSheets[i].href.split("/");
+      if (str[str.length-1] == "lmt.90.svg_elements.css"){
+        var rules = document.styleSheets[i].cssRules;
+        for (var j=0; j<rules.length;j++){
+          style += (rules[j].cssText + "\n");
+        }
+        break;
+      }
+    }
+
+    var svgDiv = $("#svgroot");
+    svgDiv.prepend("\n<style type='text/css'></style>");
+    svgDiv.find("style").html("\n<![CDATA[" + style + "]]>\n");
+
+    var svg = svgDiv[0].outerHTML;
+
+    
+    
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    
+//    svgAsDataUri(document.getElementById("svgroot"), {scale:0.05}, function(uri) {
+    svgAsDataUri(svg, {scale:0.05}, function(uri) {
+        console.log(uri)
+        var img = new Image();
+        img.onload = function() {
+            ctx.drawImage(img, 0, 0);
+        }
+        img.src = uri;
+        
+        $('body').append(canvas);
+        
+    });
+  */               
+    
+    /*
+ var canvas = document.createElement('canvas');
+var ctx = canvas.getContext('2d');
+var svgDoc = document.getElementById('svgroot');
+var svg = new Blob([svgDoc.lastChild.outerHTML], {type: 'image/svg+xml;charset=utf-8'});
+var img = new Image(); 
+img.onload = function(){ ctx.drawImage(img,0,0); };
+img.src = url  
+
+$('body').append($(img))
+    */
+    
+    
+  /*
+var style = "\n"
+for (var i=0; i<document.styleSheets.length; i++) {
+  str = document.styleSheets[i].href.split("/");
+  if (str[str.length-1] == "lmt.90.svg_elements.css"){
+    var rules = document.styleSheets[i].cssRules;
+    for (var j=0; j<rules.length;j++){
+      style += (rules[j].cssText + "\n");
+    }
+    break;
+  }
+}
+
+var svgDiv = $("#svgroot");
+svgDiv.prepend("\n<style type='text/css'></style>");
+svgDiv.find("style").html("\n<![CDATA[" + style + "]]>\n");
+
+var svg = svgDiv[0].outerHTML;
+var canvas = document.getElementById('hiddenCanvas');
+canvg(canvas, svg);
+
+var theImage = canvas.toDataURL('image/png');
+$("#hiddenPng").attr('href', theImage);
+$("#hiddenPng").click()
+*/
+
+    /*
+    var $canv = $('<canvas id="canvas" width="600px" height="600px"></canvas>');
+    $('body').append($canv);
+    
+    canvg('canvas', document.getElementById("svgroot"));
+
+    var canvas = document.getElementById("canvas");
+    var img = canvas.toDataURL("image/png");
+    
+    $('body').append('<img src="data:image/png;base64,'+img+'" />');
+    */
+    
+    /*
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    var svgroot = document.getElementById('svgroot');
+    var svgDoc = svgroot.getSVGDocument();
+    var svg = new Blob([svgDoc.lastChild.outerHTML], {type: 'image/svg+xml;charset=utf-8'});
+    var img = new Image(); 
+    img.onload = function(){ ctx.drawImage(img,0,0); };
+    img.src = url
+    console.log(url)
+    */
+    
+    /*
+    svgAsDataUri(document.getElementById("svgroot"), {scale:0.1}, function(uri) {
+        console.log(uri)
+        LMT.tmpuri = uri
+
+        var image = new Image();
+        image.onload = function() {
+            var canvas = document.createElement('canvas');
+            canvas.width = image.width;
+            canvas.height = image.height;
+            var context = canvas.getContext('2d');
+            context.drawImage(image, 0, 0);
+            pngurl = canvas.toDataURL('image/png');
+            //$('body').append('<p>'+pngurl+'</p>');
+
+        };
+        image.src = uri;
+        $('body').append($(image));
+
+    });
+    */
+    
+    
+    
+    
+
+
+}
+
+
+
+
+
+/**
+*
+*/
+svg.ConvertToPNG = function(evt) {
+    //alert('convert');
+
+    // put canvas in parent element of fixed size, because canvg takes dimensions of parent
+    var $parent = $('<div style="width:800px;height:600px;position:absolute;top:0;left:0;zindex:0;"></div>');
+
+    var canvas = document.createElement('canvas');
+    var $canvas = $(canvas);
+
+    $parent.append($canvas)
+    $('body').append($parent)
+
+    $canvas.width(800);
+    $canvas.height(800);
+//    canvas.style.width  = '800px';
+//    canvas.style.height = '600px';
+
+    // first add css to the svg!!
+    // make a clone and add css to the clone
+    //  http://code.google.com/p/canvg/issues/detail?id=143
+    var clonedSVG = svg.root.cloneNode(true);
+
+    var style = document.createElementNS(svg.ns, "style");
+
+    //style.textContent += "<![CDATA[\n";
+
+    //get stylesheet for svg
+    for (var i=0;i<document.styleSheets.length; i++) {
+        str = document.styleSheets[i].href;
+        if (str.indexOf('lmt.v')>-1 || str.indexOf('lmt.90.')>-1){
+            var rules = document.styleSheets[i].cssRules;
+            for (var j=0; j<rules.length;j++){
+                style.textContent += (rules[j].cssText + "\n");
+            }
+            break;
+        }
+    }
+    //style.textContent += "]]>";
+
+    clonedSVG.getElementsByTagName("defs")[0].appendChild(style);
+
+    canvg(canvas, (new XMLSerializer()).serializeToString(clonedSVG), { ignoreMouse: true, ignoreAnimation: true });
+
+    clonedSVG = null;
+
+
+    // add elements to dom, so canvas gets drawn
+//    $parent.append(canvas);
+//    $('body').append($parent);
+
+    //$(canvas).css({'display': 'none'});
+    //$parent.css({'display': 'none'});
+    //$(canvas).css({'visibility': 'hidden'});
+    $parent.css({'visibility': 'hidden'});
+
+    svg.canvasout = canvas;
+    svg.canvasoutprnt = $parent;
+
+    // wait for the canvas to redraw
+    setTimeout(function(){
     LMT.ui.svg.CheckInputImage();
-  }, 10);
+    }, 10);
   
   
 };
@@ -1123,7 +1296,7 @@ svg.CheckInputImage = function(){
     var canvas = LMT.ui.svg.canvasout;
     var img = canvas.toDataURL();
     log('svg.CheckInputImage | img.length'+img.length);
-    if (img.length == 12950) { //if empty image, retry! we have to wait for the image load and canvas update
+    if (img.length < 30000) { //if empty image, retry! we have to wait for the image load and canvas update
       log('svg.CheckInputImage | recheck for input image');
       setTimeout(function(){
         LMT.ui.svg.CheckInputImage();

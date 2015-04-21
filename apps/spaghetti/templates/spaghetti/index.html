@@ -23,8 +23,12 @@
 
   <script src="{% static 'scripts/jquery.chosen.js' %}"></script>
   <script src="{% static 'scripts/jquery.cookie.js' %}"></script>
+  <script type="text/javascript" src="http://gabelerner.github.io/canvg/rgbcolor.js"></script> 
+  <script type="text/javascript" src="http://gabelerner.github.io/canvg/StackBlur.js"></script>
   <script src="{% static 'scripts/canvg.js' %}"></script>
-
+<!--  <script type="text/javascript" src="http://gabelerner.github.io/canvg/canvg.js"></script> -->
+  <script src="{% static 'scripts/saveSvgAsPng.js' %}"></script>
+    
   <script src="{% static 'spaghetti/js/lmt.js' %}"></script>
   <script src="{% static 'spaghetti/js/lmt.settings.js' %}"></script>
   <script src="{% static 'spaghetti/js/lmt.com.js' %}"></script>
@@ -407,6 +411,11 @@
 
     
 <div id="save_model_dialog" class="dialog" title="Save your Model">
+</div>
+
+<div id="hiddenDiv" >
+  <canvas id="hiddenCanvas"></canvas>
+  <a id="hiddenPng" />
 </div>
     
 </body>

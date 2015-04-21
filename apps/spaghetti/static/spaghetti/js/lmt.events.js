@@ -141,6 +141,9 @@ events.assignHandlers = function() {
     $(document).on('ShowDialogSaveResult', LMT.ui.html.SaveModelDialog.show);
     $(document).on('ConvertInputImageToPNG', LMT.ui.svg.ConvertToPNG);
 
+    $(document).on('tmp', LMT.ui.svg.conv2);
+
+    
     $(document).on('InputImageGenerated', LMT.ui.html.SaveModelDialog.generatedImage);
     $(document).on('SaveModel', LMT.com.SaveModel);  // upload model with is final tag
     $(document).on('SavedModel', LMT.ui.html.SaveModelDialog.savedModel);  // if successful saved
