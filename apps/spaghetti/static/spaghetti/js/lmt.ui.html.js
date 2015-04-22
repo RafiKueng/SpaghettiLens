@@ -77,11 +77,12 @@ html.SaveModelDialog = {
                 },
                 {
                     text: "Save",
-                    click: LMT.ui.html.SaveModelDialog.upload
+//                     click: LMT.ui.html.SaveModelDialog.upload
+                    click: function (evt) { $.event.trigger("SaveModel"); }
                 },
                 {
                     text: "Close",
-                    click: LMT.ui.html.SaveModelDialog.close
+                    click: function (evt) { $('#save_model_dialog').dialog("close"); }
                 },
                 {
                     text: "Restart",
@@ -101,6 +102,7 @@ html.SaveModelDialog = {
         $.event.trigger("ConvertInputImageToPNG");
     },
 
+    /*
     upload: function (evt) {
         $.event.trigger("SaveModel");
     },
@@ -108,6 +110,7 @@ html.SaveModelDialog = {
     close: function (evt) {
         $('#save_model_dialog').dialog("close");
     },
+    */
 
     generatedImage: function (evt) {
         var html = [
@@ -123,13 +126,13 @@ html.SaveModelDialog = {
         $(".ui-dialog-buttonpane button:contains('Save')").button('enable');
     },
 
-    savedModel: function (evt, rid) {
+    savedModel: function (evt, model_id) {
         $(".ui-dialog-buttonpane button:contains('Restart')").button('enable');
         $(".ui-dialog-buttonpane button:contains('Close')").button('enable');
         $(".ui-dialog-buttonpane button:contains('Save')").button('disable');
         $(".ui-dialog-buttonpane button:contains('Abort')").button('disable');
 
-        var url = "http://mite.physik.uzh.ch/data/" + rid;
+        var url = "http://labs.spacewarps.org/spaghetti/model/" + model_id;
         var html = [
             '<p>Result Saved</p>',
             '<p>You can retrieve your model at the following url:<br/>',

@@ -16,7 +16,7 @@ import hashlib
 import base64
 
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse, HttpResponsePermanentRedirect  # , Http404
+from django.http import HttpResponse, JsonResponse, HttpResponsePermanentRedirect, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.core.servers.basehttp import FileWrapper
@@ -56,6 +56,28 @@ def getIndex(request):
 
 
 
+def getModel(rq, model_id):
+
+    try:
+        model = Model.get(model_id)
+    except CouchExceptions.ResourceNotFound as e:
+        raise Http404("Model does not exist (%s)" % e)
+        #return JsonResponse({'success': False, 'error': 'Ressource not found (%s)' % e})
+        
+    try:
+        lens = Lens.get(model.lens_id)
+    except CouchExceptions.ResourceNotFound as e:
+        raise Http404("Lens does not exist (%s)" % e)
+
+    context = {
+        'lens':  lens,        
+        'model': model
+    }
+    
+    return render(rq, 'spaghetti/model.html', context)
+
+
+
 
 def getApiDef():
 #  'api_call: (_apiCallback, [req_keyword0, ...])' 
@@ -68,6 +90,8 @@ def getApiDef():
                              ['model_id']),
         'get_rendering_status':  (_getRenderingStatus,
                              ['model_id']),
+        'set_final':        (_markModelAsFinal,
+                             ['model_id', 'lmtmodel', 'username', 'comment']),
     }
 
 
@@ -157,11 +181,20 @@ def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
 
     #model_id = "model_"+str(random.randint(100,999))
 
+    # generate the id
     m = hashlib.sha256()
     m.update(lens_id)
     m.update(lmtmodel)
     model_id = base64.b32encode(m.digest())[0:10]
     print 'model_id:', model_id
+
+
+    # generate the checksum (used when marking as final to check wether is unchanged)
+    mm = hashlib.md5()
+    mm.update(lens_id)
+    mm.update(lmtmodel)
+    checksum_md5 = mm.hexdigest()
+    
 
     now = datetime.datetime.utcnow()
 
@@ -172,6 +205,7 @@ def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
         created_by = username,
         created_at = now,
         comments = [[username, now, comment]],
+        checksum = checksum_md5,
         
         obj = obj,
         glass = {},
@@ -193,6 +227,39 @@ def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
 
 
 
+
+
+def _markModelAsFinal(rq, model_id, lmtmodel, username, comment):
+
+    try:
+        model = Model.get(model_id)
+    except CouchExceptions.ResourceNotFound as e:
+        return JsonResponse({'success': False, 'error': 'Ressource not found (%s)' % e})
+
+    lens_id = model.lens_id
+    
+    # generate the checksum (used when marking as final to check wether is unchanged)
+    mm = hashlib.md5()
+    mm.update(lens_id)
+    mm.update(lmtmodel)
+    checksum = mm.hexdigest()
+    
+    if not model.checksum == checksum:
+        print "Checksums dont match!", model_id, lens_id, checksum, model.checksum
+        return JsonResponse({'success': False, 'error': 'Checksum don match (%s - )' % (checksum, model.checksum)})
+        
+    now = datetime.datetime.utcnow()
+
+    if comment and username:
+        if model.comments:
+            model.comments.append([username, now, comment])
+        else:
+            model.comments = [[username, now, comment]]
+
+    model.isFinal = True
+    model.save()
+
+    return JsonResponse({'success': True, 'model_id': model_id})
 
 
 

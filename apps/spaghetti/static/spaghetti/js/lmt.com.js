@@ -416,7 +416,17 @@ com.UploadModel = function(evt) {
 
 
 
-/**
+
+
+
+
+
+
+
+
+
+
+/** V2
  * event handler 
  * save the resulting model string in the database as FINAL RESULT
  * - model name
@@ -428,62 +438,109 @@ com.UploadModel = function(evt) {
  */
 com.SaveModel = function(evt) {
 
-  var success = function(jsonResp, statusTxt, XHRRespObj) {
-    log('com.SaveModel | success', 'result_id: ' + jsonResp.result_id);
-    LMT.simulationResult.resultId = jsonResp.result_id;
-    //LMT.simulationResult.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
-    //$.event.trigger("UploadModelComplete")
-    /*
-      alert("Model saved! \n(result_id: "+jsonResp.result_id+")\n"+
-      "access the raw data with:\n"+
-      "http://mite.physik.uzh.ch/data/"+jsonResp.result_id);
-    */
-    $.event.trigger("SavedModel", jsonResp.result_id);
-  };
-  
-  var fail = function(a, b, c) {
-    log('com.SaveModel | fail', a, b, c, a.responseText);
-
-    /*
-    var win=window.open('about:blank');
-    with(win.document)
-    {
-      open();
-      write(a.responseText);
-      close();
-    }
-    */
-  };
-
-
-  if (LMT.model.Sources.length==0){
-    alert("Please create a model first before uploading");
-    return false;
-  }
-  
-  var data = {
-        modelid: LMT.modelData.id,
-        resultid: LMT.simulationResult.resultId,
-        isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
-        username: LMT.settings.username,
-        imgData: LMT.ui.svg.img,
-        parentid: (LMT.modelData.parentId ? LMT.modelData.parentId : -1)
+    var success = function(jsonResp, statusTxt, XHRRespObj) {
+        log('com.SaveModel | success', 'model_id: ' + jsonResp.model_id);
+        LMT.simulationResult.modelId = jsonResp.model_id;
+        $.event.trigger("SavedModel", jsonResp.model_id);
     };
-  
-  //LMT.simulationResult.resultId = -1;
-  //LMT.simulationResult.resultModelHash = data.string.hashCode();
-  
-  $.ajax(LMT.com.serverUrl + LMT.com.saveDataFinalUrl, {
-      type:"POST",
-      contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
-      data: data, 
-      dataType:"json", //data type expected from server
-      success:success,
-      error: fail
-      //mimeType: "text/plain"
-  });
+
+
+    if (LMT.model.Sources.length==0){
+        alert("Please create a model first before uploading");
+        return false;
+    }
+
+    var data = {
+        action: "set_final",
+        model_id: LMT.simulationResult.modelId,
+        lens_id: LMT.lensData._id,
+        lmtmodel: LMT.model.getStateAsString(),
+        username: LMT.settings.username ? LMT.settings.username : '',
+        comment: '',
+    };
+
+    $.ajax(com.config.spaghettiAPI, {
+        type:"POST",
+        success:success,
+        error: function (a,b,c) { log('com.SaveModel | fail',a,b,c); alert("api not available"); },
+        data: data, 
+        dataType: "json"
+    });
 
 }
+
+
+
+
+
+// /**
+//  * event handler 
+//  * save the resulting model string in the database as FINAL RESULT
+//  * - model name
+//  * - model string: the serialized model data (json)
+//  * - isFinal: true
+//  * 
+//  * post returns json 
+//  * {status: "OK" or "BAD..."
+//  */
+// com.SaveModel = function(evt) {
+// 
+//   var success = function(jsonResp, statusTxt, XHRRespObj) {
+//     log('com.SaveModel | success', 'result_id: ' + jsonResp.result_id);
+//     LMT.simulationResult.resultId = jsonResp.result_id;
+//     //LMT.simulationResult.resultModelHash = LMT.actionstack.current.stateStr.hashCode();
+//     //$.event.trigger("UploadModelComplete")
+//     /*
+//       alert("Model saved! \n(result_id: "+jsonResp.result_id+")\n"+
+//       "access the raw data with:\n"+
+//       "http://mite.physik.uzh.ch/data/"+jsonResp.result_id);
+//     */
+//     $.event.trigger("SavedModel", jsonResp.result_id);
+//   };
+//   
+//   var fail = function(a, b, c) {
+//     log('com.SaveModel | fail', a, b, c, a.responseText);
+// 
+//     /*
+//     var win=window.open('about:blank');
+//     with(win.document)
+//     {
+//       open();
+//       write(a.responseText);
+//       close();
+//     }
+//     */
+//   };
+// 
+// 
+//   if (LMT.model.Sources.length==0){
+//     alert("Please create a model first before uploading");
+//     return false;
+//   }
+//   
+//   var data = {
+//         modelid: LMT.modelData.id,
+//         resultid: LMT.simulationResult.resultId,
+//         isFinal: ( evt.type=="SaveModel" ? true : false ), //isFinal
+//         username: LMT.settings.username,
+//         imgData: LMT.ui.svg.img,
+//         parentid: (LMT.modelData.parentId ? LMT.modelData.parentId : -1)
+//     };
+//   
+//   //LMT.simulationResult.resultId = -1;
+//   //LMT.simulationResult.resultModelHash = data.string.hashCode();
+//   
+//   $.ajax(LMT.com.serverUrl + LMT.com.saveDataFinalUrl, {
+//       type:"POST",
+//       contentType: 'application/x-www-form-urlencoded; charset=UTF-8', //default anyways, type of data sent TO server
+//       data: data, 
+//       dataType:"json", //data type expected from server
+//       success:success,
+//       error: fail
+//       //mimeType: "text/plain"
+//   });
+// 
+// }
 
 
 

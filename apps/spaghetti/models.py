@@ -33,6 +33,7 @@ class Model(cdb.Document):
     created_by = cdb.StringProperty()
     created_at = cdb.DateTimeProperty(default=datetime.datetime.utcnow())
     comments = cdb.ListProperty(default=[])
+    checksum = cdb.StringProperty()
     
     obj = cdb.DictProperty()
     glass = cdb.DictProperty()
