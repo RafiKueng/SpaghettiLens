@@ -1520,6 +1520,7 @@ html.KeyboardListener = {
     
     if (evt.target.tagName=="INPUT") {return;}
     if (evt.target.tagName=="BUTTON") {return;}
+    if (evt.ctrlKey) { return; }
     
     var code = evt.keyCode;
     //var code = evt.which || evt.keyCode;

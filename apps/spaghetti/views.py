@@ -140,7 +140,7 @@ def getApiDef():
 #  'api_call: (_apiCallback, [req_keyword0, ...])' 
 #   -> GET /api_call?req_keyword=val0&req...   -> python _apiCallback(request)
     return {
-        'test':             (_testing, ['bla']),
+#        'test':             (_testing, ['bla']),
         'save_model':       (_saveModel,
                              ['lmtmodel', 'lens_id', 'parent', 'username', 'comment']),
         'start_rendering':  (_startRendering,
@@ -149,13 +149,15 @@ def getApiDef():
                              ['model_id']),
         'set_final':        (_markModelAsFinal,
                              ['model_id', 'lmtmodel', 'img_data', 'username', 'comment']),
+        'get_model_data':   (_getModelData, ['model_id']),
     }
 
+import sys
 
 @csrf_exempt
 def api(request):
 
-    #print request.GET, request.POST
+    print request.GET, request.POST
     
     if request.method in ['GET', 'POST']:
         if len(request.GET) == 0 and len(request.POST) == 0:
@@ -168,6 +170,7 @@ def api(request):
         APIDEF = getApiDef()
         
         kwdict = {}
+        print action
         if action in APIDEF.keys():
             fn, kwargs = APIDEF[action]
             for kwarg in kwargs:
@@ -178,7 +181,7 @@ def api(request):
             return fn(request, **kwdict)
             
         else:
-            return JsonResponse({'success': False, 'error': "invalid_action"})
+            return JsonResponse({'success': False, 'error': "invalid_action !! :"+action})
             
     elif request.method == 'OPTIONS':
         response = HttpResponse("")
@@ -419,6 +422,17 @@ def _getRenderingStatus(rq, model_id):
         model.save()
 
     return JsonResponse({'success': True, 'status': stat, 'progress': prog})
+
+
+
+def _getModelData(rq, model_id):
+
+    try:
+        model = Model.get(model_id)
+    except CouchExceptions.ResourceNotFound as e:
+        return JsonResponse({'success': False, 'error': 'Ressource not found (%s)' % e})
+    
+    return JsonResponse({'success': True, 'model_id': model_id, 'lens_id': model.lens_id, 'json_str': model.obj['jsonStr']})
 
 
 

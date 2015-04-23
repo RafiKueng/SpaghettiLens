@@ -51,33 +51,32 @@ com.getInitData = function(evt) {
 /** V2
  *
  */
-com.getAndLoadModel = function(evt, mid, loadHandler) {
-  var success = function(obj, status_text, resp) {
-    res_data = {
-      'model_id': obj.model_id,
-      'json_str': obj.json_str,
+com.getAndLoadModel = function(evt, model_id, loadHandler) {
+    var success = function(obj, status_text, resp) {
+        if (obj.success){
+            res_data = {
+                'model_id': obj.model_id,
+                'lens_id': obj.lens_id,
+                'json_str': obj.json_str,
+            };
+            loadHandler(res_data);
+        }
+    }
+
+    var data = {
+        action: 'get_model_data',
+        model_id: model_id,
     };
-    loadHandler(res_data);
-  }
-  
-  var fail = function(resp, status_text, code) {
-    log("getAndLoadModel | fail", resp, status_text, code);
-  };
-  
-  var data = {
-    action: 'getResultData',
-    rid: rid,
-  };
-  
-  $.ajax(LMT.com.serverUrl + "/api", {
-        type:"GET",
+
+    $.ajax(com.config.spaghettiAPI, {
+        type: "GET",
         data: data,
-        dataType:"json",
-        success:success,
-        error: function () { alert("lens api not available (server down?)"); },
-  });
-  
-  
+        dataType: "json",
+        success: success,
+        error: function () { alert("lens api not available (server down? @getAndLoadModel)"); },
+    });
+
+
 }
 
 

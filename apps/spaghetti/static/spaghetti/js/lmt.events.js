@@ -68,12 +68,13 @@ events.startUp = function () {
         var modelid = LMT.GET["model"];
         var loadResult = function(res_data) {
             var mid = res_data.model_id;
-            jsonStr = res_data.json_str;
+            var lid = res_data.lens_id;
+            var jsonStr = res_data.json_str;
 
-            $.event.trigger("LensSelected", [mid]);
+            $.event.trigger("LensSelected", [lid]);
             LMT.model = Model.getModelFormJSONString(jsonStr);
             $.event.trigger("UpdateRepaintModel");
-            LMT.modelData.parentId = rid;
+            LMT.modelData.parentId = mid;
         };
 
         $.event.trigger("GetAndLoadModel", [modelid, loadResult]);
