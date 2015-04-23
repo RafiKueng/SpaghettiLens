@@ -46,7 +46,12 @@ com.getInitData = function(evt) {
 }
 
 
-com.getAndLoadResult = function(evt, rid, loadHandler) {
+
+
+/** V2
+ *
+ */
+com.getAndLoadModel = function(evt, mid, loadHandler) {
   var success = function(obj, status_text, resp) {
     res_data = {
       'model_id': obj.model_id,
@@ -56,7 +61,7 @@ com.getAndLoadResult = function(evt, rid, loadHandler) {
   }
   
   var fail = function(resp, status_text, code) {
-    log("getAndLoadResult | fail", resp, status_text, code);
+    log("getAndLoadModel | fail", resp, status_text, code);
   };
   
   var data = {
@@ -65,11 +70,11 @@ com.getAndLoadResult = function(evt, rid, loadHandler) {
   };
   
   $.ajax(LMT.com.serverUrl + "/api", {
-      type:"POST",
-      success: success,
-      error: fail,
-      data: data,
-      dataType:"json", //data type expected from server
+        type:"GET",
+        data: data,
+        dataType:"json",
+        success:success,
+        error: function () { alert("lens api not available (server down?)"); },
   });
   
   

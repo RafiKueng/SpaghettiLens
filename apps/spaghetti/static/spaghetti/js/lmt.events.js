@@ -56,30 +56,56 @@ events.startUp = function () {
     $.event.trigger("ShowSelectDatasourceDialog");
     */
 
-
-    if (LMT.GET.hasOwnProperty("mid")){
-        var mid = parseInt(LMT.GET["mid"]);
-        $.event.trigger("GetModelData", [[mid],'','init']);
+    /** V2
+     * Shortcut for direct loading of lenses or models using urls
+     */
+    if (LMT.GET.hasOwnProperty("lens")){
+        var lid = LMT.GET["lens"];
+        $.event.trigger("LensSelected", [lid]);
         $.event.trigger("SetUsername");
 
-    } else if (LMT.GET.hasOwnProperty("rid")) {
-        rid = parseInt(LMT.GET["rid"]);
+    } else if (LMT.GET.hasOwnProperty("model")) {
+        var modelid = LMT.GET["model"];
         var loadResult = function(res_data) {
             var mid = res_data.model_id;
             jsonStr = res_data.json_str;
 
-            $.event.trigger("GetModelData", [[mid],'','init']);
+            $.event.trigger("LensSelected", [mid]);
             LMT.model = Model.getModelFormJSONString(jsonStr);
             $.event.trigger("UpdateRepaintModel");
             LMT.modelData.parentId = rid;
         };
 
-        $.event.trigger("GetAndLoadResult", [rid, loadResult]);
+        $.event.trigger("GetAndLoadModel", [modelid, loadResult]);
         $.event.trigger("SetUsername");
     } else {
         //v2      $.event.trigger("ShowSelectDatasourceDialog");
         $.event.trigger("GetSelectDatasourceDialog");
     };
+
+//    if (LMT.GET.hasOwnProperty("mid")){
+//        var mid = parseInt(LMT.GET["mid"]);
+//        $.event.trigger("GetModelData", [[mid],'','init']);
+//        $.event.trigger("SetUsername");
+//
+//    } else if (LMT.GET.hasOwnProperty("rid")) {
+//        rid = parseInt(LMT.GET["rid"]);
+//        var loadResult = function(res_data) {
+//            var mid = res_data.model_id;
+//            jsonStr = res_data.json_str;
+//
+//            $.event.trigger("GetModelData", [[mid],'','init']);
+//            LMT.model = Model.getModelFormJSONString(jsonStr);
+//            $.event.trigger("UpdateRepaintModel");
+//            LMT.modelData.parentId = rid;
+//        };
+//
+//        $.event.trigger("GetAndLoadResult", [rid, loadResult]);
+//        $.event.trigger("SetUsername");
+//    } else {
+//        //v2      $.event.trigger("ShowSelectDatasourceDialog");
+//        $.event.trigger("GetSelectDatasourceDialog");
+//    };
 };
   
 events.assignHandlers = function() {
@@ -165,7 +191,7 @@ events.assignHandlers = function() {
 //    $(document).on('RcvDatasourceDialog', LMT.ui.html.GenericDatasourceDialog.init);
       
 
-    $(document).on('GetAndLoadResult', LMT.com.getAndLoadResult);
+    $(document).on('GetAndLoadModel', LMT.com.getAndLoadModel);
     $(document).on('SetUsername', LMT.ui.html.SetUsernameDialog.show);
     
     $(document).on('ToggleDisplay', LMT.ui.html.ToggleDisplay);
@@ -179,7 +205,7 @@ events.assignHandlers = function() {
     $(document).on('GotInitData', LMT.ui.html.SelectModelDialog.onInitData);
 
     // ask the server for a particular modelid
-    $(document).on('GetModelData', LMT.com.getModelData);    
+//    $(document).on('GetModelData', LMT.com.getModelData);    
     $(document).on('ShowSelectModelDataDialog', LMT.ui.html.SelectModelDialog.show);    
     // the server sent the starting data for the model, like urls to the background image(s) and default color binding
 //    $(document).on('ReceivedModelData', LMT.ui.html.ColorSettingsDialog.init);
