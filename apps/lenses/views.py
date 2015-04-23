@@ -225,8 +225,8 @@ def _getLensData(rq):
 
 
 def getMedia(request, hash1, hash2, datatype, datasource, subtype, ext):
-    print hash1, hash2, datatype, datasource, subtype, ext
-    print request.path
+    #print hash1, hash2, datatype, datasource, subtype, ext
+    #print request.path
    
     idd = (hash1+hash2).lower() # can be full or reduced 3x3 form
 

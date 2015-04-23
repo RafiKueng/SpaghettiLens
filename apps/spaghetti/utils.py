@@ -246,15 +246,15 @@ class EvalAndSaveJSON:
     
     
     # lets got to work
-    print "EAS: eval"
+    #print "EAS: eval"
     self.evalModelString()
-    print "EAS: oder"
+    #print "EAS: oder"
     self.orderPoints2()
 #    print "EAS: create mr"
 #    self.createModellingResult()
 #    print "EAS: create cfg"
     self.createConfigFile()    
-    print "EAS: done"
+    #print "EAS: done"
         
 #  def __setitem__(self, key, value):
 #    self.__dict__[key] = value
@@ -282,8 +282,8 @@ class EvalAndSaveJSON:
         
     self._.jsonObj = json.loads(self._.jsonStr, object_hook=objHook)
     
-    print "converted json str"
-    print self._.jsonObj
+    #print "converted json str"
+    #print self._.jsonObj
     
     gs = self._.jsonObj["Parameters"]
     
@@ -318,7 +318,7 @@ class EvalAndSaveJSON:
             value = type(gs[attr])
           except TypeError:
             value = 0
-        print "found attr:", attr, str(type), ":", value, gs[attr] 
+        #print "found attr:", attr, str(type), ":", value, gs[attr] 
         self._[attr] = value
         
     #self.isSym = True;
@@ -348,7 +348,7 @@ class EvalAndSaveJSON:
     def recWalker(pnt, origin, depth=0, level=0):
       res = []
       a = " "*(depth*3)
-      print a, "rec:", level, pnt.x, pnt.y, pnt.type, pnt.wasType
+      #print a, "rec:", level, pnt.x, pnt.y, pnt.type, pnt.wasType
       
       try:
         ch1type = pnt.child1.wasType if pnt.child1.type == "sad" else pnt.child1.type
@@ -368,28 +368,28 @@ class EvalAndSaveJSON:
         
         d1 /= depth
         d2 /= depth
-        print a, "next walker: ch1:"
+        #print a, "next walker: ch1:"
         res.extend(recWalker(pnt.child1, origin, depth=depth+1, level = level+d1))
-        print a, "next walker: ch2:"
+        #print a, "next walker: ch2:"
         res.extend(recWalker(pnt.child2, origin, depth=depth+1, level = level+d2))
       except:
-        print " "*(depth*3), "no children"
+        #print " "*(depth*3), "no children"
         pass
-      print a, "get new point:"
+      #print a, "get new point:"
       npnt = pnt.getRelCoordTo(origin)
       npnt.level = level
       npnt.depth = depth
-      print a, "-> ", npnt.x, npnt.y, npnt.type, npnt.level
+      #print a, "-> ", npnt.x, npnt.y, npnt.type, npnt.level
       res.append(npnt)
       return res
       
       
     res = recWalker(pnt, origin, depth=1, level=0)
     res.sort(key=lambda pnt: pnt.level)
-    print "sorted"
+    #print "sorted"
     for r in res:
       r.changePxToArcsec(self._.pxScale)
-      print r, "-> x:% .2f, y:% .2f, type:%s, level:% .2f, depth:%i" % (r.x, r.y, r.type, r.level, r.depth)
+      #print r, "-> x:% .2f, y:% .2f, type:%s, level:% .2f, depth:%i" % (r.x, r.y, r.type, r.level, r.depth)
       
     # if the last point is a max, take it out
     if res[-1].type == "max":
@@ -397,13 +397,13 @@ class EvalAndSaveJSON:
     self._.points = res
     
     # rescale and set the external masses
-    print 'adding external masses'
-    print 'origin:', origin
+    #print 'adding external masses'
+    #print 'origin:', origin
     self._.ext_masses = []
     for mass in self._.jsonObj["ExternalMasses"]:
       # note: origin is and stays in pixels!!
       self._.ext_masses.append(mass.changePxToArcsec(origin, self._.pxScale))
-      print mass
+      #print mass
    
   
   
@@ -498,7 +498,7 @@ class EvalAndSaveJSON:
         "  %s, '%s', %s" % (chr(65+i), _.points[i].type,  delaystr)
       )
       
-    print _.ext_masses
+    #print _.ext_masses
     for em in _.ext_masses:
       gls.append(em.getStr())
       
@@ -547,10 +547,10 @@ class EvalAndSaveJSON:
     
     _.gls = '\n'.join(gls)
     
-    print "saving config"
+    #print "saving config"
     
     if not os.path.exists(_.cfg_path):
-      print "create path"
+      #print "create path"
       os.makedirs(_.cfg_path)
     
     f = open(_.cfg_path + _.cfg_file, 'w')
@@ -606,7 +606,7 @@ class EvalAndSaveJSON:
       for i, pnt in enumerate(self._.points):
           self._.source.extend(pnt.toGLSLst(i))
           
-      print "in eval (source):", self._.source
+      #print "in eval (source):", self._.source
 
       points = []
       for pnt in self._.points:
@@ -616,8 +616,8 @@ class EvalAndSaveJSON:
       
       self._.jsonObj = ""
       
-      print "in eval (source2:", self._.source
-      print dict(self._)['source']
+      #print "in eval (source2:", self._.source
+      #print dict(self._)['source']
 
       exms = []
       for exm in self._.ext_masses:

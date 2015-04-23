@@ -114,7 +114,7 @@ def getModel(rq, model_id):
     for c in childs:
         m = Model.get(c)
         children.append({ 'id': c, 'user': m.obj['author'], 'date': m.created_at })
-    print children
+    #print children
     
     try:
         p = Model.get(model.parent)
@@ -149,7 +149,7 @@ def getModel(rq, model_id):
     }
     
     
-    print context
+    #print context
     
     return render(rq, 'spaghetti/model.html', context)
 
@@ -177,7 +177,7 @@ import sys
 @csrf_exempt
 def api(request):
 
-    print request.GET, request.POST
+    #print request.GET, request.POST
     
     if request.method in ['GET', 'POST']:
         if len(request.GET) == 0 and len(request.POST) == 0:
@@ -190,7 +190,7 @@ def api(request):
         APIDEF = getApiDef()
         
         kwdict = {}
-        print action
+        #print action
         if action in APIDEF.keys():
             fn, kwargs = APIDEF[action]
             for kwarg in kwargs:
@@ -227,7 +227,7 @@ def api(request):
 
 def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
     
-    print "username:", username
+    #print "username:", username
     
     try:
         lens = Lens.get(lens_id)
@@ -235,7 +235,7 @@ def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
         return JsonResponse({'success': False, 'error': 'Ressource not found (%s) The lens id doesnt exist!!' % e})
     
 
-    print "eval and save"
+    #print "eval and save"
     EASJobj = EvalAndSaveJSON(user_str = username,
                           data_obj= lens,
                           jsonStr = lmtmodel,
@@ -243,20 +243,20 @@ def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
                           
     obj = EASJobj.getDict()
 
-    print "after eval and save"
+    #print "after eval and save"
 
-    print '='*80
-    print "EASJobj:"
-    for k, v in EASJobj.__dict__['_'].items():
-        print "%-16s : %s" % (k, v)
-    print '='*80
+    #print '='*80
+    #print "EASJobj:"
+    #for k, v in EASJobj.__dict__['_'].items():
+        #print "%-16s : %s" % (k, v)
+    #print '='*80
         
     
-    print '='*80
-    print "parsed data obj:"
-    for k, v in obj.items():
-        print "%-16s : %s" % (k, v)
-    print '='*80
+#    print '='*80
+#    print "parsed data obj:"
+#    for k, v in obj.items():
+#        print "%-16s : %s" % (k, v)
+#    print '='*80
 
     #model_id = "model_"+str(random.randint(100,999))
 
@@ -265,7 +265,7 @@ def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
     m.update(lens_id)
     m.update(lmtmodel)
     model_id = base64.b32encode(m.digest())[0:10]
-    print 'model_id:', model_id
+    #print 'model_id:', model_id
 
 
     # generate the checksum (used when marking as final to check wether is unchanged)
@@ -327,7 +327,7 @@ def _markModelAsFinal(rq, model_id, lmtmodel, img_data, username, comment):
         fh.write(img.decode('base64'))
         fh.close()
     else:
-        print 'Error: no image upload'
+        #print 'Error: no image upload'
         return JsonResponse({'success': False, 'error': 'Ressource not found (%s)' % e})
 #    except:
 #        print 'Could not open/write file'

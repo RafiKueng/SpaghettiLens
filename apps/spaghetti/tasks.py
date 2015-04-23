@@ -202,7 +202,7 @@ def runGLASS(self, GLASSconfig, config):
 #                    C,'sad', None,
 #                    D,'sad', 11.7)
 
-    print GC['source']
+    #print GC['source']
     source(*GC['source'])
 
     for i, exm in enumerate(GC['ext_masses']):
