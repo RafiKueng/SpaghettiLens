@@ -1,0 +1,19 @@
+THINGS TO FIX LATER
+
+setup:
+
+> deploy/files/django_machine_settings.py
+    * couchdb database is hardcoded
+    * static and media root are hardcoded
+    * upload user / host hardcoded
+    * secret key should be generated randomly
+    * broker is hardcoded
+
+
+databases / setup
+automatically run syncdb
+automatically add datasources entries
+
+make propper logging and loglevels
+
+multiprocessing for glass (is disabled because can't run as daemonic processes)

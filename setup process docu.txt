@@ -1,0 +1,51 @@
+
+
+rafik@rk-main-deb:~/projects/SpaghettiLens (dev) > fab -R test deploy_server
+
+
+16:27:08 ツ rafik@rk-main-deb:~ > ssh 192.168.100.10
+16:40:11 ツrafik@swlabs:~ > cd /data/swlabs/
+16:40:38 ツrafik@swlabs:/data/swlabs > source py_env/bin/activate
+(py_env)16:40:43 ツrafik@swlabs:/data/swlabs > 
+
+
+modify apache.conf
+-------------------
+* ServerAdmin
+* ServerName
+
+mkdir -p /data/swlabs/wwwroot
+mkdir -p /data/swlabs/static
+mkdir -p /data/swlabs/media/lenses
+mkdir -p /data/swlabs/media/spaghetti
+
+chmod -R 777 media
+
+
+modify django_machine_settings.py
+----------------------------------
+* hosts, usernames and psws
+
+
+
+django
+-----------------
+cd django_apps
+./manage.py collectstatic
+
+
+database:
+-------------
+./manage.py syncdb
+
+add datasource entry in db lenses
+http://labs.spacewarps.org:8080/db/futon/
+
+===================================================
+
+check if glass rev in config file is the currents
+
+rafik@rk-main-deb:~/projects/SpaghettiLens (dev) > fab -R test deploy_worker
+
+change django_machine_settings.py
+

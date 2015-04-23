@@ -1,0 +1,71 @@
+ 
+database: LENSES
+
+{
+   "_id": "0001",
+   "_rev": "6-fc124210cda8fb71c7526cc9b24df19b",
+   "name": "SpaceWarps",
+   "provides": [
+       "COMPOSED_PIXEL_IMAGE"
+   ],
+   "doc_type": "Datasource",
+   "py_module_name": "spacewarps"
+}
+
+
+
+{
+   "_id": "_design/lenses",
+   "_rev": "19-23fcfaf6791e6f103fd8d515a0ac945f",
+   "views": {
+       "Datasources": {
+           "map": "function(doc) {\n    if (doc.doc_type == 'Datasource'){\n        emit(doc._id, doc);\n    }\n}"
+       },
+       "Lenses__by_name": {
+           "map": "function(doc) {\n    if (doc.doc_type == 'Lens'){\n        for (n in doc.names) {\n            emit(doc.names[n], null);\n        }\n    }\n}"
+       }
+   },
+   "couchapp": {
+       "signatures": {
+       },
+       "objects": {
+       },
+       "manifest": [
+           "views/",
+           "views/Datasources/",
+           "views/Datasources/map.js",
+           "views/Lenses__by_name/",
+           "views/Lenses__by_name/map.js"
+       ]
+   }
+}
+
+
+
+
+
+database: SPAGHETTI
+
+
+{
+   "_id": "_design/spaghetti",
+   "_rev": "6-bb365d043abab71f572ba657bf7ef2ec",
+   "views": {
+       "Children": {
+           "map": "function(doc) {\n    if (doc.parent) {\n        emit(doc.parent, doc._id);\n    }\n}",
+           "reduce": "function(keys, values, rereduce) {\n    return values;\n}"
+       }
+   },
+   "couchapp": {
+       "signatures": {
+       },
+       "objects": {
+       },
+       "manifest": [
+           "views/",
+           "views/Children/",
+           "views/Children/reduce.js",
+           "views/Children/map.js"
+       ]
+   }
+}
