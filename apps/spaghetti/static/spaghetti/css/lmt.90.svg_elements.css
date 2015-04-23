@@ -1,0 +1,107 @@
+/* SVG elements */
+.extremalpoint.min {
+	fill: cyan;
+}
+
+.extremalpoint.max {
+	fill: red;
+}
+
+.extremalpoint.sad {
+	fill: green;
+}
+
+.contourpoint {
+	fill: #ff00ff;
+}
+
+.connectorline {
+	stroke: #ff00ff;
+	/*stroke-width:3;*/
+}
+
+.contourpath {
+	stroke: #ff00ff;
+	fill: none;
+	/*stroke-width: 3;*/
+}
+
+
+.ruler.mid {
+	r: 7;
+	fill: lime;
+}
+
+.ruler.circ {
+	fill: none;
+	stroke: lime;
+}
+
+/*
+.ruler.handle {
+  fill: #ffaaaa;
+}
+*/
+
+.ruler.text {
+  font-family:Arial, Helvetica, sans-serif;
+  fill: lime;
+  stroke: black;
+}
+
+
+.ext_mass.mid {
+	fill: gray;
+}
+
+.ext_mass.circ {
+	fill: none;
+	stroke: gray;
+}
+
+.ext_mass.handle {
+	fill: #00a;
+}
+
+.ext_mass.text {
+  font-family:Arial, Helvetica, sans-serif;
+  fill: lime;
+  stroke: black;
+}
+
+.crosshair {
+  /*stroke: #ff0000;*/
+}
+.crosshair.min {
+  stroke: cyan;
+}
+.crosshair.max {
+  stroke: red;
+}
+.crosshair.sad {
+  stroke: green;
+}
+
+
+
+
+/* use this class for elements that are not active */
+.inactive {
+  opacity: 0.25;
+}
+
+/* elements that should not be visible but still clickable
+ ...for durable elements */
+.hidden {
+  opacity: 0.001;
+}
+/* ..and this for temporary states */
+.almostinvis{
+  opacity: 0.001;
+}
+
+/* use this class for elements that are not displayed */
+.invisible {
+  opacity: 0.00;
+	visibility: hidden;
+}

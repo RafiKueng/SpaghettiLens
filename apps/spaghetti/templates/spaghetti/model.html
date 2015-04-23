@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>ResultView</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        {% if refresh %}
+          <meta http-equiv="refresh" content="{{refresh}}" > 
+        {% endif %}
+
+<style type="text/css">
+
+body {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+h1 {
+  display: block;
+  margin: 20px 15px 5px;
+  padding: 3px;
+}
+
+h2 {
+  display: block;
+  margin: 0px;
+  padding: 10px 20px 5px;
+
+  text-align:left;
+}
+
+h3 {
+  display: block;
+  margin: 0px;
+  padding: 15px;
+}
+
+h3>span{
+  font-size: 75%;
+  font-weight:normal;
+}
+
+img {
+  max-height: 500px;
+  width: 480px;
+  padding: 10px;
+}
+
+.waiting4img{
+  display: inline-block;
+  padding: 0 20px 5px;
+}
+
+.box {
+  display:block;
+  min-width: 550px;
+  max-width: 1200px;
+  
+  background-color:#999;
+  margin: 10px auto;
+  
+  text-align:center;
+}
+
+.elem {
+  display:inline-block;
+  margin: 10px;
+  min-width: 500px;
+
+  background-color:#CCCCCC;
+  background-repeat:no-repeat;
+  background-position: 95% center;
+  
+  text-align: left;
+  vertical-align: top;
+}
+
+.elem > a {
+  display: block;
+}
+
+.clear {
+  clear:all;
+}
+
+h2:before {
+  content: ">\a0";
+}
+
+.expanded:after, .notExpanded:after {
+  font-size: 0.66em;
+  font-weight:normal;
+}
+
+.expanded:after {
+  content:"\a0\a0\a0 [click to hide]";
+}
+
+.notExpanded:after {
+  content:"\a0\a0\a0 [click to show]";
+}
+
+li {
+  list-style-type: none;
+}
+
+li > span{
+  display: inline-block;
+  min-width: 100px;
+  padding-right: 5px;
+
+  text-align:right;
+  font-weight:bold;
+}
+
+.back{
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEJGlDQ1BJQ0MgUHJvZmlsZQAAOBGFVd9v21QUPolvUqQWPyBYR4eKxa9VU1u5GxqtxgZJk6XtShal6dgqJOQ6N4mpGwfb6baqT3uBNwb8AUDZAw9IPCENBmJ72fbAtElThyqqSUh76MQPISbtBVXhu3ZiJ1PEXPX6yznfOec7517bRD1fabWaGVWIlquunc8klZOnFpSeTYrSs9RLA9Sr6U4tkcvNEi7BFffO6+EdigjL7ZHu/k72I796i9zRiSJPwG4VHX0Z+AxRzNRrtksUvwf7+Gm3BtzzHPDTNgQCqwKXfZwSeNHHJz1OIT8JjtAq6xWtCLwGPLzYZi+3YV8DGMiT4VVuG7oiZpGzrZJhcs/hL49xtzH/Dy6bdfTsXYNY+5yluWO4D4neK/ZUvok/17X0HPBLsF+vuUlhfwX4j/rSfAJ4H1H0qZJ9dN7nR19frRTeBt4Fe9FwpwtN+2p1MXscGLHR9SXrmMgjONd1ZxKzpBeA71b4tNhj6JGoyFNp4GHgwUp9qplfmnFW5oTdy7NamcwCI49kv6fN5IAHgD+0rbyoBc3SOjczohbyS1drbq6pQdqumllRC/0ymTtej8gpbbuVwpQfyw66dqEZyxZKxtHpJn+tZnpnEdrYBbueF9qQn93S7HQGGHnYP7w6L+YGHNtd1FJitqPAR+hERCNOFi1i1alKO6RQnjKUxL1GNjwlMsiEhcPLYTEiT9ISbN15OY/jx4SMshe9LaJRpTvHr3C/ybFYP1PZAfwfYrPsMBtnE6SwN9ib7AhLwTrBDgUKcm06FSrTfSj187xPdVQWOk5Q8vxAfSiIUc7Z7xr6zY/+hpqwSyv0I0/QMTRb7RMgBxNodTfSPqdraz/sDjzKBrv4zu2+a2t0/HHzjd2Lbcc2sG7GtsL42K+xLfxtUgI7YHqKlqHK8HbCCXgjHT1cAdMlDetv4FnQ2lLasaOl6vmB0CMmwT/IPszSueHQqv6i/qluqF+oF9TfO2qEGTumJH0qfSv9KH0nfS/9TIp0Wboi/SRdlb6RLgU5u++9nyXYe69fYRPdil1o1WufNSdTTsp75BfllPy8/LI8G7AUuV8ek6fkvfDsCfbNDP0dvRh0CrNqTbV7LfEEGDQPJQadBtfGVMWEq3QWWdufk6ZSNsjG2PQjp3ZcnOWWing6noonSInvi0/Ex+IzAreevPhe+CawpgP1/pMTMDo64G0sTCXIM+KdOnFWRfQKdJvQzV1+Bt8OokmrdtY2yhVX2a+qrykJfMq4Ml3VR4cVzTQVz+UoNne4vcKLoyS+gyKO6EHe+75Fdt0Mbe5bRIf/wjvrVmhbqBN97RD1vxrahvBOfOYzoosH9bq94uejSOQGkVM6sN/7HelL4t10t9F4gPdVzydEOx83Gv+uNxo7XyL/FtFl8z9ZAHF4bBsrEwAAAmdJREFUWAnFl8FKAzEQhncV7EXvxavgQdB38CQi+BS+h7FvoIjvoS/Qo28geBZ7L/UkSP2/JVmm03Q3FWQDP0km88/8O4lprJfLZVXS6rrek9+5cC2cCIcR6qpZxJv6F2GquN/q+xsCuqAIY+FJmAuoLQG+cMZdsVnbmFzkkTARvoSSpDkfuMQYbRKSFSACX/0q5IL+xUasbDXWBMjxTPjYkBz7o3ApHAv7EYyxsdbFPfWVWBEgMl+eC/Ap+42w6wP4OT7RF46vFrFXKtEK0AJ7niv7s+wHPlHfHI4A14sgR3smrAAOi3e+l22nL9mmdbjCQybuJHEaAXKg9P60oz6bXPaQAvT1xBB8JcjVbEUSwN+s/Xr2L1t22QO+fYntOrEEfyae8KFxw80FK+DGBkhj+YTkl2ylvXgcYpuDnOSuLtwCJ3XttMsWrF9p4uRHTIHYVsQF+8PdbtuzSD/WoN+BoPmttW07jjE5C7Y1uaeyWFWXSTW9WnDrja/1KR0rDpeVzTXVvHp3xuMUUPbg1ix5q3H8GG5MyyN3tXDG/egcnN0Stx7HmFzdlrvgDAzZEDPsFlCBmSvBUZqrbEHjuzS3vdbqbRC5bew4nyGAZ5RtV3bSJcL6FY5XYovT5B70IkL4sFexSoyI4X6MooBhf46jiIkqYS8JxvdC9k0Apw9whf4HSRQwkjPPJS+CH5Ds26BLABwBro9HjvUnWRQx3KM0fY3UDfcsNyKoRG47fDlL58RaeY63udLA9+yTwMH0j9XSpPjBJUa752t5vMHPRaYa3BNzoTQ5vnCyX21z8IMiv/72X/+e/wLbBOAdBBUiuAAAAABJRU5ErkJggg==);
+}
+
+.forw{
+  background-image: url(data:image/png;base64,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);
+}
+
+.fork{
+  background-image: url(data:image/png;base64,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);
+}
+
+.download{
+  background-image: url(data:image/png;base64,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);
+}
+
+:link, :active, :hover, :visited{
+  text-decoration:none;
+  color:inherit;
+}
+
+</style>
+
+    </head>
+    <body>
+
+<!-- START site content -->
+<h1>
+    Model for {{ lens.id }}
+    {% for n in lens.names %}
+        {% if forloop.first %}<br/>({% endif %}
+        {{n}}
+        {% if forloop.last %}){% else %}, {% endif %}
+    {% endfor %}
+</h1>
+
+<div class="box">
+  
+{% if model_a or lens_a %}
+  <h2>basic data:</h2>
+  {% if lens_a %}
+  <div class="elem">
+    <h3>Lens Data:</h3>
+    <ul>
+    {% for key, val in lens_a %}
+      <li><span>{{key}}:</span>{{val}}</li>
+    {% endfor %}
+    </ul>   
+  </div>
+  {% endif %}
+
+  {% if model_a %}
+  <div class="elem">
+    <h3>Model Data:</h3>
+    <ul>
+    {% for key, val in model_a %}
+      <li><span>{{key}}:</span>{{val}}</li>
+    {% endfor %}
+    </ul>   
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<div class="box">
+  <h2>input data:</h2>
+  <div class="elem">
+    <h3>Lens Image</h3>
+    <img src="{{images.lens}}" alt="LensURL" />
+  </div>
+  {% if images.input %}
+  <div class="elem">
+    <h3>Input Image</h3>
+    <img src="{{images.input}}" alt="LensURL" />    
+  </div>
+  {% endif %}
+</div>
+
+
+<div class="box">
+  <h2>basic output:</h2>
+  <div class="elem">
+    <h3>Synthetic Image</h3>
+    {% if images.synthetic %}
+      <img src="{{images.synthetic}}" alt="SynImg">
+    {% else %}
+      <div class="waiting4img">{{images.no_img_txt|safe}}</div>
+    {% endif %}
+  </div>
+  <div class="elem">
+    <h3>Contour Plot</h3>
+    {% if images.contour %}
+      <img src="{{images.contour}}" alt="ContPlot">
+    {% else %}
+      <div class="waiting4img">{{images.no_img_txt|safe}}</div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="box">
+  <h2>actions:</h2>
+  {% if links.fork %}
+    <div class="elem link fork" data-link="{{links.fork}}">
+      <h3>Revise this result</h3>
+    </div>
+  {% endif %}
+  {% if links.new %}
+    <div class="elem link fork" data-link="{{links.new}}">
+      <h3>Start from scratch</h3>
+    </div>
+  {% endif %}  {% if links.prev %}
+    <div class="elem link back" data-link="{{links.prev.nr}}">
+      <h3>see parent model <span>by {{links.prev.user}} {{links.prev.date|date:'Y-m-d H:i'}}</span></h3>
+    </div>
+  {% else %}
+    <div class="elem back">
+      <h3>has no parent model</h3>
+    </div>
+  {% endif %}
+  {% for elem in links.next %}
+    <div class="elem link forw" data-link="{{elem.nr}}">
+      <h3>see revision <span>by {{elem.user}} {{elem.date|date:'Y-m-d H:i'}}</span></h3>
+    </div>
+  {% empty %}
+    <div class="elem forw">
+      <h3>has not been revised yet</h3>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="box adv">
+  <h2>advanced output images:</h2>
+  {% for advimg in images.adv %}
+    <div class="elem">
+      <h3>{{advimg.title}}</h3>
+      {% if advimg.url %}
+        <img src="{{advimg.url}}" alt="{{advimg.alt}}">
+      {% else %}
+        <div class="waiting4img">{{images.no_img_txt|safe}}</div>
+      {% endif %}
+    </div>
+  {% endfor %}
+
+  {% if images.furtherToCome %}
+    <div class="elem">
+      <h3>Note</h3>
+      <div class="waiting4img">further images are generated...</div>
+    </div>
+  {% endif %}
+</div>
+
+
+<div class="box adv">
+  <h2>advanced output data:</h2>
+  {% for name, filename, url in files %}
+    {% if url %}
+      <div class="elem download" data-link="{{url}}" data-filename="{{filename}}">
+        <h3>{{name}}</h3>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+
+        
+<!-- END site content -->
+        
+        
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <!--
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+        -->
+<script>
+$(document).ready(function(){
+  $('.box > h2').addClass('expanded');
+  $('.box > h2').click(function(evt){
+    $(this).parent().children('div').toggle(200);
+    $(this).toggleClass('notExpanded expanded')
+  });
+
+  //hide advanced topics by default  
+  $('.adv > div').hide();
+  $('.adv > h2').toggleClass('notExpanded expanded');
+  
+  $('.elem.fork > h3').wrap(function(evt){
+    return '<a href="'+$(this).parent().data('link')+'" target="_blank"/>';
+  });
+  $('.elem.link.back > h3').add('.elem.link.forw > h3').wrap(function(evt){
+    return '<a href="'+$(this).parent().data('link')+'" />';
+  });
+  $('.elem.download > h3').wrap(function(evt){
+    return '<a download="'+$(this).parent().data('filename')+'" href="'+$(this).parent().data('link')+'" />';
+  });
+  // create links around images
+  $('img').wrap(function(evt){
+    return '<a href="'+this.src+'" />';
+  });
+  
+  // react to hashtags / anchors #all #none
+  var hash = window.location.hash; //gets everything after the hashtag i.e. #home
+
+  if (hash === "#all") {
+    $(".box > h2").removeClass('notExpanded').addClass('expanded');
+    $(".box").children('div').show();
+  }
+  if (hash === "#none") {
+    $(".box > h2").addClass('notExpanded').removeClass('expanded');
+    $(".box").children('div').hide();
+  }
+  
+});
+  
+</script>
+
+    </body>
+</html>

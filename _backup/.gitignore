@@ -29,23 +29,25 @@ Icon?
 ehthumbs.db
 Thumbs.db
 ~
-.~lock*
 .directory
 .kateproject*
-*.kate-swp
 
 # Compiled files #
 ##################
 *.pyc
 
 
-# python environment
+# allow for individual starter page
+##########################################################
+/index.html
+python_env/*
 py_env/*
 
-# static files generated on server
-#/backend/static/*
-#/tmp_media/*
-apps/.coverage
+# OOo temp files
+.~lock*
 
-# dev server creates these
-media/*
+# static files generated on server
+/backend/static/*
+
+/tmp_media/*
+*.kate-swp
