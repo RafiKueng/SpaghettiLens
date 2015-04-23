@@ -39,7 +39,7 @@ database:
 ./manage.py syncdb
 
 add datasource entry in db lenses
-
+http://labs.spacewarps.org:8080/db/futon/
 
 ===================================================
 
