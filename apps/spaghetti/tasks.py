@@ -12,9 +12,6 @@ from paramiko import SSHClient
 from scp import SCPClient
 import paramiko
 
-import matplotlib as mpl
-from matplotlib import pyplot as plt
-import pylab as pl
 
 #from celery import shared_task
 from _app.celery import app
@@ -42,6 +39,14 @@ DEBUG = True
 @app.task(bind=True)
 def runGLASS(self, GLASSconfig, config):
 
+    import matplotlib as mpl
+    mpl.use('Agg') # make sure this is above the other mpl imports
+
+    from matplotlib import pyplot as plt
+    import pylab as pl
+
+    
+    
     this = self
     hist = []
     

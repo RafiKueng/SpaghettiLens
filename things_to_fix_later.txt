@@ -15,3 +15,5 @@ automatically run syncdb
 automatically add datasources entries
 
 make propper logging and loglevels
+
+multiprocessing for glass (is disabled because can't run as daemonic processes)
