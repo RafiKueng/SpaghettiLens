@@ -225,8 +225,8 @@ li > span{
       <h3>Start from scratch</h3>
     </div>
   {% endif %}  {% if links.prev %}
-    <div class="elem link back" data-link="{{links.prev.nr}}">
-      <h3>see parent model <span>by {{links.prev.user}} {{links.prev.date|date:'Y-m-d H:i'}}</span></h3>
+    <div class="elem link back" data-link="{{links.prev.id}}">
+      <h3>parent {{links.prev.id}} <span>by {{links.prev.user}} {{links.prev.date|date:'Y-m-d H:i'}}</span></h3>
     </div>
   {% else %}
     <div class="elem back">
@@ -234,8 +234,8 @@ li > span{
     </div>
   {% endif %}
   {% for elem in links.next %}
-    <div class="elem link forw" data-link="{{elem.nr}}">
-      <h3>see revision <span>by {{elem.user}} {{elem.date|date:'Y-m-d H:i'}}</span></h3>
+    <div class="elem link forw" data-link="{{elem.id}}">
+      <h3>revision {{elem.id}} <span>by {{elem.user}} {{elem.date|date:'Y-m-d H:i'}}</span></h3>
     </div>
   {% empty %}
     <div class="elem forw">

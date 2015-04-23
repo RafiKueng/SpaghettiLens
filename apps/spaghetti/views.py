@@ -14,6 +14,7 @@ import datetime
 import os
 import hashlib
 import base64
+import requests
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponsePermanentRedirect, Http404
@@ -101,12 +102,31 @@ def getModel(rq, model_id):
     }    
 
     #children = Model.view("spaghetti/Children")
+    # get children (this functionality is buggy in cdbkit, so make my own)
+    uri = Model.get_db().server_uri
+    s = requests.Session()
+    try:
+        childs = s.get(uri+'/spaghetti/_design/spaghetti/_view/Children?group=true&startkey="%s"&endkey="%s"' % (model_id, model_id)).json()['rows'][0]['value']
+    except:
+        childs = []
     
+    children = []
+    for c in childs:
+        m = Model.get(c)
+        children.append({ 'id': c, 'user': m.obj['author'], 'date': m.created_at })
+    print children
+    
+    try:
+        p = Model.get(model.parent)
+        parent = { 'id': model.parent, 'user': p.obj['author'], 'date': p.created_at }
+    except:
+        parent = None
+
     links = {
         'fork' : '/spaghetti/?model=' + model_id,
         'new'  : '/spaghetti/?lens=' + lens._id,
-        'prev' : model.parent,
-        'next' : ''
+        'prev' : parent,
+        'next' : children
     }
     
     files = [
