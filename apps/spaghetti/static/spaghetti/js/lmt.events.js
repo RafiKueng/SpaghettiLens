@@ -125,6 +125,8 @@ events.assignHandlers = function() {
 
     $(document).on('LensSelected', LMT.com.getLensData);
 
+    $(document).on('SetUsername', LMT.ui.html.SetUsernameDialog.show); // is only shown if a model or lens is directly loaded
+
     //$(document).on('ReceivedModelData', LMT.ui.html.ColorSettingsDialog.init); //for now, this is not used
     $(document).on('ReceivedModelData', LMT.ui.html.Toolbar.updateTop);
     $(document).on('ReceivedModelData', LMT.ui.svg.bg.init);
@@ -193,7 +195,7 @@ events.assignHandlers = function() {
       
 
     $(document).on('GetAndLoadModel', LMT.com.getAndLoadModel);
-    $(document).on('SetUsername', LMT.ui.html.SetUsernameDialog.show);
+//    $(document).on('SetUsername', LMT.ui.html.SetUsernameDialog.show);
     
     $(document).on('ToggleDisplay', LMT.ui.html.ToggleDisplay);
     $(document).on('ToggleHelpBar', LMT.ui.html.HelpBar.toggle);

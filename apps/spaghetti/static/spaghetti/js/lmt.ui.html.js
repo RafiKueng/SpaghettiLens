@@ -14,13 +14,13 @@ html.fire = function (evt) {
 };
 
 
-/**
+/** V2
  * creates a dialog that asks for the username
  * used when loading a result or model
  */
 html.SetUsernameDialog = {
     init: function () {
-        var $div = $('#get_username').dialog({
+        var $div = $('#enter_username_dialog').dialog({
             autoOpen: false,
             minWidth: 400,
             minHeight: 200,
@@ -29,7 +29,7 @@ html.SetUsernameDialog = {
                 {
                     text: "Ok",
                     click: function (evt) {
-                        $('#get_username').dialog("close");
+                        $('#enter_username_dialog').dialog("close");
                         var uname = $("#username2").val();
                         LMT.settings.username = uname;
                     }
@@ -50,7 +50,7 @@ html.SetUsernameDialog = {
         if (uname) {
             LMT.settings.username = uname;
         } else {
-            $('#get_username').dialog("open");
+            $('#enter_username_dialog').dialog("open");
         }
     }
   
