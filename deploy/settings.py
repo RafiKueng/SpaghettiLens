@@ -39,7 +39,7 @@ _.WORKER_TEST_HOSTS = ['192.168.100.10']
 _.WORKER_PROD_HOSTS = ['taurus.physik.uzh.ch']
 
 _.SERVER_TEST_HOST  = ['192.168.100.10']
-_.SERVER_PROD_HOST  = ['swlabs.physik.uzh.ch']
+_.SERVER_PROD_HOST  = ['root@swlabs.physik.uzh.ch']
 
 # where is the server located
 # used for worker to connect to

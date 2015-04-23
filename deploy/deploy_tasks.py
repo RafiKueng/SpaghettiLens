@@ -948,11 +948,14 @@ def _worker_setup_ssh():
     run("ssh-keyscan -H %s >> ~/.ssh/known_hosts" % SRV)
     
     # copy my id to the server        
-    run("ssh-copy-id %s" % SRV)
+    c1 = run("ssh-copy-id %s" % SRV, warn_only=True)
     
     # try to log in
-    run("ssh %s 'echo running remote'" % SRV)
+    c2 = run("ssh %s 'echo running remote'" % SRV, warn_only=True)
 
+    if c1.failed or c2.failed:
+        warnn("could not register ssh key. make sure the worker can upload the files")
+        prompt('Any key to continue, ctrl-c to abort')
 
 
 def _server_erlang_install():
