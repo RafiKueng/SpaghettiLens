@@ -693,6 +693,9 @@ html.Toolbar = {
     $('#btnMainActionPrev').on('click', function() {$.event.trigger('GetModelData', [null,null,'prev']);})
     $('#btnMainActionNext').on('click', function() {$.event.trigger('GetModelData', [null,null,'next']);})
     $("#toolbarGrpTop button").button("disable");
+    $('#btnOutGlassConfig').button("enable");  /* todo: rename those buttons */
+    $('#btnInActionSimulateModel').button("enable");  /* todo: rename those buttons */
+    
     $('#btnMainHelp').button("enable");
     $('#btnMainHelp').prop('checked', true);
     $('#btnMainHelp').change(); 	

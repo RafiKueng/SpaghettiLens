@@ -86,6 +86,7 @@
       <div id="toolbarTop" class="layout cell centered">
         <span id="toolbarGrpTop" class="toolbar ui-widget-header ui-corner-all">
           <span id="btngrpMainNav" class="btnset">
+<!--
             <button id="btnMainActionPrev"
               data-event="PrevModel"
               data-ttip-title="Previous"
@@ -95,6 +96,27 @@
               data-icon="icon-chevron-left">
               Goto Previous Model
             </button>
+-->
+            <button id="btnOutGlassConfig"
+              data-event=""
+              data-ttip-title="Simulation Properties"
+              data-ttip-text="Set up modelling properties such as resolution, redshifts, ..."
+              data-ttip-link=""
+              data-hotkey="Z"
+              data-icon="icon-tasks">
+              Configure simulation properties
+            </button>
+
+            <button id="btnInActionSimulateModel"
+              data-event="SimulateModel"
+              data-ttip-title="Model"
+              data-ttip-text="Send your input to be modelled"
+              data-ttip-link=""
+              data-hotkey="X"
+              data-icon="icon-cogs">
+              Simulate the Model and Refresh the Output Images
+            </button>
+
             <button id="btnMainFinish"
               data-event="ShowDialogSaveResult"
               data-ttip-title="Save Model"
@@ -104,6 +126,7 @@
               data-icon="icon-ok">
               Save the final model on the server
             </button>
+<!--
             <button id="btnMainActionNext"
               data-event="NextModel"
               data-ttip-title="Next"
@@ -113,7 +136,9 @@
               data-icon="icon-chevron-right">
               Goto Next Model
             </button>
+-->
           </span>
+<!--
           
           <button id="btnMainLogin"
             data-event="LoginClicked"
@@ -124,6 +149,7 @@
             data-icon="icon-signin">
             Log in / Create user account
           </button>
+-->
 
           <input id="btnMainHelp" type="checkbox"
             data-event="ToggleHelpBar"
@@ -170,6 +196,7 @@
           </span>
           
           <span id="btngrpSettings" class="btnset">
+<!--
             <button id="btnInSettingsColor"
               data-event="ShowDialogColorSettings"
               data-ttip.title="Color Settings"
@@ -179,6 +206,7 @@
               data-icon="icon-adjust">
               background image settings
             </button>
+-->
             <button id="btnInSettingsLines"
               data-event="ShowDialogDisplaySettings"
               data-ttip-title="Model Display Settings"
@@ -241,7 +269,8 @@
               Save the final model on the server
             </button>
             -->
-            <button id="btnInActionSimulateModel"
+<!--
+              <button id="btnInActionSimulateModel"
               data-event="SimulateModel"
               data-ttip-title="Model"
               data-ttip-text="Send your input to be modelled"
@@ -250,6 +279,7 @@
               data-icon="icon-cogs">
               Simulate the Model and Refresh the Output Images
             </button>
+-->
           </span>
         </span>
       </div>
@@ -260,6 +290,7 @@
         <span id="toolbarGrp2" class="toolbar ui-widget-header ui-corner-all">
           <span id="btnsetOutNrNav"></span>
           <span id="btnsetOutConfig">
+<!--
             <button id="btnOutGraphics"
               data-event="ShowDialogOutputGraphics"
               data-ttip-title="Adjust Output"
@@ -269,6 +300,8 @@
               data-icon="icon-adjust">
               Change brightness and contrast of output images
             </button>
+-->
+<!--
             <button id="btnOutGlassConfig"
               data-event=""
               data-ttip-title="Simulation Properties"
@@ -278,6 +311,7 @@
               data-icon="icon-tasks">
               Configure simulation properties
             </button>
+-->
           </span>
         </span>
       </div>
