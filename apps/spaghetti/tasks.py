@@ -85,6 +85,19 @@ def runGLASS(self, GLASSconfig, config):
             print '%-16s : %s' % (k,v)
         print '='*80
 
+
+    figpath = '/tmp/spaghettilens/'
+    name = 'testing'
+    path = os.path.join(figpath, name)
+
+    try: # this prevents a race condition
+        os.makedirs(path)
+    except OSError:
+        if not os.path.isdir(path):
+            raise
+
+
+
     # don't take this outside, because only the worker has glass installed,
     # the webserver doesn't
     # so there will be import errors
@@ -128,7 +141,7 @@ def runGLASS(self, GLASSconfig, config):
     GC = GLASSconfig
     C = config
     
-    logfile = "glass.log"
+    logfile = os.path.join(path, "glass.log")
 
 
     glass_basis('glass.basis.pixels', solver='rwalk')
@@ -201,16 +214,6 @@ def runGLASS(self, GLASSconfig, config):
 
     model(GC['n_models']) #, update_hook=status2)
     
-    figpath = '/tmp/spaghettilens/'
-    name = 'testing'
-    path = os.path.join(figpath, name)
-
-    try: # this prevents a race condition
-        os.makedirs(path)
-    except OSError:
-        if not os.path.isdir(path):
-            raise
-
 #    update_status({'text':'create files', 'progress':(0,5)})   
     Status('create files', 0,5)   
     
@@ -273,13 +276,16 @@ def runGLASS(self, GLASSconfig, config):
     scp = SCPClient(ssh.get_transport())
     
 #    update_status({'text':'upload files', 'progress':(0,5)})
-    Status('upload files', 0,5)
+    Status('upload files', 0, 6)
 
     for i, f in enumerate(files):
         scp.put(os.path.join(path, f), os.path.join(destpath, f))
         #update_status({'text':'upload files', 'progress':(i+1,5)})
-        Status('upload files', i+1,5)
-        
+        Status('upload files', i+1, 6)
+
+    # upload log file
+    scp.put(logfile, os.path.join(destpath, 'glass.log'))
+    Status('upload files', i+1, 6)
   
     # ...
     #

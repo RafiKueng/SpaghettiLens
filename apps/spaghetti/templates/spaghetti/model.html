@@ -141,28 +141,35 @@ li > span{
     <body>
 
 <!-- START site content -->
-<h1>Model for {% firstof lens.names lens._id "Unknown Lens (how did you do it?? please report)" %}</h1>
+<h1>
+    Model for {{ lens.id }}
+    {% for n in lens.names %}
+        {% if forloop.first %}<br/>({% endif %}
+        {{n}}
+        {% if forloop.last %}){% else %}, {% endif %}
+    {% endfor %}
+</h1>
 
 <div class="box">
   
-{% if model or lens %}
+{% if model_a or lens_a %}
   <h2>basic data:</h2>
-  {% if lens %}
+  {% if lens_a %}
   <div class="elem">
     <h3>Lens Data:</h3>
     <ul>
-    {% for key, val in print_lensdata_items %}
+    {% for key, val in lens_a %}
       <li><span>{{key}}:</span>{{val}}</li>
     {% endfor %}
     </ul>   
   </div>
   {% endif %}
 
-  {% if result %}
+  {% if model_a %}
   <div class="elem">
-    <h3>Result Data:</h3>
+    <h3>Model Data:</h3>
     <ul>
-    {% for key, val in print_result_items %}
+    {% for key, val in model_a %}
       <li><span>{{key}}:</span>{{val}}</li>
     {% endfor %}
     </ul>   

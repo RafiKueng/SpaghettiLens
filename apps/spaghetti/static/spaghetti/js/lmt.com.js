@@ -455,6 +455,7 @@ com.SaveModel = function(evt) {
         model_id: LMT.simulationResult.modelId,
         lens_id: LMT.lensData._id,
         lmtmodel: LMT.model.getStateAsString(),
+        img_data: LMT.ui.svg.img,
         username: LMT.settings.username ? LMT.settings.username : '',
         comment: '',
     };

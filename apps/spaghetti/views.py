@@ -69,10 +69,67 @@ def getModel(rq, model_id):
     except CouchExceptions.ResourceNotFound as e:
         raise Http404("Lens does not exist (%s)" % e)
 
+    # use lists with tuples to conserve ordering
+    model_attr = [
+        ('ID', model._id),
+        ('User', model.created_by),
+        ('Date', model.created_at.strftime('%Y-%m-%d %H:%M:%S')),
+        ('PixelRadius', model.obj['pixrad']),
+        ('nModels', model.obj['n_models']),
+        ('z(lens/src)', (model.obj['z_lens'], model.obj['z_src'])),
+#        ('', ),
+#        ('', ),
+#        ('', ),
+#        ('', ),
+    ]
+    
+    lens_attr = [
+        ('id'   , lens._id[0:12]),
+        ('name' , ''.join([_ for _ in lens.names if _.startswith('ASW')]) ),
+    ]
+    
+    dataurl = os.path.join('/media', 'spaghetti', model_id[0:2], model_id[2:])
+    images = {
+        'lens'     : '/media/lenses/%s/%s/COMPOSITE_PIXEL_IMAGE-0001-DEFAULT.PNG' % (lens._id[0:2], lens._id[2:]),
+        'input'    : dataurl + '/input.png',
+        'synthetic': dataurl + '/img3_ipol.png',
+        'contour'  : dataurl + '/img1.png',
+        'adv'      : [
+            {'title':'Mass Distribution', 'url': dataurl+'/img2.png'},
+            {'title':'Org SrcDiffPlt', 'url': dataurl+'/img3.png'},
+        ],
+    }    
+
+    #children = Model.view("spaghetti/Children")
+    
+    links = {
+        'fork' : '/spaghetti/?model=' + model_id,
+        'new'  : '/spaghetti/?lens=' + lens._id,
+        'prev' : model.parent,
+        'next' : ''
+    }
+    
+    files = [
+      ('Model JSON Object',         '%s.json'%model_id,       'data:text/plain;base64,' + model.obj['jsonStr'].encode("base64")),
+      ('Glass Config File',         '%s.config.gls'%model_id, 'data:text/plain;base64,' + model.obj['gls'].encode("base64")),
+      ('Glass State File (binary)', '%s.state'%model_id,      dataurl + '/state.glass'),
+      ('Glass Log File',            '%s.log.txt'%model_id,    dataurl + '/glass.log'),
+    ]
+    
     context = {
         'lens':  lens,        
-        'model': model
+        'model': model,
+        'lens_a':  lens_attr,        
+        'model_a': model_attr,
+        'refresh': False, # or int as nr of secs
+#        'dataurl': os.path.join(settings.MEDIA_ROOT, 'spaghetti', model_id[0:2], model_id[2:])
+        'images': images,
+        'links':links,
+        'files':files,
     }
+    
+    
+    print context
     
     return render(rq, 'spaghetti/model.html', context)
 
@@ -91,7 +148,7 @@ def getApiDef():
         'get_rendering_status':  (_getRenderingStatus,
                              ['model_id']),
         'set_final':        (_markModelAsFinal,
-                             ['model_id', 'lmtmodel', 'username', 'comment']),
+                             ['model_id', 'lmtmodel', 'img_data', 'username', 'comment']),
     }
 
 
@@ -151,7 +208,6 @@ def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
     
     try:
         lens = Lens.get(lens_id)
-
     except CouchExceptions.ResourceNotFound as e:
         return JsonResponse({'success': False, 'error': 'Ressource not found (%s) The lens id doesnt exist!!' % e})
     
@@ -216,6 +272,7 @@ def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
     )
     
     model._id = model_id
+    model.obj['model_id'] = model_id
 
     try:
         model.save()
@@ -229,7 +286,7 @@ def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
 
 
 
-def _markModelAsFinal(rq, model_id, lmtmodel, username, comment):
+def _markModelAsFinal(rq, model_id, lmtmodel, img_data, username, comment):
 
     try:
         model = Model.get(model_id)
@@ -237,6 +294,23 @@ def _markModelAsFinal(rq, model_id, lmtmodel, username, comment):
         return JsonResponse({'success': False, 'error': 'Ressource not found (%s)' % e})
 
     lens_id = model.lens_id
+
+    # save input image
+    ident, img = img_data.split(',')
+    #print ident
+    if ident == "data:image/png;base64" and img.startswith('iVBORw0KGgo'):
+        dest = os.path.join(settings.MEDIA_ROOT, 'spaghetti', model_id[0:2], model_id[2:], 'input.png')
+        fh = open(dest, "wb")
+        fh.write(img.decode('base64'))
+        fh.close()
+    else:
+        print 'Error: no image upload'
+        return JsonResponse({'success': False, 'error': 'Ressource not found (%s)' % e})
+#    except:
+#        print 'Could not open/write file'
+
+
+
     
     # generate the checksum (used when marking as final to check wether is unchanged)
     mm = hashlib.md5()
