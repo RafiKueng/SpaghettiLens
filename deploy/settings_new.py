@@ -20,14 +20,93 @@ from os.path import join
 from datetime import datetime as dt
 from attrdict import AttrDict
 
-from fabric.api import env, abort#, abort, warn
-#from fabric.contrib.console import confirm
+from fabric.api import env, abort
 
-#from fab_tools import abort
+
+if not env.has_key('TIMESTAMP'):
+    env.INSTALLTIME = dt.now()
+    env.TIMESTAMP = env.INSTALLTIME.strftime("%Y%m%d-%H%M%S")
+
+
+
+mode = ['server', 'worker']
+role = ['dev', 'test', 'prod']
+
+
+#
+# PATHS
+##############################################################################
+
+
+
+
+#
+# SETTINGS
+##############################################################################
+
+srv = AttrDict()
+
+
+conf.debug                  = True
+conf.template_debug         = True
+
+
+
+if role == '':
+    pass
+
+
+
+
+
+
+
+
+
+    
+#
+# CONFIG FILES
+##############################################################################
+
+CONFIG_FILES = AttrDict()
+
+
+
+CONFIG_FILES.APACHE = {}
+_ = CONFIG_FILES.APACHE
+
+
+
+CONFIG_FILES.COUCHDB = {}
+_ = CONFIG_FILES.COUCHDB
+
+
+CONFIG_FILES.DJANGO_SERVER = {}
+_ = CONFIG_FILES.DJANGO_SERVER
+
+_.TIMESTAMP         = env.TIMESTAMP
+_.DEBUG             = conf.DEBUG
+_.TEMPLATE_DEBUG    = conf.TEMPLATE_DEBUG
+_.COUCHSRV          = _S.COUCHDB.SRVADDRESS
+_.STATIC_ROOT       = '/data/swlabs/static'
+_.MEDIA_ROOT        = '/data/swlabs/media'
+_.UPLOAD_USER       = 'rafik'
+_.UPLOAD_HOST       = '192.168.100.10'
+_.SECRET_KEY        = ')ir@&^cmbu$e+btd&dske8h&u+u8dy9=mmho*tc171*0f!q@xn'
+_.CELERYURL         = 'amqp://guest:guest@192.168.100.3:5672/swlabs'
+
+
+CONFIG_FILES.DJANGO_WORKER = {}
+_ = CONFIG_FILES.DJANGO_WORKER
+
+
+
+
+
+
 
 _ = AttrDict()
 
-env.TIMESTAMP = dt.now().strftime("%Y%m%d%H%M")
 
 #
 # GENERAL SETTINGS
@@ -171,6 +250,10 @@ _.PYENV_DIR                     = 'py_env'
 _.TMPDIR                        = 'ttemp'
 _.TMPPATH_                      = lambda: join(_.ROOT_PATH, _.TMPDIR)
 
+# is set per task / role
+#_.BIN_PATH                     = lambda: join(_.ROOT_PATH, 'bin')
+
+
 # for server
 _.ROOT_PATH                     = '/data/labs.spacewarps.org'
 _.HOST                          = 'labs.spacewarps.org'
@@ -182,19 +265,20 @@ _.HTDOCS_PATH_                  = lambda: join(_.ROOT_PATH, _.HTDOCS_DIR)
 
 
 # where is stuff in the dev repro
-##############################################################################
 _.SRC                           = AttrDict()
 _.SRC.DJANGODIR                 = 'apps'
+#_.SRC.HTMLDIR                   = 'html'
+#_.SRC.PYENV_DIR                 = 'py_env'
 _.SRC.DEPLOYDIR                 = 'deploy'
 _.SRC.TEMPLATES                 = 'deploy/files'
 _.SRC.PIP_REQ_FILE              = 'pip_requirements.txt'                        # filename on remote machine
 _.SRC.PIP_REQ_FILE_WRK          = 'pip_requirements_worker.txt'
+#_.SRC.PIP_REQ_RPATH_WRK_        = lambda: join(_.SRC.TEMPLATES, _.SRC.PIP_REQ_FILE_WRK)
 _.SRC.PIP_REQ_FILE_SRV          = 'pip_requirements_server.txt'
 #_.SRC.PIP_REQ_RPATH_SRV_        = lambda: join(_.SRC.TEMPLATES, _.SRC.PIP_REQ_FILE_SRV)
 
 
 # SETTINGS FOR DJANGO APPS  # TODO remove this and replace all by the _.DJANGO
-##############################################################################
 _.APPS                          = AttrDict()
 _.APPS.DIR                      = 'django_app'                                  # the root of the django project (manage.py is in here)
 _.APPS.PATH_                    = lambda: join(_.ROOT_PATH, _.APPS.DIR)
@@ -219,7 +303,6 @@ _.APPS.MEDIA_DIR                = 'tmp_media'
 
 
 # FOLDER FOR EXTERNAL APPS
-##############################################################################
 _.EXTAPPS                       = AttrDict()
 _.EXTAPPS.DIR                   = 'ext_apps'
 
@@ -272,14 +355,9 @@ _.COUCHDB.CONF_PATH_            = lambda: join(_.SVCCONFIG.PATH_(), _.COUCHDB.CO
 _.COUCHDB.DATA_DIR              = 'couchdb_data'
 _.COUCHDB.DATA_PATH_            = lambda: join(_.SVCDATA.PATH_(), _.COUCHDB.DATA_DIR)
 
-# couchdb_ini
 _.COUCHDB.ADDRESS               = '127.0.0.1'
 _.COUCHDB.PORT                  = 5984
 _.COUCHDB.AUTH                  = "{couch_httpd_auth, default_authentication_handler}"
-
-# django.ini
-_.COUCHDB.SRVADDRESS            = '127.0.0.1' # role specific
-_.COUCHDB.SRVPORT               = 5984
 
 
 
@@ -311,10 +389,6 @@ das.MEDIAURL                    = '/media'
 
 _.DJANGOAPP.REQ_FOLDERS         = [das.STATICFOLDER, das.MEDIAFOLDER]
 
-
-
-_.DJANGOAPP.UPLOAD_USER         = '' # set per role level. where does the worker upload the files to
-_.DJANGOAPP.UPLOAD_HOST         = '' # set per role level
 
 
 #
@@ -384,20 +458,18 @@ if len(env.tasks)==1 and len(env.roles)==1:
             _.TMPDIR    = '/tmp/app/swl_worker_tmp'
             _.SERVERHOST = "127.0.0.1"
 
-         
-        if role in ['test', 'prod']:
-            _.SERVERHOST = "swlabs.physik.uzh.ch" 
-
-            _.ROOT_PATH = '/home/ara/rafik/swlabs_worker'
-            _.BIN_PATH  = '/home/ara/rafik/local_bins'
-            _.TMPDIR    = '/home/ara/rafik/worker_tmp'
-            _.DJANGOAPP.UPLOAD_USER = 'root' #TODO change this
-            _.DJANGOAPP.UPLOAD_HOST = 'swlabs'
-
 
         if role == "test":
             _.SERVERHOST = "127.0.0.1"
-            _.DJANGOAPP.UPLOAD_HOST = '127.0.0.1'
+            
+        if role == "prod":
+            _.SERVERHOST = "swlabs.physik.uzh.ch" 
+            
+         
+        if role in ['test', 'prod']:
+            _.ROOT_PATH = '/home/ara/rafik/swlabs_worker'
+            _.BIN_PATH  = '/home/ara/rafik/local_bins'
+            _.TMPDIR    = '/home/ara/rafik/worker_tmp'
             
             
 
@@ -413,24 +485,19 @@ if len(env.tasks)==1 and len(env.roles)==1:
             _.DEBUG = True
             _.ROOT_PATH = '/tmp/swlabs'
             _.TMPDIR    = 'srv_tmp'
-            _.COUCHDB.SRVADDRESS = 'http://192.168.100.3:5984'
+            
+        if role in ['test', 'prod']:
+            _.ROOT_PATH = '/data/swlabs'
+            _.TMPDIR    = 'srv_tmp'
+            _.BIN_PATH  = '/data/swlabs/_bin'
             
         if role == 'test':
             _.DEBUG = True
-            _.COUCHDB.SRVADDRESS = 'http://127.0.0.1'
-
-            _.ROOT_PATH = '/data/swlabs'
-            _.TMPDIR    = 'srv_tmp'
-            _.BIN_PATH  = '/data/swlabs/_bin'
-
+            pass
         
         if role == 'prod':
             _.DEBUG = False
-            _.COUCHDB.SRVADDRESS = '127.0.0.1'
-
-            _.ROOT_PATH = '/data/swlabs'
-            _.TMPDIR    = 'srv_tmp'
-            _.BIN_PATH  = '/data/swlabs/_bin'
+            pass
         
             
         else:

@@ -1070,7 +1070,17 @@ def _server_couchdb_setup():
     
 def _server_couchdb_configure():
 
-    _DB = _S.COUCHDB    
+    _DB = _S.COUCHDB
+    
+    c = AttrDict()
+    
+    c.timestamp = env.TIMESTAMP
+    c.DATA_PATH = _DB.DATA_PATH
+    c.ADDRESS   = _DB.ADDRESS
+    c.PORT      = _DB.PORT
+    c.AUTH      = _DB.AUTH
+    
+    
     sudo("systemctl stop couchdb.service")
 
 
@@ -1205,7 +1215,20 @@ def _server_djangoapp_setup():
 
 
 def _server_djangoapp_configure():
+
     _DA = _S.DJANGOAPP
+    
+    c = AttrDict()
+    c.timestamp         = env.TIMESTAMP
+    c.DEBUG             = _S.DEBUG
+    c.TEMPLATE_DEBUG    = _S.TEMPLATE_DEBUG
+    c.COUCHSRV          = _S.COUCHDB.SRVADDRESS
+    c.STATIC_ROOT       = '/data/swlabs/static'
+    c.MEDIA_ROOT        = '/data/swlabs/media'
+    c.UPLOAD_USER       = 'rafik'
+    c.UPLOAD_HOST       = '192.168.100.10'
+    c.SECRET_KEY        = ')ir@&^cmbu$e+btd&dske8h&u+u8dy9=mmho*tc171*0f!q@xn'
+    c.CELERYURL         = 'amqp://guest:guest@192.168.100.3:5672/swlabs'
 
     configfile_path = join(_E.INSTALLPATH, _S.SVCCONFIG.DIR)
     configfile_fqfn = join(configfile_path, _DA.CONF_NAME)
@@ -1219,7 +1242,7 @@ def _server_djangoapp_configure():
         warnn('Overwriting django config file in prog dir (check .bak file)')
     files.upload_template(config_template,
                           configfile_fqfn,
-                          context = _DA)
+                          context = c)
     
 
 
