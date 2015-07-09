@@ -207,7 +207,7 @@ class EvalAndSaveJSON:
     self._.loc_grad = 45
     self._.isSym = False
     self._.maprad = 0 #1.9637 #set 0 to turn off
-    self._.shear = 0.01
+    self._.shear = 0.10  # new default value is 10 times bigger
     self._.z_src = 1.00
     self._.n_models = 200
     

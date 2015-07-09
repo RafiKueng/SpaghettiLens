@@ -191,6 +191,8 @@ def runGLASS(self, GLASSconfig, config):
     smooth(GC['smooth_val'],include_central_pixel=GC['smooth_ic'])
     local_gradient(GC['loc_grad'])
     shear(GC['shear'])
+    hires(GC['hires'])
+    
     if GC['isSym']:
         symm()
         
