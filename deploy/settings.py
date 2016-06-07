@@ -60,7 +60,7 @@ _.SERVERHOST = "127.0.0.1"
 
 _.PKG                           = AttrDict()
 
-_.PKG.OSVER                     = 'openSUSE_13.1'
+_.PKG.OSVER                     = 'openSUSE_Leap_42.1'
 _.PKG.ARCH                      = 'x86_64'
 _.PKG.PREFIX                    = "http://download.opensuse.org/repositories"
 
@@ -69,7 +69,7 @@ _.PKG.COUCH                     = [
     AttrDict({
         'name': 'couchdb',
         'requ': ('libmozjs185-1_0', 'libopenssl-devel'),
-        'path': ('server:', 'database', _.PKG.OSVER,_.PKG.ARCH),
+        'path': ('server:', 'database', 'openSUSE_13.2',_.PKG.ARCH),
         'file': 'couchdb-1.6.1-56.3.x86_64',
         'ext' : '.rpm'
     })]
@@ -80,15 +80,15 @@ _.PKG.ERLANG                    = [
     AttrDict({
         'name': 'erlang',
         'requ': ('unixODBC',),
-        'path': ('server:', 'database', _.PKG.OSVER,_.PKG.ARCH),
-        'file': 'erlang-17.5-3.1.x86_64',
+        'path': ('openSUSE:','Leap:','42.1:','Update','standard',_.PKG.ARCH),
+        'file': 'erlang-18.0.3-8.1.x86_64',
         'ext' : '.rpm'
     }),
     AttrDict({
         'name': 'erlang-epmd',
         'requ': (),
-        'path': ('server:', 'database', _.PKG.OSVER,_.PKG.ARCH),
-        'file': 'erlang-epmd-17.5-3.1.x86_64',
+        'path': ('openSUSE:','Leap:','42.1:','Update/standard',_.PKG.ARCH),
+        'file': 'erlang-epmd-18.0.3-8.1.x86_64',
         'ext' : '.rpm'
     })]
 
@@ -100,15 +100,15 @@ _.PKG.RABBITMQ                  = [
     AttrDict({
         'name': 'rabbitmq-server',
         'requ': (),
-        'path': ('openSUSE:', '13.1', 'standard', _.PKG.ARCH),
-        'file': 'rabbitmq-server-3.1.5-2.2.2.x86_64',
+        'path': ('openSUSE:/Leap:/42.1','standard', _.PKG.ARCH),
+        'file': 'rabbitmq-server-3.5.1-2.7.x86_64',
         'ext' : '.rpm'
     }),
     AttrDict({
         'name': 'rabbitmq-server-plugins',
         'requ': (),
-        'path': ('openSUSE:', '13.1', 'standard', _.PKG.ARCH),
-        'file': 'rabbitmq-server-plugins-3.1.5-2.2.2.x86_64',
+        'path': ('openSUSE:/Leap:/42.1', 'standard', _.PKG.ARCH),
+        'file': 'rabbitmq-server-plugins-3.5.1-2.7.x86_64',
         'ext' : '.rpm'
     }),
     ]
