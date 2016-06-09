@@ -1,7 +1,7 @@
 pycrypto
 ecdsa
 fabric
-attrdict==1.2
+attrdict>=1.2
 requests
 pillow>=2.0
 

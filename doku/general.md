@@ -29,7 +29,8 @@ and test in this order..
 
     sudo zypper install rabbitmq-server
 
-* enable systemd service: `sudo chkconfig rabbitmq-server on`
+* enable systemd service: `systemctl enable rabbitmq-server`
+* make sure the hostname is set and assigned correctly: /etc/hosts   127.0.0.1   localhost hostname
 * start the server: `systemctl start rabbitmq-server`
 * check if running `systemctl | grep rabbit`
 * see if the ctl bin works: `rabbitmqctl stop'

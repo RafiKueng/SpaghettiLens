@@ -77,6 +77,18 @@ var log = {};
 var logger = null;
 
 $(document).ready(function(){
+    
+    /*
+     * polyfill for gettransformToElement()
+     * was removed from Chrome 48, Nov 2015
+     * http://jointjs.com/blog/get-transform-to-element-polyfill.html
+     */
+  SVGElement.prototype.getTransformToElement =
+    SVGElement.prototype.getTransformToElement
+    ||
+    function(toElement) {
+      return toElement.getScreenCTM().inverse().multiply(this.getScreenCTM());
+    };
 
   if (doLog) {
     logger = new LMT.utils.logger(logToConsole)
