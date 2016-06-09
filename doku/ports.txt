@@ -1,0 +1,8 @@
+4369    Erlang EPMD             local machine only
+5672    RabbitMQ AMQP           phy intern
+15672   RabbitMQ HTTPAdminUI    phy intern
+25672   RabbitMQ clustering     local machine
+5984    CouchDB                 phy intern
+
+80      APACHE                  internet
+8080    apache admin tools      phy intern

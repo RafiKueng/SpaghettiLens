@@ -1,0 +1,106 @@
+#
+# INSTALL SCRIPT
+#   &
+# HOW TO RECOVER FROM BACKUP
+# 
+# we assume that a copy of /data ist still around..
+#
+
+
+cd /data/rpm/
+
+wget http://download.opensuse.org/repositories/openSUSE:/Leap:/42.1:/Update/standard/x86_64/erlang-18.0.3-8.1.x86_64.rpm
+wget http://download.opensuse.org/repositories/openSUSE:/Leap:/42.1:/Update/standard/x86_64/erlang-epmd-18.0.3-8.1.x86_64.rpm
+rpm -i erlang-18.0.3-8.1.x86_64.rpm erlang-epmd-18.0.3-8.1.x86_64.rpm 
+
+
+wget http://download.opensuse.org/repositories/openSUSE:/Leap:/42.1/standard/x86_64/rabbitmq-server-3.5.1-2.7.x86_64.rpm
+wget http://download.opensuse.org/repositories/openSUSE:/Leap:/42.1/standard/x86_64/rabbitmq-server-plugins-3.5.1-2.7.x86_64.rpm
+
+rpm -i rabbitmq-server-3.5.1-2.7.x86_64.rpm 
+rpm -i rabbitmq-server-plugins-3.5.1-2.7.x86_64.rpm 
+
+
+systemctl stop rabbitmq-server.service 
+systemctl stop epmd.service epmd.socket 
+
+cd /etc/rabbitmq
+nano rabbitmq-env.conf
+
+cd /data/configs/etc/rabbitmq/
+ln -s /etc/rabbitmq/rabbitmq.config rabbitmq.config
+ln -s /etc/rabbitmq/rabbitmq-env.conf rabbitmq-env.conf
+
+systemctl enable rabbitmq-server.service 
+
+systemctl start epmd.service epmd.socket 
+systemctl start rabbitmq-server.service 
+
+systemctl status rabbitmq-server.service 
+
+# check open ports
+netstat -lptn
+
+rabbitmqctl start_app
+
+rabbitmq-plugins enable rabbitmq_management
+
+rabbitmqctl delete_user guest
+rabbitmqctl add_user swlabsrabbit fvmp,8rmq
+rabbitmqctl add_vhost swlabs
+rabbitmqctl set_permissions -p swlabs swlabsrabbit ".*" ".*" ".*"
+rabbitmqctl set_user_tags swlabsrabbit administrator
+
+
+SuSEfirewall2 open EXT TCP 5672
+SuSEfirewall2 open EXT TCP 15672
+# reload firewall to take effect
+SuSEfirewall2
+
+
+cd /data/rpm/
+wget http://download.opensuse.org/repositories/home:/BerlinOnline/openSUSE_Leap_42.1/x86_64/couchdb-1.6.1-1.1.x86_64.rpm
+rpm -i couchdb-1.6.1-1.1.x86_64.rpm 
+
+ln -s /data/swlabs/config/couchdb_swlabs.ini /etc/couchdb/local.d/couchdb_swlabs.ini
+chown couchdb:couchdb -R /data/swlabs/data/couchdb_data
+curl -X PUT $HOST/_config/admins/rafik -d '"fvmp,8rcdb"'
+
+systemctl enable couchdb.service
+systemctl start couchdb.service 
+systemctl status couchdb.service 
+
+SuSEfirewall2 open EXT TCP 5984
+SuSEfirewall2
+
+netstat -lptn
+
+
+
+
+a2enmod proxy
+a2enmod proxy_http
+a2enmod wsgi
+a2enmod rewrite
+a2enmod access_compat
+
+ln -s /data/swlabs/config/apache_swlabs.conf /etc/apache2/vhosts.d/apache_swlabs.conf
+
+SuSEfirewall2 open EXT TCP 80
+SuSEfirewall2 open EXT TCP 8080
+SuSEfirewall2
+
+systemctl enable apache2.service
+systemctl start apache2
+systemctl status apache2.service
+
+
+
+
+
+
+
+
+
+
+
