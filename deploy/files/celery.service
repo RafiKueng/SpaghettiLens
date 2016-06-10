@@ -1,0 +1,12 @@
+[Unit]
+Description=SpaghettiLens Celery Worker (glass renderer)
+After=network.target
+
+[Service]
+Type=simple
+User=SpLworker
+Group=users
+ExecStart=/data/SpL_worker/start_celery
+
+[Install]
+WantedBy=multi-user.target
