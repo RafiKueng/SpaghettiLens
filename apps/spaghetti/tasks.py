@@ -92,7 +92,7 @@ def runGLASS(self, GLASSconfig, config):
 
 
     figpath = '/tmp/spaghettilens/'
-    name = 'testing'
+    name = str(config['model_id']) # we don't like unicode here for some reason...
     path = os.path.join(figpath, name)
 
     try: # this prevents a race condition
@@ -276,6 +276,10 @@ def runGLASS(self, GLASSconfig, config):
     user = config['upload_user']
     destpath = config['upload_dest']
 
+    # TODO: if this woker runs on the web server, ssh connection failes
+    # solutions:
+    # have a dedicated user for uploading the files, OR
+    # code in a check, and on server use simple file transfer method
     ssh = SSHClient()
     ssh.load_system_host_keys()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -292,6 +296,7 @@ def runGLASS(self, GLASSconfig, config):
 
     # upload log file
     scp.put(logfile, os.path.join(destpath, 'glass.log'))
+    os.remove(logfile) # delete logfile
     Status('upload files', i+1, 6)
   
     # ...
