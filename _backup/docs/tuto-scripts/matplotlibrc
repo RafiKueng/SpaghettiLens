@@ -1,4 +1,0 @@
-savefig.dpi       : 300         # figure dots per inch
-savefig.facecolor : black       # figure facecolor when saving
-savefig.edgecolor : white       # figure edgecolor when saving
-savefig.extension : auto        # what extension to use for savefig('foo'), or 'auto'

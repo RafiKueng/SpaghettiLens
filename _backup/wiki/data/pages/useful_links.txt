@@ -1,3 +1,0 @@
-====== Useful links ======
-
-  * [[http://caniuse.com/#feat=websockets|Browser support for different techniques (websockets)]]
