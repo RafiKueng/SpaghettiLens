@@ -1,1 +1,0 @@
-find . -name 'log.txt' | xargs ./work.py > timings.csv
