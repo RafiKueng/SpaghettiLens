@@ -1,1 +1,11 @@
-fdh
+
+pip install "django<1.8"
+pip install "Celery<4.0"
+
+pillow
+scp
+paramiko
+requests
+AttrDict
+git+https://github.com/RafiKueng/couchdbkit.git@master
+
