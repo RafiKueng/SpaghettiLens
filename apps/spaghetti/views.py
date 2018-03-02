@@ -227,7 +227,7 @@ def api(request):
 
 def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
     
-    print "username:", username
+    print "username:", username, lens_id
     
     try:
         lens = Lens.get(lens_id)
