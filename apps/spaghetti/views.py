@@ -227,7 +227,7 @@ def api(request):
 
 def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
     
-    #print "username:", username
+    print "username:", username
     
     try:
         lens = Lens.get(lens_id)
@@ -235,7 +235,7 @@ def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
         return JsonResponse({'success': False, 'error': 'Ressource not found (%s) The lens id doesnt exist!!' % e})
     
 
-    #print "eval and save"
+    print "eval and save"
     EASJobj = EvalAndSaveJSON(user_str = username,
                           data_obj= lens,
                           jsonStr = lmtmodel,
@@ -243,13 +243,13 @@ def _saveModel(rq, lmtmodel, lens_id, parent, username, comment):
                           
     obj = EASJobj.getDict()
 
-    #print "after eval and save"
+    print "after eval and save"
 
-    #print '='*80
-    #print "EASJobj:"
-    #for k, v in EASJobj.__dict__['_'].items():
-        #print "%-16s : %s" % (k, v)
-    #print '='*80
+    print '='*80
+    print "EASJobj:"
+    for k, v in EASJobj.__dict__['_'].items():
+        print "%-16s : %s" % (k, v)
+    print '='*80
         
     
 #    print '='*80

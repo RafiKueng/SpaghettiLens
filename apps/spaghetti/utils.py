@@ -347,7 +347,7 @@ class EvalAndSaveJSON:
     
     def recWalker(pnt, origin, depth=0, level=0):
       res = []
-      a = " "*(depth*3)
+      #a = " "*(depth*3)
       #print a, "rec:", level, pnt.x, pnt.y, pnt.type, pnt.wasType
       
       try:
@@ -600,11 +600,21 @@ class EvalAndSaveJSON:
 
   def getDict(self):
       
-      self._.source = []
+# rafik2018
+#      self._.source = []
+#      
+#      self._.source.append(self._.z_src)
+#      for i, pnt in enumerate(self._.points):
+#          self._.source.extend(pnt.toGLSLst(i))
+
+      source = []
       
-      self._.source.append(self._.z_src)
+      source.append(self._.z_src)
       for i, pnt in enumerate(self._.points):
-          self._.source.extend(pnt.toGLSLst(i))
+          source.extend(pnt.toGLSLst(i))
+      
+      self._.source = source
+
           
       #print "in eval (source):", self._.source
 
@@ -628,7 +638,7 @@ class EvalAndSaveJSON:
       
       
       d = dict(self._) #TODO this forgets about the source, check why!!!
-      d['source'] = self._.source
+      d['source'] = source
       d['ext_masses'] = exms
       d['include_priors'] = self._.include_priors
       
