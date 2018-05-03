@@ -40,7 +40,7 @@ Thumbs.db
 
 
 # python environment
-py_env/*
+_backup2/py_env/*
 
 # static files generated on server
 #/backend/static/*
@@ -48,4 +48,4 @@ py_env/*
 apps/.coverage
 
 # dev server creates these
-media/*
+_backup2/media/*
