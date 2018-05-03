@@ -41,6 +41,9 @@ Thumbs.db
 
 # python environment
 _backup2/py_env/*
+_backup2/PyEnvNew/*
+
+pyenv*/*
 
 # static files generated on server
 #/backend/static/*
