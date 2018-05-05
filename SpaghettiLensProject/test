@@ -1,0 +1,22 @@
+#!/bin/bash
+
+LN="================================================================================"
+
+echo ""
+echo $LN
+echo " RUNNING TESTS"
+echo $LN
+echo ""
+coverage run manage.py test
+
+echo ""
+echo ""
+echo $LN
+echo " COVERAGGE REPORT"
+echo $LN
+echo ""
+coverage report
+
+# create html report
+coverage html -d _coverage_html
+firefox _coverage_html/index.html

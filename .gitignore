@@ -33,22 +33,25 @@ Thumbs.db
 .directory
 .kateproject*
 *.kate-swp
+.spyproject/*
+
 
 # Compiled files #
 ##################
 *.pyc
 
 
-# python environment
+# python environment #
+######################
 _backup2/py_env/*
 _backup2/PyEnvNew/*
+_backup2/media/*
 
 pyenv*/*
 
-# static files generated on server
-#/backend/static/*
-#/tmp_media/*
-apps/.coverage
 
-# dev server creates these
-_backup2/media/*
+# coverage files #
+##################
+*/.coverage
+*/_coverage_html/*
+
