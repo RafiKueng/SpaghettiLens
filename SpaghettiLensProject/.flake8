@@ -1,0 +1,11 @@
+[flake8]
+
+exclude =
+    .git
+    manage.py
+    wsgi.py
+
+max-line-length = 119
+
+statistics = True
+count = True

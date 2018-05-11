@@ -19,4 +19,13 @@ coverage report
 
 # create html report
 coverage html -d _coverage_html
-firefox _coverage_html/index.html
+#firefox _coverage_html/index.html
+
+
+echo ""
+echo ""
+echo $LN
+echo " Static Conde Analysis"
+echo $LN
+echo ""
+flake8
