@@ -45,7 +45,7 @@ class LensesAPI_lens_ModelTests(TestCase):
 class LensesAPI_Basic_ViewTests(TestCase):
     
     def setUp(self):
-        self.url = reverse('LensesDB:api')
+        self.url = reverse('LensesAPI:api')
     
     def test_no_args(self):
         resp = self.client.get(self.url)
@@ -114,7 +114,7 @@ class LensesAPI_GetListOfLenses_ViewTests(TestCase):
                 scidata=d, imgdata=d, metadata=d)
 
         self.Ls = [L0, L1, L2]
-        self.url = reverse('LensesDB:api')
+        self.url = reverse('LensesAPI:api')
 
         # [L.save() for L in self.Ls]
         
@@ -126,6 +126,6 @@ class LensesAPI_GetListOfLenses_ViewTests(TestCase):
 #class LensesDB_GetGui_Tests(TestCase):
 #    
 #    def test_basic_response(self):
-#        response = self.client.get(reverse('LensesDB:getGui'))
+#        response = self.client.get(reverse('LensesAPI:getGui'))
 #        self.assertEqual(response.status_code, 200)
 
