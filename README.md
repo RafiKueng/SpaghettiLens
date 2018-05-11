@@ -21,7 +21,12 @@ license: GPL
 ## Install Instructions
 
 ## Testing
+write tests!
 
 ## Coverage
+coverage
 
-## 
+## Style Analysis
+flake8
+
+all are run with ./test

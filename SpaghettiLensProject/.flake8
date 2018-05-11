@@ -4,6 +4,9 @@ exclude =
     .git
     manage.py
     wsgi.py
+    
+ignore = 
+    W293  # spaces in blank line
 
 max-line-length = 119
 
