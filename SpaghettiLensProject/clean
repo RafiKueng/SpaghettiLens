@@ -1,0 +1,7 @@
+#!/bin/bash
+
+find . -name '*.pyc' -delete
+
+rm -fr _coverage_html
+rm -f .coverage
+

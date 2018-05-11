@@ -116,10 +116,10 @@ class LensesDB_Api_GetListOfLenses_ViewTests(TestCase):
         self.Ls = [L0, L1, L2]
         self.url = reverse('LensesDB:api')
 
-        [L.save() for L in self.Ls]
+        # [L.save() for L in self.Ls]
         
     def test_simple(self):
-        self.assertTrue()
+        self.assertTrue('bbbb' in self.Ls[0].names)
 
         
 
