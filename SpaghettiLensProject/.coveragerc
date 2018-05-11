@@ -6,7 +6,7 @@ branch = True
 
 source =
     SpaghettiLensProject
-    LensesDB_app
+    LensesAPI
     SpaghettiLens_app
 
 #include =

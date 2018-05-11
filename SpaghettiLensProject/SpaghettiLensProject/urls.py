@@ -23,6 +23,6 @@ urlpatterns = [
 #    url(r'^admin/', admin.site.urls),
 
 #    url(r'^spaghetti/', include('spaghetti.urls', namespace='spaghetti')),
-    url(r'^lenses/',    include('LensesDB_app.urls',    namespace='LensesDB')),
+    url(r'^lenses/',    include('LensesAPI.urls',    namespace='LensesAPI')),
     url(r'^admin/',     include(admin.site.urls) ),
 ]

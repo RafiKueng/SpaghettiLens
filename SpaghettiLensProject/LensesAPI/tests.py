@@ -7,10 +7,10 @@ from django.urls import reverse
 import datetime as DT
 
 
-from LensesDB_app.models import Datasource, Lens
+from LensesAPI.models import Datasource, Lens
 
 
-class LensesDB_datasource_ModelTests(TestCase):
+class LensesAPI_datasource_ModelTests(TestCase):
     
     def test_model_datasource(self):
         ds = Datasource(
@@ -23,7 +23,7 @@ class LensesDB_datasource_ModelTests(TestCase):
         self.assertEqual(ds.provides[1], 'b')
         
         
-class LensesDB_lens_ModelTests(TestCase):
+class LensesAPI_lens_ModelTests(TestCase):
 
     def test_model_lens(self):
         d = {'a':3, 'b':4}
@@ -42,7 +42,7 @@ class LensesDB_lens_ModelTests(TestCase):
         
 
 
-class LensesDB_Api_Basic_ViewTests(TestCase):
+class LensesAPI_Basic_ViewTests(TestCase):
     
     def setUp(self):
         self.url = reverse('LensesDB:api')
@@ -101,7 +101,7 @@ class LensesDB_Api_Basic_ViewTests(TestCase):
                 resp._headers['access-control-allow-methods'][1])
         
 
-class LensesDB_Api_GetListOfLenses_ViewTests(TestCase):
+class LensesAPI_GetListOfLenses_ViewTests(TestCase):
     
     def setUp(self):
         d = {'a':3, 'b':4}
@@ -129,4 +129,3 @@ class LensesDB_Api_GetListOfLenses_ViewTests(TestCase):
 #        response = self.client.get(reverse('LensesDB:getGui'))
 #        self.assertEqual(response.status_code, 200)
 
-        
