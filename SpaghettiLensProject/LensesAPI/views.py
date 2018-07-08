@@ -9,7 +9,7 @@ import requests
 from django.http import HttpResponse, JsonResponse, HttpResponsePermanentRedirect  # , HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext, loader
-from django.core.servers.basehttp import FileWrapper
+# from django.core.servers.basehttp import FileWrapper
 from django.conf import settings
 
 from models import Datasource, Lens
@@ -52,25 +52,40 @@ def getApiDef():
 
     return {
         # 'get_datasource_dialog': _getDataSourceDialog,
-        'get_list_of_lenses':
-            (_getListOfLenses, ['term']),
+        'get_list_of_lenses': (
+            _getListOfLenses,
+            ['term']
+        ),
 
-        'get_select_lens_dialog':
-            (_getSelectLensDialog, []),
+        'get_select_lens_dialog': (
+            _getSelectLensDialog,
+            []
+        ),
 
-        'check_lensname_pattern':
-            (_checkLensNamePatternAgainstDatasource, ['lensname', 'datasource']),
+        'check_lensname_pattern': (
+            _checkLensNamePatternAgainstDatasource,
+            ['lensname', 'datasource']
+        ),
 
-        'fetch_lens':
-            (_fetchRemoteLens, ['lensname', 'datasource']),
+        'fetch_lens': (
+            _fetchRemoteLens,
+            ['lensname', 'datasource']
+        ),
 
-        'get_lens_data':
-            (_getLensData, ['lens_id']),
+        'get_lens_data': (
+            _getLensData,
+            ['lens_id']
+        ),
     }
+
+
 
 
 @csrf_exempt
 def api(request):
+    '''API endpoint for the lenses database
+    
+    '''
 
     if request.method == 'GET':
         if len(request.GET) == 0:
@@ -108,6 +123,7 @@ def api(request):
 
         return fn(request, **kwargs)  # actually call the api fn
 
+
     if request.method == 'OPTIONS':
         response = HttpResponse("")
         response['Access-Control-Allow-Origin'] = "*"
@@ -119,8 +135,14 @@ def api(request):
     # else
     return HttpResponse("only GET (and OPTIONS) interface allowed", status=400)
 
-    
+
+##############################################################################
+#    API FUNCTIONS
+##############################################################################
+
 def _getSelectLensDialog(request):
+    '''
+    '''
 
     datasources = Datasource.view("lenses/Datasources")
 
@@ -138,9 +160,10 @@ def _getSelectLensDialog(request):
     return JsonResponse({'success': True, 'html': html, 'jsobj': jsobj})
 
 
-def _getListOfLenses(request):
+def _getListOfLenses(request, term):
+    '''
+    '''
     
-    term = request.GET.get('term')
     if term is None:
         return JsonResponse({'success': False, 'error': "term_missing"}, status=400)
         
@@ -156,21 +179,31 @@ def _getListOfLenses(request):
     return JsonResponse({'success': True, 'data': lyst})
             
         
-def _checkLensNamePatternAgainstDatasource(rq):
-    ds = Datasource.get(rq.GET['datasource'])
+def _checkLensNamePatternAgainstDatasource(request, datasource, lensname):
+    '''Checks if a given lensname might originate from a given datasource.
+    '''
+
+#    datasource = rq.GET['datasource']
+#    lensname = rq.GET['lensname']
+
+    ds = Datasource.get(datasource)
     py_mod = ds['py_module_name']
     mod = pyDatasources.__dict__[py_mod]
     val = mod.validate
-    r = val(rq.GET['lensname']) if val is not None else True
+    r = val(lensname) if val is not None else True
     
     return JsonResponse({'success': True, 'data': r})
-        
-        
-def _fetchRemoteLens(rq):
-    dsid = rq.GET['datasource']
+
+
+def _fetchRemoteLens(request, datasource, lensname):
+    '''Download a lens from the datasource / remote'''
+
+#    lensname = rq.GET['lensname']
+
+    dsid = datasource
     ds = Datasource.get(dsid)
-    lensname = rq.GET['lensname']
     py_mod = ds['py_module_name']
+
     mod = pyDatasources.__dict__[py_mod]
     rvals = mod.fetch(lensname)  # rvals = successful, lensid, lensname
     
@@ -193,13 +226,31 @@ def _fetchRemoteLens(rq):
     
     short_id = l_id[0:9]
     short_id = '-'.join([short_id[i:i + 3] for i in [0, 3, 6]])
-    # this is a human readable EnoughUniqueId.. hopefully
-    # NOTE: probability of collision:
-    # http://stackoverflow.com/questions/19962424/probability-of-collision-with-truncated-sha-256-hash
-    # 8 hex chars = 32bits (4bit / hexchar)
-    # 2**(8*4/2) = 65536 entries, so many entries, then collisions start to happen
-    # 2**(10*4/2) =~ 1mio entries using 10 hex chars
-    # 2**(9*4/2) =~ 250'000 entries using 9 hex chars
+
+# this is a human readable EnoughUniqueId.. hopefully
+# NOTE: probability of collision:
+# http://stackoverflow.com/questions/19962424/probability-of-collision-with-truncated-sha-256-hash
+# 8 hex chars = 32bits (4bit / hexchar)
+# 2**(8*4/2) = 65536 entries, so many entries, then collisions start to happen
+# 2**(10*4/2) =~ 1mio entries using 10 hex chars
+# 2**(9*4/2) =~ 250'000 entries using 9 hex chars
+    
+# from math import log1p, sqrt
+# def birthday(probability_exponent, bits):
+#     probability = 10.0**probability_exponent
+#     outputs = 2.0**bits
+#     return sqrt(2.0*outputs*-log1p(-probability))
+#
+# In [18]: birthday(-3, 42)
+# Out[18]: 93810.94820409233
+
+# memorable id from names:  #TODO
+#
+# Using 42 bits should be save'ish for ~10'000s of lenses...
+# using https://gist.github.com/prschmid/4447660
+# use {'adjective': 8, 'adverb': 8, 'noun': 9, 'number': 9, 'verb': 8} or so
+    
+
     
     lens = Lens(
         names=[short_id, lensname],
@@ -221,9 +272,12 @@ def _fetchRemoteLens(rq):
     return JsonResponse({'success': True, 'data': {'lens_id': l_id}})
 
 
-def _getLensData(rq):
+
+def _getLensData(request, lens_id):
+    '''
+    '''
     
-    lens_id = rq.GET['lens_id']
+#    lens_id = rq.GET['lens_id']
     
     try:
         lens = Lens.get(lens_id)
@@ -231,6 +285,9 @@ def _getLensData(rq):
         return JsonResponse({'success': False, 'error': 'Ressource not found (%s)' % e})
     
     return JsonResponse({'success': True, 'data': lens.to_json()})
+
+
+
 
 
 def getMedia(request, hash1, hash2, datatype, datasource, subtype, ext):

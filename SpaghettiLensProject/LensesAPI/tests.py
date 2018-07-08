@@ -8,7 +8,7 @@ from django.urls import reverse
 import datetime as DT
 import types
 import inspect
-
+import mongomock
 
 from LensesAPI.models import Datasource, Lens
 import LensesAPI.views
@@ -56,6 +56,7 @@ class LensesAPI_getApiDef_Tests(TestCase):
         self.assertTrue(type(d) is dict)
 
     def test_return_dict(self):
+        '''Tests the returned dictionary for consitency with the code'''
         d = LensesAPI.views.getApiDef()
 
         for ep, v in d.items():  # ep = endpoint
@@ -67,11 +68,15 @@ class LensesAPI_getApiDef_Tests(TestCase):
             self.assertTrue(isinstance(fn, types.FunctionType))
             self.assertTrue(isinstance(params, list))
             
+            l1 = len(inspect.getargspec(fn).args) - 1  # -1: They all get the 'request' argument first
+            l2 = len(params)
             self.assertEqual(
-                len(inspect.getargspec(fn).args),
-                len(params),
-                "entrypoint failing: %s" % ep
+                l1, l2,
+                "Number of args of API function '{}' ({}) mismatches the API definition ({})".format(ep, l1, l2)
             )
+            
+
+
 
 
 class LensesAPI_Basic_ViewTests(TestCase):
@@ -166,6 +171,10 @@ class LensesAPI_GetListOfLenses_ViewTests(TestCase):
         self.url = reverse('LensesAPI:api')
 
         # [L.save() for L in self.Ls]
+        
+    def test_failure(self):
+        resp = self.client.get(self.url) # missing 'term'
+        self.assertEqual(resp.status_code, 400)
         
     def test_simple(self):
         self.assertTrue('bbbb' in self.Ls[0].names)

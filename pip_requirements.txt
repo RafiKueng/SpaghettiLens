@@ -1,8 +1,14 @@
+# for the actual project
+Django==1.11.13
+#mongoengine==0.15.0
+#pymongo==3.6.1
+requests==2.18.4
+psycopg2
+
+
+
+# for testing
 coverage==4.5.1
 flakes8
 ipython==5.6.0
-
-Django==1.11.13
-mongoengine==0.15.0
-pymongo==3.6.1
-requests==2.18.4
+#mongomock

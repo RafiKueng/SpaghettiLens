@@ -6,7 +6,11 @@ exclude =
     wsgi.py
     
 ignore = 
+    W291  # trailing whitespaces
     W293  # spaces in blank line
+    E221  # multiple spaces before operator... but I like those, to align =
+    E303  # too many blank line, i like those!!
+    
 
 max-line-length = 119
 
