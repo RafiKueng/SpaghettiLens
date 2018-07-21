@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from LensesAPI import views
+from Lenses import views
 
 
 urlpatterns = [

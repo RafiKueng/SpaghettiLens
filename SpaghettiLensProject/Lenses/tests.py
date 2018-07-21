@@ -8,7 +8,7 @@ from django.urls import reverse
 import datetime as DT
 import types
 import inspect
-import mongomock
+#import mongomock
 
 from LensesAPI.models import Datasource, Lens
 import LensesAPI.views

@@ -21,6 +21,6 @@ from django.contrib import admin
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
     # url(r'^spaghetti/', include('spaghetti.urls', namespace='spaghetti')),
-    url(r'^lenses/', include('LensesAPI.urls', namespace='LensesAPI')),
+    url(r'^lenses/', include('Lenses.urls', namespace='Lenses')),
     url(r'^admin/', include(admin.site.urls)),
 ]

@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'Lenses.apps.Lenses_AppConfig',
+        
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

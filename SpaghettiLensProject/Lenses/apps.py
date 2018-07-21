@@ -4,5 +4,5 @@ from __future__ import unicode_literals
 from django.apps import AppConfig
 
 
-class LensesAPI_AppConfig(AppConfig):
-    name = 'LensesAPI'
+class Lenses_AppConfig(AppConfig):
+    name = 'Lenses'
