@@ -55,3 +55,6 @@ pyenv*/*
 */.coverage
 */_coverage_html/*
 
+**/migrations/*
+
+SpaghettiLensProject/db.sqlite3

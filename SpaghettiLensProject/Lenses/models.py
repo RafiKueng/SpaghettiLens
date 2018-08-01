@@ -11,12 +11,14 @@ from django.db import models as fields
 import datetime as DT
 import os
 import hashlib
+import json
 
 
 HASH_FUNC = hashlib.sha256
 
 
 def get_hash(lens_model_instance):
+#    lens_model_instance.file.open()
     hashfn = HASH_FUNC()
     for data in lens_model_instance.file.chunks():
         hashfn.update(data)
@@ -36,26 +38,40 @@ class Lens(models.Model):
     '''This is one single lens'''
     
     hash = fields.CharField(unique=True, max_length=64)
+
     names = fields.TextField()
     file = fields.FileField(upload_to=hash_upload)
+    origin_uri = fields.TextField(default=None, null=True)
+
+    created_by_user = fields.TextField(default=None, null=True)
+    created_at = fields.DateTimeField(default=DT.datetime.utcnow)
     
     scidata = fields.TextField()
     imgdata = fields.TextField()
 #    metadata = fields.TextField()
-    
-    created_at = fields.DateTimeField(default=DT.datetime.utcnow)
-    created_by = fields.TextField(default=None, null=True)
 
     edit_history = fields.TextField()
 
 
-    def save(self):
-        self.hash = get_hash(self)
-        super(Lens, self).save()
+    def save(self, *args, **kwargs):
+        
+#        self.created_at = DT.datetime.utcnow
+#        self.hash = get_hash(self)
+#        self.edit_history = json.dumps([(self.created_at.isoformat(),'created',self.created_by_user),])
+        
+        super(Lens, self).save(*args, **kwargs)
 
-    
+
+    def set_scidata(self, data):
+        try:
+            self.scidata = json.dumps(data)
+        except:
+            self.scidata = json.dumps({})
+
+
     def __unicode__(self):
         return "<Lens hash:%s, names:'%s'>" % (self.hash, self.names)
+
 
     def __repr__(self):
         return self.__unicode__()

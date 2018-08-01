@@ -1,7 +1,7 @@
  
 # What TODO next
 
-dont use mongo, just use postgres?!!
+dont use mongo, just use postgres?!!, just use the regular DB!
 
 ## use test driven dev
 `./mng test`
